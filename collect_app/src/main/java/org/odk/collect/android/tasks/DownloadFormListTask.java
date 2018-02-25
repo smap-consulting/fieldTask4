@@ -218,7 +218,7 @@ public class DownloadFormListTask extends AsyncTask<Void, String, HashMap<String
                 if (formId == null || downloadUrl == null || formName == null) {
                     String error =
                             "Forms list entry " + Integer.toString(i)
-                                    + " is missing one or more tags: formId, name, or downloadUrl";
+                                    + " has missing or empty tags: formID, name, or downloadUrl";
                     Timber.e("Parsing OpenRosa reply -- %s", error);
                     formList.clear();
                     formList.put(
@@ -233,7 +233,7 @@ public class DownloadFormListTask extends AsyncTask<Void, String, HashMap<String
                     isNewerFormVersionAvailable = isNewerFormVersionAvailable(DownloadFormsTask.getMd5Hash(hash));
                     if (!isNewerFormVersionAvailable && manifestUrl != null) {
                         List<MediaFile> newMediaFiles = downloadMediaFileList(manifestUrl);
-                        if (newMediaFiles != null) {
+                        if (newMediaFiles != null && newMediaFiles.size() > 0) {
                             areNewerMediaFilesAvailable = areNewerMediaFilesAvailable(formId, version, newMediaFiles);
                         }
                     }

@@ -14,12 +14,14 @@
 
 package org.odk.collect.android.application;
 
+import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.multidex.MultiDex;
@@ -40,26 +42,29 @@ import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.R;
 import org.odk.collect.android.database.ActivityLogger;
 import org.odk.collect.android.external.ExternalDataManager;
+import org.odk.collect.android.injection.config.DaggerAppComponent;
 import org.odk.collect.android.logic.FormController;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.preferences.AdminSharedPreferences;
 import org.odk.collect.android.preferences.AutoSendPreferenceMigrator;
 import org.odk.collect.android.preferences.FormMetadataMigrator;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
-import org.odk.collect.android.utilities.AgingCredentialsProvider;
 import org.odk.collect.android.utilities.AuthDialogUtility;
 import org.odk.collect.android.utilities.LocaleHelper;
 import org.odk.collect.android.utilities.PRNGFixes;
 import org.opendatakit.httpclientandroidlib.client.CookieStore;
 import org.opendatakit.httpclientandroidlib.client.CredentialsProvider;
 import org.opendatakit.httpclientandroidlib.client.protocol.HttpClientContext;
-import org.opendatakit.httpclientandroidlib.impl.client.BasicCookieStore;
 import org.opendatakit.httpclientandroidlib.protocol.BasicHttpContext;
 import org.opendatakit.httpclientandroidlib.protocol.HttpContext;
 
 import java.io.File;
 import java.util.Locale;
 
+import javax.inject.Inject;
+
+import dagger.android.DispatchingAndroidInjector;
+import dagger.android.HasActivityInjector;
 import timber.log.Timber;
 
 import static org.odk.collect.android.logic.PropertyManager.PROPMGR_USERNAME;
@@ -73,7 +78,7 @@ import static org.odk.collect.android.preferences.PreferenceKeys.KEY_USERNAME;
  *
  * @author carlhartung
  */
-public class Collect extends Application {
+public class Collect extends Application implements HasActivityInjector {
 
     // Storage paths
     public static final String ODK_ROOT = Environment.getExternalStorageDirectory()
@@ -92,17 +97,22 @@ public class Collect extends Application {
 
     public static String defaultSysLanguage;
     private static Collect singleton = null;
+    private static long lastClickTime;
 
-    // share all session cookies across all sessions...
-    private CookieStore cookieStore = new BasicCookieStore();
-    // retain credentials for 7 minutes...
-    private CredentialsProvider credsProvider = new AgingCredentialsProvider(7 * 60 * 1000);
+    @Inject
+    protected CookieStore cookieStore;
+    @Inject
+    protected CredentialsProvider credsProvider;
+
     private ActivityLogger activityLogger;
 
     @Nullable
     private FormController formController = null;
     private ExternalDataManager externalDataManager;
     private Tracker tracker;
+
+    @Inject
+    DispatchingAndroidInjector<Activity> androidInjector;
 
     public static Collect getInstance() {
         return singleton;
@@ -249,6 +259,11 @@ public class Collect extends Application {
         super.onCreate();
         singleton = this;
 
+        DaggerAppComponent.builder()
+                .application(this)
+                .build()
+                .inject(this);
+
         reloadSharedPreferences();
 
         PRNGFixes.apply();
@@ -305,6 +320,7 @@ public class Collect extends Application {
         return tracker;
     }
 
+
     private static class CrashReportingTree extends Timber.Tree {
         @Override
         protected void log(int priority, String tag, String message, Throwable t) {
@@ -336,5 +352,21 @@ public class Collect extends Application {
     private void reloadSharedPreferences() {
         GeneralSharedPreferences.getInstance().reloadPreferences();
         AdminSharedPreferences.getInstance().reloadPreferences();
+    }
+
+    // Preventing multiple clicks, using threshold of 500 ms
+    public static boolean allowClick() {
+        long elapsedRealtime = SystemClock.elapsedRealtime();
+        boolean allowClick = (lastClickTime == 0 || lastClickTime == elapsedRealtime) // just for tests
+                || elapsedRealtime - lastClickTime > 500;
+        if (allowClick) {
+            lastClickTime = elapsedRealtime;
+        }
+        return allowClick;
+    }
+
+    @Override
+    public DispatchingAndroidInjector<Activity> activityInjector() {
+        return androidInjector;
     }
 }
