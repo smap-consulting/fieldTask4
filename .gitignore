@@ -8,6 +8,8 @@ local.properties
 *.iml
 
 collect_app/src/kontrolid/
+collect_app/src/plan/
+collect_app/plan/
 
 # emacs backup files
 *.*~
