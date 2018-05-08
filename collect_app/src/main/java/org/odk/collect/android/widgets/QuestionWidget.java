@@ -22,11 +22,10 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.v4.content.ContextCompat;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -46,11 +45,12 @@ import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.database.ActivityLogger;
 import org.odk.collect.android.exception.JavaRosaException;
-import org.odk.collect.android.utilities.DependencyProvider;
 import org.odk.collect.android.listeners.AudioPlayListener;
 import org.odk.collect.android.logic.FormController;
+import org.odk.collect.android.utilities.DependencyProvider;
 import org.odk.collect.android.utilities.FormEntryPromptUtils;
 import org.odk.collect.android.utilities.TextUtils;
+import org.odk.collect.android.utilities.ThemeUtils;
 import org.odk.collect.android.utilities.ViewIds;
 import org.odk.collect.android.views.MediaLayout;
 import org.odk.collect.android.widgets.interfaces.ButtonWidget;
@@ -68,9 +68,6 @@ public abstract class QuestionWidget
         extends RelativeLayout
         implements Widget, AudioPlayListener {
 
-    private static final int DEFAULT_PLAY_COLOR = Color.BLUE;
-    private static final int DEFAULT_PLAY_BACKGROUND_COLOR = Color.WHITE;
-
     private final int questionFontSize;
     private final FormEntryPrompt formEntryPrompt;
     private final MediaLayout questionMediaLayout;
@@ -79,11 +76,15 @@ public abstract class QuestionWidget
 
     private Bundle state;
 
-    private int playColor = DEFAULT_PLAY_COLOR;
-    private int playBackgroundColor = DEFAULT_PLAY_BACKGROUND_COLOR;
+    protected ThemeUtils themeUtils;
+    private int playColor;
 
     public QuestionWidget(Context context, FormEntryPrompt prompt) {
         super(context);
+
+        themeUtils = new ThemeUtils(context);
+        playColor =  themeUtils.getAttributeValue(R.attr.colorAccent);
+
         if (context instanceof FormEntryActivity) {
             state = ((FormEntryActivity) context).getState();
         }
@@ -151,8 +152,8 @@ public abstract class QuestionWidget
         TextView questionText = new TextView(getContext());
         questionText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, getQuestionFontSize());
         questionText.setTypeface(null, Typeface.BOLD);
-        questionText.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
         questionText.setPadding(0, 0, 0, 7);
+        questionText.setTextColor(themeUtils.getAttributeValue(R.attr.primaryTextColor));
         questionText.setText(TextUtils.textToHtml(FormEntryPromptUtils.markQuestionIfIsRequired(promptText, prompt.isRequired())));
         questionText.setMovementMethod(LinkMovementMethod.getInstance());
 
@@ -187,17 +188,6 @@ public abstract class QuestionWidget
             }
         }
         questionMediaLayout.setPlayTextColor(getPlayColor());
-
-        String playBackgroundColorString = prompt.getFormElement().getAdditionalAttribute(null,
-                "playBackgroundColor");
-        if (playBackgroundColorString != null) {
-            try {
-                playBackgroundColor = Color.parseColor(playBackgroundColorString);
-            } catch (IllegalArgumentException e) {
-                Timber.e(e, "Argument %s is incorrect", playBackgroundColorString);
-            }
-        }
-        questionMediaLayout.setPlayTextBackgroundColor(getPlayBackgroundColor());
 
         return questionMediaLayout;
     }
@@ -341,7 +331,7 @@ public abstract class QuestionWidget
             } else {
                 helpText.setText(TextUtils.textToHtml(s));
             }
-            helpText.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
+            helpText.setTextColor(themeUtils.getAttributeValue(R.attr.primaryTextColor));
             helpText.setMovementMethod(LinkMovementMethod.getInstance());
             return helpText;
         } else {
@@ -397,6 +387,10 @@ public abstract class QuestionWidget
 
     public void resetQuestionTextColor() {
         getQuestionMediaLayout().resetTextFormatting();
+    }
+
+    public void resetAudioButtonImage() {
+        getQuestionMediaLayout().resetAudioButtonBitmap();
     }
 
     @Override
@@ -455,12 +449,17 @@ public abstract class QuestionWidget
     }
 
     protected TextView getAnswerTextView() {
+        return getAnswerTextView("");
+    }
+
+    protected TextView getAnswerTextView(String text) {
         TextView textView = new TextView(getContext());
 
         textView.setId(R.id.answer_text);
-        textView.setTextColor(ContextCompat.getColor(getContext(), R.color.primaryTextColor));
+        textView.setTextColor(themeUtils.getAttributeValue(R.attr.primaryTextColor));
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, getAnswerFontSize());
         textView.setPadding(20, 20, 20, 20);
+        textView.setText(text);
 
         return textView;
     }
@@ -504,7 +503,7 @@ public abstract class QuestionWidget
                 }
                 formController.jumpToIndex(startFormIndex);
             } catch (JavaRosaException e) {
-                Timber.e(e);
+                Timber.d(e);
             }
         }
     }
@@ -571,7 +570,7 @@ public abstract class QuestionWidget
             return null;
         }
 
-        return formController.getInstancePath().getParent();
+        return formController.getInstanceFile().getParent();
     }
 
     @NonNull
@@ -602,9 +601,5 @@ public abstract class QuestionWidget
 
     public int getPlayColor() {
         return playColor;
-    }
-
-    public int getPlayBackgroundColor() {
-        return playBackgroundColor;
     }
 }

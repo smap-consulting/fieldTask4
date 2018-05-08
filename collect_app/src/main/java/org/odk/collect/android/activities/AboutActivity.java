@@ -22,11 +22,11 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Toast;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.AboutListAdapter;
@@ -37,7 +37,7 @@ import java.util.List;
 
 import timber.log.Timber;
 
-public class AboutActivity extends AppCompatActivity implements
+public class AboutActivity extends CollectAbstractActivity implements
         AboutListAdapter.AboutItemClickListener {
 
     private static final String LICENSES_HTML_PATH = "file:///android_asset/open_source_licenses.html";
@@ -121,7 +121,10 @@ public class AboutActivity extends AppCompatActivity implements
                             }
                         }
                     } catch (android.content.ActivityNotFoundException anfe) {
-                        Timber.e(anfe);
+                        Toast.makeText(Collect.getInstance(),
+                                getString(R.string.activity_not_found, "market view"),
+                                Toast.LENGTH_SHORT).show();
+                        Timber.d(anfe);
                     }
                     if (!intentStarted) {
                         // Show a list of all available browsers if user doesn't have a default browser
