@@ -1,6 +1,3 @@
-[Smap fieldTask](http://www.smap.com.au) 
-fieldTask4 is a clone of [odkCollect](http://opendatakit.org/use/collect/) with Task Management functionality. It replaces fieldTask3 which used odkCollect as a library.
-=======
 ODK Collect is an Android app for filling out forms. It is designed to be used in resource-constrained environments with challenges such as unreliable connectivity or power infrastructure. ODK Collect is part of Open Data Kit (ODK), a free and open-source set of tools which help organizations author, field, and manage mobile data collection solutions. Learn more about the Open Data Kit project and its history [here](https://opendatakit.org/about/) and read about example ODK deployments [here](https://opendatakit.org/about/deployments/).
 
 ODK Collect renders forms that are compliant with the [ODK XForms standard](http://opendatakit.github.io/xforms-spec/), a subset of the [XForms 1.1 standard](https://www.w3.org/TR/xforms/) with some extensions. The form parsing is done by the [JavaRosa library](https://github.com/opendatakit/javarosa) which Collect includes as a dependency.
@@ -102,51 +99,22 @@ implementation (project(path: ':javarosa-master')) {
 	```gradle
 	compile files('/path/to/javarosa/build/libs/opendatakit-javarosa-x.y.z-SNAPSHOT.jar')
 	```	
->>>>>>> upstream/master
- 
-Follow the latest news about Smap on our [blog](http://blog.smap.com.au) and on twitter [@dgmsot](https://twitter.com/dgmsot).
+## Contributing code
+Any and all contributions to the project are welcome. ODK Collect is used across the world primarily by organizations with a social purpose so you can have real impact!
 
-Frequently Asked Questions
----------------------------
-##### How to install and run
-* Install Android Studio
-* In Android Studio open the SDK manager (from the tools menu)
-* Under "Extras" install:
-    * Android Support Repository
-    * Android Support Library
-    * Google Play Services
-    * Google Repository
-* Clone as a GIT project into Android Studio
-* Checkout branch "smap"
-* Select fieldTask and run as an Android application
+Issues tagged as [good first issue](https://github.com/opendatakit/collect/labels/good%20first%20issue) should be a good place to start. There are also currently many issues tagged as [needs reproduction](https://github.com/opendatakit/collect/labels/needs%20reproduction) which need someone to try to reproduce them with the current version of ODK Collect and comment on the issue with their findings.
 
-Instructions on installing a Smap server can be found in the operations manual [here](http://www.smap.com.au/downloads.shtml)
+If you're ready to contribute code, see [the contribution guide](CONTRIBUTING.md).
 
-Task Management 
----------------
+## Contributing translations
+If you know a language other than English, consider contributing translations through [Transifex](https://www.transifex.com/opendatakit/collect/).
 
-A user of fieldTask can be assigned tasks to complete as per this [video](http://www.smap.com.au/taskManagement.shtml). 
-
-##### Get existing survey data as an XForm instance XML file
-https://hostname/instanceXML/{survey id}/0?datakey={key name}&datakeyvalue={value of key}
-
-##### Update existing results
-https://{hostname}/submission/{instanceid}
-
-Note the instance id of the existing data is included in the instanceXML.  It should be replaced with a new instance id before the results are submitted. However the instance id of the data to be replaced needs to be included in teh submission URL.
-
-This API allows you to maintain data using surveys. In the following video the data is published on a map, however it could also be published in a table as a patient registry or list of assets. fieldTask needs to be customised to access these links using the data keys in a similar way to web forms.
-
-[![ScreenShot](http://img.youtube.com/vi/FUNPOmMnt1I/0.jpg)](https://www.youtube.com/watch?v=FUNPOmMnt1I)
-
-Development
------------
-* Code contributions are very welcome. 
-* [Issue Tracker](https://github.com/smap-consulting/fieldTask4/issues)
-
-Acknowledgements
-----------------
-
-This project includes:
-* the odkCollect Library of (http://opendatakit.org/) from the University of Washington
-* the Android SDK from [MapBox] (https://www.mapbox.com/)
+## Contributing testing
+All releases are verified on the following devices (ordered by Android version):
+* [Samsung Galaxy Young GT-S6310](http://www.gsmarena.com/samsung_galaxy_young_s6310-5280.php) - Android 4.1.2
+* [Infinix Race Bolt Q X451](http://bestmobs.com/infinix-race-bolt-q-x451) - Android 4.2.1
+* [Samsung Galaxy J1 SM-J100H](http://www.gsmarena.com/samsung_galaxy_j1-6907.php) - Android 4.4.4
+* [Huawei Y560-L01](http://www.gsmarena.com/huawei_y560-7829.php) - Android 5.1.1
+* [Sony Xperia Z3 D6603](http://www.gsmarena.com/sony_xperia_z3-6539.php) - Android 6.0.1
+* [Samsung Galaxy S7 SM-G930F](https://www.gsmarena.com/samsung_galaxy_s7-7821.php) - Android 7.0.0
+* [LG Nexus 5X](https://www.gsmarena.com/lg_nexus_5x-7556.php) - Android 8.0.0
