@@ -27,7 +27,6 @@
         <exclude name="PositionLiteralsFirstInComparisons" />
         <exclude name="PreserveStackTrace" />
         <exclude name="SwitchStmtsShouldHaveDefault" />
-        <exclude name="UnusedFormalParameter" />
         <exclude name="UseVarargs" />
     </rule>
 
@@ -43,7 +42,6 @@
         <exclude name="DefaultPackage" />
         <exclude name="EmptyMethodInAbstractClassShouldBeAbstract" />
         <exclude name="FieldDeclarationsShouldBeAtStartOfClass" />
-        <exclude name="IdenticalCatchBranches" />
         <exclude name="LongVariable" />
         <exclude name="LocalVariableCouldBeFinal" />
         <exclude name="MIsLeadingVariableName" />
@@ -55,7 +53,6 @@
         <exclude name="ShortMethodName" />
         <exclude name="ShortVariable" />
         <exclude name="TooManyStaticImports" />
-        <exclude name="UnnecessaryConstructor" />
         <exclude name="UselessParentheses" />               <!-- Decided not to use in #1519 -->
     </rule>
 
@@ -79,7 +76,6 @@
         <exclude name="NcssCount" />
         <exclude name="NPathComplexity" />
         <exclude name="SignatureDeclareThrowsException" />
-        <exclude name="SimplifiedTernary" />
         <exclude name="SimplifyConditional" />
         <exclude name="SingularField" />
         <exclude name="SwitchDensity" />
