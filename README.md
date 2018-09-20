@@ -120,3 +120,76 @@ All releases are verified on the following devices (ordered by Android version):
 * [Sony Xperia Z3 D6603](http://www.gsmarena.com/sony_xperia_z3-6539.php) - Android 6.0.1
 * [Samsung Galaxy S7 SM-G930F](https://www.gsmarena.com/samsung_galaxy_s7-7821.php) - Android 7.0.0
 * [LG Nexus 5X](https://www.gsmarena.com/lg_nexus_5x-7556.php) - Android 8.0.0
+
+Our regular code contributors use these devices (ordered by Android version): 
+* [Alcatel One Touch 5020D](https://www.gsmarena.com/alcatel_one_touch_m_pop-5242.php) - Android 4.1.1
+* [Xiaomi Redmi Note 4](https://www.gsmarena.com/xiaomi_redmi_note_4-8531.php) - Android 7.0
+* [Samsung Galaxy S4 GT-I9506](http://www.gsmarena.com/samsung_i9506_galaxy_s4-5542.php) - Android 5.0.1
+* [Samsung Galaxy Tab SM-T285](http://www.gsmarena.com/samsung_galaxy_tab_a_7_0_(2016)-7880.php) - Android 5.1.1
+* [Motorola G 5th Gen XT1671](https://www.gsmarena.com/motorola_moto_g5-8454.php) - Android 7.0
+
+The best way to help us test is to build from source! If you aren't a developer and want to help us test release candidates, join the [beta program](https://play.google.com/apps/testing/org.odk.collect.android)!
+
+Testing checklists can be found on the [Collect testing plan](https://docs.google.com/spreadsheets/d/1ITmOW2MFs_8-VM6MTwganTRWDjpctz9CI8QKojXrnjE/edit?usp=sharing).
+
+If you have finished testing a pull request, please use a template from [Testing result templates](.github/TESTING_RESULT_TEMPLATES.md) to report your insights.
+
+## Downloading builds
+Per-commit debug builds can be found on [CircleCI](https://circleci.com/gh/opendatakit/collect). Login with your GitHub account, click the build you'd like, then find the APK in the Artifacts tab.
+
+Current and previous production builds can be found on the [ODK website](https://opendatakit.org/downloads/download-info/odk-collect-apk).
+
+## Creating signed releases for Google Play Store
+Project maintainers have the keys to upload signed releases to the Play Store. 
+
+Maintainers have a `secrets.properties` file in the `collect_app` folder with the following:
+```
+// collect_app/secrets.properties
+RELEASE_STORE_FILE=/path/to/collect.keystore
+RELEASE_STORE_PASSWORD=secure-store-password
+RELEASE_KEY_ALIAS=key-alias
+RELEASE_KEY_PASSWORD=secure-alias-password
+```
+To generate official signed releases, you'll need the keystore file, the keystore passwords, a configured `secrets.properties` file, and then run `./gradlew assembleRelease`. If successful, a signed release will be at `collect_app/build/outputs/apk`.
+
+## Troubleshooting
+
+#### Error when running Robolectric tests from Android Studio on macOS: `build/intermediates/bundles/debug/AndroidManifest.xml (No such file or directory)`
+> Configure the default JUnit test runner configuration in order to work around a bug where IntelliJ / Android Studio does not set the working directory to the module being tested. This can be accomplished by editing the run configurations, Defaults -> JUnit and changing the working directory value to $MODULE_DIR$.
+
+> Source: [Robolectric Wiki](https://github.com/robolectric/robolectric/wiki/Running-tests-in-Android-Studio#notes-for-mac).
+
+#### Android Studio Error: `SDK location not found. Define location with sdk.dir in the local.properties file or with an ANDROID_HOME environment variable.`
+When cloning the project from Android Studio, click "No" when prompted to open the `build.gradle` file and then open project.
+
+#### Execution failed for task ':collect_app:transformClassesWithInstantRunForDebug'.
+
+We are unsure why this problem occurs, but it seems to happen with IntelliJ IDEA and not with Android Studio. Try turning off [Instant Run](https://developer.android.com/studio/run/#set-up-ir) and see if that helps.
+
+#### Moving to the main view if user minimizes the app
+If you build the app on your own using Android Studio `(Build -> Build APK)` and then install it (from an `.apk` file), you might notice this strange behaviour thoroughly described: [#1280](https://github.com/opendatakit/collect/issues/1280) and [#1142](https://github.com/opendatakit/collect/issues/1142).
+
+This problem occurs building other apps as well.
+
+#### gradlew Failure: `FAILURE: Build failed with an exception.`
+
+If you encounter an error similar to this when running `gradlew`:
+
+```
+FAILURE: Build failed with an exception
+
+What went wrong:
+A problem occurred configuring project ':collect_app'.
+> Failed to notify project evaluation listener.
+   > Could not initialize class com.android.sdklib.repository.AndroidSdkHandler
+```
+
+You may have a mismatch between the embedded Android SDK Java and the JDK installed on your machine. You may wish to set your **JAVA_HOME** environment variable to that SDK. For example, on macOS:
+
+`export JAVA_HOME="/Applications/Android Studio.app/Contents/jre/jdk/Contents/Home"
+`
+
+Note that this change might cause problems with other Java-based applications (e.g., if you uninstall Android Studio).
+
+#### gradlew Failure: `java.lang.NullPointerException (no error message).`
+If you encounter the `java.lang.NullPointerException (no error message).` when running `gradlew`, please make sure your Java version for this project is Java 8.
