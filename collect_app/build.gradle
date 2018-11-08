@@ -100,7 +100,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
             resValue("bool", "FIREBASE_CRASHLYTICS_ENABLED", "false")
         }
-        // Release build for the original ODK Collect app
+        // Release build for the official ODK Collect app
         odkCollectRelease {
             if (secrets.getProperty('RELEASE_STORE_FILE')) {
                 signingConfig signingConfigs.release
@@ -218,7 +218,7 @@ dependencies {
     implementation "commons-io:commons-io:2.6"
     implementation "net.sf.kxml:kxml2:2.3.0"
     implementation "net.sf.opencsv:opencsv:2.3"
-    implementation("org.opendatakit:opendatakit-javarosa:2.12.0-SNAPSHOT") {
+    implementation("org.opendatakit:opendatakit-javarosa:2.12.0") {
         exclude group: 'joda-time'
         exclude group: 'org.slf4j'
     }
