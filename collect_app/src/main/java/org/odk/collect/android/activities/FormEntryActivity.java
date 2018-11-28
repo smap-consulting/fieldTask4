@@ -99,7 +99,7 @@ import org.odk.collect.android.logic.FormInfo;
 import org.odk.collect.android.preferences.AdminKeys;
 import org.odk.collect.android.preferences.AdminSharedPreferences;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
-import org.odk.collect.android.preferences.PreferenceKeys;
+import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.PreferencesActivity;
 import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
 import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
@@ -989,7 +989,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                             0, null, false, true);
                 }
 
-                Intent i = new Intent(this, EditFormHierarchyActivity.class);
+                Intent i = new Intent(this, FormHierarchyActivity.class);
                 startActivityForResult(i, RequestCodes.HIERARCHY_ACTIVITY);
                 return true;
             case R.id.menu_preferences:
@@ -1374,11 +1374,11 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
             // get constraint behavior preference value with appropriate default
             String constraintBehavior = (String) GeneralSharedPreferences.getInstance()
-                    .get(PreferenceKeys.KEY_CONSTRAINT_BEHAVIOR);
+                    .get(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
 
             if (formController != null && formController.currentPromptIsQuestion()) {
                 // if constraint behavior says we should validate on swipe, do so
-                if (constraintBehavior.equals(PreferenceKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
+                if (constraintBehavior.equals(GeneralKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
                     if (!saveAnswersForCurrentScreen(EVALUATE_CONSTRAINTS)) {
                         // A constraint was violated so a dialog should be showing.
                         beenSwiped = false;
@@ -2121,8 +2121,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             return;
         }
 
-        String navigation = (String) GeneralSharedPreferences.getInstance().get(PreferenceKeys.KEY_NAVIGATION);
-        showNavigationButtons = navigation.contains(PreferenceKeys.NAVIGATION_BUTTONS);
+        String navigation = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_NAVIGATION);
+        showNavigationButtons = navigation.contains(GeneralKeys.NAVIGATION_BUTTONS);
         backButton.setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
         nextButton.setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
 
@@ -2399,11 +2399,11 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                         if (formMode == null || ApplicationConstants.FormModes.EDIT_SAVED.equalsIgnoreCase(formMode)) {
                             formController.getTimerLogger().logTimerEvent(TimerLogger.EventTypes.FORM_RESUME, 0, null, false, true);
                             formController.getTimerLogger().logTimerEvent(TimerLogger.EventTypes.HIERARCHY, 0, null, false, true);
-                            startActivity(new Intent(this, EditFormHierarchyActivity.class));
+                            startActivity(new Intent(this, FormHierarchyActivity.class));
                             return; // so we don't show the intro screen before jumping to the hierarchy
                         } else {
                             if (ApplicationConstants.FormModes.VIEW_SENT.equalsIgnoreCase(formMode)) {
-                                startActivity(new Intent(this, ViewFormHierarchyActivity.class));
+                                startActivity(new Intent(this, ViewOnlyFormHierarchyActivity.class));
                             }
                             finish();
                         }
@@ -2494,12 +2494,12 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
                 // get constraint behavior preference value with appropriate default
                 String constraintBehavior = (String) GeneralSharedPreferences.getInstance()
-                        .get(PreferenceKeys.KEY_CONSTRAINT_BEHAVIOR);
+                        .get(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
 
                 // an answer constraint was violated, so we need to display the proper toast(s)
                 // if constraint behavior is on_swipe, this will happen if we do a 'swipe' to the
                 // next question
-                if (constraintBehavior.equals(PreferenceKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
+                if (constraintBehavior.equals(GeneralKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
                     next();
                 } else {
                     // otherwise, we can get the proper toast(s) by saving with constraint check
@@ -2569,9 +2569,9 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                            float velocityY) {
         // only check the swipe if it's enabled in preferences
         String navigation = (String) GeneralSharedPreferences.getInstance()
-                .get(PreferenceKeys.KEY_NAVIGATION);
+                .get(GeneralKeys.KEY_NAVIGATION);
 
-        if (navigation.contains(PreferenceKeys.NAVIGATION_SWIPE) && doSwipe) {
+        if (navigation.contains(GeneralKeys.NAVIGATION_SWIPE) && doSwipe) {
             // Looks for user swipes. If the user has swiped, move to the
             // appropriate screen.
 
