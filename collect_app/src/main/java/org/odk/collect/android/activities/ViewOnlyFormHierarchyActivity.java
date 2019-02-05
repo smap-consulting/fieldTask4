@@ -32,8 +32,6 @@ public class ViewOnlyFormHierarchyActivity extends FormHierarchyActivity {
      */
     @Override
     void configureButtons(FormController formController) {
-        jumpPreviousButton.setOnClickListener(v -> goUpLevel());
-
         Button exitButton = findViewById(R.id.exitButton);
         exitButton.setOnClickListener(v -> {
             setResult(RESULT_OK);
@@ -44,6 +42,16 @@ public class ViewOnlyFormHierarchyActivity extends FormHierarchyActivity {
 
         jumpBeginningButton.setVisibility(View.GONE);
         jumpEndButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void showDeleteButton(boolean shouldShow) {
+        // Disabled.
+    }
+
+    @Override
+    protected void showAddButton(boolean shouldShow) {
+        // Disabled.
     }
 
     /**
