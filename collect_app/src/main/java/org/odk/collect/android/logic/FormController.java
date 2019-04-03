@@ -17,8 +17,6 @@ package org.odk.collect.android.logic;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.google.android.gms.analytics.HitBuilders;
-
 import org.javarosa.core.model.CoreModelModule;
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
@@ -49,9 +47,10 @@ import org.javarosa.model.xform.XPathReference;
 import org.javarosa.xform.parse.XFormParser;
 import org.javarosa.xpath.XPathParseTool;
 import org.javarosa.xpath.expr.XPathExpression;
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.exception.JavaRosaException;
 import org.odk.collect.android.utilities.AuditEventLogger;
+import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.utilities.RegexUtils;
 import org.odk.collect.android.views.ODKView;
 
 import java.io.File;
@@ -109,7 +108,7 @@ public class FormController {
 
         public InstanceMetadata(String instanceId, String instanceName, AuditConfig auditConfig) {
             this.instanceId = instanceId;
-            this.instanceName = instanceName;
+            this.instanceName = RegexUtils.normalizeFormName(instanceName, false);
             this.auditConfig = auditConfig;
         }
     }
@@ -168,6 +167,11 @@ public class FormController {
     @Nullable
     public String getAbsoluteInstancePath() {
         return instanceFile != null ? instanceFile.getAbsolutePath() : null;
+    }
+
+    @Nullable
+    public String getLastSavedPath() {
+        return mediaFolder != null ? FileUtils.getLastSavedPath(mediaFolder) : null;
     }
 
     public void setIndexWaitingForData(FormIndex index) {
@@ -1219,12 +1223,6 @@ public class FormController {
             // timing element...
             v = e.getChildrenWithName(AUDIT);
             if (v.size() == 1) {
-                Collect.getInstance().getDefaultTracker()
-                        .send(new HitBuilders.EventBuilder()
-                                .setCategory("AuditLogging")
-                                .setAction("Enabled")
-                                .setLabel(Collect.getCurrentFormIdentifierHash())
-                                .build());
 
                 TreeElement auditElement = v.get(0);
 
