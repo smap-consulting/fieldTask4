@@ -10,7 +10,9 @@ local.properties
 collect_app/src/kontrolid/
 collect_app/src/supply/
 collect_app/src/plan/
+collect_app/src/seracis/
 collect_app/plan/
+collect_app/seracis/
 
 # emacs backup files
 *.*~
