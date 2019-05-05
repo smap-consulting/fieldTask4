@@ -29,12 +29,12 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
@@ -56,7 +56,6 @@ import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -262,8 +261,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private FormLoaderTask formLoaderTask;
     private SaveToDiskTask saveToDiskTask;
 
-    private ImageButton nextButton;
-    private ImageButton backButton;
+    private TextView nextButton;
+    private TextView backButton;
 
     private ODKView odkView;
     private boolean doSwipe = true;
@@ -1308,8 +1307,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                         });
 
                 if (showNavigationButtons) {
-                    backButton.setEnabled(allowMovingBackwards);
-                    nextButton.setEnabled(false);
+                    backButton.setVisibility(allowMovingBackwards ? View.VISIBLE : View.GONE);
+                    nextButton.setVisibility(View.GONE);
                 }
 
                 return endView;
@@ -1358,8 +1357,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 }
 
                 if (showNavigationButtons) {
-                    backButton.setEnabled(!formController.isCurrentQuestionFirstInForm() && allowMovingBackwards);
-                    nextButton.setEnabled(true);
+                    backButton.setVisibility(!formController.isCurrentQuestionFirstInForm() && allowMovingBackwards ? View.VISIBLE : View.GONE);
+                    nextButton.setVisibility(View.VISIBLE);
                 }
                 return odkView;
 
@@ -2152,8 +2151,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
         String navigation = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_NAVIGATION);
         showNavigationButtons = navigation.contains(GeneralKeys.NAVIGATION_BUTTONS);
-        backButton.setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
-        nextButton.setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
+        findViewById(R.id.buttonholder).setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
+        findViewById(R.id.shadow_up).setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
 
         if (errorMessage != null) {
             if (alertDialog != null && !alertDialog.isShowing()) {

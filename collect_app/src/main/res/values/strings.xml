@@ -197,6 +197,7 @@
     <string name="sent_on_date_at_time">\'Sent on\' EEE, MMM dd, yyyy \'at\' HH:mm</string> <!-- http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html -->
     <string name="sending_failed_on_date_at_time">\'Sending failed on\' EEE, MMM dd, yyyy \'at\' HH:mm</string> <!-- http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html -->
     <string name="deleted_on_date_at_time">\'Deleted on\' EEE, MMM dd, yyyy \'at\' HH:mm</string>
+    <string name="submission_deleted">Submission deleted</string>
     <string name="version">Version:</string>
     <string name="parent_form_not_present">Unable to edit this saved form because the corresponding blank form is not present or was deleted.\n\nForm ID: %1$s</string>
     <string name="launch_app">Launch</string>
@@ -224,7 +225,7 @@
     <string name="found_in_settings">Uncheck to hide from General Settings</string>
     <string name="save_preferences">Save Settings to Disk</string>
     <string name="form_forward">Next</string>
-    <string name="form_backward">Prev</string>
+    <string name="form_backward">Back</string>
     <string name="navigation">Navigation</string>
     <string name="swipe_navigation">Use horizontal swipes</string>
     <string name="buttons_navigation">Use forward/backward buttons</string>
@@ -694,4 +695,5 @@
     <string name="too_complex_form">This form is too complex for this device. Try simplifying expressions or ask for help on the forum.</string>
     <string name="reading_files">Reading files</string>
     <string name="copying_media_files_failed">Copying media files failed</string>
+    <string name="qr_code_not_found">QR Code not found in the selected image</string>
 </resources>

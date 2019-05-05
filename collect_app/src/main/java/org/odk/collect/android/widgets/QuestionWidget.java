@@ -23,8 +23,8 @@ import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
-import android.support.annotation.Nullable;
+import androidx.annotation.IdRes;
+import androidx.annotation.Nullable;
 import android.text.method.LinkMovementMethod;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -530,7 +530,7 @@ public abstract class QuestionWidget
             button.setLayoutParams(params);
 
             button.setOnClickListener(v -> {
-                if (Collect.allowClick(getClass().getName())) {
+                if (Collect.allowClick(QuestionWidget.class.getName())) {
                     ((ButtonWidget) this).onButtonClick(withId);
                 }
             });

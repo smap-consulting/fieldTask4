@@ -29,8 +29,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -200,8 +200,8 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
         listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         listView.setItemsCanFocus(false);
 
-        sortingOptions = new String[]{
-                getString(R.string.sort_by_name_asc), getString(R.string.sort_by_name_desc)
+        sortingOptions = new int[] {
+                R.string.sort_by_name_asc, R.string.sort_by_name_desc
         };
 
         driveHelper = accountsManager.getDriveHelper();
@@ -417,6 +417,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode,
                                     final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             case AUTHORIZATION_REQUEST_CODE:
                 if (resultCode == Activity.RESULT_OK) {
