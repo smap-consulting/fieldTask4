@@ -23,6 +23,7 @@ import org.javarosa.core.model.data.DateTimeData;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.joda.time.LocalDateTime;
+import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.widgets.interfaces.BinaryWidget;
 
 /**
@@ -34,7 +35,7 @@ import org.odk.collect.android.widgets.interfaces.BinaryWidget;
  */
 
 @SuppressLint("ViewConstructor")
-public class DateTimeWidget extends QuestionWidget implements BinaryWidget {
+public class DateTimeWidget extends QuestionWidget implements BinaryWidget, WidgetValueChangedListener {
 
     private AbstractDateWidget dateWidget;
     private TimeWidget timeWidget;
@@ -53,6 +54,8 @@ public class DateTimeWidget extends QuestionWidget implements BinaryWidget {
             dateWidget = new IslamicDateWidget(context, prompt);
         } else if (appearance != null && appearance.contains("bikram-sambat")) {
             dateWidget = new BikramSambatDateWidget(context, prompt);
+        } else if (appearance != null && appearance.contains("myanmar")) {
+            dateWidget = new MyanmarDateWidget(context, prompt);
         } else {
             dateWidget = new DateWidget(context, prompt);
         }
@@ -71,12 +74,13 @@ public class DateTimeWidget extends QuestionWidget implements BinaryWidget {
             linearLayout.addView(timeWidget);
         }
         addAnswerView(linearLayout);
+
+        timeWidget.setValueChangedListener(this);
+        dateWidget.setValueChangedListener(this);
     }
 
     @Override
     public IAnswerData getAnswer() {
-        clearFocus();
-
         if (isNullAnswer()) {
             return null;
         } else {
@@ -109,8 +113,10 @@ public class DateTimeWidget extends QuestionWidget implements BinaryWidget {
 
     @Override
     public void clearAnswer() {
-        dateWidget.clearAnswer();
-        timeWidget.clearAnswer();
+        dateWidget.clearAnswerWithoutValueChangeEvent();
+        timeWidget.clearAnswerWithoutValueChangeEvent();
+
+        widgetValueChanged();
     }
 
     @Override
@@ -153,5 +159,10 @@ public class DateTimeWidget extends QuestionWidget implements BinaryWidget {
         return getFormEntryPrompt().isRequired()
                 ? dateWidget.isNullAnswer() || timeWidget.isNullAnswer()
                 : dateWidget.isNullAnswer() && timeWidget.isNullAnswer();
+    }
+
+    @Override
+    public void widgetValueChanged(QuestionWidget changedWidget) {
+        widgetValueChanged();
     }
 }
