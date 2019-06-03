@@ -112,6 +112,23 @@ public class FormsDao {
         return getFormsCursor(null, selection, selectionArgs, null);
     }
 
+    public String getFormTitleForFormIdAndFormVersion(String formId, String formVersion) {
+        String formTitle = "";
+
+        Cursor cursor = getFormsCursor(formId, formVersion);
+        if (cursor != null) {
+            try {
+                if (cursor.moveToFirst()) {
+                    formTitle = cursor.getString(cursor.getColumnIndex(FormsProviderAPI.FormsColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+
+        return formTitle;
+    }
+
     public boolean isFormEncrypted(String formId, String formVersion) {
         boolean encrypted = false;
 
@@ -182,13 +199,12 @@ public class FormsDao {
         try {
             for (String hash : hashes) {
                 c = getFormsCursorForMd5Hash(hash);
-                if (c.getCount() > 0) {
-                    c.moveToFirst();
+                if (c != null && c.moveToFirst()) {
                     String id = c.getString(c.getColumnIndex(FormsProviderAPI.FormsColumns._ID));
                     idsToDelete.add(id);
+                    c.close();
+                    c = null;
                 }
-                c.close();
-                c = null;
             }
         } finally {
             if (c != null) {

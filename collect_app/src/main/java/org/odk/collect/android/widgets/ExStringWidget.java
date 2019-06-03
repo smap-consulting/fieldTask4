@@ -21,6 +21,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.text.method.TextKeyListener;
 import android.text.method.TextKeyListener.Capitalize;
 import android.util.TypedValue;
@@ -46,6 +48,7 @@ import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.DependencyProvider;
 import org.odk.collect.android.utilities.ObjectUtils;
 import org.odk.collect.android.utilities.SoftKeyboardUtils;
+import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.utilities.ViewIds;
 import org.odk.collect.android.widgets.interfaces.BinaryWidget;
 
@@ -165,7 +168,12 @@ public class ExStringWidget extends QuestionWidget implements BinaryWidget {
 
     protected void fireActivity(Intent i) throws ActivityNotFoundException {
         i.putExtra("value", getFormEntryPrompt().getAnswerText());
-        ((Activity) getContext()).startActivityForResult(i, RequestCodes.EX_STRING_CAPTURE);
+        try {
+            ((Activity) getContext()).startActivityForResult(i, RequestCodes.EX_STRING_CAPTURE);
+        } catch (SecurityException e) {
+            Timber.i(e);
+            ToastUtils.showLongToast(R.string.not_granted_permission);
+        }
     }
 
     @Override
@@ -303,6 +311,23 @@ public class ExStringWidget extends QuestionWidget implements BinaryWidget {
             answer.setFocusable(true);
             answer.setFocusableInTouchMode(true);
             answer.setEnabled(true);
+
+            answer.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                    widgetValueChanged();
+                }
+            });
         }
         launchIntentButton.setEnabled(false);
         launchIntentButton.setFocusable(false);
