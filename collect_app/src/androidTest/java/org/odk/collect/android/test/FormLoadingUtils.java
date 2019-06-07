@@ -19,20 +19,22 @@ package org.odk.collect.android.test;
 import android.content.Intent;
 import android.content.res.AssetManager;
 
+import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import org.apache.commons.io.IOUtils;
 import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.tasks.FormLoaderTask;
+import org.odk.collect.android.utilities.FileUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
-import androidx.test.platform.app.InstrumentationRegistry;
+import java.util.List;
 
 import static org.odk.collect.android.activities.FormEntryActivity.EXTRA_TESTING_PATH;
 
@@ -44,10 +46,14 @@ public class FormLoadingUtils {
     }
 
     /**
-     * Copies a form with the given file name from the given assets folder to the SD Card where it
-     * will be loaded by {@link FormLoaderTask}.
+     * Copies a form with the given file name and given associated media from the given assets
+     * folder to the SD Card where it will be loaded by {@link FormLoaderTask}.
      */
-    public static void copyFormToSdCard(String formFilename, String formAssetPath) throws IOException {
+    public static void copyFormToSdCard(String formFilename, String formAssetPath, List<String> mediaFilenames) throws IOException {
+        if (!formAssetPath.isEmpty() && !formAssetPath.endsWith(File.separator)) {
+            formAssetPath = formAssetPath + File.separator;
+        }
+
         String pathname = Collect.FORMS_PATH + formFilename;
 
         AssetManager assetManager = InstrumentationRegistry.getInstrumentation().getContext().getAssets();
@@ -57,6 +63,26 @@ public class FormLoadingUtils {
         OutputStream outputStream = new FileOutputStream(outFile);
 
         IOUtils.copy(inputStream, outputStream);
+
+        if (mediaFilenames != null) {
+            String mediaPathName = Collect.FORMS_PATH + formFilename.replace(".xml", "") + FileUtils.MEDIA_SUFFIX + "/";
+
+            for (String mediaFilename: mediaFilenames) {
+                InputStream mediaInputStream = assetManager.open(formAssetPath + mediaFilename);
+                File mediaOutFile = new File(mediaPathName + mediaFilename);
+                OutputStream mediaOutputStream = new FileOutputStream(mediaOutFile);
+
+                IOUtils.copy(mediaInputStream, mediaOutputStream);
+            }
+        }
+    }
+
+    /**
+     * Copies a form with the given file name from the from the given assets folder to the SD Card
+     * where it will be loaded by {@link FormLoaderTask}.
+     */
+    public static void copyFormToSdCard(String formFilename, String formAssetPath) throws IOException {
+        copyFormToSdCard(formFilename, formAssetPath, null);
     }
 
     /**
@@ -64,7 +90,7 @@ public class FormLoadingUtils {
      * will be loaded by {@link FormLoaderTask}.
      */
     public static void copyFormToSdCard(String formFilename) throws IOException {
-        copyFormToSdCard(formFilename, "");
+        copyFormToSdCard(formFilename, "", null);
     }
 
     public static IntentsTestRule<FormEntryActivity> getFormActivityTestRuleFor(String formFilename) {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.odk.collect.android.formfilling;
+package org.odk.collect.android.formentry;
 
 import android.Manifest;
 import android.app.Activity;
@@ -28,7 +28,6 @@ import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.odk.collect.android.R;
@@ -255,7 +254,6 @@ public class FieldListUpdateTest {
     //        onView(withText("A1B")).check(doesNotExist());
     //    }
 
-    @Ignore("Fails on Firebase Test Lab Nexus 5, Virtual, API Level 21 for unknown reasons")
     @Test
     public void selectionChangeAtOneCascadeLevelWithMinimalAppearance_ShouldUpdateNextLevels() {
         jumpToGroupWithText("Cascading select minimal");
