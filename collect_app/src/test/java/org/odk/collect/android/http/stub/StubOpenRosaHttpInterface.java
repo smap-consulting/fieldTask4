@@ -1,4 +1,4 @@
-package org.odk.collect.android.http.mock;
+package org.odk.collect.android.http.stub;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MockHttpClientConnection implements OpenRosaHttpInterface {
+public class StubOpenRosaHttpInterface implements OpenRosaHttpInterface {
 
     @Override
     @NonNull
@@ -52,12 +52,5 @@ public class MockHttpClientConnection implements OpenRosaHttpInterface {
     @Override
     public HttpPostResult uploadSubmissionFile(@NonNull List<File> fileList, @NonNull File submissionFile, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws IOException {
         return new HttpPostResult("", 0, "");
-    }
-
-    @NonNull
-    @Override
-    public HttpPostResult executePostRequest(@NonNull URI uri, @Nullable HttpCredentialsInterface credentials) throws Exception {
-        return new HttpPostResult("", 0, "");
-
     }
 }
