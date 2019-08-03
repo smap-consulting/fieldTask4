@@ -151,9 +151,8 @@ android {
 
         // To ensure that ODK Collect is installable on all devices, we don't use
         // abiFilters to exclude any ABIs; but to keep the APK slim, we include
-        // the Mapbox native library only for armeabi-v7a (which works on all
-        // ARMv7+ 32-bit and 64-bit devices), and omit it for all the other ABIs.
-        exclude 'lib/arm64-v8a/libmapbox-gl.so'
+        // the Mapbox native library only for 32-bit and 64-bit ARM devices and
+        // omit it for all X86 devices.
         exclude 'lib/x86/libmapbox-gl.so'
         exclude 'lib/x86_64/libmapbox-gl.so'
     }
@@ -241,7 +240,7 @@ dependencies {
     implementation "commons-io:commons-io:2.6"
     implementation "net.sf.kxml:kxml2:2.3.0"
     implementation "net.sf.opencsv:opencsv:2.3"
-    implementation("org.opendatakit:opendatakit-javarosa:2.14.0") {
+    implementation("org.opendatakit:opendatakit-javarosa:2.15.0") {
         exclude group: 'joda-time'
         exclude group: 'org.slf4j'
     }

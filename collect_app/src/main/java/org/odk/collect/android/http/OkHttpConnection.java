@@ -1,7 +1,5 @@
 package org.odk.collect.android.http;
 
-import android.text.format.DateFormat;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -14,7 +12,6 @@ import com.burgstaller.okhttp.digest.Credentials;
 import com.burgstaller.okhttp.digest.DigestAuthenticator;
 
 import org.apache.commons.io.IOUtils;
-import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.utilities.FileUtils;
@@ -25,8 +22,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -304,7 +301,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     private Request buildGetRequest(@NonNull URI uri) throws MalformedURLException {
         return new Request.Builder()
                 .url(uri.toURL())
-                .addHeader(USER_AGENT_HEADER, getUserAgentString())
+                .addHeader(USER_AGENT_HEADER, Collect.getInstance().getUserAgentString())
                 .addHeader(OPEN_ROSA_VERSION_HEADER, OPEN_ROSA_VERSION)
                 .addHeader(DATE_HEADER, getHeaderDate())
                 .get()
@@ -314,7 +311,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     private Request buildHeadRequest(@NonNull URI uri) throws MalformedURLException {
         return new Request.Builder()
                 .url(uri.toURL())
-                .addHeader(USER_AGENT_HEADER, getUserAgentString())
+                .addHeader(USER_AGENT_HEADER, Collect.getInstance().getUserAgentString())
                 .addHeader(OPEN_ROSA_VERSION_HEADER, OPEN_ROSA_VERSION)
                 .addHeader(DATE_HEADER, getHeaderDate())
                 .head()
@@ -324,24 +321,17 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     private Request buildPostRequest(@NonNull URI uri, RequestBody body) throws MalformedURLException {
         return new Request.Builder()
                 .url(uri.toURL())
-                .addHeader(USER_AGENT_HEADER, getUserAgentString())
+                .addHeader(USER_AGENT_HEADER, Collect.getInstance().getUserAgentString())
                 .addHeader(OPEN_ROSA_VERSION_HEADER, OPEN_ROSA_VERSION)
                 .addHeader(DATE_HEADER, getHeaderDate())
                 .post(body)
                 .build();
     }
 
-    private String getUserAgentString() {
-        return String.format("%s %s/%s",
-                System.getProperty("http.agent"),
-                BuildConfig.APPLICATION_ID,
-                BuildConfig.VERSION_NAME);
-    }
-
     private String getHeaderDate() {
-        GregorianCalendar g = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-        g.setTime(new Date());
-        return DateFormat.format("E, dd MMM yyyy hh:mm:ss zz", g).toString();
+        SimpleDateFormat dateFormatGmt = new SimpleDateFormat("E, dd MMM yyyy hh:mm:ss zz", Locale.US);
+        dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+        return dateFormatGmt.format(new Date());
     }
 
     /**

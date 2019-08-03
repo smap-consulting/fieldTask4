@@ -16,18 +16,22 @@ package org.odk.collect.android.application;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import androidx.annotation.Nullable;
-import androidx.multidex.MultiDex;
-import androidx.appcompat.app.AppCompatDelegate;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
 import com.evernote.android.job.JobManager;
@@ -35,6 +39,8 @@ import com.evernote.android.job.JobManagerCreateException;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.security.ProviderInstaller;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
@@ -54,6 +60,7 @@ import org.odk.collect.android.preferences.AdminSharedPreferences;
 import org.odk.collect.android.preferences.AutoSendPreferenceMigrator;
 import org.odk.collect.android.preferences.FormMetadataMigrator;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
+import org.odk.collect.android.preferences.PrefMigrator;
 import org.odk.collect.android.tasks.sms.SmsNotificationReceiver;
 import org.odk.collect.android.tasks.sms.SmsSentBroadcastReceiver;
 import org.odk.collect.android.utilities.FileUtils;
@@ -202,6 +209,19 @@ public class Collect extends Application {
         return getString(R.string.app_name) + versionName;
     }
 
+    /**
+     * Get a User-Agent string that provides the platform details followed by the application ID
+     * and application version name: {@code Dalvik/<version> (platform info) org.odk.collect.android/v<version>}.
+     *
+     * This deviates from the recommended format as described in https://github.com/opendatakit/collect/issues/3253.
+     */
+    public String getUserAgentString() {
+        return String.format("%s %s/%s",
+                System.getProperty("http.agent"),
+                BuildConfig.APPLICATION_ID,
+                BuildConfig.VERSION_NAME);
+    }
+
     public boolean isNetworkAvailable() {
         ConnectivityManager manager = (ConnectivityManager) getInstance()
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -225,6 +245,7 @@ public class Collect extends Application {
         singleton = this;
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
 
+        installTls12();
         setupDagger();
 
         NotificationUtils.createNotificationChannel(singleton);
@@ -240,6 +261,11 @@ public class Collect extends Application {
             Timber.e(e);
         }
 
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        FormMetadataMigrator.migrate(prefs);
+        PrefMigrator.migrateSharedPrefs();
+        AutoSendPreferenceMigrator.migrate();
+
         reloadSharedPreferences();
 
         PRNGFixes.apply();
@@ -249,10 +275,7 @@ public class Collect extends Application {
         defaultSysLanguage = Locale.getDefault().getLanguage();
         new LocaleHelper().updateLocale(this);
 
-        FormMetadataMigrator.migrate(PreferenceManager.getDefaultSharedPreferences(this));
-        AutoSendPreferenceMigrator.migrate();
-
-        initProperties();
+        initializeJavaRosa();
 
         if (BuildConfig.BUILD_TYPE.equals("odkCollectRelease")) {
             Timber.plant(new CrashReportingTree());
@@ -261,6 +284,8 @@ public class Collect extends Application {
         }
 
         setupLeakCanary();
+
+        org.osmdroid.config.Configuration.getInstance().setUserAgentValue(getUserAgentString());
     }
 
     private void setupDagger() {
@@ -269,6 +294,23 @@ public class Collect extends Application {
                 .build();
 
         applicationComponent.inject(this);
+    }
+
+    private void installTls12() {
+        if (Build.VERSION.SDK_INT <= 20) {
+            ProviderInstaller.installIfNeededAsync(getApplicationContext(), new ProviderInstaller.ProviderInstallListener() {
+                @Override
+                public void onProviderInstalled() {
+                }
+
+                @Override
+                public void onProviderInstallFailed(int i, Intent intent) {
+                    GoogleApiAvailability
+                            .getInstance()
+                            .showErrorNotification(getApplicationContext(), i);
+                }
+            });
+        }
     }
 
     protected RefWatcher setupLeakCanary() {
@@ -339,7 +381,7 @@ public class Collect extends Application {
         }
     }
 
-    public void initProperties() {
+    public void initializeJavaRosa() {
         PropertyManager mgr = new PropertyManager(this);
 
         // Use the server username by default if the metadata username is not defined

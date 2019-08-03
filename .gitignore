@@ -42,6 +42,13 @@ out/
 .navigation/
 captures/
 
+# Visual Studio Code files
+.project
+.settings/
+collect_app/.classpath
+collect_app/.project
+collect_app/.settings/
+
 # Submodules
 javarosa/
 
