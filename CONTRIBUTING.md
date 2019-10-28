@@ -80,9 +80,9 @@ Small fixes that target very particular bugs may occasionally be merged without 
 
 ## Work in progress pull requests
 
-Work in progress (WIP) pull requests are useful to illustrate a proposed direction and get early feedback before committing to a solution direction.
+Work in progress (WIP) pull requests are useful to illustrate a proposed direction and get early feedback before committing to a solution direction. These should ideally ideally be created as [Draft Pull Requests](https://help.github.com/en/articles/about-pull-requests#draft-pull-requests). 
 
-Work in progress pull requests:
+If a pull request is already a non-draft (there is currently no way to move it back to a draft) the PR:
 - Should include `[WIP]` in front of the pull request title.
 - Should specifically describe the proposed solution and feedback wanted.
 - Will not be merged until you remove `[WIP]` from the title.
@@ -121,6 +121,8 @@ icon color | themeUtils.getIconColor() | ?iconColor
 
 ## Strings
 Always use [string resources](https://developer.android.com/guide/topics/resources/string-resource.html) instead of literal strings. This ensures wording consistency across the project and also enables full translation of the app. Only make changes to the base `res/values/strings.xml` English file and not to the other language files. The translated files are generated from [Transifex](https://www.transifex.com/opendatakit/collect/) where translations can be submitted by the community. Names of software packages or other untranslatable strings should be placed in `res/values/untranslated.xml`.
+
+Strings that represent very rare failure cases or that are meant more for ODK developers to use for troubleshooting rather than directly for users may be written as literal strings. This reduces the burden on translators and makes it easier for developers to troubleshoot edge cases without having to look up translations.
 
 ## Dependency injection
 
