@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.MainMenuActivity;
-import org.odk.collect.android.espressoutils.pages.MainMenuPage;
+import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.provider.InstanceProviderAPI;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.ResetStateRule;
@@ -55,7 +55,7 @@ public class EncryptedFormTest {
                 .checkIsToastWithMessageDisplayed(R.string.data_saved_ok)
                 .clickEditSavedForm()
                 .checkInstanceState("encrypted", InstanceProviderAPI.STATUS_COMPLETE)
-                .clickSavedFormWithDialog("encrypted")
+                .clickOnFormWithDialog("encrypted")
                 .checkMessage(R.string.cannot_edit_completed_form);
     }
 

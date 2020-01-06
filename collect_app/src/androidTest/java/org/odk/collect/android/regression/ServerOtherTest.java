@@ -6,7 +6,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.espressoutils.pages.MainMenuPage;
+import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.ResetStateRule;
 
 // Issue number NODK-235
@@ -20,13 +20,13 @@ public class ServerOtherTest extends BaseRegressionTest {
     @Test
     public void formListPath_ShouldBeUpdated() {
         //TestCase1
-        new MainMenuPage(main)
+        new MainMenuPage(rule)
                 .clickOnMenu()
                 .clickGeneralSettings()
                 .openServerSettings()
                 .clickOnServerType()
                 .clickOnAreaWithIndex("CheckedTextView", 2)
-                .clickOnAreaWithKey("formlist_url")
+                .clickFormListPath()
                 .addText("/formList", "/sialala")
                 .clickOKOnDialog()
                 .checkIsTextDisplayed("/formList/sialala");
@@ -35,13 +35,13 @@ public class ServerOtherTest extends BaseRegressionTest {
     @Test
     public void submissionsPath_ShouldBeUpdated() {
         //TestCase2
-        new MainMenuPage(main)
+        new MainMenuPage(rule)
                 .clickOnMenu()
                 .clickGeneralSettings()
                 .openServerSettings()
                 .clickOnServerType()
                 .clickOnAreaWithIndex("CheckedTextView", 2)
-                .clickOnAreaWithKey("submission_url")
+                .clickSubmissionPath()
                 .addText("/submission", "/blabla")
                 .clickOKOnDialog()
                 .checkIsTextDisplayed("/submission/blabla");

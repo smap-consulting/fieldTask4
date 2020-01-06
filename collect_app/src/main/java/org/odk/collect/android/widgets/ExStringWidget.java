@@ -97,7 +97,7 @@ public class ExStringWidget extends StringWidget implements BinaryWidget {
     protected static final String DATA_NAME = "value";
 
     private boolean hasExApp = true;
-    private Button launchIntentButton;
+    public Button launchIntentButton;
 
     @Inject
     public ActivityAvailability activityAvailability;
@@ -108,7 +108,7 @@ public class ExStringWidget extends StringWidget implements BinaryWidget {
     }
 
     @Override
-    protected void setUpLayout() {
+    protected void setUpLayout(Context context) {
         answerText.setText(getFormEntryPrompt().getAnswerText());
         launchIntentButton = getSimpleButton(getButtonText());
 

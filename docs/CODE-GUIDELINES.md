@@ -3,6 +3,31 @@
 ## Java style guidelines
 Follow the [Android style rules](http://source.android.com/source/code-style.html) and the [Google Java style guide](https://google.github.io/styleguide/javaguide.html).
 
+## Java testing style guidelines
+Favor [Hamcrest](http://hamcrest.org/JavaHamcrest/) asserts over JUnit asserts for readability.
+
+Old JUnit style:
+```
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+...
+assertEquals("expected", ClassToTest.methodToTest("input"));
+assertNull(ClassToTest.methodReturnsNull());
+
+```
+
+Preferred style using Hamcrest:
+```
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNull.nullValue;
+...
+assertThat(ClassToTest.methodToTest("input"), is("expected"));
+assertThat(ClassToTest.methodReturnsNull(), is(nullValue()));
+
+```
+
+
 ## XML style guidelines
 
 Follow these naming conventions in Android XML files:
@@ -27,6 +52,16 @@ UI Component | Java | Xml _(layouts, drawables, vectors)_:
 text color | themeUtils.getPrimaryTextColor() | ?primaryTextColor
 accent color | themeUtils.getAccentColor() | ?colorAccent
 icon color | themeUtils.getIconColor() | ?iconColor
+
+## Custom view guidelines
+
+When creating or refactoring views, keep in mind our vision of an "ideal" view:
+
+- Views should generally be as dumb and as stateless as possible
+- Views shouldn't interact with other layers of your application (repositories, network etc). They should be able to take in and render data (via setters) and emit "meaningful" events via listeners.
+- A view should have a single public `Listener` sub interface and `setListener` method. Methods on the interface should correspond to "meaningful" events. If the view is a button that could just be `onClick` but if it's a volume slider this might be something like `onVolumeChanged`.
+- Views would ideally have just one setter for data but more complex views (often that have many subviews) that take in data at different times may have more - fewer setters is better as it's less changing state in the view.
+- Views that render more than one kind of data (and that have more than one setter) might benefit from a `render` method that encapsulates all the logic around displaying the state of a view.
 
 ## Strings
 Always use [string resources](https://developer.android.com/guide/topics/resources/string-resource.html) instead of literal strings. This ensures wording consistency across the project and also enables full translation of the app. Only make changes to the base `res/values/strings.xml` English file and not to the other language files. The translated files are generated from [Transifex](https://www.transifex.com/opendatakit/collect/) where translations can be submitted by the community. Names of software packages or other untranslatable strings should be placed in `res/values/untranslated.xml`.

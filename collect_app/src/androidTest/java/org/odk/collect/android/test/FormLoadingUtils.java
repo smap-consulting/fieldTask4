@@ -20,10 +20,11 @@ import android.content.ContentValues;
 
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 
+import org.javarosa.core.reference.ReferenceManager;
 import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.provider.FormsProviderAPI;
+import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
 import org.odk.collect.android.tasks.FormLoaderTask;
 import org.odk.collect.android.utilities.FileUtils;
 
@@ -32,6 +33,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static org.odk.collect.android.forms.FormUtils.setupReferenceManagerForForm;
 import static org.odk.collect.android.test.FileUtils.copyFileFromAssets;
 
 public class FormLoadingUtils {
@@ -46,12 +48,17 @@ public class FormLoadingUtils {
      * Copies a form with the given file name and given associated media from the given assets
      * folder to the SD Card where it will be loaded by {@link FormLoaderTask}.
      */
-    public static void copyFormToSdCard(String formFilename, List<String> mediaFilenames) throws IOException {
+    public static void copyFormToSdCard(String formFilename, List<String> mediaFilenames, boolean copyToDatabase) throws IOException {
         Collect.createODKDirs();
-        copyForm(formFilename);
 
+        String pathname = copyForm(formFilename);
         if (mediaFilenames != null) {
             copyFormMediaFiles(formFilename, mediaFilenames);
+        }
+
+        if (copyToDatabase) {
+            setupReferenceManagerForForm(ReferenceManager.instance(), FileUtils.getFormMediaDir(new File(pathname)));
+            saveFormToDatabase(new File(pathname));
         }
     }
 
@@ -60,21 +67,23 @@ public class FormLoadingUtils {
      * where it will be loaded by {@link FormLoaderTask}.
      */
     public static void copyFormToSdCard(String formFilename) throws IOException {
-        copyFormToSdCard(formFilename, null);
+            copyFormToSdCard(formFilename, null, false);
     }
 
     private static void saveFormToDatabase(File outFile) {
-        Map<String, String> formInfo = FileUtils.parseXML(outFile);
+        Map<String, String> formInfo = FileUtils.getMetadataFromFormDefinition(outFile);
         final ContentValues v = new ContentValues();
-        v.put(FormsProviderAPI.FormsColumns.FORM_FILE_PATH,          outFile.getAbsolutePath());
-        v.put(FormsProviderAPI.FormsColumns.FORM_MEDIA_PATH,         FileUtils.constructMediaPath(outFile.getAbsolutePath()));
-        v.put(FormsProviderAPI.FormsColumns.DISPLAY_NAME,            formInfo.get(FileUtils.TITLE));
-        v.put(FormsProviderAPI.FormsColumns.JR_VERSION,              formInfo.get(FileUtils.VERSION));
-        v.put(FormsProviderAPI.FormsColumns.JR_FORM_ID,              formInfo.get(FileUtils.FORMID));
-        v.put(FormsProviderAPI.FormsColumns.SUBMISSION_URI,          formInfo.get(FileUtils.SUBMISSIONURI));
-        v.put(FormsProviderAPI.FormsColumns.BASE64_RSA_PUBLIC_KEY,   formInfo.get(FileUtils.BASE64_RSA_PUBLIC_KEY));
-        v.put(FormsProviderAPI.FormsColumns.AUTO_DELETE,             formInfo.get(FileUtils.AUTO_DELETE));
-        v.put(FormsProviderAPI.FormsColumns.AUTO_SEND,               formInfo.get(FileUtils.AUTO_SEND));
+        v.put(FormsColumns.FORM_FILE_PATH, outFile.getAbsolutePath());
+        v.put(FormsColumns.FORM_MEDIA_PATH, FileUtils.constructMediaPath(outFile.getAbsolutePath()));
+        v.put(FormsColumns.DISPLAY_NAME, formInfo.get(FileUtils.TITLE));
+        v.put(FormsColumns.JR_VERSION, formInfo.get(FileUtils.VERSION));
+        v.put(FormsColumns.JR_FORM_ID, formInfo.get(FileUtils.FORMID));
+        v.put(FormsColumns.SUBMISSION_URI, formInfo.get(FileUtils.SUBMISSIONURI));
+        v.put(FormsColumns.BASE64_RSA_PUBLIC_KEY, formInfo.get(FileUtils.BASE64_RSA_PUBLIC_KEY));
+        v.put(FormsColumns.AUTO_DELETE, formInfo.get(FileUtils.AUTO_DELETE));
+        v.put(FormsColumns.AUTO_SEND, formInfo.get(FileUtils.AUTO_SEND));
+        v.put(FormsColumns.GEOMETRY_XPATH, formInfo.get(FileUtils.GEOMETRY_XPATH));
+
         new FormsDao().saveForm(v);
     }
 
@@ -82,10 +91,10 @@ public class FormLoadingUtils {
         return new FormActivityTestRule(formFilename);
     }
 
-    private static void copyForm(String formFilename) throws IOException {
+    private static String copyForm(String formFilename) throws IOException {
         String pathname = Collect.FORMS_PATH + "/" + formFilename;
         copyFileFromAssets("forms/" + formFilename, pathname);
-        saveFormToDatabase(new File(pathname));
+        return pathname;
     }
 
     private static void copyFormMediaFiles(String formFilename, List<String> mediaFilenames) throws IOException {

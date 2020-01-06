@@ -103,9 +103,6 @@ public class WidgetFactory {
                             questionWidget = new StringWidget(context, questionDetails, readOnlyOverride);
                         }
                         break;
-                    case Constants.DATATYPE_BOOLEAN:
-                        questionWidget = new BooleanWidget(context, questionDetails);
-                        break;
                     default:
                         questionWidget = new StringWidget(context, questionDetails, readOnlyOverride);
                         break;
@@ -145,7 +142,9 @@ public class WidgetFactory {
                 } else if (appearance.contains(WidgetAppearanceUtils.MINIMAL)) {
                     questionWidget = new SpinnerWidget(context, questionDetails, appearance.contains(WidgetAppearanceUtils.QUICK));
                 } else if (appearance.contains(WidgetAppearanceUtils.SEARCH) || appearance.contains(WidgetAppearanceUtils.AUTOCOMPLETE)) {
-                    questionWidget = new SelectOneSearchWidget(context, questionDetails, appearance.contains(WidgetAppearanceUtils.QUICK));
+                    questionWidget = new SelectOneAutocompleteWidget(context, questionDetails, appearance.contains(WidgetAppearanceUtils.QUICK));
+                } else if (appearance.contains(WidgetAppearanceUtils.LIKERT)) {
+                    questionWidget = new LikertWidget(context, questionDetails);
                 } else if (appearance.contains(WidgetAppearanceUtils.LIST_NO_LABEL)) {
                     questionWidget = new ListWidget(context, questionDetails, false, appearance.contains(WidgetAppearanceUtils.QUICK));
                 } else if (appearance.contains(WidgetAppearanceUtils.LIST)) {
