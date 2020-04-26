@@ -29,11 +29,15 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.activities.ScannerWithFlashlightActivity;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.formentry.questions.WidgetViewUtils;
 import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.utilities.CameraUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.utilities.WidgetAppearanceUtils;
 import org.odk.collect.android.widgets.interfaces.BinaryWidget;
+
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createSimpleButton;
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.getCenteredAnswerTextView;
 
 /**
  * Widget that allows user to scan barcodes and add them to the form.
@@ -47,9 +51,9 @@ public class BarcodeWidget extends QuestionWidget implements BinaryWidget {
     public BarcodeWidget(Context context, QuestionDetails questionDetails) {
         super(context, questionDetails);
 
-        getBarcodeButton = getSimpleButton(getContext().getString(R.string.get_barcode));
+        getBarcodeButton = createSimpleButton(getContext(), getFormEntryPrompt().isReadOnly(), getContext().getString(R.string.get_barcode), getAnswerFontSize(), this);
 
-        stringAnswer = getCenteredAnswerTextView();
+        stringAnswer = getCenteredAnswerTextView(getContext(), getAnswerFontSize());
 
         String s = questionDetails.getPrompt().getAnswerText();
         if (s != null) {
@@ -62,7 +66,7 @@ public class BarcodeWidget extends QuestionWidget implements BinaryWidget {
         answerLayout.setOrientation(LinearLayout.VERTICAL);
         answerLayout.addView(getBarcodeButton);
         answerLayout.addView(stringAnswer);
-        addAnswerView(answerLayout);
+        addAnswerView(answerLayout, WidgetViewUtils.getStandardMargin(context));
     }
 
     @Override

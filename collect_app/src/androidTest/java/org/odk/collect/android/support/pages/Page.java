@@ -1,6 +1,7 @@
 package org.odk.collect.android.support.pages;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
@@ -11,7 +12,9 @@ import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
+import org.odk.collect.android.R;
 import org.odk.collect.android.support.actions.RotateAction;
+import org.odk.collect.android.support.matchers.RecyclerViewMatcher;
 
 import timber.log.Timber;
 
@@ -22,6 +25,7 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
@@ -33,9 +37,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
-import static org.odk.collect.android.test.CustomMatchers.withIndex;
+import static org.odk.collect.android.support.actions.NestedScrollToAction.nestedScrollTo;
+import static org.odk.collect.android.support.matchers.RecyclerViewMatcher.withRecyclerView;
+import static org.odk.collect.android.support.CustomMatchers.withIndex;
 
 /**
  * Base class for Page Objects used in Espresso tests. Provides shared helpers/setup.
@@ -73,14 +80,14 @@ abstract class Page<T extends Page<T>> {
         return destination.assertOnPage();
     }
 
-    public T checkIsTextDisplayed(String text) {
-        onView(withText(text)).check(matches(isDisplayed()));
+    public T assertText(String text) {
+        onView(allOf(withText(text), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).check(matches(isDisplayed()));
         return (T) this;
     }
 
-    public T checkIsTextDisplayed(String...  text) {
-        for (String s : text) {
-            onView(withText(s)).check(matches(isDisplayed()));
+    public T assertText(String...  text) {
+        for (String t : text) {
+            onView(allOf(withText(t), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).check(matches(isDisplayed()));
         }
         return (T) this;
     }
@@ -111,14 +118,20 @@ abstract class Page<T extends Page<T>> {
     }
 
     public T checkIsStringDisplayed(int stringID) {
-        checkIsTextDisplayed(getTranslatedString(stringID));
+        assertText(getTranslatedString(stringID));
         return (T) this;
     }
 
     public T checkIsToastWithMessageDisplayed(String message) {
-        onView(withText(message))
-                .inRoot(withDecorView(not(is(getCurrentActivity().getWindow().getDecorView()))))
-                .check(matches(isDisplayed()));
+        try {
+            onView(withText(message))
+                    .inRoot(withDecorView(not(is(getCurrentActivity().getWindow().getDecorView()))))
+                    .check(matches(isDisplayed()));
+        } catch (RuntimeException e) {
+            // The exception we get out of this is really misleading so cleaning it up here
+            throw new RuntimeException("No Toast with text \"" + message + "\" shown on screen!");
+        }
+
 
         return (T) this;
     }
@@ -155,6 +168,10 @@ abstract class Page<T extends Page<T>> {
 
     String getTranslatedString(Integer id) {
         return getCurrentActivity().getString(id);
+    }
+
+    String getTranslatedString(Integer id, Object... formatArgs) {
+        return getCurrentActivity().getString(id, formatArgs);
     }
 
     public T clickOnAreaWithIndex(String clazz, int index) {
@@ -200,7 +217,18 @@ abstract class Page<T extends Page<T>> {
     }
 
     private static ViewAction rotateToLandscape() {
-        return new RotateAction();
+        return new RotateAction(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+    }
+
+    public <D extends Page<D>> D rotateToPortrait(D destination) {
+        onView(isRoot()).perform(rotateToPortrait());
+        waitForRotationToEnd();
+
+        return destination.assertOnPage();
+    }
+
+    private static ViewAction rotateToPortrait() {
+        return new RotateAction(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     public T waitForRotationToEnd() {
@@ -223,6 +251,60 @@ abstract class Page<T extends Page<T>> {
         });
 
         return activity[0];
+    }
+
+    public T checkIsSnackbarErrorVisible() {
+        onView(allOf(withId(R.id.snackbar_text))).check(matches(isDisplayed()));
+        return (T) this;
+    }
+
+    public T scrollToAndClickText(String text) {
+        onView(withText(text)).perform(nestedScrollTo(), click());
+        return (T) this;
+    }
+
+    public T scrollToAndAssertText(String text) {
+        onView(withText(text)).perform(nestedScrollTo());
+        onView(withText(text)).check(matches(isDisplayed()));
+        return (T) this;
+    }
+
+    public T clickOnElementInHierarchy(int index) {
+        onView(withId(R.id.list)).perform(scrollToPosition(index));
+        onView(withRecyclerView(R.id.list).atPositionOnView(index, R.id.primary_text)).perform(click());
+        return (T) this;
+    }
+
+    public T checkListSizeInHierarchy(int index) {
+        onView(withId(R.id.list)).check(matches(RecyclerViewMatcher.withListSize(index)));
+        return (T) this;
+    }
+
+    public T checkIfElementInHierarchyMatchesToText(String text, int index) {
+        onView(withRecyclerView(R.id.list).atPositionOnView(index, R.id.primary_text)).check(matches(withText(text)));
+        return (T) this;
+    }
+
+    public T checkIfWebViewActivityIsDisplayed() {
+        onView(withClassName(endsWith("WebView"))).check(matches(isDisplayed()));
+        return (T) this;
+    }
+
+    void waitForText(String text) {
+        while (true) {
+            try {
+                assertText(text);
+                break;
+            } catch (NoMatchingViewException ignored) {
+                // ignored
+            }
+
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ignored) {
+                // ignored
+            }
+        }
     }
 }
 

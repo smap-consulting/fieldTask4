@@ -20,8 +20,9 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.database.DatabaseContext;
+import org.odk.collect.android.storage.StoragePathProvider;
+import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.SQLiteUtils;
 
 import java.io.File;
@@ -52,10 +53,9 @@ import static org.odk.collect.android.provider.FormsProviderAPI.FormsColumns.SUB
  */
 public class FormsDatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "forms.db";
-    public static final String DATABASE_PATH = Collect.METADATA_PATH + File.separator + DATABASE_NAME;
     public static final String FORMS_TABLE_NAME = "forms";
 
-    static final int DATABASE_VERSION = 8;
+    public static final int DATABASE_VERSION = 8;
 
     private static final String[] COLUMN_NAMES_V7 = {_ID, DISPLAY_NAME, DESCRIPTION,
             JR_FORM_ID, JR_VERSION, MD5_HASH, DATE, FORM_MEDIA_PATH, FORM_FILE_PATH, LANGUAGE,
@@ -67,7 +67,7 @@ public class FormsDatabaseHelper extends SQLiteOpenHelper {
         SUBMISSION_URI, BASE64_RSA_PUBLIC_KEY, JRCACHE_FILE_PATH, AUTO_SEND, AUTO_DELETE,
         LAST_DETECTED_FORM_VERSION_HASH, GEOMETRY_XPATH};
 
-    static final String[] CURRENT_VERSION_COLUMN_NAMES = COLUMN_NAMES_V8;
+    public static final String[] CURRENT_VERSION_COLUMN_NAMES = COLUMN_NAMES_V8;
 
     // These exist in database versions 2 and 3, but not in 4...
     private static final String TEMP_FORMS_TABLE_NAME = "forms_v4";
@@ -76,7 +76,11 @@ public class FormsDatabaseHelper extends SQLiteOpenHelper {
     private static boolean isDatabaseBeingMigrated;
 
     public FormsDatabaseHelper() {
-        super(new DatabaseContext(Collect.METADATA_PATH), DATABASE_NAME, null, DATABASE_VERSION);
+        super(new DatabaseContext(new StoragePathProvider().getDirPath(StorageSubdirectory.METADATA)), DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static String getDatabasePath() {
+        return new StoragePathProvider().getDirPath(StorageSubdirectory.METADATA) + File.separator + DATABASE_NAME;
     }
 
     @Override
@@ -350,7 +354,7 @@ public class FormsDatabaseHelper extends SQLiteOpenHelper {
     public static boolean databaseNeedsUpgrade() {
         boolean isDatabaseHelperOutOfDate = false;
         try {
-            SQLiteDatabase db = SQLiteDatabase.openDatabase(FormsDatabaseHelper.DATABASE_PATH, null, SQLiteDatabase.OPEN_READONLY);
+            SQLiteDatabase db = SQLiteDatabase.openDatabase(FormsDatabaseHelper.getDatabasePath(), null, SQLiteDatabase.OPEN_READONLY);
             isDatabaseHelperOutOfDate = FormsDatabaseHelper.DATABASE_VERSION != db.getVersion();
             db.close();
         } catch (SQLException e) {

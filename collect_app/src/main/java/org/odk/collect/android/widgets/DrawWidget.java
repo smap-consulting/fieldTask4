@@ -23,7 +23,9 @@ import android.widget.Button;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.DrawActivity;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.formentry.questions.WidgetViewUtils;
 
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createSimpleButton;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 
 /**
@@ -41,13 +43,13 @@ public class DrawWidget extends BaseImageWidget {
         imageClickHandler = new DrawImageClickHandler(DrawActivity.OPTION_DRAW, RequestCodes.DRAW_IMAGE, R.string.draw_image);
         setUpLayout();
         addCurrentImageToLayout();
-        addAnswerView(answerLayout);
+        addAnswerView(answerLayout, WidgetViewUtils.getStandardMargin(context));
     }
 
     @Override
     protected void setUpLayout() {
         super.setUpLayout();
-        drawButton = getSimpleButton(getContext().getString(R.string.draw_image));
+        drawButton = createSimpleButton(getContext(), getFormEntryPrompt().isReadOnly(), getContext().getString(R.string.draw_image), getAnswerFontSize(), this);
 
         answerLayout.addView(drawButton);
         answerLayout.addView(errorTextView);
@@ -58,6 +60,11 @@ public class DrawWidget extends BaseImageWidget {
     @Override
     public Intent addExtrasToIntent(Intent intent) {
         return intent;
+    }
+
+    @Override
+    protected boolean doesSupportDefaultValues() {
+        return true;
     }
 
     @Override

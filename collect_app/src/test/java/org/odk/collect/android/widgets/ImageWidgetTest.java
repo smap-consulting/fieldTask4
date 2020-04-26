@@ -3,8 +3,10 @@ package org.odk.collect.android.widgets;
 import android.content.Intent;
 import android.provider.MediaStore;
 import android.view.View;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
+import androidx.core.util.Pair;
 
 import net.bytebuddy.utility.RandomString;
 
@@ -14,13 +16,18 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.odk.collect.android.R;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.support.MockFormEntryPromptBuilder;
 import org.odk.collect.android.widgets.base.FileWidgetTest;
 
 import java.io.File;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
+import static org.odk.collect.android.support.CollectHelpers.overrideReferenceManager;
+import static org.odk.collect.android.support.CollectHelpers.setupFakeReferenceManager;
 
 /**
  * @author James Knight
@@ -53,7 +60,6 @@ public class ImageWidgetTest extends FileWidgetTest<ImageWidget> {
     public void setUp() throws Exception {
         super.setUp();
         fileName = RandomString.make();
-
     }
 
     @Override
@@ -88,5 +94,21 @@ public class ImageWidgetTest extends FileWidgetTest<ImageWidget> {
 
         assertThat(getWidget().captureButton.getVisibility(), is(View.GONE));
         assertThat(getWidget().chooseButton.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void whenPromptHasDefaultAnswer_doesNotShow() throws Exception {
+        String defaultImagePath = File.createTempFile("blah", ".bmp").getAbsolutePath();
+        overrideReferenceManager(setupFakeReferenceManager(asList(
+                new Pair<>("jr://images/referenceURI", defaultImagePath)
+        )));
+
+        formEntryPrompt = new MockFormEntryPromptBuilder()
+                .withAnswerDisplayText("jr://images/referenceURI")
+                .build();
+
+        ImageWidget widget = createWidget();
+        ImageView imageView = widget.getImageView();
+        assertThat(imageView, nullValue());
     }
 }

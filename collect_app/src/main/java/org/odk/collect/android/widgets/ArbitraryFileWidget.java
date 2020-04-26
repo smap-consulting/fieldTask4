@@ -35,6 +35,7 @@ import org.javarosa.core.model.data.StringData;
 import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.R;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.formentry.questions.WidgetViewUtils;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.FileUtil;
@@ -48,6 +49,9 @@ import org.odk.collect.android.widgets.utilities.FileWidgetUtils;
 import java.io.File;
 
 import timber.log.Timber;
+
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createAnswerTextView;
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createSimpleButton;
 
 public class ArbitraryFileWidget extends QuestionWidget implements FileWidget {
 
@@ -75,7 +79,7 @@ public class ArbitraryFileWidget extends QuestionWidget implements FileWidget {
 
         binaryName = questionDetails.getPrompt().getAnswerText();
 
-        setUpLayout();
+        setUpLayout(context);
     }
 
     @Override
@@ -147,11 +151,11 @@ public class ArbitraryFileWidget extends QuestionWidget implements FileWidget {
         answerLayout.setOnLongClickListener(l);
     }
 
-    private void setUpLayout() {
+    private void setUpLayout(Context context) {
         LinearLayout widgetLayout = new LinearLayout(getContext());
         widgetLayout.setOrientation(LinearLayout.VERTICAL);
 
-        chooseFileButton = getSimpleButton(getContext().getString(R.string.choose_file));
+        chooseFileButton = createSimpleButton(getContext(), getFormEntryPrompt().isReadOnly(), getContext().getString(R.string.choose_file), getAnswerFontSize(), this);
         chooseFileButton.setEnabled(!getFormEntryPrompt().isReadOnly());
 
         answerLayout = new LinearLayout(getContext());
@@ -160,7 +164,7 @@ public class ArbitraryFileWidget extends QuestionWidget implements FileWidget {
 
         ImageView attachmentImg = new ImageView(getContext());
         attachmentImg.setImageResource(R.drawable.ic_attachment);
-        chosenFileNameTextView = getAnswerTextView(binaryName);
+        chosenFileNameTextView = createAnswerTextView(getContext(), binaryName, getAnswerFontSize());
         chosenFileNameTextView.setGravity(Gravity.CENTER);
 
         answerLayout.addView(attachmentImg);
@@ -171,12 +175,11 @@ public class ArbitraryFileWidget extends QuestionWidget implements FileWidget {
         widgetLayout.addView(chooseFileButton);
         widgetLayout.addView(answerLayout);
 
-        addAnswerView(widgetLayout);
+        addAnswerView(widgetLayout, WidgetViewUtils.getStandardMargin(context));
     }
 
     private void performFileSearch() {
-        Intent intent = new Intent(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT
-                ? Intent.ACTION_OPEN_DOCUMENT : Intent.ACTION_GET_CONTENT);
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.setType("*/*"); // all file types
         ((Activity) getContext()).startActivityForResult(intent, ApplicationConstants.RequestCodes.ARBITRARY_FILE_CHOOSER);

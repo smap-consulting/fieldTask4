@@ -11,13 +11,14 @@ import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.helpers.ContentResolverHelper;
 import org.odk.collect.android.exception.GDriveConnectionException;
+import org.odk.collect.android.formentry.ODKView;
 import org.odk.collect.android.fragments.dialogs.ProgressDialogFragment;
-import org.odk.collect.android.logic.FormController;
+import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.android.network.NetworkStateProvider;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.ImageConverter;
 import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.ToastUtils;
-import org.odk.collect.android.views.ODKView;
 import org.odk.collect.android.widgets.BaseImageWidget;
 import org.odk.collect.android.widgets.QuestionWidget;
 
@@ -29,9 +30,11 @@ import timber.log.Timber;
 public class MediaLoadingTask extends AsyncTask<Uri, Void, File> {
 
     private WeakReference<FormEntryActivity> formEntryActivity;
+    private WeakReference<NetworkStateProvider> connectivityProvider;
 
-    public MediaLoadingTask(FormEntryActivity formEntryActivity) {
+    public MediaLoadingTask(FormEntryActivity formEntryActivity, NetworkStateProvider connectivityProvider) {
         onAttach(formEntryActivity);
+        this.connectivityProvider = new WeakReference<>(connectivityProvider);
     }
 
     public void onAttach(FormEntryActivity formEntryActivity) {
@@ -40,6 +43,7 @@ public class MediaLoadingTask extends AsyncTask<Uri, Void, File> {
 
     public void onDetach() {
         formEntryActivity = null;
+        connectivityProvider = null;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class MediaLoadingTask extends AsyncTask<Uri, Void, File> {
                 String destMediaPath = instanceFolder + File.separator + System.currentTimeMillis() + extension;
 
                 try {
-                    File chosenFile = MediaUtils.getFileFromUri(formEntryActivity.get(), uris[0], MediaStore.Images.Media.DATA);
+                    File chosenFile = MediaUtils.getFileFromUri(formEntryActivity.get(), uris[0], MediaStore.Images.Media.DATA, connectivityProvider.get());
                     if (chosenFile != null) {
                         final File newFile = new File(destMediaPath);
                         FileUtils.copyFile(chosenFile, newFile);

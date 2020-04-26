@@ -12,7 +12,7 @@ import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.odk.collect.android.utilities.HandlerScheduler;
-import org.odk.collect.android.utilities.Scheduler;
+import org.odk.collect.utilities.Scheduler;
 
 import java.util.List;
 
@@ -110,8 +110,8 @@ public class AudioHelper {
         return viewModel.getError();
     }
 
-    public void dismissError() {
-        viewModel.dismissError();
+    public void errorDisplayed() {
+        viewModel.errorDisplayed();
     }
 
     private void registerLifecycleCallbacks(FragmentActivity activity, LifecycleOwner lifecycleOwner) {

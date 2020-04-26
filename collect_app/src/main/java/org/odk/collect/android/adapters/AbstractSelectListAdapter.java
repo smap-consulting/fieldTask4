@@ -41,15 +41,15 @@ import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.external.ExternalSelectChoice;
+import org.odk.collect.android.formentry.ODKView;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
 import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.utilities.QuestionFontSizeUtils;
 import org.odk.collect.android.utilities.FormEntryPromptUtils;
 import org.odk.collect.android.utilities.ImageConverter;
 import org.odk.collect.android.utilities.WidgetAppearanceUtils;
-import org.odk.collect.android.views.ODKView;
 import org.odk.collect.android.widgets.SelectWidget;
 
 import java.io.File;
@@ -59,8 +59,8 @@ import java.util.Locale;
 
 import timber.log.Timber;
 
-import static org.odk.collect.android.formentry.media.FormMediaHelpers.getClipID;
-import static org.odk.collect.android.formentry.media.FormMediaHelpers.getPlayableAudioURI;
+import static org.odk.collect.android.formentry.media.FormMediaUtils.getClipID;
+import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;
 import static org.odk.collect.android.widgets.QuestionWidget.isRTL;
 
 public abstract class AbstractSelectListAdapter extends RecyclerView.Adapter<AbstractSelectListAdapter.ViewHolder>
@@ -144,7 +144,7 @@ public abstract class AbstractSelectListAdapter extends RecyclerView.Adapter<Abs
     abstract CompoundButton createButton(int index, ViewGroup parent);
 
     void setUpButton(TextView button, int index) {
-        button.setTextSize(TypedValue.COMPLEX_UNIT_DIP, Collect.getQuestionFontsize());
+        button.setTextSize(TypedValue.COMPLEX_UNIT_DIP, QuestionFontSizeUtils.getQuestionFontSize());
         button.setText(FormEntryPromptUtils.getItemText(getFormEntryPrompt(), filteredItems.get(index)));
         button.setTag(items.indexOf(filteredItems.get(index)));
         button.setGravity(isRTL() ? Gravity.END : Gravity.START);
@@ -163,7 +163,7 @@ public abstract class AbstractSelectListAdapter extends RecyclerView.Adapter<Abs
         String errorMsg = null;
         if (imageURI != null) {
             try {
-                final File imageFile = new File(ReferenceManager.instance().DeriveReference(imageURI).getLocalURI());
+                final File imageFile = new File(ReferenceManager.instance().deriveReference(imageURI).getLocalURI());
                 if (imageFile.exists()) {
                     Bitmap bitmap = FileUtils.getBitmap(imageFile.getPath(), new BitmapFactory.Options());
 
@@ -257,7 +257,7 @@ public abstract class AbstractSelectListAdapter extends RecyclerView.Adapter<Abs
             SelectChoice item = items.get(index);
 
             audioVideoImageTextLabel.setTag(getClipID(getFormEntryPrompt(), item));
-            audioVideoImageTextLabel.setText(textView);
+            audioVideoImageTextLabel.setTextView(textView);
 
             String imageURI = getImageURI(index, items);
             String videoURI = getFormEntryPrompt().getSpecialFormSelectChoiceText(item, "video");

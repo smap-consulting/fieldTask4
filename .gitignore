@@ -13,10 +13,15 @@ collect_app/src/plan/
 collect_app/src/seracis/
 collect_app/src/supply/
 collect_app/src/meqa/
+collect_app/src/atempi/
+collect_app/src/pop/
+
 collect_app/plan/
 collect_app/seracis/
 collect_app/supply/
 collect_app/meqa/
+collect_app/atempi/
+collect_app/pop/
 
 # emacs backup files
 *.*~

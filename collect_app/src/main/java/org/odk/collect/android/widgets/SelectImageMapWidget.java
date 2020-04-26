@@ -32,6 +32,7 @@ import org.javarosa.core.model.data.helper.Selection;
 import org.javarosa.core.reference.InvalidReferenceException;
 import org.odk.collect.android.R;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.formentry.questions.WidgetViewUtils;
 import org.odk.collect.android.utilities.StringUtils;
 import org.odk.collect.android.views.CustomWebView;
 import org.w3c.dom.Document;
@@ -54,6 +55,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import timber.log.Timber;
+
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createAnswerTextView;
 
 /**
  * A base widget class which is responsible for sharing the code used by image map select widgets like
@@ -84,7 +87,7 @@ public abstract class SelectImageMapWidget extends SelectWidget {
             Timber.w(e);
         }
 
-        createLayout();
+        createLayout(context);
     }
 
     private static String convertDocumentToString(Document doc) {
@@ -115,10 +118,10 @@ public abstract class SelectImageMapWidget extends SelectWidget {
         return webView.suppressFlingGesture();
     }
 
-    private void createLayout() {
+    private void createLayout(Context context) {
         webView = new CustomWebView(getContext());
 
-        selectedAreasLabel = getAnswerTextView();
+        selectedAreasLabel = createAnswerTextView(getContext(), getAnswerFontSize());
         answerLayout.addView(webView);
         answerLayout.addView(selectedAreasLabel);
 
@@ -129,7 +132,7 @@ public abstract class SelectImageMapWidget extends SelectWidget {
         int paddingInPx = (int) (paddingInDp * scale + 0.5f);
         answerLayout.setPadding(0, 0, paddingInPx, 0);
 
-        addAnswerView(answerLayout);
+        addAnswerView(answerLayout, WidgetViewUtils.getStandardMargin(context));
         setUpWebView();
     }
 
@@ -146,7 +149,7 @@ public abstract class SelectImageMapWidget extends SelectWidget {
             webView.getSettings().setUseWideViewPort(true);
             int height = (int) (getResources().getDisplayMetrics().heightPixels / 1.7); // about 60% of a screen
             webView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height));
-            webView.setEnabled(!getFormEntryPrompt().isReadOnly());
+            webView.setClickable(!getFormEntryPrompt().isReadOnly());
             webView.setWebViewClient(new WebViewClient() {
                 @Override
                 public void onPageFinished(WebView view, String url) {

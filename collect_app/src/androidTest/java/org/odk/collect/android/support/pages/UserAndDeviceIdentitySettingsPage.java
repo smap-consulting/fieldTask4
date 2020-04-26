@@ -20,18 +20,8 @@ public class UserAndDeviceIdentitySettingsPage extends Page<UserAndDeviceIdentit
         return this;
     }
 
-    public UserAndDeviceIdentitySettingsPage clickFormMetadata() {
+    public FormMetadataPage clickFormMetadata() {
         onData(PreferenceMatchers.withKey("form_metadata")).perform(click());
-        return this;
-    }
-
-    public UserAndDeviceIdentitySettingsPage clickMetadataEmail() {
-        onData(PreferenceMatchers.withKey("metadata_email")).perform(click());
-        return this;
-    }
-
-    public UserAndDeviceIdentitySettingsPage clickMetadataUsername() {
-        onData(PreferenceMatchers.withKey("metadata_username")).perform(click());
-        return this;
+        return new FormMetadataPage(rule);
     }
 }

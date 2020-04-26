@@ -42,7 +42,7 @@ import org.odk.collect.android.external.ExternalDataReader;
 import org.odk.collect.android.external.ExternalDataReaderImpl;
 import org.odk.collect.android.external.handler.ExternalDataHandlerPull;
 import org.odk.collect.android.listeners.FormLoaderListener;
-import org.odk.collect.android.logic.FormController;
+import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.FormDefCache;
 import org.odk.collect.android.utilities.ZipUtils;
@@ -82,7 +82,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
     private ExternalDataManager externalDataManager;
     private FormDef formDef;
 
-    protected static class FECWrapper {
+    public static class FECWrapper {
         FormController controller;
         boolean usedSavepoint;
 
@@ -91,7 +91,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
             this.usedSavepoint = usedSavepoint;
         }
 
-        protected FormController getController() {
+        public FormController getController() {
             return controller;
         }
 
@@ -293,7 +293,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
             File instanceXml = new File(instancePath);
 
             // Use the savepoint file only if it's newer than the last manual save
-            final File savepointFile = SaveToDiskTask.getSavepointFile(instanceXml.getName());
+            final File savepointFile = SaveFormToDisk.getSavepointFile(instanceXml.getName());
             if (savepointFile.exists()
                     && savepointFile.lastModified() > instanceXml.lastModified()) {
                 usedSavepoint = true;

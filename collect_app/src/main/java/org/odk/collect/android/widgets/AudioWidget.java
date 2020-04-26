@@ -36,6 +36,7 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.audio.AudioControllerView;
 import org.odk.collect.android.audio.Clip;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.formentry.questions.WidgetViewUtils;
 import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.utilities.FileUtil;
 import org.odk.collect.android.utilities.MediaManager;
@@ -49,6 +50,7 @@ import java.util.Locale;
 
 import timber.log.Timber;
 
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createSimpleButton;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 
 /**
@@ -85,9 +87,9 @@ public class AudioWidget extends QuestionWidget implements FileWidget {
         this.mediaUtil = mediaUtil;
         this.audioController = audioController;
 
-        captureButton = getSimpleButton(getContext().getString(R.string.capture_audio), R.id.capture_audio);
+        captureButton = createSimpleButton(getContext(), R.id.capture_audio, getFormEntryPrompt().isReadOnly(), getContext().getString(R.string.capture_audio), getAnswerFontSize(), this);
 
-        chooseButton = getSimpleButton(getContext().getString(R.string.choose_sound), R.id.choose_sound);
+        chooseButton = createSimpleButton(getContext(), R.id.choose_sound, getFormEntryPrompt().isReadOnly(), getContext().getString(R.string.choose_sound), getAnswerFontSize(), this);
 
         // finish complex layout
         LinearLayout answerLayout = new LinearLayout(getContext());
@@ -95,7 +97,7 @@ public class AudioWidget extends QuestionWidget implements FileWidget {
         answerLayout.addView(captureButton);
         answerLayout.addView(chooseButton);
         answerLayout.addView(audioController);
-        addAnswerView(answerLayout);
+        addAnswerView(answerLayout, WidgetViewUtils.getStandardMargin(context));
 
         hideButtonsIfNeeded();
 

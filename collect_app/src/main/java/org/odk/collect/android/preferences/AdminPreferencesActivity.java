@@ -33,6 +33,8 @@ import java.io.ObjectOutputStream;
 
 import timber.log.Timber;
 
+import static org.odk.collect.android.activities.ActivityUtils.startActivityAndCloseAllOthers;
+
 /**
  * Handles admin preferences, which are password-protectable and govern which app features and
  * general preferences the end user of the app will be able to see.
@@ -84,7 +86,7 @@ public class AdminPreferencesActivity extends CollectAbstractActivity implements
         if (savedInstanceState == null) {
             getFragmentManager()
                     .beginTransaction()
-                    .add(R.id.container, new AdminPreferencesFragment(), TAG)
+                    .add(R.id.preferences_fragment_container, new AdminPreferencesFragment(), TAG)
                     .commit();
         }
     }
@@ -97,6 +99,6 @@ public class AdminPreferencesActivity extends CollectAbstractActivity implements
 
     @Override
     public void onDialogClosed() {
-        MainMenuActivity.startActivityAndCloseAllOthers(this);
+        startActivityAndCloseAllOthers(this, MainMenuActivity.class);
     }
 }

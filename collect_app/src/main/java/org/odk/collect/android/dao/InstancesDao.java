@@ -26,6 +26,7 @@ import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.instances.Instance;
 import org.odk.collect.android.provider.InstanceProviderAPI;
 import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
+import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.utilities.ApplicationConstants;
 
 import java.util.ArrayList;
@@ -167,7 +168,7 @@ public class InstancesDao {
 
     public Cursor getInstancesCursorForFilePath(String path) {
         String selection = InstanceColumns.INSTANCE_FILE_PATH + "=?";
-        String[] selectionArgs = {path};
+        String[] selectionArgs = {new StoragePathProvider().getInstanceDbPath(path)};
 
         return getInstancesCursor(null, selection, selectionArgs, null);
     }
@@ -232,6 +233,10 @@ public class InstancesDao {
         return getInstancesCursor(null, selection, selectionArgs, null);
     }
 
+    public Cursor getInstancesCursor() {
+        return getInstancesCursor(null, null, null, null);
+    }
+
     public Cursor getInstancesCursor(String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         return Collect.getInstance().getContentResolver()
                 .query(InstanceColumns.CONTENT_URI, projection, selection, selectionArgs, sortOrder);
@@ -275,8 +280,8 @@ public class InstancesDao {
             selection.append(InstanceColumns.INSTANCE_FILE_PATH + " IN (");
             int j = 0;
             while (j < selectionArgs.length) {
-                selectionArgs[j] = instanceFilePaths.get(
-                        counter * ApplicationConstants.SQLITE_MAX_VARIABLE_NUMBER + j);
+                selectionArgs[j] = new StoragePathProvider().getInstanceDbPath(instanceFilePaths.get(
+                        counter * ApplicationConstants.SQLITE_MAX_VARIABLE_NUMBER + j));
                 selection.append('?');
 
                 if (j != selectionArgs.length - 1) {
@@ -358,9 +363,8 @@ public class InstancesDao {
         values.put(InstanceColumns.STATUS, instance.getStatus());
         values.put(InstanceColumns.LAST_STATUS_CHANGE_DATE, instance.getLastStatusChangeDate());
         values.put(InstanceColumns.DELETED_DATE, instance.getDeletedDate());
+        values.put(InstanceColumns.GEOMETRY, instance.getGeometry());
         values.put(InstanceColumns.GEOMETRY_TYPE, instance.getGeometryType());
-        values.put(InstanceColumns.GEOMETRY_TYPE, instance.getGeometry());
-
         return values;
     }
 }

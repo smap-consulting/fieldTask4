@@ -38,10 +38,10 @@ import org.javarosa.core.reference.InvalidReferenceException;
 import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.odk.collect.android.R;
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.external.ExternalSelectChoice;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.utilities.QuestionFontSizeUtils;
 import org.odk.collect.android.utilities.FormEntryPromptUtils;
 import org.odk.collect.android.utilities.ScreenUtils;
 import org.odk.collect.android.utilities.WidgetAppearanceUtils;
@@ -54,7 +54,8 @@ import java.util.List;
 
 import timber.log.Timber;
 
-import static org.odk.collect.android.formentry.media.FormMediaHelpers.getPlayableAudioURI;
+import static org.odk.collect.android.analytics.AnalyticsEvents.AUDIO_QUESTION;
+import static org.odk.collect.android.formentry.media.FormMediaUtils.getPlayableAudioURI;
 
 /**
  * GridWidget handles select-one/multiple fields using a grid options. The number of columns
@@ -120,7 +121,7 @@ public abstract class BaseGridWidget extends ItemsWidget implements MultiChoiceW
         String errorMsg = null;
         if (imageURI != null) {
             try {
-                final File imageFile = new File(ReferenceManager.instance().DeriveReference(imageURI).getLocalURI());
+                final File imageFile = new File(ReferenceManager.instance().deriveReference(imageURI).getLocalURI());
                 if (imageFile.exists()) {
                     Bitmap b = FileUtils.getBitmapScaledToDisplay(imageFile, ScreenUtils.getScreenHeight(), ScreenUtils.getScreenWidth());
                     if (b != null) {
@@ -147,7 +148,7 @@ public abstract class BaseGridWidget extends ItemsWidget implements MultiChoiceW
                 ? new AppCompatRadioButton(getContext())
                 : new AppCompatCheckBox(getContext());
 
-        item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, Collect.getQuestionFontsize());
+        item.setTextSize(TypedValue.COMPLEX_UNIT_DIP, QuestionFontSizeUtils.getQuestionFontSize());
         item.setText(FormEntryPromptUtils.getItemText(getFormEntryPrompt(), items.get(index)));
         item.setTag(items.indexOf(items.get(index)));
         item.setGravity(isRTL() ? Gravity.END : Gravity.START);
@@ -256,7 +257,7 @@ public abstract class BaseGridWidget extends ItemsWidget implements MultiChoiceW
                 String audioURI = getPlayableAudioURI(questionDetails.getPrompt(), choice, getReferenceManager());
 
                 if (audioURI != null) {
-                    analytics.logEvent("Prompt", "AudioChoiceGrid", questionDetails.getFormAnalyticsID());
+                    analytics.logEvent(AUDIO_QUESTION, "AudioChoiceGrid", questionDetails.getFormAnalyticsID());
                     break;
                 }
             }

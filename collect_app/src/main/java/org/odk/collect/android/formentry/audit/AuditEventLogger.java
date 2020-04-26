@@ -6,7 +6,7 @@ import android.os.SystemClock;
 
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.data.IAnswerData;
-import org.odk.collect.android.logic.FormController;
+import org.odk.collect.android.javarosawrapper.FormController;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -97,6 +97,16 @@ public class AuditEventLogger {
         }
     }
 
+    /*
+     * Finalizes and writes events
+     */
+    public void flush() {
+        if (isAuditEnabled()) {
+            finalizeEvents();
+            writeEvents();
+        }
+    }
+
     private void addLocationCoordinatesToAuditEvent(AuditEvent auditEvent, long currentTime) {
         Location location = getMostAccurateLocation(currentTime);
         String latitude = location != null ? Double.toString(location.getLatitude()) : "";
@@ -137,16 +147,6 @@ public class AuditEventLogger {
             }
         }
         return false;
-    }
-
-    /*
-     * Exit a question
-     */
-    public void exitView() {
-        if (isAuditEnabled()) {
-            finalizeEvents();
-            writeEvents();
-        }
     }
 
     // Filter all events and set final parameters of interval events

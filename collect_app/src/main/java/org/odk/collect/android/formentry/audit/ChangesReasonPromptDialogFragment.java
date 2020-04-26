@@ -12,29 +12,15 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import org.odk.collect.android.R;
+import org.odk.collect.android.formentry.saving.FormSaveViewModel;
 import org.odk.collect.android.material.MaterialFullScreenDialogFragment;
 
 public class ChangesReasonPromptDialogFragment extends MaterialFullScreenDialogFragment {
 
-    public static final String TAG = "ChangesReasonPromptDialogFragment";
-    private static final String ARG_FORM_NAME = "ArgFormName";
-    private ChangesReasonPromptViewModel viewModel;
-
-    public ViewModelProvider.Factory viewModelFactory = new ChangesReasonPromptViewModel.Factory();
-
-    public void show(String formName, FragmentManager fragmentManager) {
-        if (fragmentManager.findFragmentByTag(TAG) == null) {
-            Bundle bundle = new Bundle();
-            bundle.putString(ChangesReasonPromptDialogFragment.ARG_FORM_NAME, formName);
-            setArguments(bundle);
-            show(fragmentManager.beginTransaction(), TAG);
-        }
-    }
+    private FormSaveViewModel viewModel;
 
     @Nullable
     @Override
@@ -47,7 +33,7 @@ public class ChangesReasonPromptDialogFragment extends MaterialFullScreenDialogF
         super.onViewCreated(view, savedInstanceState);
 
         Toolbar toolbar = getToolbar();
-        toolbar.setTitle(getArguments().getString(ARG_FORM_NAME));
+        toolbar.setTitle(viewModel.getFormName());
         toolbar.inflateMenu(R.menu.changes_reason_dialog);
 
         EditText reasonField = view.findViewById(R.id.reason);
@@ -69,33 +55,35 @@ public class ChangesReasonPromptDialogFragment extends MaterialFullScreenDialogF
             }
         });
 
-        reasonField.requestFocus();
-
         toolbar.setOnMenuItemClickListener(item -> {
-            viewModel.saveReason(System.currentTimeMillis());
+            if (viewModel.saveReason()) {
+                dismiss();
+            }
+
             return true;
         });
+
+        reasonField.requestFocus();
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(ChangesReasonPromptViewModel.class);
-        viewModel.requiresReasonToContinue().observe(this, requiresReason -> {
-            if (!requiresReason) {
-                dismiss();
-            }
-        });
+        viewModel = ViewModelProviders.of(requireActivity()).get(FormSaveViewModel.class);
     }
 
     @Override
     protected void onBackPressed() {
-        viewModel.promptDismissed();
+        dismiss();
     }
 
     @Override
     protected void onCloseClicked() {
-        viewModel.promptDismissed();
+        dismiss();
+    }
+
+    @Override
+    protected boolean shouldShowSoftKeyboard() {
+        return true;
     }
 }

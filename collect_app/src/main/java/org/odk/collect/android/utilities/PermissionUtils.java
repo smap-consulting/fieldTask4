@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AlertDialog;
@@ -21,7 +20,7 @@ import com.karumi.dexter.listener.multi.MultiplePermissionsListener;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.CollectAbstractActivity;
 import org.odk.collect.android.activities.FormChooserListActivity;
-import org.odk.collect.android.activities.FormDownloadList;
+import org.odk.collect.android.activities.FormDownloadListActivity;
 import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.activities.InstanceChooserList;
 import org.odk.collect.android.activities.InstanceUploaderActivity;
@@ -68,7 +67,7 @@ public class PermissionUtils {
         return isPermissionGranted(context, Manifest.permission.GET_ACCOUNTS);
     }
 
-    public static boolean isReadPhoneStatePermissionGranted(Context context) {
+    public boolean isReadPhoneStatePermissionGranted(Context context) {
         return isPermissionGranted(context, Manifest.permission.READ_PHONE_STATE);
     }
 
@@ -99,7 +98,7 @@ public class PermissionUtils {
         activities.add(FormChooserListActivity.class);
         activities.add(InstanceUploaderListActivity.class);
         activities.add(SplashScreenActivity.class);
-        activities.add(FormDownloadList.class);
+        activities.add(FormDownloadListActivity.class);
         activities.add(InstanceUploaderActivity.class);
 
         for (Class<?> act : activities) {
@@ -112,11 +111,7 @@ public class PermissionUtils {
     }
 
     public static void finishAllActivities(Activity activity) {
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            activity.finishAndRemoveTask();
-        } else {
-            activity.finishAffinity();
-        }
+        activity.finishAndRemoveTask();
     }
 
     /**

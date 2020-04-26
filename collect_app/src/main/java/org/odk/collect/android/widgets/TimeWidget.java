@@ -23,7 +23,6 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -35,6 +34,7 @@ import org.javarosa.core.model.data.TimeData;
 import org.joda.time.DateTime;
 import org.odk.collect.android.R;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
+import org.odk.collect.android.formentry.questions.WidgetViewUtils;
 import org.odk.collect.android.widgets.interfaces.ButtonWidget;
 
 import java.lang.reflect.Constructor;
@@ -42,6 +42,9 @@ import java.lang.reflect.Field;
 import java.util.Date;
 
 import timber.log.Timber;
+
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createAnswerTextView;
+import static org.odk.collect.android.formentry.questions.WidgetViewUtils.createSimpleButton;
 
 /**
  * Displays a TimePicker widget.
@@ -61,12 +64,13 @@ public class TimeWidget extends QuestionWidget implements ButtonWidget, TimePick
     private boolean nullAnswer;
 
     public TimeWidget(Context context, final QuestionDetails prompt) {
-        super(context, prompt);
+        this(context, prompt, false);
+    }
 
-        setGravity(Gravity.START);
-
+    public TimeWidget(Context context, QuestionDetails prompt, boolean isPartOfDateTimeWidget) {
+        super(context, prompt, !isPartOfDateTimeWidget);
         createTimeButton();
-        timeTextView = getAnswerTextView();
+        timeTextView = createAnswerTextView(getContext(), getAnswerFontSize());
         createTimePickerDialog();
         addViews();
     }
@@ -107,7 +111,7 @@ public class TimeWidget extends QuestionWidget implements ButtonWidget, TimePick
     }
 
     private void createTimeButton() {
-        timeButton = getSimpleButton(getContext().getString(R.string.select_time));
+        timeButton = createSimpleButton(getContext(), getFormEntryPrompt().isReadOnly(), getContext().getString(R.string.select_time), getAnswerFontSize(), this);
     }
 
     private void addViews() {
@@ -115,7 +119,7 @@ public class TimeWidget extends QuestionWidget implements ButtonWidget, TimePick
         linearLayout.setOrientation(LinearLayout.VERTICAL);
         linearLayout.addView(timeButton);
         linearLayout.addView(timeTextView);
-        addAnswerView(linearLayout);
+        addAnswerView(linearLayout, WidgetViewUtils.getStandardMargin(getContext()));
     }
 
     public void setTimeLabel() {

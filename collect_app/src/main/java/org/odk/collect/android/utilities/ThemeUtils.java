@@ -14,9 +14,7 @@
 
 package org.odk.collect.android.utilities;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.os.Build;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
@@ -67,12 +65,11 @@ public final class ThemeUtils {
                 theme == android.R.style.Theme_Holo_Dialog;
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @StyleRes
     public int getMaterialDialogTheme() {
-        return isDarkTheme() ?
-                android.R.style.Theme_Material_Dialog :
-                android.R.style.Theme_Material_Light_Dialog;
+        return isDarkTheme()
+                ? R.style.Theme_Collect_Dark_Dialog
+                : R.style.Theme_Collect_Light_Dialog;
     }
 
     @StyleRes
@@ -97,35 +94,28 @@ public final class ThemeUtils {
         return theme.equals(context.getString(R.string.app_theme_dark));
     }
 
-    /**
-     * @return Text color for the current {@link android.content.res.Resources.Theme}
-     */
     @ColorInt
     public int getColorOnSurface() {
         return getAttributeValue(R.attr.colorOnSurface);
     }
 
-    /**
-     * @return Accent color for the current {@link android.content.res.Resources.Theme}
-     */
     @ColorInt
     public int getAccentColor() {
         return getAttributeValue(R.attr.colorAccent);
     }
 
-    /**
-     * @return Icon color for the current {@link android.content.res.Resources.Theme}
-     */
     @ColorInt
     public int getIconColor() {
         return getAttributeValue(R.attr.iconColor);
     }
 
-    /**
-     * @return Rank item color for the current {@link android.content.res.Resources.Theme}
-     */
     @ColorInt
     public int getRankItemColor() {
         return getAttributeValue(R.attr.rankItemColor);
+    }
+
+    @ColorInt
+    public int getColorSecondary() {
+        return getAttributeValue(R.attr.colorSecondary);
     }
 }

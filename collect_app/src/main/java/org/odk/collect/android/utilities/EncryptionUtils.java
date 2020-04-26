@@ -30,7 +30,7 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.exception.EncryptionException;
-import org.odk.collect.android.logic.FormController.InstanceMetadata;
+import org.odk.collect.android.javarosawrapper.FormController.InstanceMetadata;
 import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
 import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
 
@@ -69,7 +69,7 @@ import timber.log.Timber;
 import static org.odk.collect.android.utilities.ApplicationConstants.Namespaces.XML_OPENROSA_NAMESPACE;
 
 /**
- * Utility class for encrypting submissions during the SaveToDiskTask.
+ * Utility class for encrypting submissions during the SaveFormToDisk.
  *
  * @author mitchellsundt@gmail.com
  */
