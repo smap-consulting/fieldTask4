@@ -94,6 +94,7 @@ android {
     }
 
     buildTypes {
+
         // Release build for all forks
         release {
             if (secrets.getProperty('RELEASE_STORE_FILE')) {
@@ -105,6 +106,7 @@ android {
             resValue("string", "GOOGLE_MAPS_API_KEY", googleMapsApiKey)
             buildConfigField 'String', "MAPBOX_ACCESS_TOKEN", '"' + mapboxToken + '"'
         }
+
         // Release build for the official ODK Collect app
         odkCollectRelease {
             if (secrets.getProperty('RELEASE_STORE_FILE')) {
@@ -118,9 +120,10 @@ android {
 
             matchingFallbacks = ['release'] // So other modules use release build type for this
         }
+
         debug {
             debuggable(true)
-            testCoverageEnabled(true)
+            testCoverageEnabled((findProperty("enableJacoco") ?: "false").toBoolean())
             resValue("bool", "CRASHLYTICS_ENABLED", "false")
             resValue("string", "GOOGLE_MAPS_API_KEY", googleMapsApiKey)
             buildConfigField 'String', "MAPBOX_ACCESS_TOKEN", '"' + mapboxToken + '"'
@@ -199,7 +202,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation 'androidx.browser:browser:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0-alpha10'
+    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.1.0'
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -228,7 +231,7 @@ dependencies {
     implementation "com.rarepebble:colorpicker:3.0.1"
     implementation "commons-io:commons-io:2.6"
     implementation "net.sf.opencsv:opencsv:2.4"
-    implementation("org.opendatakit:opendatakit-javarosa:2.17.0") {
+    implementation("org.opendatakit:opendatakit-javarosa:2.17.1") {
         exclude group: 'joda-time'
         exclude group: 'org.slf4j'
     }
