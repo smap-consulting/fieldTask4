@@ -3,8 +3,6 @@ package org.odk.collect.android.injection.config;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.telephony.SmsManager;
 import android.telephony.TelephonyManager;
 import android.webkit.MimeTypeMap;
 
@@ -12,6 +10,7 @@ import org.javarosa.core.reference.ReferenceManager;
 import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.analytics.FirebaseAnalytics;
+import org.odk.collect.android.application.initialization.ApplicationInitializer;
 import org.odk.collect.android.backgroundwork.CollectBackgroundWorkManager;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.dao.InstancesDao;
@@ -40,8 +39,6 @@ import org.odk.collect.android.storage.StorageStateProvider;
 import org.odk.collect.android.storage.migration.StorageEraser;
 import org.odk.collect.android.storage.migration.StorageMigrationRepository;
 import org.odk.collect.android.storage.migration.StorageMigrator;
-import org.odk.collect.android.tasks.sms.SmsSubmissionManager;
-import org.odk.collect.android.tasks.sms.contracts.SmsSubmissionManagerContract;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.AdminPasswordProvider;
 import org.odk.collect.android.utilities.AndroidUserAgent;
@@ -59,7 +56,7 @@ import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
 
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_INSTALL_ID;
+import static org.odk.collect.android.preferences.MetaKeys.KEY_INSTALL_ID;
 
 /**
  * Add dependency providers here (annotated with @Provides)
@@ -68,16 +65,6 @@ import static org.odk.collect.android.preferences.GeneralKeys.KEY_INSTALL_ID;
 @Module
 @SuppressWarnings("PMD.CouplingBetweenObjects")
 public class AppDependencyModule {
-
-    @Provides
-    SmsManager provideSmsManager() {
-        return SmsManager.getDefault();
-    }
-
-    @Provides
-    SmsSubmissionManagerContract provideSmsSubmissionManager(Application application) {
-        return new SmsSubmissionManager(application);
-    }
 
     @Provides
     Context context(Application application) {
@@ -113,7 +100,7 @@ public class AppDependencyModule {
 
     @Provides
     @Singleton
-    OpenRosaHttpInterface provideHttpInterface(MimeTypeMap mimeTypeMap, UserAgentProvider userAgentProvider) {
+    public OpenRosaHttpInterface provideHttpInterface(MimeTypeMap mimeTypeMap, UserAgentProvider userAgentProvider) {
         return new OkHttpConnection(
                 new OkHttpOpenRosaServerClientProvider(new OkHttpClient()),
                 new CollectThenSystemContentTypeMapper(mimeTypeMap),
@@ -192,9 +179,16 @@ public class AppDependencyModule {
     }
 
     @Provides
-    InstallIDProvider providesInstallIDProvider(Context context) {
-        SharedPreferences prefs = new MetaSharedPreferencesProvider(context).getMetaSharedPreferences();
-        return new SharedPreferencesInstallIDProvider(prefs, KEY_INSTALL_ID);
+    MetaSharedPreferencesProvider providesMetaSharedPreferencesProvider(Context context) {
+        return new MetaSharedPreferencesProvider(context);
+    }
+
+    @Provides
+    InstallIDProvider providesInstallIDProvider(MetaSharedPreferencesProvider metaSharedPreferencesProvider) {
+        return new SharedPreferencesInstallIDProvider(
+                metaSharedPreferencesProvider.getMetaSharedPreferences(),
+                KEY_INSTALL_ID
+        );
     }
 
     @Provides
@@ -285,5 +279,11 @@ public class AppDependencyModule {
     @Provides
     public VersionInformation providesVersionInformation() {
         return new VersionInformation(() -> BuildConfig.VERSION_NAME);
+    }
+
+    @Provides
+    @Singleton
+    public ApplicationInitializer providesApplicationInitializer(Application application, CollectJobCreator collectJobCreator, MetaSharedPreferencesProvider metaSharedPreferencesProvider, UserAgentProvider userAgentProvider) {
+        return new ApplicationInitializer(application, collectJobCreator, metaSharedPreferencesProvider.getMetaSharedPreferences(), userAgentProvider);
     }
 }

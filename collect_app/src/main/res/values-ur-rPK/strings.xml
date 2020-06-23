@@ -61,8 +61,7 @@
   <string name="list_failed_with_error">فارم ‎%s‏ کی لیسٹینگ فیل ہوگئ۔</string>
   <string name="loading_form">فارم لوڈ ہو رہا ہے</string>
   <string name="load_remote_form_error">فارم کی لیسٹینگ میں غلطی ہے</string>
-  <string name="location_provider_accuracy">‎%1$s‏ استعمال ہو رہا ہے، ‎%2$s‏ درستگی  میٹر ہے</string>
-  <string name="location_accuracy">درستگی ‎%1$s‏ ہے</string>
+    <string name="location_accuracy">درستگی ‎%1$s‏ ہے</string>
   <string name="manage_files">محفوظ شدہ فارم کو مٹا دیں۔</string>
   <string name="mark_finished">فارم کو حتمی کردیں</string>
   <string name="noselect_error">معافی، آپنے کسی فارم کا انتخاب نہیں کیا</string>
@@ -108,8 +107,7 @@
   <string name="change_splash_path">عکس بدل دیں</string>
   <string name="keep_changes">تبدیلیوں کو محفوظ کریں</string>
   <string name="change_formlist_url">فارم لیسٹ کا راستہ (ملحقہ ہو آر ایل)</string>
-  <string name="change_protocol">پلیٹ فارم</string>
-  <string name="change_submission_url">حوالگی کا راستہ </string>
+    <string name="change_submission_url">حوالگی کا راستہ </string>
   <string name="formlist_url">فارم فہرست کا پاتھ</string>
   <string name="submission_url">سبمشن کا پاتھ</string>
   <string name="font_size">ہجوں کے فانٹ کا ناپ</string>
@@ -129,9 +127,7 @@
   <string name="save_as_error">محفوظ کیا گیا نام خالی نہیں ہونا چاہئے</string>
   <string name="edit_prompt">پرامپٹ کی تدوین کریں</string>
   <string name="selected_google_account_text">گوگل اکاونٹ</string>
-  <string name="server_platform_odk_aggregate">مجموعی  ODK</string>
-  <string name="server_platform_other">دیگر</string>
-  <string name="font_size_extra_large">زیادہ بڑا</string>
+    <string name="font_size_extra_large">زیادہ بڑا</string>
   <string name="font_size_large">بڑا</string>
   <string name="font_size_medium">درمیانہ</string>
   <string name="font_size_small">چھو ٹا</string>
@@ -194,5 +190,4 @@
   <!--%1$s represents degrees, %2$s represents minutes and %3$s represents seconds as in N 18°48'8"-->
   <!--<string name="submission_transport_admin_setting">Submission transport</string>-->
   <!--Displays dates in specialized calendars with the Gregorian dates in parentheses. This is translated so right-to-left languages can specify the correct order-->
-  <!--Sms submission-->
 </resources>

@@ -77,8 +77,7 @@
   <string name="list_failed_with_error">ការធ្វើបញ្ជីសំណុំបែបបទបរាជ័យ %s ។</string>
   <string name="loading_form">កំពុងផ្ទុកសំណុំបែបបទ</string>
   <string name="load_remote_form_error">បញ្ហានៃការទាញបញ្ជីសំណុំបែបបទ</string>
-  <string name="location_provider_accuracy">កំពុងប្រើប្រាស់ %1$s. ភាពត្រឹមត្រូវគឺ %2$s ម៉ែត្រ.</string>
-  <string name="location_accuracy">ភាព​ត្រឹមត្រូវគឺ %1$s ម៉ែត្រ</string>
+    <string name="location_accuracy">ភាព​ត្រឹមត្រូវគឺ %1$s ម៉ែត្រ</string>
   <string name="manage_files">លុបសំណុំបែបបទដែលបានរក្សាទុក</string>
   <string name="mark_finished">សម្គាល់សំណុំបែបបទថាបានបញ្ចប់</string>
   <string name="noselect_error">សុំទោស, អ្នកមិនបានជ្រើសរើសសំណុំបែបបទណាមួយទេ!</string>
@@ -110,8 +109,6 @@
   <string name="send_data">បញ្ជូនសំណុំ​បែប​បទ​ដែលបានបញ្ចប់</string>
   <string name="send_data_button">បញ្ជូនសំណុំ​បែប​បទ​ដែលបានបញ្ចប់ (%s)</string>
   <string name="send_selected_data">បញ្ជូនការជ្រើសរើស</string>
-  <string name="send_selected_data_internet">ផ្ញើចេញ (អ៊ិនធើណីត)</string>
-  <string name="send_selected_data_sms">ផ្ញើ (សារ)</string>
   <string name="view_sent_forms">បង្ហាញសំណុំ​បែប​បទដែលបានផ្ញើចេញ</string>
   <string name="view_sent_forms_button">បង្ហាញសំណុំ​បែប​បទដែលបានផ្ញើចេញ (%s)</string>
   <string name="server_auth_credentials">ឈ្មោះអ្នកប្រើប្រាស់ ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវសម្រាប់ម៉ាស៊ីនមេ៖ %s</string>
@@ -133,8 +130,7 @@
   <string name="change_splash_path">ផ្លាស់ប្តូររូបថត</string>
   <string name="keep_changes">រក្សាការផ្លាស់ប្តូរ</string>
   <string name="change_formlist_url">ផ្លូវរបស់បញ្ជីសំណុំ​បែប​បទ​(បានបន្ថែមលើ URL)</string>
-  <string name="change_protocol">Platform</string>
-  <string name="change_submission_url">ផ្លូវដាក់ចូល (បន្ថែមលើ URL)</string>
+    <string name="change_submission_url">ផ្លូវដាក់ចូល (បន្ថែមលើ URL)</string>
   <string name="formlist_url">ទីតាំងបញ្ជីសំណុំ​បែប​បទ</string>
   <string name="submission_url">ផ្លូវដាក់ចូល</string>
   <string name="font_size">ទំហំពុម្ភអក្សរ</string>
@@ -161,9 +157,7 @@
   <string name="save_as_error">ឈ្មោះរក្សាទុកមិនអាចទទេ!</string>
   <string name="edit_prompt">កែប្រែ Prompt</string>
   <string name="selected_google_account_text">គណនី Google</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">ផ្សេងៗ</string>
-  <string name="font_size_extra_large">ធំបំផុត</string>
+    <string name="font_size_extra_large">ធំបំផុត</string>
   <string name="font_size_large">ធំ</string>
   <string name="font_size_medium">មធ្បម</string>
   <string name="font_size_small">តូច</string>
@@ -261,10 +255,7 @@
   <string name="go_drive">ថាសរបស់ខ្ញុំ</string>
   <string name="go_shared">ចែក​រំលែក​ជាមួយ​ខ្ញុំ</string>
   <string name="modified_on_date_at_time">\'កែប្រែនៅថ្ងៃ\' EEE, MMM dd, yyyy \'នៅម៉ោង\' HH:mm</string>
-  <string name="aggregate_preferences">ការកំណត់របស់ ODK Aggregate</string>
-  <string name="other_preferences">ការកំណត់លើ platform ដទៃ</string>
-  <string name="google_preferences">ការកំណត់សន្លឹក Google</string>
-  <string name="google_sheets_url_hint">ទម្រង់​ត្រូវតែ​កំណត់ URLក្នុងការបញ្ជូន​។ ប្រសិន​មិន​បាន​កំណត់, URL នេះ​នឹង​ត្រូវ​បាន​ប្រើប្រាស់។</string>
+    <string name="google_sheets_url_hint">ទម្រង់​ត្រូវតែ​កំណត់ URLក្នុងការបញ្ជូន​។ ប្រសិន​មិន​បាន​កំណត់, URL នេះ​នឹង​ត្រូវ​បាន​ប្រើប្រាស់។</string>
   <string name="drive_get_file">កំពុង​ទទួល​ %1$s និង ឯកសារមេឌៀ</string>
   <string name="no_google_account">គ្មាន​គណនី​ Google បាន​ជ្រើស​រើស</string>
   <string name="google_set_account">អ្នក​បាន​ជ្រើស​សន្លឹក​ Google ជា​ម៉ាស៊ីន​មេ​របស់​អ្នក​សូម​ជ្រើស​រើស​គណនី Google ត្រូវគ្នា ដែលឋិតក្នុងការកំណត់ទូទៅមុននឹងបន្ត</string>
@@ -558,10 +549,6 @@
   <string name="not_a_directory">%s មានរួច, ប៉ុន្តែ​ពុំមែន​ជាថត​ឯក​សារ</string>
   <string name="location_metadata">ផ្កាយរណបមាន៖ %1$d/24\n\nពេលវេលាកន្លងទៅ៖ %2$s</string>
   <string name="instance_upload_cancelled">បានបោះបង់ការផ្ទុកឡើងភ្លាមៗ</string>
-  <string name="sms_invalid_phone_number">លេខទូរស័ព្ទមិន​ត្រឹម​ត្រូវ!</string>
-  <!--Sms submission-->
-  <string name="transport_type_sms">សារ</string>
-  <string name="transport_type_both">ជ្រើសរើសនៅពេលផ្ញើ</string>
   <string name="rank_items">ចំណាត់ថ្នាក់ធាតុ</string>
   <string name="missing_google_account_dialog_title">មិនទាន់ដាក់គណនី Google</string>
   <string name="notification_channel_name">ការជូនដំណឹង​ជាទូទៅ</string>

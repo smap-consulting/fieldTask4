@@ -8,10 +8,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.regression.BaseRegressionTest;
+import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.matchers.RecyclerViewMatcher;
+import org.odk.collect.android.support.pages.AddNewRepeatDialog;
+import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.FormHierarchyPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
@@ -21,7 +23,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.odk.collect.android.support.matchers.RecyclerViewMatcher.withRecyclerView;
 
-public class FormHierarchyTest extends BaseRegressionTest {
+public class FormHierarchyTest {
+
+    public CollectTestRule rule = new CollectTestRule();
 
     @Rule
     public RuleChain copyFormChain = RuleChain
@@ -32,7 +36,8 @@ public class FormHierarchyTest extends BaseRegressionTest {
             .around(new ResetStateRule())
             .around(new CopyFormRule("formHierarchy1.xml", null))
             .around(new CopyFormRule("formHierarchy2.xml", null))
-            .around(new CopyFormRule("formHierarchy3.xml", null));
+            .around(new CopyFormRule("formHierarchy3.xml", null))
+            .around(rule);
 
     @Test
     //https://github.com/opendatakit/collect/issues/2871
@@ -101,18 +106,19 @@ public class FormHierarchyTest extends BaseRegressionTest {
     public void repeatGroupsShouldBeVisibleAsAppropriate() {
         FormHierarchyPage page = new MainMenuPage(rule)
                 .startBlankForm("formHierarchy3")
-                .swipeToNextQuestion()
-                .swipeToNextQuestion()
-                .swipeToNextQuestion()
-                .swipeToNextQuestion()
-                .swipeToNextQuestion()
-                .swipeToNextQuestion()
-                .clickOnString(R.string.add_repeat)
-                .swipeToNextQuestion()
-                .clickOnString(R.string.add_repeat)
-                .swipeToNextQuestion()
-                .clickOnDoNotAddGroup()
-                .clickOnDoNotAddGroup()
+                .assertQuestion("Intro")
+                .swipeToNextQuestion("Text")
+                .swipeToNextQuestion("Integer 1_1")
+                .swipeToNextQuestion("Integer 1_2")
+                .swipeToNextQuestion("Integer 2_1")
+                .swipeToNextQuestion("Integer 2_2")
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3", rule))
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnAdd(new FormEntryPage("formHierarchy3", rule))
+                .swipeToNextQuestionWithRepeatGroup("Repeat Group 1_1")
+                .clickOnDoNotAdd(new AddNewRepeatDialog("Repeat Group 1", rule))
+                .clickOnDoNotAdd(new FormEntryPage("formHierarchy3", rule))
                 .clickGoToArrow();
 
         onView(withId(R.id.list)).check(matches(RecyclerViewMatcher.withListSize(3)));

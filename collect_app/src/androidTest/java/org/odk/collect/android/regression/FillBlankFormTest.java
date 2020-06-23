@@ -5,7 +5,7 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.test.rule.GrantPermissionRule;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -13,16 +13,17 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormEntryActivity;
+import org.odk.collect.android.provider.InstanceProviderAPI;
+import org.odk.collect.android.support.ActivityHelpers;
+import org.odk.collect.android.support.CollectTestRule;
+import org.odk.collect.android.support.CopyFormRule;
+import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.pages.BlankFormSearchPage;
 import org.odk.collect.android.support.pages.ExitFormDialog;
 import org.odk.collect.android.support.pages.FillBlankFormPage;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.GeneralSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
-import org.odk.collect.android.provider.InstanceProviderAPI;
-import org.odk.collect.android.support.ActivityHelpers;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,13 +40,16 @@ import static org.odk.collect.android.support.matchers.RecyclerViewMatcher.withR
 
 //Issue NODK-244
 @RunWith(AndroidJUnit4.class)
-public class FillBlankFormTest extends BaseRegressionTest {
-        @Rule
-        public RuleChain copyFormChain = RuleChain
-                .outerRule(GrantPermissionRule.grant(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_PHONE_STATE)
+public class FillBlankFormTest {
+
+    public CollectTestRule rule = new CollectTestRule();
+
+    @Rule
+    public RuleChain copyFormChain = RuleChain
+            .outerRule(GrantPermissionRule.grant(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_PHONE_STATE)
             )
             .around(new ResetStateRule())
             .around(new CopyFormRule("All_widgets.xml"))
@@ -78,7 +82,8 @@ public class FillBlankFormTest extends BaseRegressionTest {
             .around(new CopyFormRule("select_one_external.xml"))
             .around(new CopyFormRule("fieldlist-updates_nocsv.xml"))
             .around(new CopyFormRule("nested-repeats-complex.xml"))
-            .around(new CopyFormRule("repeat_group_form.xml"));
+            .around(new CopyFormRule("repeat_group_form.xml"))
+            .around(rule);
 
     @Test
     public void subtext_ShouldDisplayAdditionalInformation() {
@@ -453,19 +458,19 @@ public class FillBlankFormTest extends BaseRegressionTest {
 
     @Test
     public void bigForm_ShouldBeFilledSuccessfully() {
-
         //TestCase18
         new MainMenuPage(rule)
                 .startBlankForm("Nigeria Wards")
+                .assertQuestion("State")
                 .clickOnString(R.string.select_one)
                 .clickOnText("Adamawa")
-                .swipeToNextQuestion()
+                .swipeToNextQuestion("LGA", true)
                 .clickOnString(R.string.select_one)
                 .clickOnText("Ganye")
-                .swipeToNextQuestion()
+                .swipeToNextQuestion("Ward", true)
                 .clickOnString(R.string.select_one)
                 .clickOnText("Jaggu")
-                .swipeToNextQuestion()
+                .swipeToNextQuestion("Comments")
                 .swipeToEndScreen()
                 .clickSaveAndExit();
     }

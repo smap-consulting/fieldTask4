@@ -62,8 +62,7 @@
   <string name="list_failed_with_error">Lỗi hiển thị biểu mẫu. %s.</string>
   <string name="loading_form">Tải biểu mẫu</string>
   <string name="load_remote_form_error">Lỗi hiển thị danh sách</string>
-  <string name="location_provider_accuracy">Sử dụng %1$s. Độ chính xác là %2$s m.</string>
-  <string name="location_accuracy">Độ chính xác là %1$s m</string>
+    <string name="location_accuracy">Độ chính xác là %1$s m</string>
   <string name="manage_files">Xoá biểu mẫu cũ</string>
   <string name="mark_finished">Đánh dấu biểu mẫu là hoàn thành</string>
   <string name="noselect_error">Xin lỗi, bạn không chọn biểu mẫu nào!</string>
@@ -107,8 +106,7 @@
   <string name="change_splash_path">Đổi ảnh</string>
   <string name="keep_changes">Lưu thay đổi</string>
   <string name="change_formlist_url">Danh sách đường dẫn biểu mẫu</string>
-  <string name="change_protocol">Nền tảng máy chủ</string>
-  <string name="change_submission_url">Đường dẫn gửi dữ liệu</string>
+    <string name="change_submission_url">Đường dẫn gửi dữ liệu</string>
   <string name="formlist_url">Danh sách đường dẫn biểu mẫu</string>
   <string name="submission_url">Đường dẫn gửi dữ liệu</string>
   <string name="font_size">Kích thước chữ</string>
@@ -132,9 +130,7 @@
   <string name="save_as_error">Tên được lưu không để trống!</string>
   <string name="edit_prompt">Sửa thông tin</string>
   <string name="selected_google_account_text">Tài khoản Google</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">Khác</string>
-  <string name="font_size_extra_large">Cực lớn</string>
+    <string name="font_size_extra_large">Cực lớn</string>
   <string name="font_size_large">Lớn</string>
   <string name="font_size_medium">Vừa</string>
   <string name="font_size_small">Nhỏ</string>
@@ -192,5 +188,4 @@
   <!--%1$s represents degrees, %2$s represents minutes and %3$s represents seconds as in N 18°48'8"-->
   <!--<string name="submission_transport_admin_setting">Submission transport</string>-->
   <!--Displays dates in specialized calendars with the Gregorian dates in parentheses. This is translated so right-to-left languages can specify the correct order-->
-  <!--Sms submission-->
 </resources>

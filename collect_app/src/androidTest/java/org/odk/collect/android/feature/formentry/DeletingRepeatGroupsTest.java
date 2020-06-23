@@ -10,11 +10,11 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormEntryActivity;
-import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.CopyFormRule;
+import org.odk.collect.android.support.FormLoadingUtils;
 import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.matchers.RecyclerViewMatcher;
-import org.odk.collect.android.support.FormLoadingUtils;
+import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.FormHierarchyPage;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -47,17 +47,17 @@ public class DeletingRepeatGroupsTest {
     @Test
     public void requestingDeletionOfMiddleRepeat_deletesMiddleRepeat() {
         new FormEntryPage("repeatGroups", activityTestRule)
-                .swipeToNextQuestion()
+                .swipeToNextRepeat("repeatGroup", 2)
                 .deleteGroup("text1")
-                .waitForText("3");
+                .assertText("3");
     }
 
     @Test
     public void requestingDeletionOfLastRepeat_deletesLastRepeat() {
         new FormEntryPage("repeatGroups", activityTestRule)
-                .swipeToNextQuestion()
-                .swipeToNextQuestion()
-                .swipeToNextQuestion()
+                .swipeToNextRepeat("repeatGroup", 2)
+                .swipeToNextRepeat("repeatGroup", 3)
+                .swipeToNextRepeat("repeatGroup", 4)
                 .deleteGroup("text1")
                 .assertText("number1");
     }

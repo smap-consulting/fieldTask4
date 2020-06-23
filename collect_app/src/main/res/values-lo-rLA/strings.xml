@@ -60,8 +60,7 @@
   <string name="list_failed_with_error">ບໍ່ສາມາດສະແດງລາຍການແບບຟອມໄດ້ %s.</string>
   <string name="loading_form">ກຳລັງເປີດແບບຟອມ</string>
   <string name="load_remote_form_error">ມີ​ຄວາມຜິດພາດ ບໍ່ສາມາດສະແດງລາຍການແບບຟອມໄດ້</string>
-  <string name="location_provider_accuracy">ໃຊ້້ຄ່າພິກັດ %1$s. ຄ່າຄວາມຖືກຕ້ອງແມ່ນ %2$s m.</string>
-  <string name="location_accuracy">ຄ່າຄວາມຖືກຕ້ອງ​ແມ່ນ %1$s m</string>
+    <string name="location_accuracy">ຄ່າຄວາມຖືກຕ້ອງ​ແມ່ນ %1$s m</string>
   <string name="manage_files">ລຶບແບບຟອມທີ່ບັນທຶກໄວ້</string>
   <string name="mark_finished">ໝາຍແບບຟອມວ່າໄດ້ສຳເລັດແລ້ວ</string>
   <string name="noselect_error">ທ່ານບໍ່ທັນ​ໄດ້ເລືອກແບບຟອມ!</string>
@@ -108,8 +107,7 @@
   <string name="change_splash_path">ປ່ຽນຮູບພາບ</string>
   <string name="keep_changes">ບັນທຶກການປ່ຽນແປງ</string>
   <string name="change_formlist_url">​ບ່ອນ​ເກັບ​ລາຍ​ການແບບຟອມ (ເພີ່ມເຕີມໃສ່ URL)</string>
-  <string name="change_protocol">ແພຼັດຟອມ (Platform)</string>
-  <string name="change_submission_url">​ບ່ອນ​ສົ່ງ​ຂໍ້​ມູນ (ເພີ່ມເຕີມໃສ່ URL)</string>
+    <string name="change_submission_url">​ບ່ອນ​ສົ່ງ​ຂໍ້​ມູນ (ເພີ່ມເຕີມໃສ່ URL)</string>
   <string name="formlist_url">ບ່ອນ​ເກັບ​ລາຍ​ການແບບຟອມ</string>
   <string name="submission_url">ບ່ອນ​ສົ່ງ​ຂໍ້​ມູນ </string>
   <string name="font_size">ຂະໜາດຕົວອັກສອນ</string>
@@ -133,9 +131,7 @@
   <string name="save_as_error">ການໃສ່ຊື່ເອກະສານທີ່ຈະບັນທຶກບໍ່​ຕ້ອງຍະຫວ່າງ!</string>
   <string name="edit_prompt">ແກ້ໄຂຈຸດທີ່ເລືອກ</string>
   <string name="selected_google_account_text">ບັນຊີໃຊ້ງານໃນ Google </string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">ອື່ນໆ</string>
-  <string name="font_size_extra_large">ຂະໜາດໃຫຍ່ທີ່ສຸດ</string>
+    <string name="font_size_extra_large">ຂະໜາດໃຫຍ່ທີ່ສຸດ</string>
   <string name="font_size_large">ຂະໜາດໃຫຍ່</string>
   <string name="font_size_medium">ຂະໜາດປານກາງ</string>
   <string name="font_size_small">ຂະໜາດນ້ອຍ</string>
@@ -226,9 +222,7 @@
   <string name="go_drive">ຊ້ອງຂອງຂ້ອຍ</string>
   <string name="go_shared">ແບ່ງກັບຂ້ອຍ</string>
   <string name="modified_on_date_at_time">\'ດັດແກ້ວັນທີ\' EEE, MMM dd, yyyy \'ເວລາ\' HH:mm</string>
-  <string name="aggregate_preferences">ການຕັ້ງຄ່າ ODK Aggregate</string>
-  <string name="other_preferences">ການຕັ້ງຄ່າ platform ອື່ນໆ</string>
-  <string name="drive_get_file">ໄດ້ %1$s ຂອງເອກະສານ.</string>
+    <string name="drive_get_file">ໄດ້ %1$s ຂອງເອກະສານ.</string>
   <string name="no_google_account">ບໍ່ໄດ້ເລືອກບັນຊີຂອງ Google</string>
   <string name="notification_error">ຂໍ້ຜິດພາດສະແດງຂໍ້ຄວາມແຈ້ງເຕືອນ</string>
   <string name="delete_after_send">ລຶບພາຍຫຼັງສົ່ງແລ້ວ</string>
@@ -245,5 +239,4 @@
   <!--%1$s represents degrees, %2$s represents minutes and %3$s represents seconds as in N 18°48'8"-->
   <!--<string name="submission_transport_admin_setting">Submission transport</string>-->
   <!--Displays dates in specialized calendars with the Gregorian dates in parentheses. This is translated so right-to-left languages can specify the correct order-->
-  <!--Sms submission-->
 </resources>

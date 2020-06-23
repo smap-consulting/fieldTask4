@@ -77,8 +77,7 @@
   <string name="list_failed_with_error">ფორმების ჩამონათვალის ჩვენება ვერ მოხერხდა. %s.</string>
   <string name="loading_form">ფორმის ჩატვირთვა</string>
   <string name="load_remote_form_error">შეცდომა ფორმების ჩამონათვლის ჩვენებისას</string>
-  <string name="location_provider_accuracy">მდებარეობის მიღება %1$s-ით. აკურატულობა შეადგენს %2$s მეტრს.</string>
-  <string name="location_accuracy">აკურატულობა %1$s მეტრია</string>
+    <string name="location_accuracy">აკურატულობა %1$s მეტრია</string>
   <string name="manage_files">შენახული ფორმების წაშლა</string>
   <string name="mark_finished">აღვნიშნოთ ფორმა დასრულებულად</string>
   <string name="noselect_error">უკაცრავად, თქვენ ფორმა არ აგირჩევიათ!</string>
@@ -111,8 +110,6 @@
   <string name="send_data">დასრულებული ფორმების გაგზავნა</string>
   <string name="send_data_button">დასრულებული ფორმების გაგზავნა (%s)</string>
   <string name="send_selected_data">არჩეული ფორმების გაგზავნა</string>
-  <string name="send_selected_data_internet">გაგზავნა (ინტერნეტი)</string>
-  <string name="send_selected_data_sms">გაგზავნა (მოკლე ტექსტური შეტყობინება)</string>
   <string name="view_sent_forms">გაგზავნილი ფორმის ნახვა</string>
   <string name="view_sent_forms_button">გაგზავნილი ფორმების ნახვა (%s)</string>
   <string name="server_auth_credentials">სერვერის არასწორი პაროლი ან მომხმარებლის სახელი: %s</string>
@@ -134,8 +131,7 @@
   <string name="change_splash_path">სურათის შეცვლა</string>
   <string name="keep_changes">ცვლილებების შენახვა</string>
   <string name="change_formlist_url">ბმული ფორმების ჩამონათვალზე (დაემატოს სერვერის ბმულს)</string>
-  <string name="change_protocol">სერვერის პლატფორმა</string>
-  <string name="change_submission_url">ბმული დადასტურებულ ფორმებზე (დაემატოს სერვერის ბმულს)</string>
+    <string name="change_submission_url">ბმული დადასტურებულ ფორმებზე (დაემატოს სერვერის ბმულს)</string>
   <string name="formlist_url">ბმული ფორმების ჩამონათვალზე</string>
   <string name="submission_url">ბმული დადასტურებულ ფორმებზე</string>
   <string name="font_size">ტექსტის ზომა</string>
@@ -161,9 +157,7 @@
   <string name="save_as_error">სახელი არ უნდა იყოს ცარიელი!</string>
   <string name="edit_prompt">გამოპასუხების რედაქტირება</string>
   <string name="selected_google_account_text">Google ექაუნთი</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">სხვა</string>
-  <string name="font_size_extra_large">ძალიან დიდი</string>
+    <string name="font_size_extra_large">ძალიან დიდი</string>
   <string name="font_size_large">დიდი</string>
   <string name="font_size_medium">საშუალო</string>
   <string name="font_size_small">პატარა</string>
@@ -236,8 +230,7 @@
   <string name="survey_saving_saving_message">მიმდინარეობს SD-ბარათზე შენახვა</string>
   <string name="google_drive">Google Drive</string>
   <string name="go_drive">ჩემი Drive</string>
-  <string name="aggregate_preferences">ODK Aggregate-ის პარამეტრები</string>
-  <string name="notification_error">შეცდომა შეტყობინების ტექსტის ჩვენებისას</string>
+    <string name="notification_error">შეცდომა შეტყობინების ტექსტის ჩვენებისას</string>
   <string name="delete_after_send">გაგზავნის შემდგომ წაშლა</string>
   <string name="change_server_url">სერვერის ვებ-მისამართი</string>
   <string name="about_preferences">შესახებ</string>
@@ -261,5 +254,4 @@
   <string name="autosend_selector_title">ავტომატურად გაგზავნა</string>
   <!--<string name="submission_transport_admin_setting">Submission transport</string>-->
   <!--Displays dates in specialized calendars with the Gregorian dates in parentheses. This is translated so right-to-left languages can specify the correct order-->
-  <!--Sms submission-->
 </resources>

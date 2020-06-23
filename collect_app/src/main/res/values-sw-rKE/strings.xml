@@ -59,8 +59,7 @@
   <string name="list_failed_with_error">Uanishaji wa fomu haukufaulu. %s.</string>
   <string name="loading_form">Fomu inawekwa</string>
   <string name="load_remote_form_error">Tatizo katika kuchukua fomu!</string>
-  <string name="location_provider_accuracy">Ukitumia %1$s. Usahihi ni %2$s m.</string>
-  <string name="location_accuracy">Usahihi ni %1$s m</string>
+    <string name="location_accuracy">Usahihi ni %1$s m</string>
   <string name="manage_files">Ondoa fomu iliyo hifadhiwa</string>
   <string name="mark_finished">sahihisha fomu kama iliyo kamilika</string>
   <string name="noselect_error">Samahani, hujachagua fomu yoyote!</string>
@@ -105,8 +104,7 @@
   <string name="change_splash_path">Badilisha picha</string>
   <string name="keep_changes">Hifadhi mabadiliko</string>
   <string name="change_formlist_url">Njia ya orodha ya Fomu (imeelekezwa URL)</string>
-  <string name="change_protocol">Jukwaa</string>
-  <string name="change_submission_url">Njia ya Kuwasilisha (imeelekezwa URL)</string>
+    <string name="change_submission_url">Njia ya Kuwasilisha (imeelekezwa URL)</string>
   <string name="formlist_url">Njia ya orodha ya fomu</string>
   <string name="submission_url">Njia ya kuwasilisha</string>
   <string name="font_size">Ukubwa wa fonti za nakala</string>
@@ -130,9 +128,7 @@
   <string name="save_as_error">Jina lilohifadhiwa halifai kuwa tupu</string>
   <string name="edit_prompt">Hariri ilani</string>
   <string name="selected_google_account_text">Akaunti ya Google</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">Nyingine</string>
-  <string name="font_size_extra_large">Kubwa zaidi</string>
+    <string name="font_size_extra_large">Kubwa zaidi</string>
   <string name="font_size_large">Kubwa</string>
   <string name="font_size_medium">Katikati</string>
   <string name="font_size_small">Ndogo</string>
@@ -225,5 +221,4 @@
   <string name="select_time">Chagua wakati</string>
   <!--<string name="submission_transport_admin_setting">Submission transport</string>-->
   <!--Displays dates in specialized calendars with the Gregorian dates in parentheses. This is translated so right-to-left languages can specify the correct order-->
-  <!--Sms submission-->
 </resources>

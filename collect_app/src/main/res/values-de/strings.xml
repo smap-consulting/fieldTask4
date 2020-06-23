@@ -77,7 +77,6 @@
   <string name="list_failed_with_error">Formularauflistung gescheitert. %s.</string>
   <string name="loading_form">Formular wird geladen</string>
   <string name="load_remote_form_error">Fehler bei der Formularauflistung</string>
-  <string name="location_provider_accuracy">Verwendung von %1$s. Genauigkeit beträgt %2$s m.</string>
   <string name="location_accuracy">Genauigkeit beträgt %1$s m</string>
   <string name="manage_files">Formulare löschen</string>
   <string name="mark_finished">Formular als vollständig markieren</string>
@@ -111,8 +110,6 @@
   <string name="send_data">Vollständiges Formular hochladen</string>
   <string name="send_data_button">Vollständiges Formular hochladen (%s)</string>
   <string name="send_selected_data">Auswahl hochladen</string>
-  <string name="send_selected_data_internet">Senden (Internet)</string>
-  <string name="send_selected_data_sms">Senden (SMS)</string>
   <string name="view_sent_forms">Gesendete Formulare anzeigen</string>
   <string name="view_sent_forms_button">Gesendetes Formular (%s) anzeigen</string>
   <string name="server_auth_credentials">Ungültiger Benutzername oder Passwort für Server: %s</string>
@@ -134,8 +131,7 @@
   <string name="change_splash_path">Bild ändern</string>
   <string name="keep_changes">Änderungen speichern</string>
   <string name="change_formlist_url">Formularlisten-Pfad (der Server-URL angehängt)</string>
-  <string name="change_protocol">Server-Plattform</string>
-  <string name="change_submission_url">Submissionspfad (der Server-URL angehängt)</string>
+    <string name="change_submission_url">Submissionspfad (der Server-URL angehängt)</string>
   <string name="formlist_url">Formularlisten-Pfad</string>
   <string name="submission_url">Submissionspfad</string>
   <string name="font_size">Schriftgröße</string>
@@ -162,9 +158,7 @@
   <string name="save_as_error">Gespeicherter Name darf nicht leer sein!</string>
   <string name="edit_prompt">Eingabe ändern</string>
   <string name="selected_google_account_text">Google-Konto</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">Andere</string>
-  <string name="font_size_extra_large">Sehr gross</string>
+    <string name="font_size_extra_large">Sehr gross</string>
   <string name="font_size_large">Groß</string>
   <string name="font_size_medium">Mittel</string>
   <string name="font_size_small">Klein</string>
@@ -263,13 +257,7 @@
   <string name="go_drive">My Drive</string>
   <string name="go_shared">Shared with Me</string>
   <string name="modified_on_date_at_time">\'Geändert am\' EEE, dd.MM.yyyy \'um\' HH:mm</string>
-  <string name="aggregate_preferences">ODK-Aggregate-Einstellungen</string>
-  <string name="sms_submission_preferences">SMS-Einsendungseinstellungen</string>
-  <string name="submission_transport">Einsendungsübertragung (erweitert)</string>
-  <string name="submission_transport_types_title">Einsendung über</string>
-  <string name="other_preferences">Andere Plattform-Einstellungen</string>
-  <string name="google_preferences">Google-Sheets-Einstellungen</string>
-  <string name="google_sheets_url_hint">Formulare müssen eine Speicherort-URL setzen. Wenn nicht, wird diese URL verwendet.</string>
+    <string name="google_sheets_url_hint">Formulare müssen eine Speicherort-URL setzen. Wenn nicht, wird diese URL verwendet.</string>
   <string name="drive_get_file">Lade %1$s und Mediendateien.</string>
   <string name="no_google_account">Kein Google-Konto ausgewählt!</string>
   <string name="google_set_account">Sie haben Google Sheets als Server ausgewählt. Bitte geben Sie unter den Einstellungen ein Google-Konto an, bevor Sie fortfahren.</string>
@@ -618,8 +606,6 @@
   <string name="record_audio_runtime_permission_denied_desc">Ohne diese Berechtigungen kann Collect nicht auf das Mikrofon zugreifen. Bitte versuchen Sie es erneut, wenn Sie bereit dazu sind die Berechtigungen zu erteilen.</string>
   <string name="get_accounts_runtime_permission_denied_title">Kontoberechtigungen abfragen</string>
   <string name="get_accounts_runtime_permission_denied_desc">Ohne diese Berechtigung kann Collect nicht auf die Konten zugreifen. Bitte versuchen Sie es erneut, wenn Sie dazu bereit sind die Berechtigung zu erteilen.</string>
-  <string name="send_sms_runtime_permission_denied_title">SMS-Versand-Berechtigung</string>
-  <string name="send_sms_runtime_permission_denied_desc">Ohne diese Berechtigung kann Collect keine SMS versenden. Bitte versuchen Sie es erneut, wenn Sie dazu bereit sind die Berechtigung zu erteilen.</string>
   <string name="read_phone_state_runtime_permission_denied_title">Berechtigung Telefonstatus abrufen</string>
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect macht keine Telefonanrufe aber benötigt Zugriff auf bestimmte Eigenschaften Ihres Geräts, wie die Telefonnummer und Geräte-ID.</string>
   <string name="form_update_category">Formular-Update</string>
@@ -643,33 +629,10 @@
   <string name="instance_upload_cancelled">Instanz Upload abgebrochen</string>
   <string name="hide_old_form_versions_setting_title">Alte Formular-Versionen verbergen</string>
   <string name="hide_old_form_versions_setting_summary">Nur die neueste Version wird in \"Leeres Formular ausfüllen\" angezeigt</string>
-  <string name="sms_pref_dialog_title">Ziel-Telefonnummer</string>
-  <string name="sms_pref_title">Ziel-Telefonnummer</string>
-  <string name="sms_invalid_phone_number">Ungültige Telefonnummer!</string>
-  <!--Sms submission-->
-  <string name="sms_no_reception">\'Fehlgeschlagen am\' EEE, MMM dd, yyyy \'um\' HH:mm \'wegen fehlendem Empfang.\'</string>
-  <string name="sms_no_number">\'Fehlgeschlagen am\' EEE, dd. MMM yyyy \'um\' HH:mm \'wegen einer fehlenden Telefonnummer.\'</string>
-  <string name="sms_fatal_error">\'Fehlgeschlagen am\' EEE, MMM dd, yyyy \'um\' HH:mm</string>
-  <string name="sms_airplane_mode">\'Fehlgeschlagen am\' EEE, MMM dd, yyyy \'um\' HH:mm \'wegen aktiviertem Flugzeugmodus.\'</string>
-  <string name="sms_no_message">Dieses Formular hat keine Fragen mit SMS-Tags.</string>
-  <string name="sms_encrypted_message">Verschlüsselte Formulare können nicht per SMS eingesendet werden.</string>
-  <string name="sms_last_submission_on_date_at_time">\'Letzter Einsendeversuch am\' EEE, MMM dd, yyyy \'um\' HH:mm</string>
-  <plurals name="sms_sending">
-    <item quantity="one">Formulareinsendung als einzelne Nachricht.</item>
-    <item quantity="other">Formulareinsendung, sende Nachricht %1$d von %2$d</item>
-  </plurals>
-  <string name="sms_sent_on_date_at_time">\'Als SMS versendet am\' EEE, MMM dd, yyyy \'um\' HH:mm</string>
-  <string name="sms_submission_queued">Eingereiht zur Einsendung.</string>
-  <string name="sms_submissions_notif_title">SMS-Einsendungen</string>
-  <string name="sms_submissions_notif_description">Mehrere Formulare werden gerade versendet.</string>
-  <string name="transport_type_internet">WLAN/Mobilfunk (empfohlen)</string>
-  <string name="transport_type_sms">SMS</string>
-  <string name="transport_type_both">Beim Senden auswählen</string>
-  <string name="rank_items">Rangfolge festlegen</string>
+    <string name="rank_items">Rangfolge festlegen</string>
   <string name="loading_form_failed">Beim Laden des Formulars ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut.</string>
   <string name="missing_google_account_dialog_title">Google-Konto nicht eingestellt</string>
   <string name="missing_google_account_dialog_desc">Um Formulare über Google Tabellen einzureichen, müssen Sie Ihr Google-Konto bei den Server-Einstellungen einrichten.</string>
-  <string name="sms_invalid_phone_number_description">Ziel-Telefonnummer für SMS-Versand einstellen oder Übertragungsart ändern.</string>
   <string name="notification_channel_name">Allgemeine Benachrichtigungen</string>
   <string name="corrupt_imported_preferences_error">Die aktuellen Einstellungen sind beschädigt. Setze die Einstellungen in den Admin-Einstellungen zurück oder importiere funktionierende.</string>
   <string name="google_play_services_not_available">Dieses Formular möchte Ihren Standort aufzeichnen, aber die Google Play-Dienste sind nicht verfügbar.</string>
@@ -679,9 +642,6 @@
   <string name="background_location_disabled">Dieses Formular möchte Ihren Standort aufzeichnen, aber die Standortaufzeichnung ist deaktiviert. Bitte oben im %1$s Menü aktivieren.</string>
   <string name="background_location_enabled">Dieses Formular zeichnet Ihren Standort auf. Sie können die Standortaufzeichnung oben im %1$s Menü deaktivieren.</string>
   <string name="open_file">Datei öffnen</string>
-  <string name="sms_feature_disabled_dialog_title">SMS-Versand deaktiviert</string>
-  <string name="sms_feature_disabled_dialog_message">Der Versand von Einsendungen per SMS wurde wegen Google Play-Store-Bestimmungen deaktiviert.\n\nBitte stellen sicher, dass die Person, die dieses Gerät konfiguriert hat, die untenstehenden Details liest und entsprechend handelt. </string>
-  <string name="read_details">Details lesen</string>
   <string name="google_sheets_encrypted_message">Verschlüsselte Formulare können nicht an Google Sheets gesendet werden.</string>
   <string name="number_picker_title">Zahlenwähler</string>
   <string name="too_complex_form">Dieses Formular ist zu komplex für dieses Gerät. Versuche Ausdrücke zu vereinfachen oder bitte im Forum um Hilfe.</string>

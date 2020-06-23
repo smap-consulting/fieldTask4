@@ -1,7 +1,6 @@
 package org.odk.collect.android.injection.config;
 
 import android.app.Application;
-import android.telephony.SmsManager;
 
 import org.javarosa.core.reference.ReferenceManager;
 import org.odk.collect.android.activities.FormDownloadListActivity;
@@ -20,6 +19,7 @@ import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.events.RxEventBus;
 import org.odk.collect.android.formentry.ODKView;
+import org.odk.collect.android.formentry.QuitFormDialogFragment;
 import org.odk.collect.android.formentry.saving.SaveFormProgressDialogFragment;
 import org.odk.collect.android.fragments.DataManagerList;
 import org.odk.collect.android.geo.GoogleMapFragment;
@@ -35,6 +35,7 @@ import org.odk.collect.android.preferences.FormManagementPreferences;
 import org.odk.collect.android.preferences.FormMetadataFragment;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.preferences.IdentityPreferences;
+import org.odk.collect.android.preferences.MetaSharedPreferencesProvider;
 import org.odk.collect.android.preferences.ServerPreferencesFragment;
 import org.odk.collect.android.preferences.UserInterfacePreferencesFragment;
 import org.odk.collect.android.storage.StorageInitializer;
@@ -42,11 +43,6 @@ import org.odk.collect.android.storage.migration.StorageMigrationDialog;
 import org.odk.collect.android.storage.migration.StorageMigrationService;
 import org.odk.collect.android.tasks.InstanceServerUploaderTask;
 import org.odk.collect.android.tasks.ServerPollingJob;
-import org.odk.collect.android.tasks.sms.SmsNotificationReceiver;
-import org.odk.collect.android.tasks.sms.SmsSender;
-import org.odk.collect.android.tasks.sms.SmsSentBroadcastReceiver;
-import org.odk.collect.android.tasks.sms.SmsService;
-import org.odk.collect.android.tasks.sms.contracts.SmsSubmissionManagerContract;
 import org.odk.collect.android.upload.AutoSendWorker;
 import org.odk.collect.android.utilities.AuthDialogUtility;
 import org.odk.collect.android.utilities.FormDownloader;
@@ -95,14 +91,6 @@ public interface AppDependencyComponent {
     }
 
     void inject(Collect collect);
-
-    void inject(SmsService smsService);
-
-    void inject(SmsSender smsSender);
-
-    void inject(SmsSentBroadcastReceiver smsSentBroadcastReceiver);
-
-    void inject(SmsNotificationReceiver smsNotificationReceiver);
 
     void inject(InstanceUploaderAdapter instanceUploaderAdapter);
 
@@ -178,9 +166,7 @@ public interface AppDependencyComponent {
 
     void inject(SaveFormProgressDialogFragment saveFormProgressDialogFragment);
 
-    SmsManager smsManager();
-
-    SmsSubmissionManagerContract smsSubmissionManagerContract();
+    void inject(QuitFormDialogFragment quitFormDialogFragment);
 
     RxEventBus rxEventBus();
 
@@ -193,4 +179,6 @@ public interface AppDependencyComponent {
     GeneralSharedPreferences generalSharedPreferences();
 
     AdminSharedPreferences adminSharedPreferences();
+
+    MetaSharedPreferencesProvider metaSharedPreferencesProvider();
 }

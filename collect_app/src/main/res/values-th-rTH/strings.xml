@@ -61,8 +61,7 @@
   <string name="list_failed_with_error">ไม่สามารถแสดงรายการแบบสำรวจได้ %s.</string>
   <string name="loading_form">กำลังเปิดแบบสำรวจ</string>
   <string name="load_remote_form_error">มีข้อผิดพลาด ไม่สามารถแสดงรายการแบบสำรวจได้</string>
-  <string name="location_provider_accuracy">รับพิกัดผ่าน %1$s ค่าความแม่นยำที่ %2$s เมตร</string>
-  <string name="location_accuracy">ความแม่นยำ %1$s เมตร</string>
+    <string name="location_accuracy">ความแม่นยำ %1$s เมตร</string>
   <string name="manage_files">ลบแบบสำรวจที่บันทึกไว้</string>
   <string name="mark_finished">ทำเครื่องหมายแบบสำรวจว่าเสร็จเรียบร้อยแล้ว</string>
   <string name="noselect_error">ขออภัย ท่านยังไม่ได้เลือกแบบสำรวจ</string>
@@ -112,8 +111,7 @@
   <string name="change_splash_path">เปลี่ยนภาพใหม่</string>
   <string name="keep_changes">บันทึกการเปลี่ยนแปลง</string>
   <string name="change_formlist_url">Form list path (appended to URL)</string>
-  <string name="change_protocol">Platform</string>
-  <string name="change_submission_url">Submission path (appended to URL)</string>
+    <string name="change_submission_url">Submission path (appended to URL)</string>
   <string name="formlist_url">Form list path</string>
   <string name="submission_url">Submission path</string>
   <string name="font_size">ขนาดตัวอักษร</string>
@@ -137,9 +135,7 @@
   <string name="save_as_error">Saved name must not be blank!</string>
   <string name="edit_prompt">แก้ไขจุดที่เลือก</string>
   <string name="selected_google_account_text">บัญชีกูเกิล</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">อื่นๆ</string>
-  <string name="font_size_extra_large">ขนาดใหญ่พิเศษ</string>
+    <string name="font_size_extra_large">ขนาดใหญ่พิเศษ</string>
   <string name="font_size_large">ขนาดใหญ่</string>
   <string name="font_size_medium">ขนาดปานกลาง</string>
   <string name="font_size_small">ขนาดเล็ก</string>
@@ -226,10 +222,7 @@
   <string name="go_drive">My Drive</string>
   <string name="go_shared">แบ่งปันกับฉัน</string>
   <string name="modified_on_date_at_time">\'แก้ไขเมื่อ\' EEE, MMM dd, yyy \'เวลา\' HH:mm</string>
-  <string name="aggregate_preferences">ตั้งค่า ODK Aggregate</string>
-  <string name="other_preferences">ตั้งค่า Platform อื่น</string>
-  <string name="google_preferences">การตั้งค่า Google Sheets</string>
-  <string name="drive_get_file">ได้รับ %1$s และไฟล์ภาพและเสียง</string>
+    <string name="drive_get_file">ได้รับ %1$s และไฟล์ภาพและเสียง</string>
   <string name="no_google_account">ไม่ได้เลือกบัญชีผู้ใช้งาน Google</string>
   <string name="google_set_account">คุณเลือก Google Sheets เป็นเซิร์ฟเวอร์ โปรดเลือกบัญชี Google ที่เกี่ยวข้องในการตั้งค่าทั่วไปก่อนดำเนินการต่อ</string>
   <string name="notification_error">การแสดงข้อความเตือนผิดพลาด</string>
@@ -335,5 +328,4 @@
   <string name="no_time_selected">ยังไม่ได้เลือกเวลา</string>
   <!--<string name="submission_transport_admin_setting">Submission transport</string>-->
   <!--Displays dates in specialized calendars with the Gregorian dates in parentheses. This is translated so right-to-left languages can specify the correct order-->
-  <!--Sms submission-->
 </resources>

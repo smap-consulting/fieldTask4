@@ -26,13 +26,13 @@ import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
 import org.odk.collect.android.provider.InstanceProviderAPI;
 import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.FeatureTestRule;
+import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.ResetStateRule;
 
 public class EncryptedFormTest {
 
     @Rule
-    public FeatureTestRule rule = new FeatureTestRule();
+    public CollectTestRule rule = new CollectTestRule();
 
     @Rule
     public RuleChain copyFormChain = RuleChain
@@ -49,6 +49,7 @@ public class EncryptedFormTest {
     public void instanceOfEncryptedForm_cantBeEditedWhenFinalized() {
         rule.mainMenu()
                 .startBlankForm("encrypted")
+                .assertQuestion("Question 1")
                 .swipeToEndScreen()
                 .clickSaveAndExit()
                 .checkIsToastWithMessageDisplayed(R.string.data_saved_ok)
@@ -62,6 +63,7 @@ public class EncryptedFormTest {
     public void instanceOfEncryptedFormWithoutInstanceID_failsFinalizationWithMessage() {
         rule.mainMenu()
                 .startBlankForm("encrypted-no-instanceID")
+                .assertQuestion("Question 1")
                 .swipeToEndScreen()
                 .clickSaveAndExit()
                 .checkIsToastWithMessageDisplayed("This form does not specify an instanceID. You must specify one to enable encryption. Form has not been saved as finalized.")

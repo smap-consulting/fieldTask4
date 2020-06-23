@@ -73,8 +73,7 @@
   <string name="list_failed_with_error">فارم ‎‏ کی لیسٹینگ فیل ہوگئ۔ %s</string>
   <string name="loading_form">فارم لوڈ ہو رہا ہے</string>
   <string name="load_remote_form_error">فارم لسٹ حاصل کرنے میں خرابی</string>
-  <string name="location_provider_accuracy">‎%1$s‏ استعمال ہو رہا ہے، ‎%2$s‏ درستگی  میٹر ہے</string>
-  <string name="location_accuracy">درستگی ‎%1$s‏ ہے</string>
+    <string name="location_accuracy">درستگی ‎%1$s‏ ہے</string>
   <string name="manage_files">محفوظ شدہ فارم کو ڈیلیٹ کردیں۔</string>
   <string name="mark_finished">فارم کو حتمی کردیں</string>
   <string name="noselect_error">معذرت، آپنے کسی فارم کا انتخاب نہیں کیا!</string>
@@ -105,8 +104,6 @@
   <string name="send_data">حتمی فارم  بھیجیں</string>
   <string name="send_data_button">حتمی فارم  بھیجیں (%s)</string>
   <string name="send_selected_data">منتخب شدہ کو بھیجیں</string>
-  <string name="send_selected_data_internet">بیجھے ( انٹرنیٹ )</string>
-  <string name="send_selected_data_sms">بھیجیں ( ایس ام ایس )</string>
   <string name="view_sent_forms">بھیجا ہوا فارم دیکھیں </string>
   <string name="view_sent_forms_button">بھیجے گئے فارم کو دیکھیں(%s)</string>
   <string name="server_auth_credentials">سرور کے لئے غلط صارف کا نام یا پاس ورڈ:%s</string>
@@ -128,8 +125,7 @@
   <string name="change_splash_path">تصویر بدل دیں</string>
   <string name="keep_changes">تبدیلیوں کو محفوظ کریں</string>
   <string name="change_formlist_url">فارم لسٹ پاتھ (اپینڈڈ یو آر ایل)</string>
-  <string name="change_protocol">پلیٹ فارم</string>
-  <string name="change_submission_url">سبمشن پاتھ(اپینڈڈ یو آر ایل)</string>
+    <string name="change_submission_url">سبمشن پاتھ(اپینڈڈ یو آر ایل)</string>
   <string name="formlist_url">فارم لسٹ کا پاتھ</string>
   <string name="submission_url">سبمشن کا پاتھ</string>
   <string name="font_size">ٹیکسٹ فونٹ سائز</string>
@@ -156,9 +152,7 @@
   <string name="save_as_error">محفوظ کیا گیا نام خالی نہیں ہونا چاہئے</string>
   <string name="edit_prompt">پرامپٹ کی ترمیم کریں</string>
   <string name="selected_google_account_text">گوگل اکاونٹ</string>
-  <string name="server_platform_odk_aggregate">مجموعی  ODK</string>
-  <string name="server_platform_other">دیگر</string>
-  <string name="font_size_extra_large">زیادہ بڑا</string>
+    <string name="font_size_extra_large">زیادہ بڑا</string>
   <string name="font_size_large">بڑا</string>
   <string name="font_size_medium">درمیانہ</string>
   <string name="font_size_small">چھو ٹا</string>
@@ -255,13 +249,7 @@
   <string name="go_drive">مائی ڈرائیو</string>
   <string name="go_shared">میرے ساتھ شیئر کیا ہوا</string>
   <string name="modified_on_date_at_time"> EEE, MMM dd, yyyy\'کو\' HH:mm \'پر موڈیفائی کیا گیا\'</string>
-  <string name="aggregate_preferences">او ڈی کے اگریگیٹ سیٹینگز</string>
-  <string name="sms_submission_preferences">ایس ایم ایس جمع کرنے کی سیٹینگز</string>
-  <string name="submission_transport">سبمشن ٹرانسپورٹ (ایڈوانسڈ)</string>
-  <string name="submission_transport_types_title">کے ذریعے جمع کرائیں</string>
-  <string name="other_preferences">دوسرے پلیٹ فارم کی سیٹنگز</string>
-  <string name="google_preferences">گوگل شیٹ کی سیٹنگز</string>
-  <string name="google_sheets_url_hint">فارم جمع کرانے کا یو آرال مقرر کرنا لازمی ہے. اگر مقررنہیں کرتے تو یہ یو آرال استعمال کیا جائے گا</string>
+    <string name="google_sheets_url_hint">فارم جمع کرانے کا یو آرال مقرر کرنا لازمی ہے. اگر مقررنہیں کرتے تو یہ یو آرال استعمال کیا جائے گا</string>
   <string name="drive_get_file">%1$sاور میڈیا فائلز کو حاصل کیا جا رہا ہے</string>
   <string name="no_google_account">کوئی گوگل اکاؤنٹ منتخب نہیں ہوا!</string>
   <string name="google_set_account">آپ نے اپنے سرور کے طور پر گوگل شیٹ کو منتخب کیا ہے، براہ کرم شمار کرنے سے قبل عام ترتیب میں اسی گوگل اکاؤنٹ کو منتخب کریں</string>
@@ -542,8 +530,6 @@
   <string name="record_audio_runtime_permission_denied_desc">اس اجازت کے بغیر کولیکٹ کو مائیکروفون تک رسائی نہیں مل سکتی. برائےمہربانی دوبارہ کوشش کریں جب آپ پرمیشن دینے کے لئے تیار ہو</string>
   <string name="get_accounts_runtime_permission_denied_title">گیٹ اکاؤنٹس پرمیشن</string>
   <string name="get_accounts_runtime_permission_denied_desc">اس اجازت کے بغیر کولیکٹ کو اکاؤنٹس تک رسائی نہیں مل سکتی. برائےمہربانی دوبارہ کوشش کریں جب آپ پرمیشن دینے کے لئے تیار ہو</string>
-  <string name="send_sms_runtime_permission_denied_title">ایس ایم ایس کی اجازت بھیجیں</string>
-  <string name="send_sms_runtime_permission_denied_desc">اس اجازت کے بغیر کولیکٹ ایس ایم ایس نہیں بھیج سکتا. برائےمہربانی دوبارہ کوشش کریں جب آپ پرمیشن دینے کے لئے تیار ہو</string>
   <string name="read_phone_state_runtime_permission_denied_title">ریڈ فون اسٹیٹ پرمیشن</string>
   <string name="read_phone_state_runtime_permission_denied_desc">او ڈی کے کولیکٹ  کالز نہیں کرتا، لیکن یہ آپ کےڈیوائس  کے بارے میں مخصوص خصوصیات جیسے فون نمبر اور ڈیوائس آئی ڈٰی تک رسائی حاصل کرنے کی ضرورت ہے.</string>
   <string name="form_update_category">فارم اپ ڈیٹ</string>
@@ -566,32 +552,8 @@
   <string name="instance_upload_cancelled">انسٹنس اپ لوڈ منسوخ</string>
   <string name="hide_old_form_versions_setting_title">پرانے فارم ورژن چھپائیں</string>
   <string name="hide_old_form_versions_setting_summary">صرف نئے ورژن  خالی فارم پرکریں میں نظر آئیں گے</string>
-  <string name="sms_pref_dialog_title">ڈیسٹینیشن فون نمبر </string>
-  <string name="sms_pref_title">ڈیسٹینیشن فون نمبر </string>
-  <string name="sms_invalid_phone_number">غلط فون نمبر!</string>
-  <!--Sms submission-->
-  <string name="sms_no_reception">EEE, MMM dd, yyyy \'پر\' HH:mm\' کو ری سیپشن نہ ہونے کی وجہ سے ناکام ہوگئی \'</string>
-  <string name="sms_no_number">EEE, MMM dd, yyyy\' پر\' HH:mm \' کو فون نمبر نہ ہونے کی وجہ سے فیل ہو گیا. \'</string>
-  <string name="sms_fatal_error">EEE, MMM dd, yyyy\'پر\' HH:mm \' کو فیل ہوگئی\'</string>
-  <string name="sms_airplane_mode">EEE, MMM dd, yyyy\' پر\' HH:mm \' کو ایئرپلین موڈ پر ہونے کی وجہ سے فیل ہو گئی. \'</string>
-  <string name="sms_no_message">اس فارم میں ایس ایم ایس ٹیگ کے ساتھ کوئی سوال نہیں ہے.</string>
-  <string name="sms_encrypted_message">انکرپٹڈ فارم ایس ایم ایس کے طور پرجمع نہیں کیا جا سکتا.</string>
-  <string name="sms_last_submission_on_date_at_time">EEE, MMM dd, yyyy\' پر\' HH:mm \' کوآخری دفعہ جمع کرانےکی کوشش کی گئی  \'</string>
-  <plurals name="sms_sending">
-    <item quantity="one">فارم کو سنگل میسج کے طور پر جمع کیا جا رہا ہے</item>
-    <item quantity="other">فارم جمع ہو رہا ہے، میسج %1$d آف %2$d بھیجا جا رہا ہے</item>
-  </plurals>
-  <string name="sms_sent_on_date_at_time">EEE, MMM dd, yyyy\' کو\' HH:mm \'پر ایس ایم ایس کے طور پر بھیجا گیا ہے\'</string>
-  <string name="sms_submission_queued">جمع کرانے کے لئےانتظار میں ہے  </string>
-  <string name="sms_submissions_notif_title">ایس ایم ایس سبمیشن</string>
-  <string name="sms_submissions_notif_description">اس وقت کئی فارم جمع کیے جا رہے ہیں.</string>
-  <string name="transport_type_internet">وائی فائی / سیلولر (سفارش کردہ)</string>
-  <string name="transport_type_sms">ایس ایم ایس </string>
-  <string name="transport_type_both">بھیجنے پر منتخب کریں</string>
-  <string name="rank_items"> رینک آئٹمز</string>
+    <string name="rank_items"> رینک آئٹمز</string>
   <string name="loading_form_failed">فارم لوڈ کرتے ہوئے ایک خرابی واقع ہوئی. دوبارہ کوشش کریں.</string>
   <string name="missing_google_account_dialog_title">گوگل اکاؤنٹ سیٹ نہیں ہے</string>
   <string name="missing_google_account_dialog_desc">گوگل شیٹس  کے ذریعے فارم جمع کرنے کے لئے آپ کو سرور کی سیٹنگنزمیں اپناگوگل اکاؤنٹ بنانا ہوگا.</string>
-  <string name="sms_invalid_phone_number_description">ایس ایم ایس جمع کرانے کے لۓ ایک ڈیسٹی نیشن فون نمبر مقرر کریں یا اپنے ٹرانسپورٹ کی قسم  تبدیل کریں.</string>
-  <string name="read_details">تفصیلات پڑھیں</string>
 </resources>

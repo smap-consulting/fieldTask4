@@ -5,6 +5,7 @@ import androidx.test.rule.ActivityTestRule;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.support.ActivityHelpers;
+import org.odk.collect.android.utilities.FlingRegister;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -42,11 +43,35 @@ public class FormEntryPage extends Page<FormEntryPage> {
         return this;
     }
 
+    /**
+     * @deprecated use {@link #swipeToNextQuestion(String)} instead
+     */
+    @Deprecated
     public FormEntryPage swipeToNextQuestion() {
-        onView(withId(R.id.questionholder)).perform(swipeLeft());
+        flingLeft();
         return this;
     }
 
+    public FormEntryPage swipeToNextQuestion(String questionText) {
+        return swipeToNextQuestion(questionText, false);
+    }
+
+    public FormEntryPage swipeToNextQuestion(String questionText, boolean isRequired) {
+        flingLeft();
+
+        if (isRequired) {
+            waitForText("* " + questionText);
+        } else {
+            waitForText(questionText);
+        }
+
+        return this;
+    }
+
+    /**
+     * @deprecated use {@link #swipeToNextQuestion(String)} instead
+     */
+    @Deprecated
     public FormEntryPage swipeToNextQuestion(int repetitions) {
         for (int i = 0; i < repetitions; i++) {
             swipeToNextQuestion();
@@ -54,17 +79,20 @@ public class FormEntryPage extends Page<FormEntryPage> {
         return this;
     }
 
-    public FormEndPage swipeToEndScreen() {
-        tryAgainOnFail(() -> {
-            onView(withId(R.id.questionholder)).perform(swipeLeft());
-            new FormEndPage(formName, rule).assertOnPage();
-        });
+    public FormEntryPage swipeToNextRepeat(String repeatLabel, int repeatNumber) {
+        waitForText(repeatLabel + " > " + (repeatNumber - 1));
+        flingLeft();
+        waitForText(repeatLabel + " > " + repeatNumber);
+        return this;
+    }
 
-        return new FormEndPage(formName, rule);
+    public FormEndPage swipeToEndScreen() {
+        flingLeft();
+        return waitFor(() -> new FormEndPage(formName, rule).assertOnPage());
     }
 
     public ErrorDialog swipeToNextQuestionWithError() {
-        onView(withId(R.id.questionholder)).perform(swipeLeft());
+        flingLeft();
         return new ErrorDialog(rule).assertOnPage();
     }
 
@@ -89,8 +117,17 @@ public class FormEntryPage extends Page<FormEntryPage> {
         return this;
     }
 
+    /**
+     * @deprecated use {@link #swipeToPreviousQuestion(String)} instead
+     */
     public FormEntryPage swipeToPreviousQuestion() {
         onView(withId(R.id.questionholder)).perform(swipeRight());
+        return this;
+    }
+
+    public FormEntryPage swipeToPreviousQuestion(String questionText) {
+        onView(withId(R.id.questionholder)).perform(swipeRight());
+        assertText(questionText);
         return this;
     }
 
@@ -219,11 +256,34 @@ public class FormEntryPage extends Page<FormEntryPage> {
     }
 
     public AddNewRepeatDialog swipeToNextQuestionWithRepeatGroup(String repeatName) {
-        tryAgainOnFail(() -> {
-            onView(withId(R.id.questionholder)).perform(swipeLeft());
-            new AddNewRepeatDialog(repeatName, rule).assertOnPage();
-        });
+        flingLeft();
+        return waitFor(() -> new AddNewRepeatDialog(repeatName, rule).assertOnPage());
+    }
 
-        return new AddNewRepeatDialog(repeatName, rule);
+    public FormEntryPage answerQuestion(String question, String answer) {
+        assertText(question);
+        inputText(answer);
+        closeSoftKeyboard();
+        return this;
+    }
+
+    public FormEntryPage assertQuestion(String text) {
+        waitForText(text);
+        return this;
+    }
+
+    private void flingLeft() {
+        tryAgainOnFail(() -> {
+            FlingRegister.attemptingFling();
+            onView(withId(R.id.questionholder)).perform(swipeLeft());
+
+            waitFor(() -> {
+                if (FlingRegister.isFlingDetected()) {
+                    return true;
+                } else {
+                    throw new RuntimeException("Fling never detected!");
+                }
+            });
+        }, 5);
     }
 }

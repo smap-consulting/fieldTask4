@@ -73,8 +73,7 @@
   <string name="list_failed_with_error">Laden formulieren mislukt. %s.</string>
   <string name="loading_form">Formulier laden</string>
   <string name="load_remote_form_error">Fout bij laden formulieren</string>
-  <string name="location_provider_accuracy">Gebruikt %1$s. Nauwkeurigheid is %2$s m.</string>
-  <string name="location_accuracy">Nauwkeurigheid is %1$s m</string>
+    <string name="location_accuracy">Nauwkeurigheid is %1$s m</string>
   <string name="manage_files">Verwijder formulieren</string>
   <string name="mark_finished">Definitief maken</string>
   <string name="noselect_error">Sorry, u heeft geen formulier gekozen!</string>
@@ -106,8 +105,6 @@
   <string name="send_data">Verstuur Afgeronde Formulieren</string>
   <string name="send_data_button">Upload afgerond formulier (%s)</string>
   <string name="send_selected_data">Verstuur selectie</string>
-  <string name="send_selected_data_internet">Verzenden (Internet)</string>
-  <string name="send_selected_data_sms">Verzenden (SMS)</string>
   <string name="view_sent_forms">Bekijk verzonden formulier</string>
   <string name="view_sent_forms_button">Bekijk verzonden formulier (%s)</string>
   <string name="server_auth_credentials">Ongeldige gebruikersnaam of wachtwoord voor server: %s</string>
@@ -129,8 +126,7 @@
   <string name="change_splash_path">Wijzig afbeelding</string>
   <string name="keep_changes">Wijzigingen opslaan</string>
   <string name="change_formlist_url">Form List Path (toegevoegd aan Server URL)</string>
-  <string name="change_protocol">Server Platform</string>
-  <string name="change_submission_url">Submission Path (toegevoegd aan Server URL)</string>
+    <string name="change_submission_url">Submission Path (toegevoegd aan Server URL)</string>
   <string name="formlist_url">Form List Path</string>
   <string name="submission_url">Submission Path</string>
   <string name="font_size">Tekstgrootte</string>
@@ -156,9 +152,7 @@
   <string name="save_as_error">Formuliernaam mag niet leeg zijn!</string>
   <string name="edit_prompt">Edit Prompt</string>
   <string name="selected_google_account_text">Google Account</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">Anders</string>
-  <string name="font_size_extra_large">Extra groot</string>
+    <string name="font_size_extra_large">Extra groot</string>
   <string name="font_size_large">Groot</string>
   <string name="font_size_medium">Nomaal</string>
   <string name="font_size_small">Klein</string>
@@ -253,10 +247,7 @@
   <string name="go_drive">Mijn Drive</string>
   <string name="go_shared">Gedeeld met mij</string>
   <string name="modified_on_date_at_time">\'Gewijzigd op\' EEE dd MMM yyyy \'om\' HH:mm</string>
-  <string name="aggregate_preferences">ODK Aggregate instellingen</string>
-  <string name="other_preferences">Andere platform instellingen</string>
-  <string name="google_preferences">Google Sheets instellingen</string>
-  <string name="no_google_account">Geen Google account geselecteerd!</string>
+    <string name="no_google_account">Geen Google account geselecteerd!</string>
   <string name="odk_auto_note">ODK automatische verzendresultaten</string>
   <string name="odk_auto_download_notification_title">ODK automatische downloadresultaten</string>
   <string name="delete_after_send">Verwijderen na versturen</string>
@@ -332,10 +323,6 @@
   <string name="theme_dark">Donker thema</string>
   <string name="hide_old_form_versions_setting_title">Verberg oude formulier versies. </string>
   <string name="hide_old_form_versions_setting_summary">Alleen de nieuwste versie zal verschijnen in Vul Leeg Formulier In. </string>
-  <string name="sms_invalid_phone_number">Onjuist telefoonnummer! </string>
-  <!--Sms submission-->
-  <string name="sms_no_message">Dit formulier heeft geen vragen met SMS tags. </string>
-  <string name="transport_type_sms">SMS</string>
   <string name="notification_channel_name">Algemene notificaties</string>
   <string name="go_to_settings">Ga naar instellingen</string>
   <string name="open_file">Open bestand</string>

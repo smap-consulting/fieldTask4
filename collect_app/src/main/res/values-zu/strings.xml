@@ -61,8 +61,7 @@
   <string name="list_failed_with_error">Ukukleliswa kwamafomu akuphumelelanga. %s.</string>
   <string name="loading_form">Kufakwa ifomu</string>
   <string name="load_remote_form_error">Iphutha ekutholeni uhlu lwamafomu</string>
-  <string name="location_provider_accuracy">Ukusebenzisa %1$s. ukucophelela %2$s m.</string>
-  <string name="location_accuracy">Ukucophelela %1s% m</string>
+    <string name="location_accuracy">Ukucophelela %1s% m</string>
   <string name="manage_files">Susa ifomu elongiwe</string>
   <string name="mark_finished">Bonisa ukuthi ifomu liphothuliwe</string>
   <string name="noselect_error">Uxolo, alikho ifomu olikhethile</string>
@@ -108,8 +107,7 @@
   <string name="change_splash_path">Shintsha umfanekiso</string>
   <string name="keep_changes">Gcina ushintsho</string>
   <string name="change_formlist_url">Uhla lendlela yefomu (appended to URL)</string>
-  <string name="change_protocol">Inkundla</string>
-  <string name="change_submission_url">Indlela yokuhambisa  (appended to URL)</string>
+    <string name="change_submission_url">Indlela yokuhambisa  (appended to URL)</string>
   <string name="formlist_url">Uhla lendlela yefomu</string>
   <string name="submission_url">Indlela yokuthumela</string>
   <string name="font_size">Usayizi wombhalo (Font)</string>
@@ -133,9 +131,7 @@
   <string name="save_as_error">Igama eligciniwe akumele lingabi nalutho</string>
   <string name="edit_prompt">Hlela ngokushesha</string>
   <string name="selected_google_account_text">akhawunti Google</string>
-  <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-  <string name="server_platform_other">Okunye</string>
-  <string name="font_size_extra_large">Okukhulu kakhulu</string>
+    <string name="font_size_extra_large">Okukhulu kakhulu</string>
   <string name="font_size_large">Okukhulu </string>
   <string name="font_size_medium">Okuphakathi</string>
   <string name="font_size_small">Okuncane</string>
@@ -209,5 +205,4 @@
   <!--%1$s represents degrees, %2$s represents minutes and %3$s represents seconds as in N 18°48'8"-->
   <!--<string name="submission_transport_admin_setting">Submission transport</string>-->
   <!--Displays dates in specialized calendars with the Gregorian dates in parentheses. This is translated so right-to-left languages can specify the correct order-->
-  <!--Sms submission-->
 </resources>

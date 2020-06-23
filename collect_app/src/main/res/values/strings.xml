@@ -89,8 +89,8 @@
     <string name="list_failed_with_error">Form listing failed. %s.</string>
     <string name="loading_form">Loading Form</string>
     <string name="load_remote_form_error">Error Getting Form List</string>
-    <string name="location_provider_accuracy">Using %1$s. Accuracy is %2$s m.</string>
-    <string name="location_accuracy">Accuracy is %1$s m</string>
+    <string name="location_accuracy">Accuracy: %1$s m</string>
+    <string name="location_provider">Location provider: %s</string>
     <string name="manage_files">Delete Saved Form</string>
     <string name="mark_finished">Mark form as finalized</string>
     <string name="noselect_error">Sorry, you have not selected any forms!</string>
@@ -123,8 +123,6 @@
     <string name="send_data">Send Finalized Form</string>
     <string name="send_data_button">Send Finalized Form (%s)</string>
     <string name="send_selected_data">Send Selected</string>
-    <string name="send_selected_data_internet">Send (Internet)</string>
-    <string name="send_selected_data_sms">Send (SMS)</string>
     <string name="view_sent_forms">View Sent Form</string>
     <string name="view_sent_forms_button">View Sent Form (%s)</string>
     <string name="server_auth_credentials">Invalid username or password for server: %s</string>
@@ -146,7 +144,6 @@
     <string name="change_splash_path">Change image</string>
     <string name="keep_changes">Save Changes</string>
     <string name="change_formlist_url">Form list path (appended to URL)</string>
-    <string name="change_protocol">Platform</string>
     <string name="change_submission_url">Submission path (appended to URL)</string>
     <string name="formlist_url">Form list path</string>
     <string name="submission_url">Submission path</string>
@@ -174,8 +171,6 @@
     <string name="save_as_error">Saved name must not be blank!</string>
     <string name="edit_prompt">Edit Prompt</string>
     <string name="selected_google_account_text">Google account</string>
-    <string name="server_platform_odk_aggregate">ODK Aggregate</string>
-    <string name="server_platform_other">Other</string>
     <string name="font_size_extra_large">Extra Large</string>
     <string name="font_size_large">Large</string>
     <string name="font_size_medium">Medium</string>
@@ -270,12 +265,6 @@
     <string name="go_drive">My Drive</string>
     <string name="go_shared">Shared with Me</string>
     <string name="modified_on_date_at_time">\'Modified on\' EEE, MMM dd, yyyy \'at\' HH:mm</string>
-    <string name="aggregate_preferences">ODK Aggregate settings</string>
-    <string name="sms_submission_preferences">SMS submission settings</string>
-    <string name="submission_transport">Submission transport (advanced)</string>
-    <string name="submission_transport_types_title">Send submissions via</string>
-    <string name="other_preferences">Other platform settings</string>
-    <string name="google_preferences">Google Sheets settings</string>
     <string name="google_sheets_url_hint">Forms must set a submission URL. If they don\'t, this URL will be used.</string>
     <string name="drive_get_file">Getting %1$s and media files.</string>
     <string name="no_google_account">No Google Account Selected!</string>
@@ -375,10 +364,10 @@
         <item quantity="one">%d meter</item>
         <item quantity="other">%d meters</item>
     </plurals>
-    <string name="location_status_searching">Searching for GPS location, please wait&#8230;</string>
-    <string name="location_status_accuracy">GPS location accuracy: %.2f m</string>
-    <string name="location_status_acceptable">GPS location accuracy: %.2f m (acceptable)</string>
-    <string name="location_status_unacceptable">GPS location accuracy: %.2f m (unacceptable)</string>
+    <string name="location_status_searching">Searching for location, please wait&#8230;</string>
+    <string name="location_status_accuracy">Location accuracy: %.2f m</string>
+    <string name="location_status_acceptable">Location accuracy: %.2f m (acceptable)</string>
+    <string name="location_status_unacceptable">Location accuracy: %.2f m (unacceptable)</string>
     <string name="collection_status_paused">Points entered: %d</string>
     <string name="collection_status_placement">Points entered: %d (tap to place points)</string>
     <string name="collection_status_manual">Points entered: %d (manual recording)</string>
@@ -415,7 +404,7 @@
     <string name="version_number">Version: %s</string>
     <string name="id_number">ID: %s</string>
     <string name="odk_website">Visit the ODK website</string>
-    <string name="odk_website_summary">Open Data Kit (ODK) is used to collect data for social good in challenging environments.</string>
+    <string name="odk_website_summary">ODK is used to collect data for social good in challenging environments.</string>
     <string name="odk_forum">Join the ODK forum</string>
     <string name="odk_forum_summary">Join the forum to get support, request features, contribute code/translations! </string>
     <string name="all_open_source_licenses">Open source libraries/licenses</string>
@@ -639,8 +628,6 @@
     <string name="record_audio_runtime_permission_denied_desc">Without this permission Collect can\'t access the microphone. Please try again when you are ready to grant it.</string>
     <string name="get_accounts_runtime_permission_denied_title">Get accounts permission</string>
     <string name="get_accounts_runtime_permission_denied_desc">Without this permission Collect can\'t access accounts. Please try again when you are ready to grant it.</string>
-    <string name="send_sms_runtime_permission_denied_title">Send SMS permission</string>
-    <string name="send_sms_runtime_permission_denied_desc">Without this permission Collect can\'t send SMS messages. Please try again when you are ready to grant it.</string>
     <string name="read_phone_state_runtime_permission_denied_title">Read phone state permission</string>
     <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect does not make calls but it needs to access certain properties about your device such as the phone number and device ID.</string>
     <string name="form_update_category">Form update</string>
@@ -664,34 +651,10 @@
     <string name="instance_upload_cancelled">Instance upload canceled</string>
     <string name="hide_old_form_versions_setting_title">Hide old form versions</string>
     <string name="hide_old_form_versions_setting_summary">Only the newest version will appear in Fill Blank Form</string>
-    <string name="sms_pref_dialog_title">Destination phone number</string>
-    <string name="sms_pref_title">Destination phone number</string>
-    <string name="sms_invalid_phone_number">Invalid phone number!</string>
-
-    <!-- Sms submission -->
-    <string name="sms_no_reception">\'Failed on\' EEE, MMM dd, yyyy \'at\' HH:mm \'due to no reception\'</string>
-    <string name="sms_no_number">\'Failed on\' EEE, MMM dd, yyyy \'at\' HH:mm \'due to no phone number.\'</string>
-    <string name="sms_fatal_error">\'Failed on\' EEE, MMM dd, yyyy \'at\' HH:mm</string>
-    <string name="sms_airplane_mode">\'Failed on\' EEE, MMM dd, yyyy \'at\' HH:mm \'due to Airplane Mode being on.\'</string>
-    <string name="sms_no_message">This form has no questions with SMS tags.</string>
-    <string name="sms_encrypted_message">Encrypted forms can\'t be submitted as SMS.</string>
-    <string name="sms_last_submission_on_date_at_time">\'Last submission attempt at\' EEE, MMM dd, yyyy \'at\' HH:mm</string>
-    <plurals name="sms_sending">
-        <item quantity="one">Submitting form as a single message.</item>
-        <item quantity="other">Submitting form, sending message %1$d of %2$d</item>
-    </plurals>
-    <string name="sms_sent_on_date_at_time">\'Sent as SMS on\' EEE, MMM dd, yyyy \'at\' HH:mm</string>
-    <string name="sms_submission_queued">Queued for submission.</string>
-    <string name="sms_submissions_notif_title">SMS submissions</string>
-    <string name="sms_submissions_notif_description">Several forms are currently being submitted.</string>
-    <string name="transport_type_internet">Wifi/Cellular (recommended)</string>
-    <string name="transport_type_sms">SMS</string>
-    <string name="transport_type_both">Select on send</string>
     <string name="rank_items">Rank items</string>
     <string name="loading_form_failed">An error occurred while loading the form. Please try again.</string>
     <string name="missing_google_account_dialog_title">Google account not set</string>
     <string name="missing_google_account_dialog_desc">To submit forms via Google Sheets you have to set up your Google account in the Server settings.</string>
-    <string name="sms_invalid_phone_number_description">Set a destination phone number for SMS submissions or change your transport type.</string>
     <string name="notification_channel_name">General notifications</string>
     <string name="corrupt_imported_preferences_error">Current settings are corrupt. From the admin settings, reset settings or import working ones.</string>
     <string name="google_play_services_not_available">This form wants to track your location but Google Play Services are not available.</string>
@@ -701,9 +664,6 @@
     <string name="background_location_disabled">This form wants to track your location but tracking is disabled. Please enable in the %1$s menu above.</string>
     <string name="background_location_enabled">This form tracks your location. You can disable tracking in the %1$s menu above.</string>
     <string name="open_file">Open file</string>
-    <string name="sms_feature_disabled_dialog_title">Sending via SMS Disabled</string>
-    <string name="sms_feature_disabled_dialog_message">Sending submissions via SMS has been disabled due to Google Play Store restrictions.\n\nPlease make sure the person who configured this device reads the details below and takes action.</string>
-    <string name="read_details">Read details</string>
     <string name="google_sheets_encrypted_message">Encrypted forms can\'t be submitted to Google Sheets.</string>
     <string name="number_picker_title">Number Picker</string>
     <string name="too_complex_form">This form is too complex for this device. Try simplifying expressions or ask for help on the forum.</string>
@@ -743,4 +703,6 @@
 
     <string name="install_id">Install ID - will replace Device ID in August 2020</string>
     <string name="preference_not_available">Not available</string>
+    <string name="custom_server_paths">Custom server paths</string>
+    <string name="legacy_custom_server_paths_summary">Will be removed in a future version. Please use /formList and /submission on your server.</string>
 </resources>

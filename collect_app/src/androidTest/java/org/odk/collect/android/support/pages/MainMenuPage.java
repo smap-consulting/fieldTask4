@@ -10,6 +10,7 @@ import org.odk.collect.android.support.ActivityHelpers;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.CursorMatchers.withRowString;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -32,7 +33,9 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public MainMenuPage clickOnMenu() {
+        assertOnPage(); // Make sure we're on the Main Menu to prevent this being called early
         Espresso.openActionBarOverflowOrOptionsMenu(ActivityHelpers.getActivity());
+        onView(withText(getTranslatedString(R.string.general_preferences))).check(matches(isDisplayed()));
         return this;
     }
 
@@ -95,6 +98,16 @@ public class MainMenuPage extends Page<MainMenuPage> {
         return this;
     }
 
+    public MainMenuPage assertNumberOfEditableForms(int number) {
+        if (number == 0) {
+            onView(withText(getTranslatedString(R.string.review_data))).check(matches(isDisplayed()));
+        } else {
+            onView(withText(getTranslatedString(R.string.review_data, String.valueOf(number)))).check(matches(isDisplayed()));
+        }
+
+        return this;
+    }
+
     public MainMenuPage assertStorageMigrationBannerIsDisplayed() {
         onView(withText(R.string.scoped_storage_banner_text)).check(matches(isDisplayed()));
         onView(withText(R.string.scoped_storage_learn_more)).check(matches(isDisplayed()));
@@ -125,6 +138,16 @@ public class MainMenuPage extends Page<MainMenuPage> {
     public MainMenuPage recreateActivity() {
         getInstrumentation().runOnMainSync(() -> rule.getActivity().recreate());
         return this;
+    }
+
+    public GetBlankFormPage clickGetBlankForm() {
+        onView(withText(getTranslatedString(R.string.get_forms))).perform(scrollTo(), click());
+        return new GetBlankFormPage(rule);
+    }
+
+    public SendFinalizedFormPage clickSendFinalizedForm(int formCount) {
+        onView(withText(getTranslatedString(R.string.send_data_button, formCount))).perform(click());
+        return new SendFinalizedFormPage(rule);
     }
 }
 

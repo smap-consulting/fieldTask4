@@ -40,6 +40,7 @@ import static org.odk.collect.android.preferences.GeneralKeys.KEY_BASEMAP_SOURCE
 import static org.odk.collect.android.preferences.PreferencesActivity.INTENT_KEY_ADMIN_MODE;
 
 public class MapsPreferences extends BasePreferenceFragment {
+
     private Context context;
     private ListPreference basemapSourcePref;
     private CaptionedListPreference referenceLayerPref;
@@ -79,6 +80,20 @@ public class MapsPreferences extends BasePreferenceFragment {
             populateReferenceLayerPref();
             referenceLayerPref.showDialog();
         }
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (referenceLayerPref != null) {
+            populateReferenceLayerPref();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        referenceLayerPref = null;
     }
 
     /**
@@ -157,6 +172,7 @@ public class MapsPreferences extends BasePreferenceFragment {
             referenceLayerPref.setSummary(summary);
         }
     }
+
 
     /** Sets up the contents of the reference layer selection dialog. */
     private void populateReferenceLayerPref() {

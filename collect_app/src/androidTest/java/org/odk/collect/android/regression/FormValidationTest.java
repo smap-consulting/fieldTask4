@@ -3,22 +3,24 @@ package org.odk.collect.android.regression;
 import android.Manifest;
 
 import androidx.test.rule.GrantPermissionRule;
-import androidx.test.runner.AndroidJUnit4;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-
+import org.odk.collect.android.support.CollectTestRule;
+import org.odk.collect.android.support.CopyFormRule;
+import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.pages.SaveOrIgnoreDialog;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
 
 // Issue number NODK-251
 @RunWith(AndroidJUnit4.class)
-public class FormValidationTest extends BaseRegressionTest {
+public class FormValidationTest {
+
+    public CollectTestRule rule = new CollectTestRule();
 
     @Rule
     public RuleChain copyFormChain = RuleChain
@@ -28,7 +30,8 @@ public class FormValidationTest extends BaseRegressionTest {
                     Manifest.permission.READ_PHONE_STATE)
             )
             .around(new ResetStateRule())
-            .around(new CopyFormRule("OnePageFormShort.xml"));
+            .around(new CopyFormRule("OnePageFormShort.xml"))
+            .around(rule);
 
     @Test
     public void invalidAnswer_ShouldDisplayAllQuestionsOnOnePage() {

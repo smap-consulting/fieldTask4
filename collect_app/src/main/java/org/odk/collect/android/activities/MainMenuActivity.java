@@ -47,6 +47,7 @@ import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.InstancesDao;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.network.NetworkStateProvider;
+import org.odk.collect.android.preferences.MetaSharedPreferencesProvider;
 import org.odk.collect.material.MaterialBanner;
 import org.odk.collect.android.preferences.AdminKeys;
 import org.odk.collect.android.preferences.AdminPasswordDialogFragment;
@@ -58,7 +59,6 @@ import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.preferences.PreferenceSaver;
 import org.odk.collect.android.preferences.PreferencesActivity;
-import org.odk.collect.android.preferences.Transport;
 import org.odk.collect.android.preferences.qr.QRCodeTabsActivity;
 import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
 import org.odk.collect.android.storage.StorageInitializer;
@@ -71,7 +71,7 @@ import org.odk.collect.android.utilities.AdminPasswordProvider;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.MultiClickGuard;
-import org.odk.collect.android.utilities.PlayServicesUtil;
+import org.odk.collect.android.utilities.PlayServicesChecker;
 import org.odk.collect.android.utilities.SharedPreferencesUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.version.VersionInformation;
@@ -89,8 +89,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_MAPBOX_INITIALIZED;
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_SUBMISSION_TRANSPORT_TYPE;
+import static org.odk.collect.android.preferences.MetaKeys.KEY_MAPBOX_INITIALIZED;
 import static org.odk.collect.android.utilities.DialogUtils.getDialog;
 import static org.odk.collect.android.utilities.DialogUtils.showIfNotShowing;
 
@@ -150,6 +149,9 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
     @Inject
     GeneralSharedPreferences generalSharedPreferences;
 
+    @Inject
+    MetaSharedPreferencesProvider metaSharedPreferencesProvider;
+
     private MainMenuViewModel viewModel;
 
     @Override
@@ -163,8 +165,6 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
         initToolbar();
         initMapBox();
         DaggerUtils.getComponent(this).inject(this);
-
-        disableSmsIfNeeded();
 
         storageMigrationRepository.getResult().observe(this, this::onStorageMigrationFinish);
 
@@ -238,11 +238,11 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
                             GeneralKeys.KEY_PROTOCOL, getString(R.string.protocol_odk_default));
                     Intent i = null;
                     if (protocol.equalsIgnoreCase(getString(R.string.protocol_google_sheets))) {
-                        if (PlayServicesUtil.isGooglePlayServicesAvailable(MainMenuActivity.this)) {
+                        if (new PlayServicesChecker().isGooglePlayServicesAvailable(MainMenuActivity.this)) {
                             i = new Intent(getApplicationContext(),
                                     GoogleDriveActivity.class);
                         } else {
-                            PlayServicesUtil.showGooglePlayServicesAvailabilityErrorDialog(MainMenuActivity.this);
+                            new PlayServicesChecker().showGooglePlayServicesAvailabilityErrorDialog(MainMenuActivity.this);
                             return;
                         }
                     } else {
@@ -399,7 +399,8 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
     }
 
     private void initMapBox() {
-        if (!generalSharedPreferences.getBoolean(KEY_MAPBOX_INITIALIZED, false) && connectivityProvider.isDeviceOnline()) {
+        SharedPreferences metaSharedPreferences = metaSharedPreferencesProvider.getMetaSharedPreferences();
+        if (!metaSharedPreferences.getBoolean(KEY_MAPBOX_INITIALIZED, false) && connectivityProvider.isDeviceOnline()) {
             // This "one weird trick" lets us initialize MapBox at app start when the internet is
             // most likely to be available. This is annoyingly needed for offline tiles to work.
             try {
@@ -407,7 +408,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
                 FrameLayout mapboxContainer = findViewById(R.id.mapbox_container);
                 mapboxContainer.addView(mapView);
                 mapView.getMapAsync(mapBoxMap -> mapBoxMap.setStyle(Style.MAPBOX_STREETS, style -> {
-                    generalSharedPreferences.save(KEY_MAPBOX_INITIALIZED, true);
+                    metaSharedPreferences.edit().putBoolean(KEY_MAPBOX_INITIALIZED, true).apply();
                 }));
             } catch (Exception | Error ignored) {
                 // This will crash on devices where the arch for MapBox is not included
@@ -620,27 +621,6 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
             handler.sendEmptyMessage(0);
-        }
-    }
-
-    private void disableSmsIfNeeded() {
-        if (Transport.Internet != Transport.fromPreference(generalSharedPreferences.get(KEY_SUBMISSION_TRANSPORT_TYPE))) {
-            generalSharedPreferences.save(KEY_SUBMISSION_TRANSPORT_TYPE, getString(R.string.transport_type_value_internet));
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder
-                    .setTitle(R.string.sms_feature_disabled_dialog_title)
-                    .setMessage(R.string.sms_feature_disabled_dialog_message)
-                    .setPositiveButton(R.string.read_details, (dialog, which) -> {
-                        Intent intent = new Intent(this, WebViewActivity.class);
-                        intent.putExtra("url", "https://forum.getodk.org/t/17973");
-                        startActivity(intent);
-                    })
-                    .setNegativeButton(R.string.ok, (dialog, which) -> dialog.dismiss());
-
-            builder
-                    .create()
-                    .show();
         }
     }
 
