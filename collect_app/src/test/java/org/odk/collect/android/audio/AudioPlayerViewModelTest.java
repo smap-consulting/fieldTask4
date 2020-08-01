@@ -19,6 +19,7 @@ import org.robolectric.RobolectricTestRunner;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -205,7 +206,7 @@ public class AudioPlayerViewModelTest {
         viewModel.play(new Clip("clip1", "file://audio.mp3"));
 
         when(mediaPlayer.getCurrentPosition()).thenReturn(1000);
-        fakeScheduler.runTask();
+        fakeScheduler.runForeground();
 
         viewModel.stop();
         assertThat(position.getValue(), equalTo(0));
@@ -219,8 +220,10 @@ public class AudioPlayerViewModelTest {
 
     @Test
     public void background_cancelsScheduler() {
+        viewModel.play(new Clip("clip1", "file://audio.mp3"));
         viewModel.background();
-        assertThat(fakeScheduler.isCancelled(), equalTo(true));
+
+        assertThat(fakeScheduler.hasBeenCancelled(), equalTo(true));
     }
 
     @Test
@@ -284,11 +287,11 @@ public class AudioPlayerViewModelTest {
         viewModel.play(new Clip("clip1", "file://audio.mp3"));
 
         when(mediaPlayer.getCurrentPosition()).thenReturn(1000);
-        fakeScheduler.runTask();
+        fakeScheduler.runForeground();
         assertThat(duration.getValue(), equalTo(1000));
 
         when(mediaPlayer.getCurrentPosition()).thenReturn(24135);
-        fakeScheduler.runTask();
+        fakeScheduler.runForeground();
         assertThat(duration.getValue(), equalTo(24135));
     }
 
@@ -300,12 +303,12 @@ public class AudioPlayerViewModelTest {
 
         viewModel.play(new Clip("clip1", "file://audio.mp3"));
         when(mediaPlayer.getCurrentPosition()).thenReturn(1000);
-        fakeScheduler.runTask();
+        fakeScheduler.runForeground();
         assertThat(duration1.getValue(), equalTo(1000));
 
         viewModel.play(new Clip("clip2", "file://audio.mp3"));
         when(mediaPlayer.getCurrentPosition()).thenReturn(2500);
-        fakeScheduler.runTask();
+        fakeScheduler.runForeground();
         assertThat(duration2.getValue(), equalTo(2500));
     }
 
@@ -340,8 +343,10 @@ public class AudioPlayerViewModelTest {
 
     @Test
     public void onCleared_cancelsScheduler() {
+        viewModel.play(new Clip("clip1", "file://audio.mp3"));
         viewModel.onCleared();
-        assertThat(fakeScheduler.isCancelled(), equalTo(true));
+
+        assertThat(fakeScheduler.hasBeenCancelled(), equalTo(true));
     }
 
     @Test
@@ -352,7 +357,7 @@ public class AudioPlayerViewModelTest {
         verify(mediaPlayer).setOnCompletionListener(captor.capture());
         captor.getValue().onCompletion(mediaPlayer);
 
-        assertThat(fakeScheduler.isCancelled(), equalTo(true));
+        assertThat(fakeScheduler.hasBeenCancelled(), equalTo(true));
     }
 
     @Test
@@ -362,7 +367,7 @@ public class AudioPlayerViewModelTest {
         viewModel.play(new Clip("clip1", "file://audio.mp3"));
 
         when(mediaPlayer.getCurrentPosition()).thenReturn(1000);
-        fakeScheduler.runTask();
+        fakeScheduler.runForeground();
 
         ArgumentCaptor<MediaPlayer.OnCompletionListener> captor = ArgumentCaptor.forClass(MediaPlayer.OnCompletionListener.class);
         verify(mediaPlayer).setOnCompletionListener(captor.capture());
@@ -406,12 +411,12 @@ public class AudioPlayerViewModelTest {
         assertThat(error.getValue(), equalTo(null));
     }
 
-    private static class RecordingMockMediaPlayerFactory implements MediaPlayerFactory {
+    private static class RecordingMockMediaPlayerFactory implements Supplier<MediaPlayer> {
 
         List<MediaPlayer> createdInstances = new ArrayList<>();
 
         @Override
-        public MediaPlayer create() {
+        public MediaPlayer get() {
             MediaPlayer mock = mock(MediaPlayer.class);
             createdInstances.add(mock);
 

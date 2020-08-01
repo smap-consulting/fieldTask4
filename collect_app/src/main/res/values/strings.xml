@@ -86,9 +86,8 @@
     <string name="jump_to_beginning">Go To Start</string>
     <string name="jump_to_end">Go To End</string>
     <string name="jump_to_previous">Go Up</string>
-    <string name="list_failed_with_error">Form listing failed. %s.</string>
     <string name="loading_form">Loading Form</string>
-    <string name="load_remote_form_error">Error Getting Form List</string>
+    <string name="load_remote_form_error">Form list download failed</string>
     <string name="location_accuracy">Accuracy: %1$s m</string>
     <string name="location_provider">Location provider: %s</string>
     <string name="manage_files">Delete Saved Form</string>
@@ -101,8 +100,6 @@
     <string name="no_items_display_instances">Nothing available to display.\n\nTry finalizing saved forms before sending.</string>
     <string name="ok">OK</string>
     <string name="parse_error">Sorry, unable to parse form.</string>
-    <string name="parse_legacy_formlist_failed">The server has not provided an available-forms document compatible with Aggregate 0.9.x. : %s</string>
-    <string name="parse_openrosa_formlist_failed">The server has not provided an available-forms document compatible with the OpenRosa version 1.0 standard: %s</string>
     <string name="password">Password</string>
     <string name="play_video">Play Video</string>
     <string name="please_wait">Please wait a few moments.</string>
@@ -115,6 +112,7 @@
     <string name="replace_barcode">Replace Barcode</string>
     <string name="required_answer_error">Sorry, this response is required!</string>
     <string name="review_data">Edit Saved Form</string>
+    <string name="view_data">View Saved Form</string>
     <string name="review_data_button">Edit Saved Form (%s)‎‎‎‎</string>
     <string name="save_all_answers">Save Form</string>
     <string name="save_enter_data_description">You are at the end of %s.</string>
@@ -149,11 +147,6 @@
     <string name="submission_url">Submission path</string>
     <string name="font_size">Text font size</string>
     <string name="change_font_size">Text font size</string>
-    <string name="access_error">Error while accessing %s: </string>
-    <string name="manifest_server_error">Manifest reply does not report an OpenRosa version — bad server?</string>
-    <string name="root_element_error">Root element is not &lt;manifest\&gt; — was %s</string>
-    <string name="root_namespace_error">Root element Namespace is incorrect: %s</string>
-    <string name="manifest_tag_error">Manifest entry %s is missing one or more tags: filename, hash, or downloadUrl</string>
     <string name="form_download_progress">%1$s. Getting media files: %2$s of %3$s</string>
     <string name="fetching_manifest">%s. Getting manifest </string>
     <string name="success">Success</string>
@@ -499,7 +492,6 @@
     <string name="include_password_dialog">Passwords Included in Code</string>
     <string name="generate">Generate</string>
     <string name="invalid_qrcode">QR code does not contain valid settings</string>
-    <string name="share_qrcode">Share QR code</string>
     <string name="take_picture_instruction">Tap the screen to take a picture</string>
     <string name="error_front_camera_unavailable">Front camera not available on this device</string>
     <string name="camera_error">This device doesn\'t support the Camera2 API.</string>
@@ -632,7 +624,6 @@
     <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect does not make calls but it needs to access certain properties about your device such as the phone number and device ID.</string>
     <string name="form_update_category">Form update</string>
     <string name="periodic_form_updates_check_title">Periodic form updates check</string>
-    <string name="never">Never</string>
     <string name="every_fifteen_minutes">Every fifteen minutes</string>
     <string name="every_one_hour">Every hour</string>
     <string name="every_six_hours">Every six hours</string>
@@ -683,7 +674,7 @@
     <string name="save_legacy_settings_warning">Will be removed in a future version. Please use the QR code above.</string>
     <string name="reason_for_changes_description">You need to explain the reason for changes to this form</string>
 
-    <string name="scoped_storage_banner_text">You must migrate Collect forms to private storage by August 2020 to comply with Android requirements.</string>
+    <string name="scoped_storage_banner_text">You must migrate Collect forms to private storage to comply with Android requirements. In Collect v1.29, <b>the migration will be forced on install</b>.</string>
     <string name="scoped_storage_learn_more">Learn more and migrate</string>
     <string name="storage_migration_completed">Storage migration completed!</string>
     <string name="scoped_storage_dismiss">Dismiss</string>
@@ -695,8 +686,7 @@
     <string name="migrate">Migrate</string>
     <string name="error">Error:</string>
     <string name="storage_migration_not_enough_space">You do not have enough space on your internal storage to migrate your data. Please free up some space and try again.</string>
-    <string name="storage_migration_form_uploader_is_running">Background form uploader is running. Please try again.</string>
-    <string name="storage_migration_form_downloader_is_running">Background form downloader is running. Please try again.</string>
+    <string name="changes_in_progress">Automatic send or blank form download is running. Please try again later.</string>
     <string name="storage_migration_failed">Data migration failed. Please try again.</string>
     <string name="storage_migration_dialog_title">Storage migration</string>
     <string name="storage_migration_progress_msg">Migration in progress.\nThis may take a few seconds…</string>
@@ -705,4 +695,13 @@
     <string name="preference_not_available">Not available</string>
     <string name="custom_server_paths">Custom server paths</string>
     <string name="legacy_custom_server_paths_summary">Will be removed in a future version. Please use /formList and /submission on your server.</string>
+    <string name="experimental">Experimental</string>
+    <string name="match_exactly">Exactly match server</string>
+    <string name="manually">Manually</string>
+    <string name="form_update_mode_title">Blank form update mode</string>
+    <string name="previously_downloaded_only">Previously downloaded forms only</string>
+    <string name="form_update_frequency_title">Automatic update frequency</string>
+    <string name="form_update_error">Form update failed</string>
+    <string name="report_to_project_lead">If you keep having this problem, report it to the person who asked you to collect data.</string>
+    <string name="unknown_host_error">Collect can\'t reach the server at %s. Did you enter the URL correctly?</string>
 </resources>

@@ -6,12 +6,8 @@ import org.odk.collect.android.R;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.allOf;
 
 public class FormHierarchyPage extends Page<FormHierarchyPage> {
 
@@ -24,7 +20,7 @@ public class FormHierarchyPage extends Page<FormHierarchyPage> {
 
     @Override
     public FormHierarchyPage assertOnPage() {
-        onView(allOf(withText(formName), isDescendantOfA(withId(R.id.toolbar)))).check(matches(isDisplayed()));
+        assertToolbarTitle(formName);
         return this;
     }
 
@@ -33,13 +29,13 @@ public class FormHierarchyPage extends Page<FormHierarchyPage> {
         return this;
     }
 
-    public FormEntryPage clickPlus(String repeatName) {
-        onView(withId(R.id.menu_add_repeat)).perform(click());
+    public FormEntryPage clickGoToStart() {
+        onView(withId(R.id.jumpBeginningButton)).perform(click());
         return new FormEntryPage(formName, rule).assertOnPage();
     }
 
-    public FormEntryPage clickGoToStart() {
-        onView(withId(R.id.jumpBeginningButton)).perform(click());
+    public FormEntryPage addGroup() {
+        onView(withId(R.id.menu_add_repeat)).perform(click());
         return new FormEntryPage(formName, rule).assertOnPage();
     }
 

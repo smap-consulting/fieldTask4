@@ -74,8 +74,7 @@
   <string name="jump_to_beginning">Přejít na začátek</string>
   <string name="jump_to_end">Přejít na konec</string>
   <string name="jump_to_previous">Přejít nahoru</string>
-  <string name="list_failed_with_error">Výpis dotazníku selhal. %s.</string>
-  <string name="loading_form">Načítám dotazník</string>
+    <string name="loading_form">Načítám dotazník</string>
   <string name="load_remote_form_error">Chyba při načítání seznamu dotazníků</string>
   <string name="location_accuracy">Přesnost: %1$s m</string>
   <string name="manage_files">Smazat uložený dotazník</string>
@@ -88,8 +87,6 @@
   <string name="no_items_display_instances">Není co zobrazit.\n\nZkuste před odesláním označit dotazníky jako dokončené.</string>
   <string name="ok">OK</string>
   <string name="parse_error">Dotazník nejde načíst.</string>
-  <string name="parse_legacy_formlist_failed">Server neposkytnul seznam dostupných dotazníků kompatibilní s Aggregate 0.9.x. : %s</string>
-  <string name="parse_openrosa_formlist_failed">Server neposkytnul seznam dostupných dotazníků kompatibilní se standartem OpenRosa 1.0: %s</string>
   <string name="password">Heslo</string>
   <string name="play_video">Přehrát video</string>
   <string name="please_wait">Prosím chvilku počkejte.</string>
@@ -136,11 +133,6 @@
   <string name="submission_url">Cesta pro odeslání</string>
   <string name="font_size">Velikost písma</string>
   <string name="change_font_size">Velikost písma</string>
-  <string name="access_error">Chyba při přístupu k %s:</string>
-  <string name="manifest_server_error">Odpověď manifestu nehlásí verzi OpenRosa - špatný server?</string>
-  <string name="root_element_error">Kořenový prvek není &lt;manifest\&gt; — místo toho předán %s</string>
-  <string name="root_namespace_error">Jmenný prostor kořenového prvku není správný: %s</string>
-  <string name="manifest_tag_error">Na vstupu manifestu %s chybí jeden nebo více tagů: filename, hash nebo downloadUrl</string>
   <string name="form_download_progress">%1$s. Stahuji mediální soubory: %2$s z %3$s</string>
   <string name="fetching_manifest">%s. Stahuji manifest </string>
   <string name="success">Úspěch</string>
@@ -478,8 +470,7 @@
   <string name="include_password_dialog">Hesla zahrnuta v kódu</string>
   <string name="generate">Vytvořit</string>
   <string name="invalid_qrcode">Kód QR neobsahuje platná nastavení</string>
-  <string name="share_qrcode">Sdílet QR kód</string>
-  <string name="take_picture_instruction">Klepnutím na obrazovku udělejte snímek</string>
+    <string name="take_picture_instruction">Klepnutím na obrazovku udělejte snímek</string>
   <string name="error_front_camera_unavailable">Přední fotoaparát není v tomto zařízení k dispozici</string>
   <string name="camera_error">Toto zařízení nepodporuje API Camera2.</string>
   <string name="invalid_range_widget">Tento widget obsahuje neplatné parametry!</string>
@@ -609,7 +600,6 @@
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect neprovádí volání, ale potřebuje přístup k určitým vlastnostem vašeho zařízení, jako je například telefonní číslo a device ID.</string>
   <string name="form_update_category">Aktualizace formuláře</string>
   <string name="periodic_form_updates_check_title">Pravidelná kontrola aktualizací dotazníků</string>
-  <string name="never">Nikdy</string>
   <string name="every_fifteen_minutes">Každých patnáct minut</string>
   <string name="every_one_hour">Každou hodinu</string>
   <string name="every_six_hours">Každých šest hodin</string>
@@ -671,8 +661,7 @@
   <string name="migrate">Migrovat</string>
   <string name="error">Chyba:</string>
   <string name="storage_migration_not_enough_space">Na interním úložišti nemáte dostatek místa pro migraci dat. Uvolněte místo a zkuste to znovu.</string>
-  <string name="storage_migration_form_uploader_is_running">Je spuštěn nástroj pro nahrávání na pozadí. Prosím zkuste to znovu.</string>
-  <string name="storage_migration_form_downloader_is_running">Je spuštěno stahování formulářů na pozadí. Prosím zkuste to znovu.</string>
+    <string name="changes_in_progress">Je spuštěno stahování formulářů na pozadí. Prosím zkuste to znovu.</string>
   <string name="storage_migration_failed">Migrace dat se nezdařila. Prosím zkuste to znovu.</string>
   <string name="storage_migration_dialog_title">Migrace úložiště</string>
   <string name="storage_migration_progress_msg">Probíhá migrace. 

@@ -1,27 +1,66 @@
 package org.odk.collect.android.support;
 
-import org.odk.collect.utilities.Scheduler;
+import org.jetbrains.annotations.NotNull;
+import org.odk.collect.async.Cancellable;
+import org.odk.collect.async.Scheduler;
+import org.odk.collect.async.TaskSpec;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class FakeScheduler implements Scheduler {
 
-    private Runnable task;
+    private Runnable foregroundTask;
+    private Runnable backgroundTask;
     private Boolean cancelled = false;
 
     @Override
-    public void schedule(Runnable task, long period) {
-        this.task = task;
+    public <T> void immediate(Supplier<T> foreground, Consumer<T> background) {
+        backgroundTask = () -> background.accept(foreground.get());
     }
 
     @Override
-    public void cancel() {
-        cancelled = true;
+    public void networkDeferred(@NotNull String tag, @NotNull TaskSpec spec) {
+
     }
 
-    public void runTask() {
-        task.run();
+    @Override
+    public void networkDeferred(@NotNull String tag, @NotNull TaskSpec taskSpec, long repeatPeriod) {
+
     }
 
-    public Boolean isCancelled() {
+    @Override
+    public Cancellable repeat(Runnable foreground, long repeatPeriod) {
+        this.foregroundTask = foreground;
+        return () -> {
+            cancelled = true;
+            return true;
+        };
+    }
+
+    public void runForeground() {
+        foregroundTask.run();
+    }
+
+    public void runBackground() {
+        if (backgroundTask == null) {
+            return;
+        }
+
+        backgroundTask.run();
+    }
+
+    public Boolean hasBeenCancelled() {
         return cancelled;
+    }
+
+    @Override
+    public boolean isRunning(@NotNull String tag) {
+        return false;
+    }
+
+    @Override
+    public void cancelDeferred(@NotNull String tag) {
+
     }
 }

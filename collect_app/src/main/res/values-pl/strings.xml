@@ -74,8 +74,7 @@
   <string name="jump_to_beginning">Idź Do Początku</string>
   <string name="jump_to_end">Idź Na Koniec</string>
   <string name="jump_to_previous">Idź Do Góry</string>
-  <string name="list_failed_with_error">Tworzenie listy formularzy nie powiodło się. %s</string>
-  <string name="loading_form">Wczytywanie Formularza</string>
+    <string name="loading_form">Wczytywanie Formularza</string>
   <string name="load_remote_form_error">Błąd Pobierania Listy Formularzy</string>
     <string name="location_accuracy">Dokładność rzędu %1$s m</string>
   <string name="manage_files">Skasuj Zapisany Formularz</string>
@@ -88,8 +87,6 @@
   <string name="no_items_display_instances">Brak informacji do wyświetlenia.\n\nSpróbuj zakończyć zapisane formularze przed wysłaniem.</string>
   <string name="ok">OK</string>
   <string name="parse_error">Przykro mi, nie mogę zanalizować formularza.</string>
-  <string name="parse_legacy_formlist_failed">Serwer nie dostarczył dokumentu z dostępnymi formularzami zgodnego z Aggregate 0.9.x: %s</string>
-  <string name="parse_openrosa_formlist_failed">Serwer nie dostarczył dokumentu z dostępnymi formularzami zgodnego ze standardem OpenRosa wersja 1.0: %s</string>
   <string name="password">Hasło</string>
   <string name="play_video">Odtwórz Wideo</string>
   <string name="please_wait">Poczekaj kilka chwil.</string>
@@ -136,11 +133,6 @@
   <string name="submission_url">Ścieżka zgłoszeń</string>
   <string name="font_size">Wielkość czcionki</string>
   <string name="change_font_size">Wielkość czcionki</string>
-  <string name="access_error">Błąd przy próbie dostępu %s:</string>
-  <string name="manifest_server_error">Odpowiedź w manifeście nie raportuje wersji OpenRosa — niewłaściwy serwer?</string>
-  <string name="root_element_error">Główny element nie jest &lt;manifest\&gt; — był %s</string>
-  <string name="root_namespace_error">Przestrzeń nazw głównego elementu jest niewłaściwa: %s</string>
-  <string name="manifest_tag_error">Wpis %s w manifeście ma brakujący jeden lub więcej znaczników: nazwa pliku, hash lub URL pobrania</string>
   <string name="form_download_progress">%1$s. Pobieram pliki medialne: %2$s z %3$s</string>
   <string name="fetching_manifest">%s. Pobieram manifest </string>
   <string name="success">Sukces</string>
@@ -476,8 +468,7 @@
   <string name="include_password_dialog">Hasło Zawarte w Kodzie</string>
   <string name="generate">Wygeneruj</string>
   <string name="invalid_qrcode">Kod QR nie zawiera poprawnych ustawień</string>
-  <string name="share_qrcode">Udostępnij kod QR</string>
-  <string name="take_picture_instruction">Dotknij ekran, by zrobić zdjęcie</string>
+    <string name="take_picture_instruction">Dotknij ekran, by zrobić zdjęcie</string>
   <string name="error_front_camera_unavailable">Przednia kamera nie jest dostępna w tym urządzeniu</string>
   <string name="camera_error">To urządzenie nie wspiera Camera2 API.</string>
   <string name="invalid_range_widget">Ten widget ma nieprawidłowe parametry!</string>
@@ -606,7 +597,6 @@
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect nie wykonuje połączeń, ale wymaga dostępu do niektórych właściwości twojego urządzenia, w tym do numeru telefonu i numeru ID</string>
   <string name="form_update_category">Aktualizacja formularza</string>
   <string name="periodic_form_updates_check_title">Cykliczne sprawdzenie możliwych aktualizacji</string>
-  <string name="never">Nigdy</string>
   <string name="every_fifteen_minutes">Co piętnaście minut</string>
   <string name="every_one_hour">Co godzinę</string>
   <string name="every_six_hours">Co sześć godzin</string>

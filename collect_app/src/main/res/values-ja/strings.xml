@@ -74,8 +74,7 @@
   <string name="jump_to_beginning">最初に移動</string>
   <string name="jump_to_end">最後に移動</string>
   <string name="jump_to_previous">上に移動</string>
-  <string name="list_failed_with_error">フォームが一覧できませんでした。 %s。</string>
-  <string name="loading_form">フォームのロード中</string>
+    <string name="loading_form">フォームのロード中</string>
   <string name="load_remote_form_error">フォーム一覧の取得中にエラー</string>
     <string name="location_accuracy">精度は %1$s mです</string>
   <string name="manage_files">保存されたフォームを削除</string>
@@ -88,8 +87,6 @@
   <string name="no_items_display_instances">表示可能なものはありません。\n\nフォームを送信する前に保存されたフォームを確定してください。</string>
   <string name="ok">OK</string>
   <string name="parse_error">申し訳ありません、フォームを解析できません。</string>
-  <string name="parse_legacy_formlist_failed">サーバが Aggregate 0.9.x と互換性のある利用可能なフォームの文書を提供していません : %s</string>
-  <string name="parse_openrosa_formlist_failed">サーバが OpenRosa バージョン 1.0 規格と互換性のある利用可能なフォームの文書を提供していません : %s</string>
   <string name="password">パスワード</string>
   <string name="play_video">ビデオを再生</string>
   <string name="please_wait">しばらくお待ちください。</string>
@@ -136,11 +133,6 @@
   <string name="submission_url">送信パス</string>
   <string name="font_size">文字フォントサイズ</string>
   <string name="change_font_size">文字フォントサイズ</string>
-  <string name="access_error">%s のアクセス中にエラー:</string>
-  <string name="manifest_server_error">マニフェストの応答が OpenRosa バージョンを報告しません — サーバーが異常?</string>
-  <string name="root_element_error">ルートエレメントが &lt;manifest\&gt; ではありません — %s でした</string>
-  <string name="root_namespace_error">ルートエレメントのネームスペースが正しくありません: %s</string>
-  <string name="manifest_tag_error">マニフェストのエントリー %s で1以上のタグがありません: filename, hash, or downloadUrl</string>
   <string name="form_download_progress">%1$s。 メディア ファイルの取得中: %2$s / %3$s</string>
   <string name="fetching_manifest">%s。 マニフェストの取得中 </string>
   <string name="success">成功しました</string>
@@ -476,8 +468,7 @@
   <string name="include_password_dialog">パスワードがコードに含まれます</string>
   <string name="generate">生成</string>
   <string name="invalid_qrcode">QR コードに有効な設定が含まれていません</string>
-  <string name="share_qrcode">QR コードを共有</string>
-  <string name="take_picture_instruction">画面をタップすると写真を撮ります</string>
+    <string name="take_picture_instruction">画面をタップすると写真を撮ります</string>
   <string name="error_front_camera_unavailable">このデバイスは前面カメラが利用できません</string>
   <string name="camera_error">このデバイスは Camera2 API をサポートしていません。</string>
   <string name="invalid_range_widget">このウィジェットに無効なパラメータがあります!</string>
@@ -607,7 +598,6 @@
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect は電話はかけませんが、電話番号やデバイス ID など、デバイスに関する特定のプロパティにアクセスする必要があります。</string>
   <string name="form_update_category">フォームの更新</string>
   <string name="periodic_form_updates_check_title">定期的なフォームの更新チェック</string>
-  <string name="never">しない</string>
   <string name="every_fifteen_minutes">15 分ごと</string>
   <string name="every_one_hour">1 時間ごと</string>
   <string name="every_six_hours">6 時間ごと</string>
@@ -669,8 +659,7 @@
   <string name="migrate">移行</string>
   <string name="error">エラー:</string>
   <string name="storage_migration_not_enough_space">内部ストレージにデータを移行するための十分なスペースがありません。スペースを空けてもう一度お試しください。</string>
-  <string name="storage_migration_form_uploader_is_running">バックグラウンドフォームアップローダーが実行中です。もう一度お試しください。</string>
-  <string name="storage_migration_form_downloader_is_running">バックグラウンドフォームダウンローダーが実行中です。もう一度お試しください。</string>
+    <string name="changes_in_progress">バックグラウンドフォームダウンローダーが実行中です。もう一度お試しください。</string>
   <string name="storage_migration_failed">データの移行に失敗しました。もう一度お試しください。</string>
   <string name="storage_migration_dialog_title">ストレージの移行</string>
   <string name="storage_migration_progress_msg">移行中です。\nこれは数秒かかることがあります…</string>

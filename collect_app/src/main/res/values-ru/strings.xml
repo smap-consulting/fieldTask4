@@ -73,8 +73,7 @@
   <string name="jump_to_beginning">В начало</string>
   <string name="jump_to_end">В конец</string>
   <string name="jump_to_previous">Назад</string>
-  <string name="list_failed_with_error">Не удалось вывести список бланков опросников: %s шт.</string>
-  <string name="loading_form">Загрузка бланка опросника…</string>
+    <string name="loading_form">Загрузка бланка опросника…</string>
   <string name="load_remote_form_error">Не удалось получить список бланков</string>
     <string name="location_accuracy">Точность %1$s м.</string>
   <string name="manage_files">Удаление опросов / бланков</string>
@@ -87,8 +86,6 @@
   <string name="no_items_display_instances">Пусто\n\nФинализируйте сохранённые опросы для выгрузки</string>
   <string name="ok">OK</string>
   <string name="parse_error">Не удалось прочесть структуру бланка</string>
-  <string name="parse_legacy_formlist_failed">Сервер не предоставил список доступных опросников в формате совместимом с Aggregate v0.9.x.: %s</string>
-  <string name="parse_openrosa_formlist_failed">Сервер не предоставил список доступных опросников в формате совместимом со стандартом OpenRosa v1.0: %s</string>
   <string name="password">Пароль</string>
   <string name="play_video">Проиграть видео</string>
   <string name="please_wait">Подождите несколько секунд.</string>
@@ -133,11 +130,6 @@
   <string name="submission_url">Папка выгрузки</string>
   <string name="font_size">Размер шрифта</string>
   <string name="change_font_size">Размер шрифта</string>
-  <string name="access_error">Ошибка доступа %s:</string>
-  <string name="manifest_server_error">Манифест не соответствует версии OpenRosa — не тот сервер?</string>
-  <string name="root_element_error">Корневой элемент не &lt;манифест\&gt; — был %s</string>
-  <string name="root_namespace_error">Неверное пространство имён для корневого элемента: %s</string>
-  <string name="manifest_tag_error">В записи манифеста %s отсутствуют один или более тэгов: filename, hash, или downloadUrl</string>
   <string name="form_download_progress">%1$s. Загрузка медиа-файлов: %2$s из %3$s</string>
   <string name="fetching_manifest">%s. Загрузка манифеста</string>
   <string name="success">Успешно</string>
@@ -419,8 +411,7 @@
   <string name="include_password_dialog">Пароли включены в код</string>
   <string name="generate">Сгенерировать</string>
   <string name="invalid_qrcode">В QR-коде не содержатся правильные настройки</string>
-  <string name="share_qrcode">Поделиться QR-кодом</string>
-  <string name="take_picture_instruction">Нажмите на экран, чтобы сделать фото</string>
+    <string name="take_picture_instruction">Нажмите на экран, чтобы сделать фото</string>
   <string name="error_front_camera_unavailable">Передняя камера недоступна на данном устройстве</string>
   <string name="camera_error">Это устройство не поддерживает API Camera2.</string>
   <string name="invalid_range_widget">У этого виджета неправильные параметры!</string>
@@ -535,7 +526,6 @@
   <string name="get_accounts_runtime_permission_denied_desc">Без данного разрешения Collect не сможет получить доступ к учётным записям. Попробуйте снова когда будете готовы предоставить доступ.</string>
   <string name="form_update_category">ОБНОВЛЕНИЕ БЛАНКОВ</string>
   <string name="periodic_form_updates_check_title">Периодичность проверки обновлений</string>
-  <string name="never">Никогда</string>
   <string name="every_fifteen_minutes">Каждые ¼ часа</string>
   <string name="every_one_hour">Каждый 1 час</string>
   <string name="every_six_hours">Каждые 6 часов</string>

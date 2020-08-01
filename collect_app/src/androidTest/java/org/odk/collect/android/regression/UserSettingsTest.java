@@ -31,9 +31,9 @@ public class UserSettingsTest {
                 .clickOnMenu()
                 .clickAdminSettings()
                 .openUserSettings()
-                .checkIfTextDoesNotExist("Type")
-                .checkIfTextDoesNotExist("Submission transport")
-                .checkIsStringDisplayed(R.string.server);
+                .assertTextDoesNotExist("Type")
+                .assertTextDoesNotExist("Submission transport")
+                .assertText(R.string.server);
     }
 
     @Test
@@ -48,11 +48,11 @@ public class UserSettingsTest {
                 .pressBack(new MainMenuPage(rule))
                 .clickOnMenu()
                 .clickGeneralSettings()
-                .checkIfTextDoesNotExist(R.string.server)
-                .checkIfTextDoesNotExist(R.string.client)
-                .checkIfTextDoesNotExist(R.string.maps)
-                .checkIfTextDoesNotExist(R.string.form_management_preferences)
-                .checkIfTextDoesNotExist(R.string.user_and_device_identity_title)
+                .assertTextDoesNotExist(R.string.server)
+                .assertTextDoesNotExist(R.string.client)
+                .assertTextDoesNotExist(R.string.maps)
+                .assertTextDoesNotExist(R.string.form_management_preferences)
+                .assertTextDoesNotExist(R.string.user_and_device_identity_title)
                 .pressBack(new MainMenuPage(rule))
                 .clickOnMenu()
                 .clickAdminSettings()
@@ -65,19 +65,19 @@ public class UserSettingsTest {
     }
 
     @Test
-    public void showGuidance_shouldBehidden() {
+    public void showGuidance_shouldBeHidden() {
         //TestCase5
         new MainMenuPage(rule)
                 .clickOnMenu()
                 .clickAdminSettings()
                 .openUserSettings()
-                .uncheckUserSettings("guidance_hint")
+                .uncheckUserSettings(R.string.guidance_hint_title)
                 .pressBack(new AdminSettingsPage(rule))
                 .pressBack(new MainMenuPage(rule))
                 .clickOnMenu()
                 .clickGeneralSettings()
                 .openFormManagement()
-                .checkIfTextDoesNotExist(R.string.guidance_hint_title)
+                .assertTextDoesNotExist(R.string.guidance_hint_title)
                 .pressBack(new GeneralSettingsPage(rule))
                 .pressBack(new MainMenuPage(rule))
                 .clickOnMenu()
@@ -89,6 +89,6 @@ public class UserSettingsTest {
                 .clickOnMenu()
                 .clickGeneralSettings()
                 .openFormManagement()
-                .checkIsStringDisplayed(R.string.guidance_hint_title);
+                .assertText(R.string.guidance_hint_title);
     }
 }

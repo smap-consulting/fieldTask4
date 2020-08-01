@@ -73,8 +73,7 @@
   <string name="jump_to_beginning">Vai all\'inizio</string>
   <string name="jump_to_end">Vai alla fine</string>
   <string name="jump_to_previous">Vai al livello superiore</string>
-  <string name="list_failed_with_error">Errore visualizzazione Elenco Moduli %s.</string>
-  <string name="loading_form">Caricamento Modulo</string>
+    <string name="loading_form">Caricamento Modulo</string>
   <string name="load_remote_form_error">Errore nel recupero Elenco Moduli.</string>
     <string name="location_accuracy">Precisione: %1$s m</string>
   <string name="manage_files">Elimina Modulo Salvato</string>
@@ -87,9 +86,6 @@
   <string name="no_items_display_instances">Nessuna visualizzazione disponibile.\n\nCerca di completare i moduli salvati prima dell\'invio.</string>
   <string name="ok">OK</string>
   <string name="parse_error">Spiacenti, non sono in grado di analizzare il modulo.</string>
-  <string name="parse_legacy_formlist_failed">Il server non ha fornito un modulo compatibile con Aggregate 0.9.x. : %s </string>
-  <string name="parse_openrosa_formlist_failed">Il server non ha fornito un modulo compatibile con OpenRosa version 1.0 standard: %s
-</string>
   <string name="password">Password</string>
   <string name="play_video">Riproduci Video</string>
   <string name="please_wait">Si prega di attendere qualche istante.</string>
@@ -136,11 +132,6 @@
   <string name="submission_url">Luogo di consegna</string>
   <string name="font_size">Dimensione dei caratteri del testo</string>
   <string name="change_font_size">Dimensione dei caratteri del testo</string>
-  <string name="access_error">Errore durante l\'accesso %s: </string>
-  <string name="manifest_server_error">La risposta del \'Manifest\' non si riferisce a una versione OpenRosa — server sbagliato?</string>
-  <string name="root_element_error">Elemento principale non è &amp;lt;manifest\&gt; — era %s</string>
-  <string name="root_namespace_error">Il \'Namespace\' dell\'Elemento Root del documento XML non è corretto: %s</string>
-  <string name="manifest_tag_error">Il \'Manifest\' %s del documento XML manca di una o più \'tag\': filename, hash, or downloadUrl</string>
   <string name="form_download_progress">%1$s. Caricamento file multimediali: %2$s di %3$s</string>
   <string name="fetching_manifest">%s. Ottenendo \'Manifest\' da XML</string>
   <string name="success">Successo</string>
@@ -464,8 +455,7 @@
   <string name="include_password_dialog">Password inclusa nel Codice</string>
   <string name="generate">Genera</string>
   <string name="invalid_qrcode">Il codice QR non contiene parametri validi</string>
-  <string name="share_qrcode">Condividi codice QR</string>
-  <string name="take_picture_instruction">Tocca lo schermo per scattare una foto</string>
+    <string name="take_picture_instruction">Tocca lo schermo per scattare una foto</string>
   <string name="error_front_camera_unavailable">Fotocamera frontale non disponibile in questo dispositivo</string>
   <string name="camera_error">Questo dispositivo non supporta la Camera2 API.</string>
   <string name="invalid_range_widget">Questo widget ha parametri invalidi!</string>
@@ -571,7 +561,6 @@
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect non effettua chiamate ma necessita di accedere ad alcune propietà del tuo dispositivo quali ad esempio il numero telefonico e l\'Identificativo del dispositivo.</string>
   <string name="form_update_category">Aggiornamento Modulo</string>
   <string name="periodic_form_updates_check_title">Controllo periodico di aggiornamento questionari</string>
-  <string name="never">Mai</string>
   <string name="every_fifteen_minutes">Ogni 15 minuti</string>
   <string name="every_one_hour">Ogni ora</string>
   <string name="every_six_hours">Ogni 6 ore</string>

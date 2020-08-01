@@ -74,8 +74,7 @@
   <string name="jump_to_beginning">Zum Start</string>
   <string name="jump_to_end">Zum Ende</string>
   <string name="jump_to_previous">Zurück</string>
-  <string name="list_failed_with_error">Formularauflistung gescheitert. %s.</string>
-  <string name="loading_form">Formular wird geladen</string>
+    <string name="loading_form">Formular wird geladen</string>
   <string name="load_remote_form_error">Fehler bei der Formularauflistung</string>
   <string name="location_accuracy">Genauigkeit beträgt %1$s m</string>
   <string name="manage_files">Formulare löschen</string>
@@ -88,8 +87,6 @@
   <string name="no_items_display_instances">Nichts zum Anzeigen vorhanden.\n\nVersuchen Sie ein gespeichertes Formular abzuschließen, um es zu versenden.</string>
   <string name="ok">OK</string>
   <string name="parse_error">Formularverarbeitung nicht möglich.</string>
-  <string name="parse_legacy_formlist_failed">Der Server hat kein Vorhandene-Formulare Dokument geliefert, welches mit Aggregate 0.9.x. kompatibel ist : %s</string>
-  <string name="parse_openrosa_formlist_failed">Der Server hat kein Vorhandene-Formulare-Dokument geliefert, welches mit dem OpenRosa-Version-1.0-Standard kompatibel ist: %s</string>
   <string name="password">Passwort</string>
   <string name="play_video">Video abspielen</string>
   <string name="please_wait">Bitte haben Sie einen Moment Geduld.</string>
@@ -136,11 +133,6 @@
   <string name="submission_url">Submissionspfad</string>
   <string name="font_size">Schriftgröße</string>
   <string name="change_font_size">Schriftgröße</string>
-  <string name="access_error">Fehler beim Zugriff auf %s: </string>
-  <string name="manifest_server_error">Manifestantwort meldet keine OpenRosa Version — Serverfehler?</string>
-  <string name="root_element_error">Root element ist nicht &lt;manifest\&gt; — war %s</string>
-  <string name="root_namespace_error">Root element Namespace ist falsch: %s</string>
-  <string name="manifest_tag_error">Bei Manifest-Eintrag %s fehlt ein oder mehrere Tag(s): filename, hash, oder downloadUrl</string>
   <string name="form_download_progress">%1$s. Media-Dateien werden geladen: %2$s von %3$s</string>
   <string name="fetching_manifest">%s. Manifest wird geladen </string>
   <string name="success">Erfolg</string>
@@ -479,8 +471,7 @@
   <string name="include_password_dialog">Passwörter im Code enthalten</string>
   <string name="generate">Generieren</string>
   <string name="invalid_qrcode">QR-Code enthält keine gültigen Einstellungen</string>
-  <string name="share_qrcode">QR-Code teilen</string>
-  <string name="take_picture_instruction">Bildschirm berühren um ein Foto aufzunehmen</string>
+    <string name="take_picture_instruction">Bildschirm berühren um ein Foto aufzunehmen</string>
   <string name="error_front_camera_unavailable">Frontkamera bei diesem Gerät nicht verfügbar</string>
   <string name="camera_error">Dieses Gerät unterstützt die Camera2-API nicht.</string>
   <string name="invalid_range_widget">Dieses Widget hat ungültige Parameter!</string>
@@ -610,7 +601,6 @@
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect macht keine Telefonanrufe aber benötigt Zugriff auf bestimmte Eigenschaften Ihres Geräts, wie die Telefonnummer und Geräte-ID.</string>
   <string name="form_update_category">Formular-Update</string>
   <string name="periodic_form_updates_check_title">Periodischer Formular-Update-Check</string>
-  <string name="never">Nie</string>
   <string name="every_fifteen_minutes">Alle 15 Minuten</string>
   <string name="every_one_hour">Jede Stunde</string>
   <string name="every_six_hours">Alle 6 Stunden</string>
@@ -672,8 +662,7 @@
   <string name="migrate">Migrieren</string>
   <string name="error">Fehler:</string>
   <string name="storage_migration_not_enough_space">Sie haben nicht genug Platz auf Ihrem internen Speicher um Ihre Daten zu migrieren. Bitte geben Sie Speicherplatz frei und versuchen  Sie es erneut. </string>
-  <string name="storage_migration_form_uploader_is_running">Hintergrund-Formular-Uploader läuft. Bitte erneut versuchen. </string>
-  <string name="storage_migration_form_downloader_is_running">Hintergrund-Formular-Downloader läuft. Bitte erneut versuchen. </string>
+    <string name="changes_in_progress">Hintergrund-Formular-Downloader läuft. Bitte erneut versuchen. </string>
   <string name="storage_migration_failed">Datenmigration fehlgeschlagen. Bitte erneut versuchen. </string>
   <string name="storage_migration_dialog_title">Speichermigration</string>
   <string name="storage_migration_progress_msg">Migration läuft. \nDas kann einige Sekunden dauern… </string>

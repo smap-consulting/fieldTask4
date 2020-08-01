@@ -102,8 +102,8 @@ public class FillBlankFormTest {
         new MainMenuPage(rule)
                 .startBlankForm("All widgets")
                 .pressBack(new ExitFormDialog("All widgets", rule))
-                .checkIsStringDisplayed(R.string.keep_changes)
-                .checkIsStringDisplayed(R.string.do_not_save)
+                .assertText(R.string.keep_changes)
+                .assertText(R.string.do_not_save)
                 .clickOnString(R.string.do_not_save)
                 .checkIsIdDisplayed(R.id.enter_data)
                 .checkIsIdDisplayed(R.id.get_forms);
@@ -240,7 +240,7 @@ public class FillBlankFormTest {
 
         //TestCase26
         // This form doesn't define an instanceID and also doesn't request encryption so this case
-        // would catch regressions for https://github.com/opendatakit/collect/issues/3340
+        // would catch regressions for https://github.com/getodk/collect/issues/3340
         new MainMenuPage(rule).startBlankForm("CSV error Form")
                 .clickOnText("Greg Pommen")
                 .swipeToNextQuestion()
@@ -452,8 +452,8 @@ public class FillBlankFormTest {
                 .swipeToNextQuestion()
                 .clickGoToArrow()
                 .assertText("n1")
-                .checkIfTextDoesNotExist("t1")
-                .checkIfTextDoesNotExist("t2");
+                .assertTextDoesNotExist("t1")
+                .assertTextDoesNotExist("t2");
     }
 
     @Test
@@ -561,7 +561,7 @@ public class FillBlankFormTest {
                 .startBlankForm("validate")
                 .clearTheText("2019")
                 .swipeToNextQuestion()
-                .checkIsStringDisplayed(R.string.error_occured)
+                .assertText(R.string.error_occured)
                 .checkIsTextDisplayedOnDialog("The value \"-01-01\" can't be converted to a date.")
                 .clickOKOnDialog()
                 .swipeToNextQuestion()

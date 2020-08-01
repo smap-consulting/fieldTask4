@@ -16,7 +16,7 @@ public class ServerSettingsPage extends Page<ServerSettingsPage> {
 
     @Override
     public ServerSettingsPage assertOnPage() {
-        checkIsStringDisplayed(R.string.server_preferences);
+        assertText(R.string.server_preferences);
         return this;
     }
 
@@ -25,7 +25,7 @@ public class ServerSettingsPage extends Page<ServerSettingsPage> {
         return this;
     }
 
-    public ServerSettingsPage clickAggregateUsername() {
+    public ServerSettingsPage clickServerUsername() {
         onView(withText(getTranslatedString(R.string.username))).perform(click());
         return this;
     }
@@ -38,5 +38,10 @@ public class ServerSettingsPage extends Page<ServerSettingsPage> {
     public CustomServerPathsPage clickCustomServerPaths() {
         onView(withText(getTranslatedString(R.string.custom_server_paths))).perform(click());
         return new CustomServerPathsPage(rule).assertOnPage();
+    }
+
+    public ServerSettingsPage clickServerPassword() {
+        onView(withText(getTranslatedString(R.string.password))).perform(click());
+        return this;
     }
 }

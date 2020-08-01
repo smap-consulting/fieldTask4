@@ -16,8 +16,6 @@ and update this document as the code evolves.
 ## Where we are now
 
 * App has mixture of unit tests (JUnit), Robolectric tests (Junit + Robolectric) and Espresso tests but coverage is far from complete
-* Test style, reasoning and layering is inconsistent
-* App still written in Java with min API at 16 so basically targeting Java 7 source
 * UI is "iconic" (old) but with a lot of inconsistencies and quirks and is best adapted to small screens
 * A lot of code lives in between one "god" Activity (FormEntryActivity) and a process singleton (FormController)
 * Core form entry flow uses custom side-to-side swipe view (in FormEntryActivity made up of ODKView)
@@ -26,14 +24,13 @@ and update this document as the code evolves.
 * App stores data in flat files indexed in SQLite
 * Access to data in SQLite is done inconsistently through a mix of provider, helper and DAO objects
 * Raw access to database rows is favored over the use of domain objects
-* Preferences for the app use Android's Preferences abstraction (for UI also)
+* Settings for the app use (the now deprecated) Android's Preferences abstraction
 * Material Components styles are used in some places but app still uses AppCompat theme
 * Dagger is used to inject "black box" objects such as Activity and in some other places but isn't set up in a particularly advanced way
 * Http is handled using OkHttp3 and https client abstractions are generally wrapped in Android's AsyncTask (and some Rx)
 * Geo activities use three engines (Mapbox, osmdroid, Google Maps) depending on the selected basemap even though Mapbox could do everything osmdroid does
 * Code goes through static analysis using CheckStyle, PMD, SpotBugs and Android Lint
 * Code is mostly organized into packages based around what kind of object they are which has become unwieldy
-* The `@Deprecated` annotation (with a comment) is being used to track technical debt in the code
 
 ## Where we're going
 
@@ -47,3 +44,7 @@ and update this document as the code evolves.
 * Moving code to packages based on domain slices (`audio` or `formentry` for instance) to make it easier to work on isolated features and navigate code
 * Refactoring towards an OpenRosa abstraction (`OpenRosaAPIClient`) closer to its [documented API](https://docs.getodk.org/openrosa/) and takes care of all interactions with Aggregate, Central etc (currently some high level work interacts with `OpenRosaHttpInterface` directly)
 * `QuestionWiget` implementations are moving from defining their "answer" view programmatically to [implementing `onCreateAnswerView`](WIDGETS.md)
+* Converting settings screens to using the new AndroidX Preferences framework as we touch them
+* Replacing Rx (and other async work) with LiveData + Scheduler abstraction
+* Moving away from custom `SharedPreferences` abstractions (`GeneralSharedPreferences` and `AdminSharedPreferences`) to just using `SharedPreferences` interface
+* Replacing `..Factory` and `..Provider` objects with the new Java `Supplier` interface as much as possible

@@ -14,12 +14,12 @@
 
 package org.odk.collect.android.tasks;
 
-import android.content.ContentResolver;
-import android.net.Uri;
 import android.os.AsyncTask;
 
+import org.odk.collect.android.formmanagement.FormDeleter;
+import org.odk.collect.android.forms.FormsRepository;
+import org.odk.collect.android.instances.InstancesRepository;
 import org.odk.collect.android.listeners.DeleteFormsListener;
-import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
 
 import timber.log.Timber;
 
@@ -29,19 +29,26 @@ import timber.log.Timber;
  * @author norman86@gmail.com
  * @author mitchellsundt@gmail.com
  */
-public class DeleteFormsTask extends AsyncTask<Long, Void, Integer> {
+public class DeleteFormsTask extends AsyncTask<Long, Integer, Integer> {
 
-    private ContentResolver cr;
     private DeleteFormsListener dl;
 
     private int successCount;
     private int toDeleteCount;
 
+    private final FormsRepository formsRepository;
+    private final InstancesRepository instancesRepository;
+
+    public DeleteFormsTask(FormsRepository formsRepository, InstancesRepository instancesRepository) {
+        this.formsRepository = formsRepository;
+        this.instancesRepository = instancesRepository;
+    }
+
     @Override
     protected Integer doInBackground(Long... params) {
         int deleted = 0;
 
-        if (params == null || cr == null || dl == null) {
+        if (params == null || dl == null) {
             return deleted;
         }
         toDeleteCount = params.length;
@@ -52,11 +59,12 @@ public class DeleteFormsTask extends AsyncTask<Long, Void, Integer> {
                 break;
             }
             try {
-                Uri deleteForm =
-                        Uri.withAppendedPath(FormsColumns.CONTENT_URI, param.toString());
+                new FormDeleter(formsRepository, instancesRepository).delete(param);
 
-                int wasDeleted = cr.delete(deleteForm, null, null);
-                deleted += wasDeleted;
+                deleted++;
+
+                successCount++;
+                publishProgress(successCount, toDeleteCount);
             } catch (Exception ex) {
                 Timber.e("Exception during delete of: %s exception: %s", param.toString(), ex.toString());
             }
@@ -66,8 +74,16 @@ public class DeleteFormsTask extends AsyncTask<Long, Void, Integer> {
     }
 
     @Override
+    protected void onProgressUpdate(Integer... values) {
+        synchronized (this) {
+            if (dl != null) {
+                dl.progressUpdate(values[0], values[1]);
+            }
+        }
+    }
+
+    @Override
     protected void onPostExecute(Integer result) {
-        cr = null;
         if (dl != null) {
             dl.deleteComplete(result);
         }
@@ -76,7 +92,6 @@ public class DeleteFormsTask extends AsyncTask<Long, Void, Integer> {
 
     @Override
     protected void onCancelled() {
-        cr = null;
         if (dl != null) {
             dl.deleteComplete(successCount);
         }
@@ -84,10 +99,6 @@ public class DeleteFormsTask extends AsyncTask<Long, Void, Integer> {
 
     public void setDeleteListener(DeleteFormsListener listener) {
         dl = listener;
-    }
-
-    public void setContentResolver(ContentResolver resolver) {
-        cr = resolver;
     }
 
     public int getDeleteCount() {

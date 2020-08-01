@@ -16,19 +16,30 @@
 
 package org.odk.collect.android.preferences;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.PreferenceScreen;
+
+import androidx.annotation.NonNull;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
 
 import org.odk.collect.android.R;
+import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.utilities.MultiClickGuard;
+import org.odk.collect.android.version.VersionInformation;
 
 import java.util.Collection;
+
+import javax.inject.Inject;
 
 import static org.odk.collect.android.preferences.AdminKeys.KEY_MAPS;
 import static org.odk.collect.android.preferences.PreferencesActivity.INTENT_KEY_ADMIN_MODE;
 
 public class GeneralPreferencesFragment extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
+
+    @Inject
+    VersionInformation versionInformation;
 
     public static GeneralPreferencesFragment newInstance(boolean adminMode) {
         Bundle bundle = new Bundle();
@@ -37,6 +48,12 @@ public class GeneralPreferencesFragment extends BasePreferenceFragment implement
         GeneralPreferencesFragment generalPreferencesFragment = new GeneralPreferencesFragment();
         generalPreferencesFragment.setArguments(bundle);
         return generalPreferencesFragment;
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        DaggerUtils.getComponent(context).inject(this);
     }
 
     @Override
@@ -50,23 +67,28 @@ public class GeneralPreferencesFragment extends BasePreferenceFragment implement
         findPreference("maps").setOnPreferenceClickListener(this);
         findPreference("form_management").setOnPreferenceClickListener(this);
         findPreference("user_and_device_identity").setOnPreferenceClickListener(this);
+        findPreference("experimental").setOnPreferenceClickListener(this);
 
         if (!getArguments().getBoolean(INTENT_KEY_ADMIN_MODE)) {
             setPreferencesVisibility();
+        }
+
+        if (versionInformation.isRelease()) {
+            findPreference("experimental").setVisible(false);
         }
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (MultiClickGuard.allowClick(getClass().getName())) {
-            BasePreferenceFragment basePreferenceFragment = null;
+            PreferenceFragmentCompat basePreferenceFragment = null;
             boolean adminMode = getArguments().getBoolean(INTENT_KEY_ADMIN_MODE, false);
             switch (preference.getKey()) {
                 case "protocol":
                     basePreferenceFragment = ServerPreferencesFragment.newInstance(adminMode);
                     break;
                 case "user_interface":
-                    AndroidXPreferencesActivity.start(getActivity(), UserInterfacePreferencesFragment.class);
+                    basePreferenceFragment =  new UserInterfacePreferencesFragment();
                     break;
                 case "maps":
                     basePreferenceFragment = MapsPreferences.newInstance(adminMode);
@@ -77,9 +99,12 @@ public class GeneralPreferencesFragment extends BasePreferenceFragment implement
                 case "user_and_device_identity":
                     basePreferenceFragment = IdentityPreferences.newInstance(adminMode);
                     break;
+                case "experimental":
+                    basePreferenceFragment = new ExperimentalPreferencesFragment();
+                    break;
             }
             if (basePreferenceFragment != null) {
-                getActivity().getFragmentManager()
+                getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.preferences_fragment_container, basePreferenceFragment)
                         .addToBackStack(null)

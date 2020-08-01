@@ -24,16 +24,14 @@ import androidx.annotation.Nullable;
 import androidx.multidex.MultiDex;
 
 import org.odk.collect.android.BuildConfig;
-import org.odk.collect.android.R;
 import org.odk.collect.android.application.initialization.ApplicationInitializer;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.external.ExternalDataManager;
 import org.odk.collect.android.injection.config.AppDependencyComponent;
 import org.odk.collect.android.injection.config.DaggerAppDependencyComponent;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
-import org.odk.collect.android.preferences.MetaSharedPreferencesProvider;
+import org.odk.collect.android.preferences.PreferencesProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.LocaleHelper;
@@ -43,19 +41,9 @@ import java.io.File;
 
 import javax.inject.Inject;
 
-import timber.log.Timber;
-
-import static org.odk.collect.android.logic.PropertyManager.PROPMGR_USERNAME;
-import static org.odk.collect.android.logic.PropertyManager.SCHEME_USERNAME;
 import static org.odk.collect.android.preferences.GeneralKeys.KEY_APP_LANGUAGE;
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_USERNAME;
 import static org.odk.collect.android.preferences.MetaKeys.KEY_GOOGLE_BUG_154855417_FIXED;
 
-/**
- * The Open Data Kit Collect application.
- *
- * @author carlhartung
- */
 public class Collect extends Application {
     public static String defaultSysLanguage;
     private static Collect singleton;
@@ -69,7 +57,7 @@ public class Collect extends Application {
     ApplicationInitializer applicationInitializer;
 
     @Inject
-    MetaSharedPreferencesProvider metaSharedPreferencesProvider;
+    PreferencesProvider preferencesProvider;
 
     public static Collect getInstance() {
         return singleton;
@@ -130,17 +118,11 @@ public class Collect extends Application {
         singleton = this;
 
         setupDagger();
-        applicationInitializer.initializePreferences();
-        applicationInitializer.initializeFrameworks();
-        applicationInitializer.initializeLocale();
+        applicationInitializer.initialize();
+        
         fixGoogleBug154855417();
 
-        initializeJavaRosa();
         setupStrictMode();
-
-        // Force inclusion of scoped storage strings so they can be translated
-        Timber.i("%s %s", getString(R.string.scoped_storage_banner_text),
-                                   getString(R.string.scoped_storage_learn_more));
     }
 
     /**
@@ -182,17 +164,6 @@ public class Collect extends Application {
         }
     }
 
-    public void initializeJavaRosa() {
-        PropertyManager mgr = new PropertyManager(this);
-
-        // Use the server username by default if the metadata username is not defined
-        if (mgr.getSingularProperty(PROPMGR_USERNAME) == null || mgr.getSingularProperty(PROPMGR_USERNAME).isEmpty()) {
-            mgr.putProperty(PROPMGR_USERNAME, SCHEME_USERNAME, (String) GeneralSharedPreferences.getInstance().get(KEY_USERNAME));
-        }
-
-        FormController.initializeJavaRosa(mgr);
-    }
-
     public AppDependencyComponent getComponent() {
         return applicationComponent;
     }
@@ -230,7 +201,7 @@ public class Collect extends Application {
     // https://issuetracker.google.com/issues/154855417
     private void fixGoogleBug154855417() {
         try {
-            SharedPreferences metaSharedPreferences = metaSharedPreferencesProvider.getMetaSharedPreferences();
+            SharedPreferences metaSharedPreferences = preferencesProvider.getMetaSharedPreferences();
 
             boolean hasFixedGoogleBug154855417 = metaSharedPreferences.getBoolean(KEY_GOOGLE_BUG_154855417_FIXED, false);
 

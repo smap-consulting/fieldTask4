@@ -53,7 +53,7 @@ public class FormsDao {
         return Collect.getInstance().getContentResolver().query(uri, null, null, null, null);
     }
 
-    public Cursor getFormsCursor(String formId, String formVersion) {
+    public Cursor getFormsCursorSortedByDateDesc(String formId, String formVersion) {
         String[] selectionArgs;
         String selection;
 
@@ -74,10 +74,6 @@ public class FormsDao {
         return getFormsCursor(null, selection, selectionArgs, order);
     }
 
-    private CursorLoader getFormsCursorLoader(String sortOrder, boolean newestByFormId) {
-        return getFormsCursorLoader(null, null, sortOrder, newestByFormId);
-    }
-
     /**
      * Returns a loader filtered by the specified charSequence in the specified sortOrder. If
      * newestByFormId is true, only the most recently-downloaded version of each form is included.
@@ -86,9 +82,9 @@ public class FormsDao {
         CursorLoader cursorLoader;
 
         if (charSequence.length() == 0) {
-            cursorLoader = getFormsCursorLoader(sortOrder, newestByFormId);
+            cursorLoader = getFormsCursorLoader(FormsColumns.DELETED + " = 0", new String[]{}, sortOrder, newestByFormId);
         } else {
-            String selection = FormsColumns.DISPLAY_NAME + " LIKE ?";
+            String selection = FormsColumns.DISPLAY_NAME + " LIKE ? AND " + FormsColumns.DELETED + " = 0";
             String[] selectionArgs = {"%" + charSequence + "%"};
 
             cursorLoader = getFormsCursorLoader(selection, selectionArgs, sortOrder, newestByFormId);
@@ -121,7 +117,7 @@ public class FormsDao {
     public String getFormTitleForFormIdAndFormVersion(String formId, String formVersion) {
         String formTitle = "";
 
-        Cursor cursor = getFormsCursor(formId, formVersion);
+        Cursor cursor = getFormsCursorSortedByDateDesc(formId, formVersion);
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
@@ -138,7 +134,7 @@ public class FormsDao {
     public boolean isFormEncrypted(String formId, String formVersion) {
         boolean encrypted = false;
 
-        Cursor cursor = getFormsCursor(formId, formVersion);
+        Cursor cursor = getFormsCursorSortedByDateDesc(formId, formVersion);
         if (cursor != null) {
             try {
                 if (cursor.moveToFirst()) {
@@ -155,7 +151,7 @@ public class FormsDao {
     public String getFormMediaPath(String formId, String formVersion) {
         String formMediaPath = null;
 
-        Cursor cursor = getFormsCursor(formId, formVersion);
+        Cursor cursor = getFormsCursorSortedByDateDesc(formId, formVersion);
 
         if (cursor != null) {
             try {
@@ -199,27 +195,6 @@ public class FormsDao {
         Collect.getInstance().getContentResolver().delete(FormsColumns.CONTENT_URI, selection.toString(), idsToDelete);
     }
 
-    public void deleteFormsFromMd5Hash(String... hashes) {
-        List<String> idsToDelete = new ArrayList<>();
-        Cursor c = null;
-        try {
-            for (String hash : hashes) {
-                c = getFormsCursorForMd5Hash(hash);
-                if (c != null && c.moveToFirst()) {
-                    String id = c.getString(c.getColumnIndex(FormsColumns._ID));
-                    idsToDelete.add(id);
-                    c.close();
-                    c = null;
-                }
-            }
-        } finally {
-            if (c != null) {
-                c.close();
-            }
-        }
-        deleteFormsFromIDs(idsToDelete.toArray(new String[idsToDelete.size()]));
-    }
-
     public Uri saveForm(ContentValues values) {
         return Collect.getInstance().getContentResolver().insert(FormsColumns.CONTENT_URI, values);
     }
@@ -241,7 +216,7 @@ public class FormsDao {
     /**
      * Returns all forms available through the cursor and closes the cursor.
      */
-    public List<Form> getFormsFromCursor(Cursor cursor) {
+    public static List<Form> getFormsFromCursor(Cursor cursor) {
         List<Form> forms = new ArrayList<>();
         if (cursor != null) {
             try {

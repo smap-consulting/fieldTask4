@@ -3,6 +3,8 @@ package org.odk.collect.android.application.initialization.migration;
 import android.annotation.SuppressLint;
 import android.content.SharedPreferences;
 
+import static org.odk.collect.android.utilities.SharedPreferencesUtils.put;
+
 public class MigrationUtils {
 
     private MigrationUtils() {
@@ -60,6 +62,10 @@ public class MigrationUtils {
         return prefs -> prefs.edit().remove(key).apply();
     }
 
+    public static KeyExtractor extractNewKey(String oldKey) {
+        return new KeyExtractor(oldKey);
+    }
+
     /** Removes an old key and sets a new key. */
     @SuppressLint("ApplySharedPref")
     static void replace(SharedPreferences prefs, String oldKey, String newKey, Object newValue) {
@@ -71,38 +77,23 @@ public class MigrationUtils {
 
     /** Removes one or more old keys, then adds one or more new key-value pairs. */
     @SuppressLint("ApplySharedPref")
-    static void replace(SharedPreferences prefs, String[] oldKeys, Pair... newPairs) {
+    static void replace(SharedPreferences prefs, String[] oldKeys, KeyValuePair... newKeyValuePairs) {
         SharedPreferences.Editor editor = prefs.edit();
         for (String key : oldKeys) {
             editor.remove(key);
         }
-        for (Pair pair : newPairs) {
-            put(editor, pair.key, pair.value);
+        for (KeyValuePair keyValuePair : newKeyValuePairs) {
+            put(editor, keyValuePair.key, keyValuePair.value);
         }
         editor.commit();
     }
 
-    /** Writes a key with a value of varying type to a SharedPreferences.Editor. */
-    static void put(SharedPreferences.Editor editor, String key, Object value) {
-        if (value instanceof String) {
-            editor.putString(key, (String) value);
-        } else if (value instanceof Boolean) {
-            editor.putBoolean(key, (Boolean) value);
-        } else if (value instanceof Long) {
-            editor.putLong(key, (Long) value);
-        } else if (value instanceof Integer) {
-            editor.putInt(key, (Integer) value);
-        } else if (value instanceof Float) {
-            editor.putFloat(key, (Float) value);
-        }
-    }
-
     /** Converts an array of alternating keys and values into an array of Pairs. */
-    static Pair[] asPairs(Object... args) {
-        Pair[] pairs = new Pair[args.length / 2];
+    static KeyValuePair[] asPairs(Object... args) {
+        KeyValuePair[] keyValuePairs = new KeyValuePair[args.length / 2];
         for (int i = 0; i * 2 + 1 < args.length; i++) {
-            pairs[i] = new Pair((String) args[i * 2], args[i * 2 + 1]);
+            keyValuePairs[i] = new KeyValuePair((String) args[i * 2], args[i * 2 + 1]);
         }
-        return pairs;
+        return keyValuePairs;
     }
 }

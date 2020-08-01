@@ -15,6 +15,9 @@ collect_app/src/supply/
 collect_app/src/meqa/
 collect_app/src/atempi/
 collect_app/src/pop/
+collect_app/src/informEd/
+collect_app/src/tdh/
+collect_app/src/assignfield/
 
 collect_app/plan/
 collect_app/seracis/
@@ -22,6 +25,11 @@ collect_app/supply/
 collect_app/meqa/
 collect_app/atempi/
 collect_app/pop/
+collect_app/informEd/
+collect_app/assignfield/
+collect_app/tdh/
+
+collect_app/kontrolid/release/trace.db
 
 # emacs backup files
 *.*~

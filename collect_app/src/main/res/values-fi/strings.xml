@@ -74,8 +74,7 @@
   <string name="jump_to_beginning">Alkuun</string>
   <string name="jump_to_end">Loppuun</string>
   <string name="jump_to_previous">Ylös</string>
-  <string name="list_failed_with_error">Lomakkeiden luetteleminen epäonnistui. %s.</string>
-  <string name="loading_form">Ladataan lomaketta</string>
+    <string name="loading_form">Ladataan lomaketta</string>
   <string name="load_remote_form_error">Virhe lomakelistaa hakiessa.</string>
   <string name="location_accuracy">Tarkkuus %1$s m</string>
   <string name="manage_files">Poista tallennettu lomake</string>
@@ -88,8 +87,6 @@
   <string name="no_items_display_instances">Ei näytettävää.\n\nKokeile tallennetun lomakkeen viimeistelyä ennen lähettämistä.</string>
   <string name="ok">OK</string>
   <string name="parse_error">Pahoittelen, lomake ei ole tulkittavissa.</string>
-  <string name="parse_legacy_formlist_failed">Palvelin ei ole toimittanut käytettävissä-olevat-lomakkeet -dokumenttia joka olisi yhteensopiva Aggregate 0.9.x:n kanssa. : %s</string>
-  <string name="parse_openrosa_formlist_failed">Palvelin ei ole toimittanut käytettävissä-olevat-lomakkeet -dokumenttia joka olisi yhteensopiva OpenRosa versio 1.0 standardin kanssa: %s</string>
   <string name="password">Salasana</string>
   <string name="play_video">Näytä video</string>
   <string name="please_wait">Odota hetki.</string>
@@ -136,11 +133,6 @@
   <string name="submission_url">Lähetettävien lomakkeiden polku</string>
   <string name="font_size">Tekstin koko</string>
   <string name="change_font_size">Tekstin koko</string>
-  <string name="access_error">Virhe käyttäessä %s:</string>
-  <string name="manifest_server_error">Manifestivastaus ei raportoi OpenRosa-versiota - palvelinvika?</string>
-  <string name="root_element_error">Juurielementti ei ole &lt;manifest\&gt; — oli %s</string>
-  <string name="root_namespace_error">Juurielementin nimiavaruus on virheellinen: %s</string>
-  <string name="manifest_tag_error">Manifestin kohdasta %s puuttuu yksi tai useampi tägi: tiedostonimi, tiiviste (hash) tai downloadUrl</string>
   <string name="form_download_progress">%1$s. Haetaan mediatiedostoja: %2$s / %3$s</string>
   <string name="fetching_manifest">%s. Haetaan manifestia</string>
   <string name="success">Onnistui</string>
@@ -479,8 +471,7 @@
   <string name="include_password_dialog">Koodiin sisältyvät salasanat</string>
   <string name="generate">Luo</string>
   <string name="invalid_qrcode">QR-koodi ei sisällä kelvollisia asetuksia</string>
-  <string name="share_qrcode">Jaa QR-koodi</string>
-  <string name="take_picture_instruction">Napsauta näyttöä ottaaksesi kuvan</string>
+    <string name="take_picture_instruction">Napsauta näyttöä ottaaksesi kuvan</string>
   <string name="error_front_camera_unavailable">Etukamera ei ole käytettävissä tällä laitteella</string>
   <string name="camera_error">Tämä laite ei tue Camera2 API:a (ohjelmarajapintaa).</string>
   <string name="invalid_range_widget">Tällä widgetillä on väärät asetukset!</string>
@@ -610,7 +601,6 @@
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect ei soita puheluita, mutta se tarvitsee tiedot joistakin laitteesi tiedoista, kuten puhelinnumero ja laitteen ID.</string>
   <string name="form_update_category">Lomakepäivitys</string>
   <string name="periodic_form_updates_check_title">Ajastettu lomakepäivitysten tarkistus</string>
-  <string name="never">Ei koskaan</string>
   <string name="every_fifteen_minutes">Vartin välein</string>
   <string name="every_one_hour">Tunnin välein</string>
   <string name="every_six_hours">Kuuden tunnin välein</string>
@@ -672,8 +662,7 @@
   <string name="migrate">Siirrä</string>
   <string name="error">Virhe:</string>
   <string name="storage_migration_not_enough_space">Sinulla ei ole riittävästi tilaa sisäisessä muistissa tietojesi siirtämiseen. Ole hyvä ja vapauta tilaa ja yritä uudelleen.</string>
-  <string name="storage_migration_form_uploader_is_running">Lomakkeiden taustalähetys käynnissä. Ole hyvä ja yritä uudelleen.</string>
-  <string name="storage_migration_form_downloader_is_running">Lomakkeiden taustalataus käynnissä. Ole hyvä ja yritä uudelleen.</string>
+    <string name="changes_in_progress">Lomakkeiden taustalataus käynnissä. Ole hyvä ja yritä uudelleen.</string>
   <string name="storage_migration_failed">Tietojen siirto epäonnistui. Ole hyvä ja yritä uudelleen.</string>
   <string name="storage_migration_dialog_title">Tallennuksen siirto</string>
   <string name="storage_migration_progress_msg">Siirto käynnissä.\Tässä voi kulua muutama sekunti…</string>

@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.ActivityTestRule;
@@ -24,16 +25,20 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
@@ -94,6 +99,11 @@ abstract class Page<T extends Page<T>> {
         return (T) this;
     }
 
+    public T assertText(int stringID) {
+        assertText(getTranslatedString(stringID));
+        return (T) this;
+    }
+
     public T checkIsTranslationDisplayed(String... text) {
         for (String s : text) {
             try {
@@ -110,18 +120,13 @@ abstract class Page<T extends Page<T>> {
         return (T) this;
     }
 
-    public T checkIfTextDoesNotExist(String text) {
+    public T assertTextDoesNotExist(String text) {
         onView(withText(text)).check(doesNotExist());
         return (T) this;
     }
 
-    public T checkIfTextDoesNotExist(int string) {
-        return checkIfTextDoesNotExist(getTranslatedString(string));
-    }
-
-    public T checkIsStringDisplayed(int stringID) {
-        assertText(getTranslatedString(stringID));
-        return (T) this;
+    public T assertTextDoesNotExist(int string) {
+        return assertTextDoesNotExist(getTranslatedString(string));
     }
 
     public T checkIsToastWithMessageDisplayed(String message) {
@@ -191,6 +196,11 @@ abstract class Page<T extends Page<T>> {
         return (T) this;
     }
 
+    public T inputText(int hint, String text) {
+        onView(withHint(getTranslatedString(hint))).perform(replaceText(text));
+        return (T) this;
+    }
+
     public T checkIfElementIsGone(int id) {
         onView(withId(id)).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         return (T) this;
@@ -206,7 +216,12 @@ abstract class Page<T extends Page<T>> {
         return (T) this;
     }
 
-    public T checkIfOptionIsDisabled(int string) {
+    public T assertEnabled(int string) {
+        onView(withText(string)).check(matches(isEnabled()));
+        return (T) this;
+    }
+
+    public T assertDisabled(int string) {
         onView(withText(string)).check(matches(not(isEnabled())));
         return (T) this;
     }
@@ -262,6 +277,14 @@ abstract class Page<T extends Page<T>> {
 
     public T scrollToAndClickText(String text) {
         onView(withText(text)).perform(nestedScrollTo(), click());
+        return (T) this;
+    }
+
+    public T scrollToViewAndClickText(String text) {
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions
+                .actionOnItem(hasDescendant(withText(text)), scrollTo()));
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions
+                .actionOnItem(hasDescendant(withText(text)), click()));
         return (T) this;
     }
 
@@ -343,6 +366,19 @@ abstract class Page<T extends Page<T>> {
         }
 
         throw new RuntimeException("waitFor failed", failure);
+    }
+
+    public T assertTextNotDisplayed(int string) {
+        onView(withText(getTranslatedString(string))).check(matches(not(isDisplayed())));
+        return (T) this;
+    }
+
+    protected void assertToolbarTitle(String title) {
+        onView(allOf(withText(title), isDescendantOfA(withId(R.id.toolbar)))).check(matches(isDisplayed()));
+    }
+
+    protected void assertToolbarTitle(int title) {
+        assertToolbarTitle(getTranslatedString(title));
     }
 }
 

@@ -74,8 +74,7 @@
   <string name="jump_to_beginning">Nenda mwanzo</string>
   <string name="jump_to_end">Nenda mwisho</string>
   <string name="jump_to_previous">Nenda juu</string>
-  <string name="list_failed_with_error">Kuorodheshwa kwa fomu kumeshindikana. %s.</string>
-  <string name="loading_form">Fomu inakuja</string>
+    <string name="loading_form">Fomu inakuja</string>
   <string name="load_remote_form_error">Hitilafu kupata orodha ya fomu</string>
     <string name="location_accuracy">Usahihi ni %1$s m</string>
   <string name="manage_files">Futa fomu zilizohifadhiwa</string>
@@ -88,8 +87,6 @@
   <string name="no_items_display_instances">Hakuna kitu cha kuonyesha.\n\n Jaribu kukamilisha fomu kabla ya kuzituma</string>
   <string name="ok">Sawa</string>
   <string name="parse_error">Pole, haiwezi kuchanganua fomu.</string>
-  <string name="parse_legacy_formlist_failed">Seva haijatoa taarifa ya fomu-zinazopatikana na kuendana na Aggregate 0.9.x. : %s</string>
-  <string name="parse_openrosa_formlist_failed">Seva haijatoa taarifa ya fomu-zinazopatikana na kuendana na OpenRosa version 1.0 standard: %s </string>
   <string name="password">Nenosiri</string>
   <string name="play_video">Cheza video</string>
   <string name="please_wait">Tafadhali subiri kidogo.</string>
@@ -136,11 +133,6 @@
   <string name="submission_url">Njia ya kuwasilisha </string>
   <string name="font_size">Ukubwa wa maandishi</string>
   <string name="change_font_size">Ukubwa wa maandishi</string>
-  <string name="access_error">Hitilafu inapojaribu kufikia %s: </string>
-  <string name="manifest_server_error">Orodha ya seva haiwezi kuripoti toleo la OpenRosa — seva ina tatizo?</string>
-  <string name="root_element_error">Root element sio &lt;manifest\&gt; — ilikuwa %s</string>
-  <string name="root_namespace_error">Root element namespace sio sahihi: %s</string>
-  <string name="manifest_tag_error">Ingizo la orodha ya seva  %s inakosa taarifa moja au mbili: jina la kabrasha, alama ya reli, au URL ya kupakua</string>
   <string name="form_download_progress">%1$s. inapata kabrasha za media: %2$s kati ya %3$s</string>
   <string name="fetching_manifest">%s. Inapata orodha </string>
   <string name="success">Mafanikio</string>
@@ -452,8 +444,7 @@
   <string name="include_password_dialog">Nenosiri limejumuishwa ndani ya kanuni</string>
   <string name="generate">Zalisha</string>
   <string name="invalid_qrcode">Kanuni za QR hazijajumuisha mipangilio sahihi</string>
-  <string name="share_qrcode">Shirikisha kanuni za QR</string>
-  <string name="take_picture_instruction">Bofya kioo kuchukua picha</string>
+    <string name="take_picture_instruction">Bofya kioo kuchukua picha</string>
   <string name="error_front_camera_unavailable">Kamera ya mbele haipo katika kifaa hiki</string>
   <string name="camera_error">Kifaa hiki hakina uwezo wa kutumia Kamera2 API.</string>
   <string name="invalid_range_widget">Widget hii  ina vigezo batili!</string>
@@ -571,7 +562,6 @@
   <string name="read_phone_state_runtime_permission_denied_desc">ODK Collect haipigi simu lakini inahitaji kufikia taarifa fulani kuhusu kifaa chako kama namba ya simu na ya utambulisho wa kifaa.</string>
   <string name="form_update_category">Tolea jipya la fomu</string>
   <string name="periodic_form_updates_check_title">Ukaguzi wa mara kwa mara wa matolea mapya ya  fomu</string>
-  <string name="never">Kamwe</string>
   <string name="every_fifteen_minutes">Kila dakika kumi na tano</string>
   <string name="every_one_hour">Kila saa</string>
   <string name="every_six_hours">Kila masaa sita</string>
@@ -594,8 +584,7 @@
   <string name="missing_google_account_dialog_title">Akaunti ya Google haijawekwa sawa</string>
   <string name="missing_google_account_dialog_desc">Kuwasilisha  fomu kupitia karatasi ya Google , unatakiwa kurekebisha  akaunti yako ya Google kwenye mpangilio wa seva. </string>
   <string name="storage_migration_not_enough_space">Huna nafasi kwenye kifaa chako cha ndani kuhamisha data, Tafadhali ongeza nafasi kiasi na ujaribu tena.</string>
-  <string name="storage_migration_form_uploader_is_running">Fomu ya upakuaji inatumika. Tafadhali jaribu tena</string>
-  <string name="storage_migration_form_downloader_is_running">Fomu inatumika kwenye upakuaji. Tafadhali jaribu tena.</string>
+    <string name="changes_in_progress">Fomu inatumika kwenye upakuaji. Tafadhali jaribu tena.</string>
   <string name="storage_migration_failed">Hamisho la data limesitishwa, Tafadhali jaribu tena</string>
   <string name="storage_migration_dialog_title">Uhamiaji wa uhifadhi</string>
   <string name="storage_migration_progress_msg">Uhamiaji unaendelea. \ Hii inaweza kuchukua sekunde chache…</string>

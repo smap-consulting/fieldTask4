@@ -70,6 +70,10 @@ def mapboxToken = secrets.getProperty('MAPBOX_ACCESS_TOKEN', '')
 android {
     compileSdkVersion(28)
 
+    viewBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId('org.odk.collect.android')
         minSdkVersion(21)
@@ -168,24 +172,14 @@ android {
 
     compileOptions {
         coreLibraryDesugaringEnabled true
-
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    dexOptions {
-        javaMaxHeapSize '2048M'
     }
 
     testOptions {
         unitTests {
             includeAndroidResources = true
             returnDefaultValues = true
-            all {
-                // https://discuss.circleci.com/t/11207/24
-                // it seems any number works, but 1024 - 2048 seem reasonable
-                maxHeapSize = "2048M"
-            }
         }
     }
 }
@@ -207,12 +201,14 @@ dependencies {
     implementation 'androidx.browser:browser:1.2.0'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation "androidx.work:work-runtime:2.3.4"
-    implementation 'com.google.android.material:material:1.1.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.2.0'
     implementation 'androidx.multidex:multidex:2.0.1'
     implementation 'androidx.preference:preference:1.1.1'
     implementation "androidx.fragment:fragment:${rootProject.fragmentVersion}"
+
+    implementation 'com.google.android.material:material:1.1.0'
+    implementation 'com.google.android:flexbox:2.0.1'
 
     implementation "com.google.android.gms:play-services-auth:18.0.0"
     implementation "com.google.android.gms:play-services-maps:17.0.0"
@@ -233,7 +229,6 @@ dependencies {
     implementation 'com.github.mohamadian:PersianJodaTime:1.2'
     implementation 'com.github.chanmratekoko:myanmar-calendar:1.0.6.RC3'
     implementation 'bikramsambat:bikram-sambat:1.1.0'
-    implementation "com.evernote:android-job:1.4.2"
     implementation "com.rarepebble:colorpicker:3.0.1"
     implementation "commons-io:commons-io:2.6"
     implementation "net.sf.opencsv:opencsv:2.4"
@@ -260,8 +255,12 @@ dependencies {
     implementation "org.slf4j:slf4j-api:2.0.0-alpha0"
     implementation "com.arcao:slf4j-timber:3.1@aar"
 
-    implementation "com.google.zxing:core:3.3.0" //updating to 3.4.0 requires minSdkVersion >=24 https://github.com/zxing/zxing/releases/tag/zxing-3.4.0
-    implementation "com.journeyapps:zxing-android-embedded:3.6.0" //updating would require minSdkVersion >=24
+    //updating to 3.4.0 requires minSdkVersion >=24 https://github.com/zxing/zxing/releases/tag/zxing-3.4.0
+    implementation "com.google.zxing:core:3.3.0"
+
+    //updating would require minSdkVersion >=24
+    implementation "com.journeyapps:zxing-android-embedded:3.6.0"
+
     implementation "net.danlew:android.joda:2.10.6"
 
     // Real LeakCanary for debug builds only: notifications, analysis, etc
@@ -274,7 +273,10 @@ dependencies {
     // Dagger:
     implementation "com.google.dagger:dagger:${rootProject.daggerVersion}"
     annotationProcessor "com.google.dagger:dagger-compiler:${rootProject.daggerVersion}"
-    testAnnotationProcessor "com.google.dagger:dagger-compiler:${rootProject.daggerVersion}" // Needed for injection into Robolectric tests
+
+    // Needed for injection into Robolectric tests
+    testAnnotationProcessor "com.google.dagger:dagger-compiler:${rootProject.daggerVersion}"
+
 
     // Dagger Android:
     implementation "com.google.dagger:dagger-android:${rootProject.daggerVersion}"
@@ -290,6 +292,7 @@ dependencies {
 
     implementation project(':nbi-stubs')
     implementation project(':material')
+    implementation project(':async')
 
     // Makes binding to Views easy:
     implementation "com.jakewharton:butterknife:10.2.1"
@@ -309,6 +312,7 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.3.1"
     testImplementation 'androidx.test.ext:junit:1.1.1'
     debugImplementation "androidx.fragment:fragment-testing:${rootProject.fragmentVersion}"
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
     testImplementation "org.robolectric:shadows-multidex:4.3.1"
     testImplementation "com.squareup.okhttp3:mockwebserver:${rootProject.okhttp3Version}"
     testImplementation "com.squareup.okhttp3:okhttp-tls:${rootProject.okhttp3Version}"
