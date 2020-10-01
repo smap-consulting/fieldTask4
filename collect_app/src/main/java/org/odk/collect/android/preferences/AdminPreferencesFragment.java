@@ -14,18 +14,21 @@
 
 package org.odk.collect.android.preferences;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.Preference;
 
 import org.odk.collect.android.R;
+import org.odk.collect.android.configure.qr.QRCodeTabsActivity;
+import org.odk.collect.android.formmanagement.FormUpdateMode;
 import org.odk.collect.android.fragments.dialogs.MovingBackwardsDialog;
 import org.odk.collect.android.fragments.dialogs.SimpleDialog;
-import org.odk.collect.android.configure.qr.QRCodeTabsActivity;
+import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.DialogUtils;
@@ -34,15 +37,21 @@ import org.odk.collect.android.utilities.ToastUtils;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
+import static org.odk.collect.android.configure.SettingsUtils.getFormUpdateMode;
 import static org.odk.collect.android.fragments.dialogs.MovingBackwardsDialog.MOVING_BACKWARDS_DIALOG_TAG;
 import static org.odk.collect.android.preferences.AdminKeys.ALLOW_OTHER_WAYS_OF_EDITING_FORM;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_CHANGE_ADMIN_PASSWORD;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_EDIT_SAVED;
+import static org.odk.collect.android.preferences.AdminKeys.KEY_GET_BLANK;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_IMPORT_SETTINGS;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_JUMP_TO;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_MOVING_BACKWARDS;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_SAVE_MID;
 import static org.odk.collect.android.preferences.GeneralKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE;
+import static org.odk.collect.android.preferences.PreferencesActivity.INTENT_KEY_ADMIN_MODE;
+import static org.odk.collect.android.preferences.utilities.PreferencesUtils.displayDisabled;
 
 public class AdminPreferencesFragment extends BasePreferenceFragment implements Preference.OnPreferenceClickListener {
 
@@ -50,8 +59,6 @@ public class AdminPreferencesFragment extends BasePreferenceFragment implements 
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        super.onCreatePreferences(savedInstanceState, rootKey);
-
         getPreferenceManager().setSharedPreferencesName(ADMIN_PREFERENCES);
 
         setPreferencesFromResource(R.xml.admin_preferences, rootKey);
@@ -67,34 +74,34 @@ public class AdminPreferencesFragment extends BasePreferenceFragment implements 
 
     @Override
     public void onDisplayPreferenceDialog(Preference preference) {
-        ResetDialogPreference resetDialogPreference = null;
-        if (preference instanceof ResetDialogPreference) {
-            resetDialogPreference = (ResetDialogPreference) preference;
-        }
-        if (resetDialogPreference != null) {
-            ResetDialogPreferenceFragmentCompat dialogFragment = ResetDialogPreferenceFragmentCompat.newInstance(preference.getKey());
-            dialogFragment.setTargetFragment(this, 0);
-            dialogFragment.show(getParentFragmentManager(), null);
-        } else {
-            super.onDisplayPreferenceDialog(preference);
+        if (MultiClickGuard.allowClick(getClass().getName())) {
+            ResetDialogPreference resetDialogPreference = null;
+            if (preference instanceof ResetDialogPreference) {
+                resetDialogPreference = (ResetDialogPreference) preference;
+            }
+            if (resetDialogPreference != null) {
+                ResetDialogPreferenceFragmentCompat dialogFragment = ResetDialogPreferenceFragmentCompat.newInstance(preference.getKey());
+                dialogFragment.setTargetFragment(this, 0);
+                dialogFragment.show(getParentFragmentManager(), null);
+            } else {
+                super.onDisplayPreferenceDialog(preference);
+            }
         }
     }
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
         if (MultiClickGuard.allowClick(getClass().getName())) {
-            Fragment fragment = null;
-
             switch (preference.getKey()) {
                 case "odk_preferences":
                     Intent intent = new Intent(getActivity(), PreferencesActivity.class);
-                    intent.putExtra("adminMode", true);
+                    intent.putExtra(INTENT_KEY_ADMIN_MODE, true);
                     startActivity(intent);
                     break;
 
                 case KEY_CHANGE_ADMIN_PASSWORD:
                     DialogUtils.showIfNotShowing(ChangeAdminPasswordDialog.class,
-                            ((AppCompatActivity) getActivity()).getSupportFragmentManager());
+                            getActivity().getSupportFragmentManager());
                     break;
 
                 case KEY_IMPORT_SETTINGS:
@@ -120,21 +127,14 @@ public class AdminPreferencesFragment extends BasePreferenceFragment implements 
                     }
                     return true;
                 case "main_menu":
-                    fragment = new MainMenuAccessPreferences();
+                    displayPreferences(new MainMenuAccessPreferences());
                     break;
                 case "user_settings":
-                    fragment = new UserSettingsAccessPreferences();
+                    displayPreferences(new UserSettingsAccessPreferences());
                     break;
                 case "form_entry":
-                    fragment = new FormEntryAccessPreferences();
+                    displayPreferences(new FormEntryAccessPreferences());
                     break;
-            }
-
-            if (fragment != null) {
-                getActivity().getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.preferences_fragment_container, fragment)
-                        .addToBackStack(null)
-                        .commit();
             }
 
             return true;
@@ -143,48 +143,66 @@ public class AdminPreferencesFragment extends BasePreferenceFragment implements 
         return false;
     }
 
+    private void displayPreferences(Fragment fragment) {
+        if (fragment != null) {
+            fragment.setArguments(getArguments());
+            getActivity().getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.preferences_fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
+    }
+
     public static class MainMenuAccessPreferences extends BasePreferenceFragment {
 
+        @Inject
+        PreferencesProvider preferencesProvider;
+
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onAttach(@NonNull Context context) {
+            super.onAttach(context);
+            DaggerUtils.getComponent(context).inject(this);
+        }
+
+        @Override
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             getPreferenceManager().setSharedPreferencesName(ADMIN_PREFERENCES);
 
-            addPreferencesFromResource(R.xml.main_menu_access_preferences);
+            setPreferencesFromResource(R.xml.main_menu_access_preferences, rootKey);
             findPreference(KEY_EDIT_SAVED).setEnabled((Boolean) AdminSharedPreferences.getInstance().get(ALLOW_OTHER_WAYS_OF_EDITING_FORM));
+
+            FormUpdateMode formUpdateMode = getFormUpdateMode(requireContext(), preferencesProvider.getGeneralSharedPreferences());
+            if (formUpdateMode == FormUpdateMode.MATCH_EXACTLY) {
+                displayDisabled(findPreference(KEY_GET_BLANK), false);
+            }
         }
     }
 
     public static class UserSettingsAccessPreferences extends BasePreferenceFragment {
 
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             getPreferenceManager().setSharedPreferencesName(ADMIN_PREFERENCES);
-
-            addPreferencesFromResource(R.xml.user_settings_access_preferences);
+            setPreferencesFromResource(R.xml.user_settings_access_preferences, rootKey);
         }
     }
 
     public static class FormEntryAccessPreferences extends BasePreferenceFragment {
+
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             getPreferenceManager().setSharedPreferencesName(ADMIN_PREFERENCES);
 
             addPreferencesFromResource(R.xml.form_entry_access_preferences);
 
-            findPreference(KEY_MOVING_BACKWARDS).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    if (((CheckBoxPreference) preference).isChecked()) {
-                        new MovingBackwardsDialog().show(((AdminPreferencesActivity) getActivity()).getSupportFragmentManager(), MOVING_BACKWARDS_DIALOG_TAG);
-                    } else {
-                        SimpleDialog.newInstance(getActivity().getString(R.string.moving_backwards_enabled_title), 0, getActivity().getString(R.string.moving_backwards_enabled_message), getActivity().getString(R.string.ok), false).show(((AdminPreferencesActivity) getActivity()).getSupportFragmentManager(), SimpleDialog.COLLECT_DIALOG_TAG);
-                        onMovingBackwardsEnabled();
-                    }
-                    return true;
+            findPreference(KEY_MOVING_BACKWARDS).setOnPreferenceChangeListener((preference, newValue) -> {
+                if (((CheckBoxPreference) preference).isChecked()) {
+                    new MovingBackwardsDialog().show(getActivity().getSupportFragmentManager(), MOVING_BACKWARDS_DIALOG_TAG);
+                } else {
+                    SimpleDialog.newInstance(getActivity().getString(R.string.moving_backwards_enabled_title), 0, getActivity().getString(R.string.moving_backwards_enabled_message), getActivity().getString(R.string.ok), false).show(((AdminPreferencesActivity) getActivity()).getSupportFragmentManager(), SimpleDialog.COLLECT_DIALOG_TAG);
+                    onMovingBackwardsEnabled();
                 }
+                return true;
             });
             findPreference(KEY_JUMP_TO).setEnabled((Boolean) AdminSharedPreferences.getInstance().get(ALLOW_OTHER_WAYS_OF_EDITING_FORM));
             findPreference(KEY_SAVE_MID).setEnabled((Boolean) AdminSharedPreferences.getInstance().get(ALLOW_OTHER_WAYS_OF_EDITING_FORM));

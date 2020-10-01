@@ -13,11 +13,15 @@ import java.util.List;
  */
 public interface InstancesRepository {
 
+    List<Instance> getAllFinalized();
+
     Instance get(long databaseId);
 
     List<Instance> getAllByJrFormId(String formId);
 
     List<Instance> getAllByJrFormIdAndJrVersion(String jrFormId, String jrVersion);
+
+    List<Instance> getAllByJrFormIdAndJrVersionNotDeleted(String jrFormId, String jrVersion);
 
     /**
      * Get the Instance corresponding to the given path or null if no unique Instance matches.

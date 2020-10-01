@@ -29,8 +29,12 @@ import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.forms.Form;
+import org.odk.collect.android.forms.FormsRepository;
+import org.odk.collect.android.gdrive.GoogleAccountsManager;
+import org.odk.collect.android.gdrive.GoogleApiProvider;
 import org.odk.collect.android.instancemanagement.InstanceSubmitter;
 import org.odk.collect.android.instancemanagement.SubmitException;
+import org.odk.collect.android.instances.InstancesRepository;
 import org.odk.collect.android.network.NetworkStateProvider;
 import org.odk.collect.android.notifications.Notifier;
 import org.odk.collect.android.preferences.GeneralKeys;
@@ -62,6 +66,18 @@ public class AutoSendTaskSpec implements TaskSpec {
     @Inject
     @Named("INSTANCES")
     ChangeLock changeLock;
+
+    @Inject
+    FormsRepository formsRepository;
+
+    @Inject
+    InstancesRepository instancesRepository;
+
+    @Inject
+    GoogleAccountsManager googleAccountsManager;
+
+    @Inject
+    GoogleApiProvider googleApiProvider;
 
     /**
      * If the app-level auto-send setting is enabled, send all finalized forms that don't specify not
@@ -97,15 +113,15 @@ public class AutoSendTaskSpec implements TaskSpec {
             return changeLock.withLock(acquiredLock -> {
                 if (acquiredLock) {
                     try {
-                        Pair<Boolean, String> results = new InstanceSubmitter(analytics).submitUnsubmittedInstances();
+                        Pair<Boolean, String> results = new InstanceSubmitter(analytics, formsRepository, instancesRepository, googleAccountsManager, googleApiProvider).submitUnsubmittedInstances();
                         notifier.onSubmission(results.first, results.second);
                     } catch (SubmitException e) {
                         switch (e.getType()) {
                             case GOOGLE_ACCOUNT_NOT_SET:
-                                notifier.onSubmission(true, Collect.getInstance().getString(R.string.google_set_account));
+                                notifier.onSubmission(true, context.getString(R.string.google_set_account));
                                 break;
                             case GOOGLE_ACCOUNT_NOT_PERMITTED:
-                                notifier.onSubmission(true, Collect.getInstance().getString(R.string.odk_permissions_fail));
+                                notifier.onSubmission(true, context.getString(R.string.odk_permissions_fail));
                                 break;
                             case NOTHING_TO_SUBMIT:
                                 break;

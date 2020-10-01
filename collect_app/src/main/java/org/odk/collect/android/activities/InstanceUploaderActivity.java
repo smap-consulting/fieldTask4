@@ -21,7 +21,6 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.forms.FormsRepository;
 import org.odk.collect.android.fragments.dialogs.SimpleDialog;
 import org.odk.collect.android.injection.DaggerUtils;
@@ -184,7 +183,7 @@ public class InstanceUploaderActivity extends CollectAbstractActivity implements
             instanceServerUploaderTask = new InstanceServerUploaderTask();
 
             if (url != null) {
-                instanceServerUploaderTask.setCompleteDestinationUrl(url + Collect.getInstance().getString(R.string.default_odk_submission));
+                instanceServerUploaderTask.setCompleteDestinationUrl(url + getString(R.string.default_odk_submission));
 
                 if (deleteInstanceAfterUpload != null) {
                     instanceServerUploaderTask.setDeleteInstanceAfterSubmission(deleteInstanceAfterUpload);
@@ -261,7 +260,7 @@ public class InstanceUploaderActivity extends CollectAbstractActivity implements
 
         // If the activity is paused or in the process of pausing, don't show the dialog
         if (!isInstanceStateSaved()) {
-            createUploadInstancesResultDialog(InstanceUploaderUtils.getUploadResultMessage(this, result));
+            createUploadInstancesResultDialog(InstanceUploaderUtils.getUploadResultMessage(instancesRepository, this, result));
         } else {
             // Clean up
             finish();
@@ -376,7 +375,7 @@ public class InstanceUploaderActivity extends CollectAbstractActivity implements
         // TODO: is this really needed here? When would the task not have gotten a server set in
         // init already?
         if (url != null) {
-            instanceServerUploaderTask.setCompleteDestinationUrl(url + Collect.getInstance().getString(R.string.default_odk_submission), false);
+            instanceServerUploaderTask.setCompleteDestinationUrl(url + getString(R.string.default_odk_submission), false);
         }
         instanceServerUploaderTask.setRepositories(instancesRepository, formsRepository);
         instanceServerUploaderTask.execute(instancesToSend);

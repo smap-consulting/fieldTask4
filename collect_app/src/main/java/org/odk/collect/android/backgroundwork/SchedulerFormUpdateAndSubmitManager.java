@@ -3,12 +3,13 @@ package org.odk.collect.android.backgroundwork;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-import org.odk.collect.android.formmanagement.FormUpdateMode;
+import org.odk.collect.android.preferences.Protocol;
 import org.odk.collect.async.Scheduler;
 
 import static org.odk.collect.android.backgroundwork.BackgroundWorkUtils.getPeriodInMilliseconds;
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_FORM_UPDATE_MODE;
+import static org.odk.collect.android.configure.SettingsUtils.getFormUpdateMode;
 import static org.odk.collect.android.preferences.GeneralKeys.KEY_PERIODIC_FORM_UPDATES_CHECK;
+import static org.odk.collect.android.preferences.GeneralKeys.KEY_PROTOCOL;
 
 public class SchedulerFormUpdateAndSubmitManager implements FormUpdateManager, FormSubmitManager {
 
@@ -28,30 +29,30 @@ public class SchedulerFormUpdateAndSubmitManager implements FormUpdateManager, F
 
     @Override
     public void scheduleUpdates() {
-        scheduler.cancelDeferred(MATCH_EXACTLY_SYNC_TAG);
-        scheduler.cancelDeferred(AUTO_UPDATE_TAG);
+        String protocol = sharedPreferences.getString(KEY_PROTOCOL, null);
+        if (Protocol.parse(application, protocol) == Protocol.GOOGLE) {
+            scheduler.cancelDeferred(MATCH_EXACTLY_SYNC_TAG);
+            scheduler.cancelDeferred(AUTO_UPDATE_TAG);
+            return;
+        }
 
-        String newValue = sharedPreferences.getString(KEY_FORM_UPDATE_MODE, null);
         String period = sharedPreferences.getString(KEY_PERIODIC_FORM_UPDATES_CHECK, null);
+        long periodInMilliseconds = getPeriodInMilliseconds(period, application);
 
-        switch (FormUpdateMode.parse(application, newValue)) {
+        switch (getFormUpdateMode(application, sharedPreferences)) {
             case MANUAL:
+                scheduler.cancelDeferred(MATCH_EXACTLY_SYNC_TAG);
+                scheduler.cancelDeferred(AUTO_UPDATE_TAG);
                 break;
             case PREVIOUSLY_DOWNLOADED_ONLY:
-                scheduleAutoUpdate(getPeriodInMilliseconds(period));
+                scheduler.cancelDeferred(MATCH_EXACTLY_SYNC_TAG);
+                scheduler.networkDeferred(AUTO_UPDATE_TAG, new AutoUpdateTaskSpec(), periodInMilliseconds);
                 break;
             case MATCH_EXACTLY:
-                scheduleMatchExactlySync(getPeriodInMilliseconds(period));
+                scheduler.cancelDeferred(AUTO_UPDATE_TAG);
+                scheduler.networkDeferred(MATCH_EXACTLY_SYNC_TAG, new SyncFormsTaskSpec(), periodInMilliseconds);
                 break;
         }
-    }
-
-    private void scheduleMatchExactlySync(long repeatPeriod) {
-        scheduler.networkDeferred(MATCH_EXACTLY_SYNC_TAG, new SyncFormsTaskSpec(), repeatPeriod);
-    }
-
-    private void scheduleAutoUpdate(long repeatPeriod) {
-        scheduler.networkDeferred(AUTO_UPDATE_TAG, new AutoUpdateTaskSpec(), repeatPeriod);
     }
 
     @Override

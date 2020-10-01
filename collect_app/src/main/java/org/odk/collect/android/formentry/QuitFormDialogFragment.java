@@ -19,16 +19,12 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.IconMenuListAdapter;
 import org.odk.collect.android.adapters.model.IconMenuItem;
 import org.odk.collect.android.analytics.Analytics;
-import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.helpers.InstancesDaoHelper;
-import org.odk.collect.android.external.ExternalDataManager;
-import org.odk.collect.android.formentry.audit.AuditEvent;
 import org.odk.collect.android.formentry.saving.FormSaveViewModel;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.preferences.AdminKeys;
 import org.odk.collect.android.preferences.AdminSharedPreferences;
 import org.odk.collect.android.utilities.DialogUtils;
-import org.odk.collect.android.utilities.MediaManager;
 
 import java.util.List;
 
@@ -49,8 +45,8 @@ public class QuitFormDialogFragment extends DialogFragment {
         super.onAttach(context);
         DaggerUtils.getComponent(context).inject(this);
 
-        viewModel = new ViewModelProvider(requireActivity(), new FormSaveViewModel.Factory(analytics))
-                .get(FormSaveViewModel.class);
+        FormSaveViewModel.Factory factory = new FormSaveViewModel.Factory(requireActivity(), null, analytics);
+        viewModel = new ViewModelProvider(requireActivity(), factory).get(FormSaveViewModel.class);
 
         if (context instanceof Listener) {
             listener = (Listener) context;
@@ -85,17 +81,7 @@ public class QuitFormDialogFragment extends DialogFragment {
                     listener.onSaveChangesClicked();
                 }
             } else {
-                ExternalDataManager manager = Collect.getInstance().getExternalDataManager();
-                if (manager != null) {
-                    manager.close();
-                }
-
-                if (viewModel.getAuditEventLogger() != null) {
-                    viewModel.getAuditEventLogger().logEvent(AuditEvent.AuditEventType.FORM_EXIT, true, System.currentTimeMillis());
-                }
-
-                viewModel.removeTempInstance();
-                MediaManager.INSTANCE.revertChanges();
+                viewModel.ignoreChanges();
 
                 String action = getActivity().getIntent().getAction();
                 if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_EDIT.equals(action)) {

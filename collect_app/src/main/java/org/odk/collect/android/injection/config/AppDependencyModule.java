@@ -10,11 +10,16 @@ import android.webkit.MimeTypeMap;
 
 import androidx.work.WorkManager;
 
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.api.client.util.ExponentialBackOff;
+import com.google.api.services.drive.DriveScopes;
+
 import org.javarosa.core.reference.ReferenceManager;
 import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.R;
 import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.analytics.FirebaseAnalytics;
+import org.odk.collect.android.application.CollectSettingsChangeHandler;
 import org.odk.collect.android.application.initialization.ApplicationInitializer;
 import org.odk.collect.android.application.initialization.CollectSettingsPreferenceMigrator;
 import org.odk.collect.android.application.initialization.SettingsPreferenceMigrator;
@@ -23,7 +28,10 @@ import org.odk.collect.android.backgroundwork.FormSubmitManager;
 import org.odk.collect.android.backgroundwork.FormUpdateManager;
 import org.odk.collect.android.backgroundwork.ReentrantLockChangeLock;
 import org.odk.collect.android.backgroundwork.SchedulerFormUpdateAndSubmitManager;
+import org.odk.collect.android.configure.ServerRepository;
+import org.odk.collect.android.configure.SettingsChangeHandler;
 import org.odk.collect.android.configure.SettingsImporter;
+import org.odk.collect.android.configure.SharedPreferencesServerRepository;
 import org.odk.collect.android.configure.StructureAndTypeSettingsValidator;
 import org.odk.collect.android.configure.qr.CachingQRCodeGenerator;
 import org.odk.collect.android.configure.qr.QRCodeDecoder;
@@ -31,6 +39,9 @@ import org.odk.collect.android.configure.qr.QRCodeGenerator;
 import org.odk.collect.android.configure.qr.QRCodeUtils;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.dao.InstancesDao;
+import org.odk.collect.android.database.DatabaseFormsRepository;
+import org.odk.collect.android.database.DatabaseInstancesRepository;
+import org.odk.collect.android.database.DatabaseMediaFileRepository;
 import org.odk.collect.android.events.RxEventBus;
 import org.odk.collect.android.formentry.media.AudioHelperFactory;
 import org.odk.collect.android.formentry.media.ScreenContextAudioHelperFactory;
@@ -40,13 +51,12 @@ import org.odk.collect.android.formmanagement.ServerFormDownloader;
 import org.odk.collect.android.formmanagement.ServerFormsDetailsFetcher;
 import org.odk.collect.android.formmanagement.matchexactly.ServerFormsSynchronizer;
 import org.odk.collect.android.formmanagement.matchexactly.SyncStatusRepository;
-import org.odk.collect.android.formmanagement.previouslydownloaded.ServerFormsUpdateChecker;
-import org.odk.collect.android.forms.DatabaseFormsRepository;
-import org.odk.collect.android.forms.DatabaseMediaFileRepository;
 import org.odk.collect.android.forms.FormsRepository;
 import org.odk.collect.android.forms.MediaFileRepository;
+import org.odk.collect.android.gdrive.GoogleAccountCredentialGoogleAccountPicker;
+import org.odk.collect.android.gdrive.GoogleAccountPicker;
+import org.odk.collect.android.gdrive.GoogleApiProvider;
 import org.odk.collect.android.geo.MapProvider;
-import org.odk.collect.android.instances.DatabaseInstancesRepository;
 import org.odk.collect.android.instances.InstancesRepository;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.metadata.InstallIDProvider;
@@ -78,6 +88,7 @@ import org.odk.collect.android.utilities.AdminPasswordProvider;
 import org.odk.collect.android.utilities.AndroidUserAgent;
 import org.odk.collect.android.utilities.DeviceDetailsProvider;
 import org.odk.collect.android.utilities.FileProvider;
+import org.odk.collect.android.utilities.FileUtil;
 import org.odk.collect.android.utilities.FormsDirDiskFormsSynchronizer;
 import org.odk.collect.android.utilities.MultiFormDownloader;
 import org.odk.collect.android.utilities.PermissionUtils;
@@ -89,6 +100,7 @@ import org.odk.collect.async.Scheduler;
 import org.odk.collect.utilities.UserAgentProvider;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -330,8 +342,8 @@ public class AppDependencyModule {
 
     @Singleton
     @Provides
-    public ApplicationInitializer providesApplicationInitializer(Application application, UserAgentProvider userAgentProvider, SettingsPreferenceMigrator preferenceMigrator, PropertyManager propertyManager) {
-        return new ApplicationInitializer(application, userAgentProvider, preferenceMigrator, propertyManager);
+    public ApplicationInitializer providesApplicationInitializer(Application application, UserAgentProvider userAgentProvider, SettingsPreferenceMigrator preferenceMigrator, PropertyManager propertyManager, Analytics analytics) {
+        return new ApplicationInitializer(application, userAgentProvider, preferenceMigrator, propertyManager, analytics);
     }
 
     @Provides
@@ -346,7 +358,17 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public SettingsImporter providesCollectSettingsImporter(PreferencesProvider preferencesProvider, SettingsPreferenceMigrator preferenceMigrator, PropertyManager propertyManager, FormUpdateManager formUpdateManager) {
+    public ServerRepository providesServerRepository(Context context, PreferencesProvider preferencesProvider) {
+        return new SharedPreferencesServerRepository(context.getString(R.string.default_server_url), preferencesProvider.getMetaSharedPreferences());
+    }
+
+    @Provides
+    public SettingsChangeHandler providesSettingsChangeHandler(PropertyManager propertyManager, FormUpdateManager formUpdateManager, ServerRepository serverRepository) {
+        return new CollectSettingsChangeHandler(propertyManager, formUpdateManager, serverRepository);
+    }
+
+    @Provides
+    public SettingsImporter providesCollectSettingsImporter(PreferencesProvider preferencesProvider, SettingsPreferenceMigrator preferenceMigrator, SettingsChangeHandler settingsChangeHandler) {
         HashMap<String, Object> generalDefaults = GeneralKeys.DEFAULTS;
         Map<String, Object> adminDefaults = AdminKeys.getDefaults();
         return new SettingsImporter(
@@ -356,10 +378,8 @@ public class AppDependencyModule {
                 new StructureAndTypeSettingsValidator(generalDefaults, adminDefaults),
                 generalDefaults,
                 adminDefaults,
-                () -> {
-                    propertyManager.reload();
-                    formUpdateManager.scheduleUpdates();
-                });
+                settingsChangeHandler
+        );
     }
 
     @Provides
@@ -379,7 +399,7 @@ public class AppDependencyModule {
 
     @Provides
     public MediaFileRepository providesMediaFileRepository() {
-        return new DatabaseMediaFileRepository();
+        return new DatabaseMediaFileRepository(new FormsDao(), new FileUtil());
     }
 
     @Provides
@@ -413,8 +433,8 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public Notifier providesNotifier(Application application) {
-        return new NotificationManagerNotifier(application);
+    public Notifier providesNotifier(Application application, PreferencesProvider preferencesProvider) {
+        return new NotificationManagerNotifier(application, preferencesProvider);
     }
 
     @Provides
@@ -432,12 +452,21 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public ServerFormsUpdateChecker providesServerFormUpdatesChecker(ServerFormsDetailsFetcher serverFormsDetailsFetcher, FormsRepository formsRepository) {
-        return new ServerFormsUpdateChecker(serverFormsDetailsFetcher, formsRepository);
-    }
-
-    @Provides
     public InstancesRepository providesInstancesRepository() {
         return new DatabaseInstancesRepository();
     }
+
+    @Provides
+    public GoogleApiProvider providesGoogleApiProvider(Context context, PreferencesProvider preferencesProvider) {
+        return new GoogleApiProvider(context
+        );
+    }
+
+    @Provides
+    public GoogleAccountPicker providesGoogleAccountPicker(Context context) {
+        return new GoogleAccountCredentialGoogleAccountPicker(GoogleAccountCredential
+                .usingOAuth2(context, Collections.singletonList(DriveScopes.DRIVE))
+                .setBackOff(new ExponentialBackOff()));
+    }
+
 }

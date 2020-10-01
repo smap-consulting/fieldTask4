@@ -35,6 +35,8 @@ import com.journeyapps.barcodescanner.camera.CameraSettings;
 
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.R;
+import org.odk.collect.android.analytics.Analytics;
+import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.utilities.CameraUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.utilities.WidgetAppearanceUtils;
@@ -45,8 +47,6 @@ import java.util.Collection;
 import java.util.zip.DataFormatException;
 
 import javax.inject.Inject;
-
-import timber.log.Timber;
 
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
 
@@ -60,6 +60,9 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
 
     @Inject
     BarcodeViewDecoder barcodeViewDecoder;
+
+    @Inject
+    Analytics analytics;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -82,10 +85,6 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
             switchFlashlightButton.setVisibility(View.GONE);
         }
 
-        if (frontCameraUsed()) {
-            switchToFrontCamera();
-        }
-
         startScanning(savedInstanceState);
         return rootView;
     }
@@ -95,14 +94,19 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
         capture.initializeFromIntent(getIntent(), savedInstanceState);
         capture.decode();
 
+        // Must be called after setting up CaptureManager
+        if (frontCameraUsed()) {
+            switchToFrontCamera();
+        }
+
         barcodeViewDecoder.waitForBarcode(barcodeScannerView).observe(getViewLifecycleOwner(), barcodeResult -> {
             beepManager.playBeepSoundAndVibrate();
 
             try {
                 handleScanningResult(barcodeResult);
             } catch (IOException | DataFormatException | IllegalArgumentException e) {
-                Timber.e(e);
                 ToastUtils.showShortToast(getString(R.string.invalid_qrcode));
+                analytics.logEvent(AnalyticsEvents.SETTINGS_IMPORT_QR, "No valid settings", "none");
             }
         });
     }

@@ -18,6 +18,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
+import javax.net.ssl.SSLException;
+
 import timber.log.Timber;
 
 public class OpenRosaXmlFetcher {
@@ -25,7 +27,7 @@ public class OpenRosaXmlFetcher {
     private static final String HTTP_CONTENT_TYPE_TEXT_XML = "text/xml";
 
     private final OpenRosaHttpInterface httpInterface;
-    private final WebCredentialsUtils webCredentialsUtils;
+    private WebCredentialsUtils webCredentialsUtils;
 
     public OpenRosaXmlFetcher(OpenRosaHttpInterface httpInterface, WebCredentialsUtils webCredentialsUtils) {
         this.httpInterface = httpInterface;
@@ -40,7 +42,7 @@ public class OpenRosaXmlFetcher {
      */
 
     @SuppressWarnings("PMD.AvoidRethrowingException")
-    public DocumentFetchResult getXML(String urlString) throws UnknownHostException {
+    public DocumentFetchResult getXML(String urlString) throws UnknownHostException, SSLException {
 
         // parse response
         Document doc;
@@ -65,7 +67,7 @@ public class OpenRosaXmlFetcher {
                 parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, true);
                 doc.parse(parser);
             }
-        } catch (UnknownHostException e) {
+        } catch (UnknownHostException | SSLException e) {
             throw e;
         } catch (Exception e) {
             String error = "Parsing failed with " + e.getMessage() + " while accessing " + urlString;
@@ -76,6 +78,7 @@ public class OpenRosaXmlFetcher {
         return new DocumentFetchResult(doc, inputStreamResult.isOpenRosaResponse(), inputStreamResult.getHash());
     }
 
+    @Nullable
     public InputStream getFile(@NonNull String downloadUrl, @Nullable final String contentType) throws Exception {
         return fetch(downloadUrl, contentType).getInputStream();
     }
@@ -109,11 +112,11 @@ public class OpenRosaXmlFetcher {
         return httpInterface.executeGetRequest(uri, contentType, webCredentialsUtils.getCredentials(uri));
     }
 
-    public OpenRosaHttpInterface getHttpInterface() {
-        return httpInterface;
-    }
-
     public WebCredentialsUtils getWebCredentialsUtils() {
         return webCredentialsUtils;
+    }
+
+    public void updateWebCredentialsUtils(WebCredentialsUtils webCredentialsUtils) {
+        this.webCredentialsUtils = webCredentialsUtils;
     }
 }

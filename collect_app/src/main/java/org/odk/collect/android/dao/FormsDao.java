@@ -24,6 +24,7 @@ import android.provider.BaseColumns;
 import androidx.loader.content.CursorLoader;
 
 import org.odk.collect.android.application.Collect;
+import org.odk.collect.android.database.FormsDatabaseHelper;
 import org.odk.collect.android.forms.Form;
 import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
 import org.odk.collect.android.storage.StoragePathProvider;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class is used to encapsulate all access to the {@link org.odk.collect.android.database.helpers.FormsDatabaseHelper#DATABASE_NAME}
+ * This class is used to encapsulate all access to the {@link FormsDatabaseHelper#DATABASE_NAME}
  * For more information about this pattern go to https://en.wikipedia.org/wiki/Data_access_object
  */
 public class FormsDao {
@@ -82,9 +83,9 @@ public class FormsDao {
         CursorLoader cursorLoader;
 
         if (charSequence.length() == 0) {
-            cursorLoader = getFormsCursorLoader(FormsColumns.DELETED + " = 0", new String[]{}, sortOrder, newestByFormId);
+            cursorLoader = getFormsCursorLoader(FormsColumns.DELETED_DATE + " IS NULL", new String[]{}, sortOrder, newestByFormId);
         } else {
-            String selection = FormsColumns.DISPLAY_NAME + " LIKE ? AND " + FormsColumns.DELETED + " = 0";
+            String selection = FormsColumns.DISPLAY_NAME + " LIKE ? AND " + FormsColumns.DELETED_DATE + " IS NULL";
             String[] selectionArgs = {"%" + charSequence + "%"};
 
             cursorLoader = getFormsCursorLoader(selection, selectionArgs, sortOrder, newestByFormId);
@@ -112,6 +113,10 @@ public class FormsDao {
         String[] selectionArgs = {formId};
 
         return getFormsCursor(null, selection, selectionArgs, null);
+    }
+
+    public Cursor getFormsCursorForFormIdAndFormVersion(String formId, String formVersion) {
+        return getFormsCursorSortedByDateDesc(formId, formVersion);
     }
 
     public String getFormTitleForFormIdAndFormVersion(String formId, String formVersion) {
@@ -237,8 +242,8 @@ public class FormsDao {
                     int languageColumnIndex = cursor.getColumnIndex(FormsColumns.LANGUAGE);
                     int autoSendColumnIndex = cursor.getColumnIndex(FormsColumns.AUTO_SEND);
                     int autoDeleteColumnIndex = cursor.getColumnIndex(FormsColumns.AUTO_DELETE);
-                    int lastDetectedFormVersionHashColumnIndex = cursor.getColumnIndex(FormsColumns.LAST_DETECTED_FORM_VERSION_HASH);
                     int geometryXpathColumnIndex = cursor.getColumnIndex(FormsColumns.GEOMETRY_XPATH);
+                    int deletedDateColumnIndex = cursor.getColumnIndex(FormsColumns.DELETED_DATE);
 
                     Form form = new Form.Builder()
                             .id(cursor.getLong(idColumnIndex))
@@ -246,18 +251,18 @@ public class FormsDao {
                             .description(cursor.getString(descriptionColumnIndex))
                             .jrFormId(cursor.getString(jrFormIdColumnIndex))
                             .jrVersion(cursor.getString(jrVersionColumnIndex))
-                            .formFilePath(cursor.getString(formFilePathColumnIndex))
+                            .formFilePath(new StoragePathProvider().getFormDbPath(cursor.getString(formFilePathColumnIndex)))
                             .submissionUri(cursor.getString(submissionUriColumnIndex))
                             .base64RSAPublicKey(cursor.getString(base64RSAPublicKeyColumnIndex))
                             .md5Hash(cursor.getString(md5HashColumnIndex))
                             .date(cursor.getLong(dateColumnIndex))
-                            .jrCacheFilePath(cursor.getString(jrCacheFilePathColumnIndex))
-                            .formMediaPath(cursor.getString(formMediaPathColumnIndex))
+                            .jrCacheFilePath(new StoragePathProvider().getCacheDbPath(cursor.getString(jrCacheFilePathColumnIndex)))
+                            .formMediaPath(new StoragePathProvider().getFormDbPath(cursor.getString(formMediaPathColumnIndex)))
                             .language(cursor.getString(languageColumnIndex))
                             .autoSend(cursor.getString(autoSendColumnIndex))
                             .autoDelete(cursor.getString(autoDeleteColumnIndex))
-                            .lastDetectedFormVersionHash(cursor.getString(lastDetectedFormVersionHashColumnIndex))
                             .geometryXpath(cursor.getString(geometryXpathColumnIndex))
+                            .deleted(!cursor.isNull(deletedDateColumnIndex))
                             .build();
 
                     forms.add(form);

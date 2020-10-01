@@ -27,14 +27,15 @@ import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.dao.InstancesDao;
 import org.odk.collect.android.exception.EncryptionException;
+import org.odk.collect.android.instances.Instance;
 import org.odk.collect.android.listeners.DiskSyncListener;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
-import org.odk.collect.android.provider.InstanceProviderAPI;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.EncryptionUtils;
+import org.odk.collect.android.utilities.TranslationHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -83,7 +84,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                 File[] instanceFolders = instancesPath.listFiles();
                 if (instanceFolders == null || instanceFolders.length == 0) {
                     Timber.i("[%d] Empty instance folder. Stopping scan process.", instance);
-                    Timber.d(Collect.getInstance().getString(R.string.instance_scan_completed));
+                    Timber.d(TranslationHandler.getString(Collect.getInstance(), R.string.instance_scan_completed));
                     return currentStatus;
                 }
 
@@ -125,7 +126,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                                 instanceCursor.getColumnIndex(InstanceColumns.INSTANCE_FILE_PATH)));
                         String instanceStatus = instanceCursor.getString(
                                 instanceCursor.getColumnIndex(InstanceColumns.STATUS));
-                        if (candidateInstances.contains(instanceFilename) || instanceStatus.equals(InstanceProviderAPI.STATUS_SUBMITTED)) {
+                        if (candidateInstances.contains(instanceFilename) || instanceStatus.equals(Instance.STATUS_SUBMITTED)) {
                             candidateInstances.remove(instanceFilename);
                         } else {
                             filesToRemove.add(instanceFilename);
@@ -175,7 +176,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                                 values.put(InstanceColumns.JR_FORM_ID, jrFormId);
                                 values.put(InstanceColumns.JR_VERSION, jrVersion);
                                 values.put(InstanceColumns.STATUS, instanceSyncFlag
-                                        ? InstanceProviderAPI.STATUS_COMPLETE : InstanceProviderAPI.STATUS_INCOMPLETE);
+                                        ? Instance.STATUS_COMPLETE : Instance.STATUS_INCOMPLETE);
                                 values.put(InstanceColumns.CAN_EDIT_WHEN_COMPLETE, Boolean.toString(true));
                                 // save the new instance object
 
@@ -195,7 +196,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                 }
                 if (counter > 0) {
                     currentStatus += String.format(
-                            Collect.getInstance().getString(R.string.instance_scan_count),
+                            TranslationHandler.getString(Collect.getInstance(), R.string.instance_scan_count),
                             counter);
                 }
             }

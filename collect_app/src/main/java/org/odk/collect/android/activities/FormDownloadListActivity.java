@@ -17,7 +17,6 @@ package org.odk.collect.android.activities;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -59,6 +58,7 @@ import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.MultiFormDownloader;
 import org.odk.collect.android.utilities.PermissionUtils;
 import org.odk.collect.android.utilities.ToastUtils;
+import org.odk.collect.android.utilities.TranslationHandler;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 
 import java.net.URI;
@@ -498,10 +498,8 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
             return true;
         }
 
-        try (Cursor formCursor = formsDao.getFormsCursorForFormId(formId)) {
-            return formCursor != null && formCursor.getCount() == 0 // form does not already exist locally
-                    || viewModel.getFormDetailsByFormId().get(formId).isUpdated(); // or a newer version of this form is available
-        }
+        ServerFormDetails form = viewModel.getFormDetailsByFormId().get(formId);
+        return form.isNotOnDevice() || form.isUpdated();
     }
 
     /**
@@ -510,7 +508,6 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
      * convenience to users to download the latest version of those forms from the server.
      */
     private void selectSupersededForms() {
-
         ListView ls = listView;
         for (int idx = 0; idx < filteredFormList.size(); idx++) {
             HashMap<String, String> item = filteredFormList.get(idx);
@@ -577,8 +574,8 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         } else {
             switch (exception.getType()) {
                 case FETCH_ERROR:
-                case UNKNOWN_HOST:
-                    String dialogMessage = new FormApiExceptionMapper(getResources()).getMessage(exception);
+                case UNREACHABLE:
+                    String dialogMessage = new FormApiExceptionMapper(this).getMessage(exception);
                     String dialogTitle = getString(R.string.load_remote_form_error);
 
                     if (viewModel.isDownloadOnlyMode()) {
@@ -704,7 +701,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         if (viewModel.isDownloadOnlyMode()) {
             for (ServerFormDetails serverFormDetails : result.keySet()) {
                 String successKey = result.get(serverFormDetails);
-                if (Collect.getInstance().getString(R.string.success).equals(successKey)) {
+                if (getString(R.string.success).equals(successKey)) {
                     if (viewModel.getFormResults().containsKey(serverFormDetails.getFormId())) {
                         viewModel.putFormResult(serverFormDetails.getFormId(), true);
                     }
@@ -721,7 +718,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
         for (ServerFormDetails k : keys) {
             b.append(k.getFormName() + " ("
                     + ((k.getFormVersion() != null)
-                    ? (Collect.getInstance().getString(R.string.version) + ": " + k.getFormVersion() + " ")
+                    ? (TranslationHandler.getString(Collect.getInstance(), R.string.version) + ": " + k.getFormVersion() + " ")
                     : "") + "ID: " + k.getFormId() + ") - " + result.get(k));
             b.append("\n\n");
         }

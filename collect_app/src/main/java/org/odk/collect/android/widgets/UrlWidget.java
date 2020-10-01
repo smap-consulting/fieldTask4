@@ -44,7 +44,6 @@ public class UrlWidget extends QuestionWidget {
     @Override
     protected View onCreateAnswerView(Context context, FormEntryPrompt prompt, int answerFontSize) {
         binding = UrlWidgetAnswerBinding.inflate(((Activity) context).getLayoutInflater());
-        View answerView = binding.getRoot();
 
         if (prompt.isReadOnly()) {
             binding.urlButton.setVisibility(GONE);
@@ -52,11 +51,10 @@ public class UrlWidget extends QuestionWidget {
             binding.urlButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontSize);
             binding.urlButton.setOnClickListener(v -> onButtonClick());
         }
-
         binding.urlAnswerText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, answerFontSize);
         binding.urlAnswerText.setText(prompt.getAnswerText());
 
-        return answerView;
+        return binding.getRoot();
     }
 
     @Override

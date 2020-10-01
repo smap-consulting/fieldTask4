@@ -10,21 +10,18 @@ public interface FormsRepository {
 
     Uri save(Form form);
 
-    boolean contains(String jrFormId);
-
     List<Form> getAll();
 
     @Nullable
     Form get(Long id);
 
     @Nullable
-    Form get(String jrFormId, String jrVersion);
+    Form get(String jrFormId, @Nullable String jrVersion);
+
+    List<Form> getByJrFormIdNotDeleted(String jrFormId);
 
     @Nullable
     Form getByMd5Hash(String hash);
-
-    @Nullable
-    Form getByLastDetectedUpdate(String formHash, String manifestHash);
 
     @Nullable
     Form getByPath(String path);
@@ -33,7 +30,7 @@ public interface FormsRepository {
 
     void softDelete(Long id);
 
-    void setLastDetectedUpdated(String jrFormId, String formHash, String manifestHash);
-
     void deleteFormsByMd5Hash(String md5Hash);
+
+    void restore(Long id);
 }

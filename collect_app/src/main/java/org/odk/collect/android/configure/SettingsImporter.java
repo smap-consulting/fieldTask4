@@ -22,9 +22,9 @@ public class SettingsImporter {
     private final SettingsValidator settingsValidator;
     private final Map<String, Object> generalDefaults;
     private final Map<String, Object> adminDefaults;
-    private final Runnable settingsChangedHandler;
+    private final SettingsChangeHandler settingsChangedHandler;
 
-    public SettingsImporter(SharedPreferences generalSharedPrefs, SharedPreferences adminSharedPrefs, SettingsPreferenceMigrator preferenceMigrator, SettingsValidator settingsValidator, Map<String, Object> generalDefaults, Map<String, Object> adminDefaults, Runnable settingsChangedHandler) {
+    public SettingsImporter(SharedPreferences generalSharedPrefs, SharedPreferences adminSharedPrefs, SettingsPreferenceMigrator preferenceMigrator, SettingsValidator settingsValidator, Map<String, Object> generalDefaults, Map<String, Object> adminDefaults, SettingsChangeHandler settingsChangedHandler) {
         this.generalSharedPrefs = generalSharedPrefs;
         this.adminSharedPrefs = adminSharedPrefs;
         this.preferenceMigrator = preferenceMigrator;
@@ -62,7 +62,13 @@ public class SettingsImporter {
         loadDefaults(generalSharedPrefs, generalDefaults);
         loadDefaults(adminSharedPrefs, adminDefaults);
 
-        settingsChangedHandler.run();
+        for (Map.Entry<String, ?> entry: generalSharedPrefs.getAll().entrySet()) {
+            settingsChangedHandler.onSettingChanged(entry.getKey(), entry.getValue());
+        }
+
+        for (Map.Entry<String, ?> entry: adminSharedPrefs.getAll().entrySet()) {
+            settingsChangedHandler.onSettingChanged(entry.getKey(), entry.getValue());
+        }
 
         return true;
     }

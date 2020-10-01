@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
+import org.odk.collect.android.analytics.Analytics;
+import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.formmanagement.FormDownloader;
 import org.odk.collect.android.formmanagement.ServerFormsDetailsFetcher;
 import org.odk.collect.android.formmanagement.matchexactly.ServerFormsSynchronizer;
@@ -17,6 +19,8 @@ import org.odk.collect.android.injection.config.AppDependencyModule;
 import org.odk.collect.android.instances.InstancesRepository;
 import org.odk.collect.android.notifications.Notifier;
 import org.odk.collect.android.openrosa.api.FormApiException;
+import org.odk.collect.android.preferences.GeneralSharedPreferences;
+import org.odk.collect.android.preferences.PreferencesProvider;
 import org.odk.collect.android.support.BooleanChangeLock;
 import org.odk.collect.android.support.RobolectricHelpers;
 import org.robolectric.RobolectricTestRunner;
@@ -35,6 +39,7 @@ public class SyncFormsTaskSpecTest {
     private final ServerFormsSynchronizer serverFormsSynchronizer = mock(ServerFormsSynchronizer.class);
     private final SyncStatusRepository syncStatusRepository = mock(SyncStatusRepository.class);
     private final Notifier notifier = mock(Notifier.class);
+    private final Analytics analytics = mock(Analytics.class);
     private final BooleanChangeLock changeLock = new BooleanChangeLock();
 
     @Before
@@ -57,8 +62,13 @@ public class SyncFormsTaskSpecTest {
             }
 
             @Override
-            public Notifier providesNotifier(Application application) {
+            public Notifier providesNotifier(Application application, PreferencesProvider preferencesProvider) {
                 return notifier;
+            }
+
+            @Override
+            public Analytics providesAnalytics(Application application, GeneralSharedPreferences generalSharedPreferences) {
+                return analytics;
             }
         });
     }
@@ -79,6 +89,15 @@ public class SyncFormsTaskSpecTest {
     }
 
     @Test
+    public void logsAnalytics() {
+        SyncFormsTaskSpec taskSpec = new SyncFormsTaskSpec();
+        Supplier<Boolean> task = taskSpec.getTask(ApplicationProvider.getApplicationContext());
+        task.get();
+
+        verify(analytics).logEvent(AnalyticsEvents.MATCH_EXACTLY_SYNC_COMPLETED, "Success");
+    }
+
+    @Test
     public void whenSynchronizingFails_setsRepositoryToNotSyncingAndNotifiesWithError() throws Exception {
         FormApiException exception = new FormApiException(FormApiException.Type.FETCH_ERROR);
         doThrow(exception).when(serverFormsSynchronizer).synchronize();
@@ -93,6 +112,18 @@ public class SyncFormsTaskSpecTest {
         inOrder.verify(syncStatusRepository).finishSync(exception);
 
         verify(notifier).onSync(exception);
+    }
+
+    @Test
+    public void whenSynchronizingFails_logsAnalytics() throws Exception {
+        FormApiException exception = new FormApiException(FormApiException.Type.FETCH_ERROR);
+        doThrow(exception).when(serverFormsSynchronizer).synchronize();
+
+        SyncFormsTaskSpec taskSpec = new SyncFormsTaskSpec();
+        Supplier<Boolean> task = taskSpec.getTask(ApplicationProvider.getApplicationContext());
+        task.get();
+
+        verify(analytics).logEvent(AnalyticsEvents.MATCH_EXACTLY_SYNC_COMPLETED, "FETCH_ERROR");
     }
 
     @Test

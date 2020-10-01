@@ -25,7 +25,6 @@ import android.widget.Toast;
 
 import org.javarosa.core.model.data.IAnswerData;
 import org.odk.collect.android.R;
-import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.formentry.questions.WidgetViewUtils;
 import org.odk.collect.android.widgets.interfaces.BinaryDataReceiver;
@@ -185,6 +184,7 @@ public class ExPrinterWidget extends QuestionWidget implements BinaryDataReceive
 
     @Override
     public void clearAnswer() {
+        widgetValueChanged();
     }
 
     @Override
@@ -192,9 +192,6 @@ public class ExPrinterWidget extends QuestionWidget implements BinaryDataReceive
         return getFormEntryPrompt().getAnswerValue();
     }
 
-    /**
-     * Allows answer to be set externally in {@link FormEntryActivity}.
-     */
     @Override
     public void setBinaryData(Object answer) {
     }

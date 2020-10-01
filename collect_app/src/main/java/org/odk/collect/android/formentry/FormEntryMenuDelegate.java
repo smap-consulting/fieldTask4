@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
+import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.R;
 import org.odk.collect.android.formentry.backgroundlocation.BackgroundLocationViewModel;
 import org.odk.collect.android.formentry.questions.AnswersProvider;
@@ -19,6 +20,7 @@ import org.odk.collect.android.preferences.AdminSharedPreferences;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.preferences.PreferencesActivity;
 import org.odk.collect.android.utilities.MenuDelegate;
+import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 
 import static org.odk.collect.android.preferences.GeneralKeys.KEY_BACKGROUND_LOCATION;
@@ -39,7 +41,7 @@ public class FormEntryMenuDelegate implements MenuDelegate, RequiresFormControll
     }
 
     @Override
-    public void formLoaded(FormController formController) {
+    public void formLoaded(@NotNull FormController formController) {
         this.formController = formController;
     }
 
@@ -86,21 +88,23 @@ public class FormEntryMenuDelegate implements MenuDelegate, RequiresFormControll
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_add_repeat:
-                getFormSaveViewModel().saveAnswersForScreen(answersProvider.getAnswers());
-                getFormEntryViewModel().promptForNewRepeat();
-                formIndexAnimationHandler.handle(getFormEntryViewModel().getCurrentIndex());
-                return true;
+        if (MultiClickGuard.allowClick(getClass().getName())) {
+            switch (item.getItemId()) {
+                case R.id.menu_add_repeat:
+                    getFormSaveViewModel().saveAnswersForScreen(answersProvider.getAnswers());
+                    getFormEntryViewModel().promptForNewRepeat();
+                    formIndexAnimationHandler.handle(getFormEntryViewModel().getCurrentIndex());
+                    return true;
 
-            case R.id.menu_preferences:
-                Intent pref = new Intent(activity, PreferencesActivity.class);
-                activity.startActivity(pref);
-                return true;
+                case R.id.menu_preferences:
+                    Intent pref = new Intent(activity, PreferencesActivity.class);
+                    activity.startActivity(pref);
+                    return true;
 
-            case R.id.track_location:
-                getBackgroundLocationViewModel().backgroundLocationPreferenceToggled();
-                return true;
+                case R.id.track_location:
+                    getBackgroundLocationViewModel().backgroundLocationPreferenceToggled();
+                    return true;
+            }
         }
 
         return false;
