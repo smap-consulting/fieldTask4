@@ -30,6 +30,7 @@ collect_app/assignfield/
 collect_app/tdh/
 
 collect_app/kontrolid/release/trace.db
+collect_app/libs/
 
 # emacs backup files
 *.*~
