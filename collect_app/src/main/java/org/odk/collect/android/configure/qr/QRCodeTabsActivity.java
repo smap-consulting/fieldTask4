@@ -19,6 +19,7 @@ import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.preferences.PreferencesProvider;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.FileProvider;
+import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PermissionUtils;
 import org.odk.collect.async.Scheduler;
 
@@ -67,7 +68,7 @@ public class QRCodeTabsActivity extends CollectAbstractActivity {
         initToolbar(getString(R.string.configure_via_qr_code));
         menuDelegate = new QRCodeMenuDelegate(this, activityAvailability, qrCodeGenerator, fileProvider, preferencesProvider, scheduler);
 
-        new PermissionUtils().requestCameraPermission(this, new PermissionListener() {
+        new PermissionUtils(R.style.Theme_Collect_Dialog_PermissionAlert).requestCameraPermission(this, new PermissionListener() {
             @Override
             public void granted() {
                 setupViewPager();
@@ -100,6 +101,10 @@ public class QRCodeTabsActivity extends CollectAbstractActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (!MultiClickGuard.allowClick(getClass().getName())) {
+            return true;
+        }
+
         if (menuDelegate.onOptionsItemSelected(item)) {
             return true;
         } else {

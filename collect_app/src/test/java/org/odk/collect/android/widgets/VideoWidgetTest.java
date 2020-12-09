@@ -17,7 +17,7 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.utilities.CameraUtils;
 import org.odk.collect.android.utilities.FileUtil;
-import org.odk.collect.android.utilities.MediaUtil;
+import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.widgets.base.FileWidgetTest;
 import org.odk.collect.android.widgets.support.FakeQuestionMediaManager;
 import org.odk.collect.android.widgets.support.FakeWaitingForDataRegistry;
@@ -37,7 +37,7 @@ public class VideoWidgetTest extends FileWidgetTest<VideoWidget> {
     Uri uri;
 
     @Mock
-    MediaUtil mediaUtil;
+    MediaUtils mediaUtils;
 
     @Mock
     FileUtil fileUtil;
@@ -50,7 +50,7 @@ public class VideoWidgetTest extends FileWidgetTest<VideoWidget> {
     @NonNull
     @Override
     public VideoWidget createWidget() {
-        return new VideoWidget(activity, new QuestionDetails(formEntryPrompt, "formAnalyticsID"), fileUtil, mediaUtil,
+        return new VideoWidget(activity, new QuestionDetails(formEntryPrompt, "formAnalyticsID", readOnlyOverride), fileUtil, mediaUtils,
                 new FakeWaitingForDataRegistry(), new FakeQuestionMediaManager(), new CameraUtils());
     }
 
@@ -92,16 +92,11 @@ public class VideoWidgetTest extends FileWidgetTest<VideoWidget> {
     public void prepareForSetAnswer() {
         when(formEntryPrompt.isReadOnly()).thenReturn(false);
 
-        when(mediaUtil.getPathFromUri(
-                activity,
-                uri,
-                MediaStore.Video.Media.DATA)
+        String sourcePath = String.format("%s.mp4", RandomString.make());
+        when(mediaUtils.getPath(activity, uri)).thenReturn(sourcePath);
+        when(mediaUtils.getDestinationPathFromSourcePath(sourcePath, "")).thenReturn(File.separator + destinationName + ".mp4");
 
-        ).thenReturn(String.format("%s.mp4", RandomString.make()));
-
-        when(fileUtil.getRandomFilename()).thenReturn(destinationName);
-        when(fileUtil.getFileAtPath(File.separator + destinationName + ".mp4"))
-                .thenReturn(file);
+        when(fileUtil.getFileAtPath(File.separator + destinationName + ".mp4")).thenReturn(file);
 
         when(file.getName()).thenReturn(destinationName);
     }
@@ -136,5 +131,19 @@ public class VideoWidgetTest extends FileWidgetTest<VideoWidget> {
         assertThat(getSpyWidget().captureButton.getVisibility(), is(View.GONE));
         assertThat(getSpyWidget().chooseButton.getVisibility(), is(View.GONE));
         assertThat(getSpyWidget().playButton.getVisibility(), is(View.VISIBLE));
+        assertThat(getSpyWidget().playButton.isEnabled(), is(Boolean.FALSE));
+        assertThat(getSpyWidget().playButton.getText(), is("Play Video"));
+    }
+
+    @Test
+    public void whenReadOnlyOverrideOptionIsUsed_shouldAllClickableElementsBeDisabled() {
+        readOnlyOverride = true;
+        when(formEntryPrompt.isReadOnly()).thenReturn(false);
+
+        assertThat(getSpyWidget().captureButton.getVisibility(), is(View.GONE));
+        assertThat(getSpyWidget().chooseButton.getVisibility(), is(View.GONE));
+        assertThat(getSpyWidget().playButton.getVisibility(), is(View.VISIBLE));
+        assertThat(getSpyWidget().playButton.isEnabled(), is(Boolean.FALSE));
+        assertThat(getSpyWidget().playButton.getText(), is("Play Video"));
     }
 }

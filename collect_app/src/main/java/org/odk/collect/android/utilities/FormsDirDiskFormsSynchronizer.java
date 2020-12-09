@@ -24,6 +24,7 @@ import java.util.List;
 import timber.log.Timber;
 
 import static org.odk.collect.android.forms.FormUtils.setupReferenceManagerForForm;
+import static org.odk.collect.utilities.PathUtils.getAbsoluteFilePath;
 
 public class FormsDirDiskFormsSynchronizer implements DiskFormsSynchronizer {
 
@@ -75,7 +76,7 @@ public class FormsDirDiskFormsSynchronizer implements DiskFormsSynchronizer {
                     while (cursor.moveToNext()) {
                         // For each element in the provider, see if the file already exists
                         String sqlFilename =
-                                storagePathProvider.getAbsoluteFormFilePath(cursor.getString(
+                                getAbsoluteFilePath(storagePathProvider.getDirPath(StorageSubdirectory.FORMS), cursor.getString(
                                         cursor.getColumnIndex(FormsProviderAPI.FormsColumns.FORM_FILE_PATH)));
                         String md5 = cursor.getString(
                                 cursor.getColumnIndex(FormsProviderAPI.FormsColumns.MD5_HASH));
@@ -92,17 +93,6 @@ public class FormsDirDiskFormsSynchronizer implements DiskFormsSynchronizer {
                                         cursor.getColumnIndex(FormsProviderAPI.FormsColumns._ID));
                                 Uri updateUri = Uri.withAppendedPath(FormsProviderAPI.FormsColumns.CONTENT_URI, id);
                                 uriToUpdate.add(new UriFile(updateUri, sqlFile));
-                            } else {
-                                if (!cursor.isNull(cursor.getColumnIndex(FormsProviderAPI.FormsColumns.DELETED_DATE))) {
-                                    long deletedDate = cursor.getLong(cursor.getColumnIndex(FormsProviderAPI.FormsColumns.DELETED_DATE));
-
-                                    if (sqlFile.lastModified() > deletedDate) {
-                                        String id = cursor.getString(
-                                                cursor.getColumnIndex(FormsProviderAPI.FormsColumns._ID));
-                                        Uri updateUri = Uri.withAppendedPath(FormsProviderAPI.FormsColumns.CONTENT_URI, id);
-                                        uriToUpdate.add(new UriFile(updateUri, sqlFile));
-                                    }
-                                }
                             }
                         } else {
                             //File not found in sdcard but file path found in database

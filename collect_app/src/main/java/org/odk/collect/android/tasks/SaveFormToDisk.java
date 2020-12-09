@@ -210,7 +210,7 @@ public class SaveFormToDisk {
 
             // Set uri to handle encrypted case (see exportData)
             InstancesRepository instances = new DatabaseInstancesRepository();
-            Instance instance = instances.getByPath(instancePath);
+            Instance instance = instances.getOneByPath(instancePath);
             if (instance != null) {
                 uri = Uri.withAppendedPath(InstanceColumns.CONTENT_URI, instance.getId().toString());
 
@@ -374,7 +374,7 @@ public class SaveFormToDisk {
         String instancePath = formController.getInstanceFile().getAbsolutePath();
 
         for (String fileName : tempFiles) {
-            mediaUtils.deleteImageFileFromMediaProvider(fileName);
+            mediaUtils.deleteMediaFile(fileName);
         }
 
         progressListener.onProgressUpdate(TranslationHandler.getString(Collect.getInstance(), R.string.survey_saving_saving_message));

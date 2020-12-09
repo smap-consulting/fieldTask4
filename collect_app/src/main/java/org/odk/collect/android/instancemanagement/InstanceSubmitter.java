@@ -12,6 +12,7 @@ import org.odk.collect.android.forms.Form;
 import org.odk.collect.android.forms.FormsRepository;
 import org.odk.collect.android.gdrive.GoogleAccountsManager;
 import org.odk.collect.android.gdrive.GoogleApiProvider;
+import org.odk.collect.android.gdrive.InstanceGoogleSheetsUploader;
 import org.odk.collect.android.instancemanagement.SubmitException.Type;
 import org.odk.collect.android.instances.Instance;
 import org.odk.collect.android.instances.InstancesRepository;
@@ -20,7 +21,6 @@ import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.provider.InstanceProviderAPI;
-import org.odk.collect.android.gdrive.InstanceGoogleSheetsUploader;
 import org.odk.collect.android.upload.InstanceServerUploader;
 import org.odk.collect.android.upload.InstanceUploader;
 import org.odk.collect.android.upload.UploadException;
@@ -92,7 +92,7 @@ public class InstanceSubmitter {
             uploader = new InstanceServerUploader(httpInterface,
                     new WebCredentialsUtils(), new HashMap<>());
             deviceId = new PropertyManager(Collect.getInstance().getApplicationContext())
-                    .getSingularProperty(PropertyManager.withUri(PropertyManager.PROPMGR_DEVICE_ID));
+                    .getSingularProperty(PropertyManager.PROPMGR_DEVICE_ID);
         }
 
         for (Instance instance : toUpload) {
@@ -167,7 +167,7 @@ public class InstanceSubmitter {
      */
     @Deprecated
     public static boolean shouldFormBeSent(FormsRepository formsRepository, String jrFormId, String jrFormVersion, boolean isAutoSendAppSettingEnabled) {
-        Form form = formsRepository.get(jrFormId, jrFormVersion);
+        Form form = formsRepository.getOneByFormIdAndVersion(jrFormId, jrFormVersion);
         if (form == null) {
             return false;
         }

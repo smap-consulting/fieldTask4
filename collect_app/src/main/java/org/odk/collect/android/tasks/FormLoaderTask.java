@@ -33,7 +33,7 @@ import org.javarosa.xform.util.XFormUtils;
 import org.javarosa.xpath.XPathTypeMismatchException;
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.database.ItemsetDbAdapter;
+import org.odk.collect.android.fastexternalitemset.ItemsetDbAdapter;
 import org.odk.collect.android.external.ExternalAnswerResolver;
 import org.odk.collect.android.external.ExternalDataHandler;
 import org.odk.collect.android.external.ExternalDataManager;
@@ -188,8 +188,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
                 // the data are imported, the survey will be unusable
                 // but we should give the option to the user to edit the form
                 // otherwise the survey will be TOTALLY inaccessible.
-                Timber.w("We have a syntactically correct instance, but the data threw an "
-                                + "exception inside JR. We should allow editing.");
+                Timber.w("We have a syntactically correct instance, but the data threw an exception inside JR. We should allow editing.");
             } else {
                 errorMsg = e.getMessage();
                 return null;
@@ -397,6 +396,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
         }
     }
 
+    // Copied from XFormParser.loadXmlInstance in order to set ExternalAnswerResolver for search()
     public static void importData(File instanceFile, FormEntryController fec) throws IOException, RuntimeException {
         // convert files into a byte array
         byte[] fileBytes = org.apache.commons.io.FileUtils.readFileToByteArray(instanceFile);
@@ -420,6 +420,11 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
         XFormParser.setAnswerResolver(new ExternalAnswerResolver());
         templateRoot.populate(savedRoot, fec.getModel().getForm());
         XFormParser.setAnswerResolver(new DefaultAnswerResolver());
+
+        // FormInstanceParser.parseInstance is responsible for initial creation of instances. It explicitly sets the
+        // main instance name to null so we force this again on deserialization because some code paths rely on the main
+        // instance not having a name. Must be before the call on setRoot because setRoot also sets the root's name.
+        fec.getModel().getForm().getInstance().setName(null);
 
         // populated model to current form
         fec.getModel().getForm().getInstance().setRoot(templateRoot);

@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.widgets;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -27,7 +28,7 @@ import org.javarosa.core.model.data.IAnswerData;
 import org.odk.collect.android.R;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.formentry.questions.WidgetViewUtils;
-import org.odk.collect.android.widgets.interfaces.BinaryDataReceiver;
+import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver;
 import org.odk.collect.android.widgets.interfaces.ButtonClickListener;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 
@@ -116,7 +117,8 @@ import static org.odk.collect.android.formentry.questions.WidgetViewUtils.create
  *
  * @author mitchellsundt@gmail.com
  */
-public class ExPrinterWidget extends QuestionWidget implements BinaryDataReceiver, ButtonClickListener {
+@SuppressLint("ViewConstructor")
+public class ExPrinterWidget extends QuestionWidget implements WidgetDataReceiver, ButtonClickListener {
 
     final Button launchIntentButton;
     private final WaitingForDataRegistry waitingForDataRegistry;
@@ -193,7 +195,7 @@ public class ExPrinterWidget extends QuestionWidget implements BinaryDataReceive
     }
 
     @Override
-    public void setBinaryData(Object answer) {
+    public void setData(Object answer) {
     }
 
     @Override

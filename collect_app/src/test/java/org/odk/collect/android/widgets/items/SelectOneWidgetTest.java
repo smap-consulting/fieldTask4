@@ -24,9 +24,9 @@ import org.mockito.junit.MockitoRule;
 import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.audio.AudioButton;
 import org.odk.collect.android.audio.AudioHelper;
-import org.odk.collect.android.audio.Clip;
 import org.odk.collect.android.formentry.media.AudioHelperFactory;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
+import org.odk.collect.android.formentry.questions.NoButtonsItem;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.formentry.questions.QuestionTextSizeHelper;
 import org.odk.collect.android.injection.config.AppDependencyModule;
@@ -37,6 +37,7 @@ import org.odk.collect.android.support.RobolectricHelpers;
 import org.odk.collect.android.utilities.WidgetAppearanceUtils;
 import org.odk.collect.android.widgets.base.GeneralSelectOneWidgetTest;
 import org.odk.collect.async.Scheduler;
+import org.odk.collect.audioclips.Clip;
 
 import java.util.List;
 
@@ -105,7 +106,7 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
     public void whenNoButtonsModeExist_shouldFrameLayoutBeUsedAsItemView() {
         when(formEntryPrompt.getAppearanceHint()).thenReturn("no-buttons");
         populateRecyclerView(getWidget());
-        assertThat(getChoiceView(getWidget(), 0).getClass().getName(), is(FrameLayout.class.getName()));
+        assertThat(getChoiceView(getWidget(), 0).getClass().getName(), is(NoButtonsItem.class.getName()));
     }
 
     @Test

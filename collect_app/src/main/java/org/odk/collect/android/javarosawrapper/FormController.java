@@ -48,6 +48,7 @@ import org.odk.collect.android.formentry.ODKView;
 import org.odk.collect.android.formentry.audit.AsyncTaskAuditEventWriter;
 import org.odk.collect.android.formentry.audit.AuditConfig;
 import org.odk.collect.android.formentry.audit.AuditEventLogger;
+import org.odk.collect.android.forms.FormDesignException;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.FormNameUtils;
 
@@ -611,12 +612,15 @@ public class FormController {
                     switch (event) {
                         case FormEntryController.EVENT_QUESTION:
                         case FormEntryController.EVENT_END_OF_FORM:
-                            break group_skip;
                         case FormEntryController.EVENT_PROMPT_NEW_REPEAT:
                             break group_skip;
                         case FormEntryController.EVENT_GROUP:
                         case FormEntryController.EVENT_REPEAT:
-                            if (indexIsInFieldList() && getQuestionPrompts().length != 0) {
+                            try {
+                                if (indexIsInFieldList() && getQuestionPrompts().length != 0) {
+                                    break group_skip;
+                                }
+                            } catch (FormDesignException e) {
                                 break group_skip;
                             }
                             // otherwise it's not a field-list group, so just skip it
@@ -626,8 +630,7 @@ public class FormController {
                             // skip repeat junctures until we implement them
                             break;
                         default:
-                            Timber.w("JavaRosa added a new EVENT type and didn't tell us... shame "
-                                    + "on them.");
+                            Timber.w("JavaRosa added a new EVENT type and didn't tell us... shame on them.");
                             break;
                     }
                 } while (event != FormEntryController.EVENT_END_OF_FORM);
@@ -749,8 +752,7 @@ public class FormController {
     /**
      * @return FailedConstraint of first failed constraint or null if all questions were saved.
      */
-    public FailedConstraint saveAllScreenAnswers(HashMap<FormIndex, IAnswerData> answers,
-                                                 boolean evaluateConstraints) throws JavaRosaException {
+    public FailedConstraint saveAllScreenAnswers(HashMap<FormIndex, IAnswerData> answers, boolean evaluateConstraints) throws JavaRosaException {
         if (currentPromptIsQuestion()) {
             for (FormIndex index : answers.keySet()) {
                 FailedConstraint failedConstraint = saveOneScreenAnswer(
@@ -901,10 +903,10 @@ public class FormController {
      * The array has a single element if there is a question at this {@link FormIndex} or multiple
      * elements if there is a group.
      *
-     * @throws RuntimeException if there is a group at this {@link FormIndex} and it contains
+     * @throws FormDesignException if there is a group at this {@link FormIndex} and it contains
      *                          elements that are not questions or regular (non-repeat) groups.
      */
-    public FormEntryPrompt[] getQuestionPrompts() throws RuntimeException {
+    public FormEntryPrompt[] getQuestionPrompts() throws FormDesignException {
         // For questions, there is only one.
         // For groups, there could be many, but we set that below
         FormEntryPrompt[] questions = new FormEntryPrompt[0];
@@ -916,11 +918,9 @@ public class FormController {
             List<FormEntryPrompt> questionList = new ArrayList<>();
             for (FormIndex index : getIndicesForGroup(gd)) {
                 if (getEvent(index) != FormEntryController.EVENT_QUESTION) {
-                    String errorMsg =
-                            "Only questions and regular groups are allowed in 'field-list'.  Bad node is: "
-                                    + index.getReference().toString(false);
-                    RuntimeException e = new RuntimeException(errorMsg);
-                    Timber.w(errorMsg);
+                    FormDesignException e = new FormDesignException("Repeats in 'field-list' groups " +
+                            "are not supported. Please update the form design to remove the " +
+                            "following repeat from a field list: " + index.getReference().toString(false));
                     throw e;
                 }
 

@@ -20,6 +20,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.ParcelFileDescriptor;
 
 import org.apache.commons.io.IOUtils;
 import org.javarosa.core.model.Constants;
@@ -37,11 +38,13 @@ import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.storage.StorageStateProvider;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.FileNameMap;
 import java.net.URLConnection;
@@ -98,6 +101,39 @@ public class FileUtils {
     static int bufSize = 16 * 1024; // May be set by unit test
 
     private FileUtils() {
+    }
+
+    public static void saveAnswerFileFromUri(Uri uri, File destFile, Context context) {
+        try {
+            ParcelFileDescriptor pfd = context.getContentResolver().openFileDescriptor(uri, "r");
+            if (pfd != null) {
+                FileDescriptor fd = pfd.getFileDescriptor();
+                InputStream fileInputStream = new FileInputStream(fd);
+                OutputStream fileOutputStream = new FileOutputStream(destFile);
+
+                byte[] buffer = new byte[1024];
+                int length;
+
+                while ((length = fileInputStream.read(buffer)) > 0) {
+                    fileOutputStream.write(buffer, 0, length);
+                }
+
+                fileOutputStream.flush();
+                fileInputStream.close();
+                fileOutputStream.close();
+                pfd.close();
+            }
+        } catch (IOException e) {
+            Timber.w(e);
+        }
+    }
+
+    public static File createDestinationMediaFile(String fileLocation, String fileExtension) {
+        return new File(fileLocation
+                + File.separator
+                + System.currentTimeMillis()
+                + "."
+                + fileExtension);
     }
 
     public static String getMimeType(String fileUrl) throws IOException {
@@ -454,8 +490,7 @@ public class FileUtils {
      */
     public static void checkMediaPath(File mediaDir) {
         if (mediaDir.exists() && mediaDir.isFile()) {
-            Timber.e("The media folder is already there and it is a FILE!! We will need to delete "
-                    + "it and create a folder instead");
+            Timber.e("The media folder is already there and it is a FILE!! We will need to delete it and create a folder instead");
             boolean deleted = mediaDir.delete();
             if (!deleted) {
                 throw new RuntimeException(
@@ -476,13 +511,14 @@ public class FileUtils {
     public static void purgeMediaPath(String mediaPath) {
         File tempMediaFolder = new File(mediaPath);
         File[] tempMediaFiles = tempMediaFolder.listFiles();
-        if (tempMediaFiles == null || tempMediaFiles.length == 0) {
-            deleteAndReport(tempMediaFolder);
-        } else {
+
+        if (tempMediaFiles != null) {
             for (File tempMediaFile : tempMediaFiles) {
                 deleteAndReport(tempMediaFile);
             }
         }
+
+        deleteAndReport(tempMediaFolder);
     }
 
     public static void moveMediaFiles(String tempMediaPath, File formMediaPath) throws IOException {

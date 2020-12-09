@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.widgets;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -38,6 +39,7 @@ import static org.odk.collect.android.utilities.ApplicationConstants.RequestCode
  * <p>
  * See {@link org.odk.collect.android.widgets.ExStringWidget} for usage.
  */
+@SuppressLint("ViewConstructor")
 public class ExIntegerWidget extends ExStringWidget {
 
     public ExIntegerWidget(Context context, QuestionDetails questionDetails, WaitingForDataRegistry waitingForDataRegistry) {
@@ -62,7 +64,7 @@ public class ExIntegerWidget extends ExStringWidget {
     }
 
     @Override
-    public void setBinaryData(Object answer) {
+    public void setData(Object answer) {
         IntegerData integerData = ExternalAppsUtils.asIntegerData(answer);
         answerText.setText(integerData == null ? null : integerData.getValue().toString());
         widgetValueChanged();

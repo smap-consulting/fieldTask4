@@ -14,6 +14,7 @@
 
 package org.odk.collect.android.widgets;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.util.TypedValue;
@@ -32,7 +33,7 @@ import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.utilities.CameraUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.utilities.WidgetAppearanceUtils;
-import org.odk.collect.android.widgets.interfaces.BinaryDataReceiver;
+import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 
 import static org.odk.collect.android.utilities.WidgetAppearanceUtils.FRONT;
@@ -40,7 +41,9 @@ import static org.odk.collect.android.utilities.WidgetAppearanceUtils.FRONT;
 /**
  * Widget that allows user to scan barcodes and add them to the form.
  */
-public class BarcodeWidget extends QuestionWidget implements BinaryDataReceiver {
+
+@SuppressLint("ViewConstructor")
+public class BarcodeWidget extends QuestionWidget implements WidgetDataReceiver {
     BarcodeWidgetAnswerBinding binding;
 
     private final WaitingForDataRegistry waitingForDataRegistry;
@@ -88,7 +91,7 @@ public class BarcodeWidget extends QuestionWidget implements BinaryDataReceiver 
     }
 
     @Override
-    public void setBinaryData(Object answer) {
+    public void setData(Object answer) {
         String response = (String) answer;
         binding.barcodeAnswerText.setText(stripInvalidCharacters(response));
         binding.barcodeButton.setText(getContext().getString(R.string.replace_barcode));

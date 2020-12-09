@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/margin_standard">
 
     <org.odk.collect.android.views.MultiClickSafeButton
         android:id="@+id/url_button"
         style="@style/Widget.Collect.Button.WidgetAnswer"
         android:text="@string/open_url" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/url_answer_text"
-        style="@style/Widget.Collect.TextView.WidgetAnswer" />
 
 </LinearLayout>

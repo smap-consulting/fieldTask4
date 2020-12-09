@@ -2,7 +2,6 @@ package org.odk.collect.android.feature.formmanagement;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -65,7 +64,7 @@ public class DeleteBlankFormTest {
 
     @Test
     public void afterFillingAForm_andDeletingIt_allowsFormToBeReDownloaded() {
-        testDependencies.server.addForm("One Question", "one_question", "one-question.xml");
+        testDependencies.server.addForm("One Question", "one_question", "1", "one-question.xml");
 
         rule.mainMenu()
                 .setServer(testDependencies.server.getURL())
@@ -89,30 +88,6 @@ public class DeleteBlankFormTest {
                 .clickGetSelected()
                 .assertText("One Question (Version:: 1 ID: one_question) - Success")
                 .clickOK(new MainMenuPage(rule))
-                .clickFillBlankForm()
-                .assertFormExists("One Question");
-    }
-
-    @Test
-    @Ignore("https://github.com/getodk/collect/issues/4124")
-    public void afterFillingAForm_andDeletingIt_allowsFormToBeReloadedDirectly() {
-        rule.mainMenu()
-                .copyForm("one-question.xml")
-                .startBlankForm("One Question")
-                .answerQuestion("what is your age", "22")
-                .swipeToEndScreen()
-                .clickSaveAndExit()
-
-                .clickDeleteSavedForm()
-                .clickBlankForms()
-                .clickForm("One Question")
-                .clickDeleteSelected(1)
-                .clickDeleteForms()
-                .assertTextDoesNotExist("One Question")
-                .pressBack(new MainMenuPage(rule))
-
-                .copyForm("one-question.xml")
-                .wait250ms() // We need to account for inaccuracy in calls to system time
                 .clickFillBlankForm()
                 .assertFormExists("One Question");
     }

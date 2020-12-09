@@ -8,7 +8,10 @@ import org.junit.runner.RunWith;
 import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.exception.JavaRosaException;
+import org.odk.collect.android.formentry.audit.AuditEvent;
+import org.odk.collect.android.formentry.audit.AuditEventLogger;
 import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.utilities.Clock;
 import org.robolectric.RobolectricTestRunner;
 
 import java.io.IOException;
@@ -16,6 +19,7 @@ import java.io.IOException;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.atMostOnce;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.only;
@@ -29,6 +33,8 @@ public class FormEntryViewModelTest {
     private Analytics analytics;
     private FormController formController;
     private FormIndex startingIndex;
+    private AuditEventLogger auditEventLogger;
+    private Clock clock;
 
     @Before
     public void setup() {
@@ -39,7 +45,12 @@ public class FormEntryViewModelTest {
         when(formController.getFormIndex()).thenReturn(startingIndex);
         when(formController.getCurrentFormIdentifierHash()).thenReturn("formIdentifierHash");
 
-        viewModel = new FormEntryViewModel(analytics);
+        auditEventLogger = mock(AuditEventLogger.class);
+        when(formController.getAuditEventLogger()).thenReturn(auditEventLogger);
+
+        clock = mock(Clock.class);
+
+        viewModel = new FormEntryViewModel(analytics, clock);
         viewModel.formLoaded(formController);
     }
 
@@ -50,11 +61,43 @@ public class FormEntryViewModelTest {
     }
 
     @Test
+    public void addRepeat_whenThereIsAnErrorCreatingRepeat_setsErrorWithMessage() {
+        doThrow(new RuntimeException(new IOException("OH NO"))).when(formController).newRepeat();
+
+        viewModel.addRepeat(true);
+        assertThat(viewModel.getError().getValue(), equalTo("OH NO"));
+    }
+
+    @Test
+    public void addRepeat_whenThereIsAnErrorCreatingRepeat_setsErrorWithoutCause() {
+        RuntimeException runtimeException = mock(RuntimeException.class);
+        when(runtimeException.getCause()).thenReturn(null);
+        when(runtimeException.getMessage()).thenReturn("Unknown issue occurred while adding a new group");
+
+        doThrow(runtimeException).when(formController).newRepeat();
+
+        viewModel.addRepeat(true);
+        assertThat(viewModel.getError().getValue(), equalTo("Unknown issue occurred while adding a new group"));
+    }
+
+    @Test
     public void addRepeat_whenThereIsAnErrorSteppingToNextScreen_setsErrorWithMessage() throws Exception {
         when(formController.stepToNextScreenEvent()).thenThrow(new JavaRosaException(new IOException("OH NO")));
 
         viewModel.addRepeat(true);
         assertThat(viewModel.getError().getValue(), equalTo("OH NO"));
+    }
+
+    @Test
+    public void addRepeat_whenThereIsAnErrorSteppingToNextScreen_setsErrorWithoutCause() throws Exception {
+        JavaRosaException javaRosaException = mock(JavaRosaException.class);
+        when(javaRosaException.getCause()).thenReturn(null);
+        when(javaRosaException.getMessage()).thenReturn("Unknown issue occurred while adding a new group");
+
+        when(formController.stepToNextScreenEvent()).thenThrow(javaRosaException);
+
+        viewModel.addRepeat(true);
+        assertThat(viewModel.getError().getValue(), equalTo("Unknown issue occurred while adding a new group"));
     }
 
     @Test
@@ -114,5 +157,12 @@ public class FormEntryViewModelTest {
 
         viewModel.cancelRepeatPrompt();
         assertThat(viewModel.getError().getValue(), equalTo("OH NO"));
+    }
+
+    @Test
+    public void openHierarchy_logsHierarchyAuditEvent() {
+        when(clock.getCurrentTime()).thenReturn(12345L);
+        viewModel.openHierarchy();
+        verify(auditEventLogger).logEvent(AuditEvent.AuditEventType.HIERARCHY, true, 12345L);
     }
 }

@@ -20,9 +20,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.odk.collect.android.formmanagement.FormUpdateMode.MANUAL;
-import static org.odk.collect.android.formmanagement.FormUpdateMode.MATCH_EXACTLY;
-import static org.odk.collect.android.formmanagement.FormUpdateMode.PREVIOUSLY_DOWNLOADED_ONLY;
+import static org.odk.collect.android.preferences.FormUpdateMode.MANUAL;
+import static org.odk.collect.android.preferences.FormUpdateMode.MATCH_EXACTLY;
+import static org.odk.collect.android.preferences.FormUpdateMode.PREVIOUSLY_DOWNLOADED_ONLY;
 import static org.odk.collect.android.injection.DaggerUtils.getComponent;
 import static org.odk.collect.android.preferences.GeneralKeys.KEY_AUTOMATIC_UPDATE;
 import static org.odk.collect.android.preferences.GeneralKeys.KEY_FORM_UPDATE_MODE;
@@ -150,6 +150,25 @@ public class FormManagementPreferencesTest {
     }
 
     @Test
+    public void changingFormUpdateMode_shouldNotCauseAnyCrashIfRelatedPreferncesAreDisabledInAdminSettings() {
+        adminSharedPreferences.save(AdminKeys.KEY_PERIODIC_FORM_UPDATES_CHECK, false);
+        adminSharedPreferences.save(AdminKeys.KEY_AUTOMATIC_UPDATE, false);
+
+        FragmentScenario<FormManagementPreferences> scenario = FragmentScenario.launch(FormManagementPreferences.class);
+        scenario.onFragment(f -> {
+            assertThat(f.findPreference(KEY_PERIODIC_FORM_UPDATES_CHECK), nullValue());
+            assertThat(f.findPreference(KEY_AUTOMATIC_UPDATE), nullValue());
+
+            ListPreference updateMode = f.findPreference(KEY_FORM_UPDATE_MODE);
+            updateMode.setValue(PREVIOUSLY_DOWNLOADED_ONLY.getValue(context));
+
+            updateMode.setValue(MATCH_EXACTLY.getValue(context));
+
+            updateMode.setValue(MANUAL.getValue(context));
+        });
+    }
+
+    @Test
     public void visiblePreferences_shouldBeVisibleIfOpenedFromGeneralPreferences() {
         FragmentScenario<FormManagementPreferences> scenario = FragmentScenario.launch(FormManagementPreferences.class);
         scenario.onFragment(fragment -> {
@@ -201,6 +220,7 @@ public class FormManagementPreferencesTest {
         adminSharedPreferences.save(AdminKeys.KEY_IMAGE_SIZE, false);
         adminSharedPreferences.save(AdminKeys.KEY_GUIDANCE_HINT, false);
         adminSharedPreferences.save(AdminKeys.KEY_INSTANCE_FORM_SYNC, false);
+        adminSharedPreferences.save(AdminKeys.KEY_EXTERNAL_APP_RECORDING, false);
 
         FragmentScenario<FormManagementPreferences> scenario = FragmentScenario.launch(FormManagementPreferences.class);
         scenario.onFragment(fragment -> {
@@ -215,6 +235,7 @@ public class FormManagementPreferencesTest {
             assertThat(fragment.findPreference(GeneralKeys.KEY_IMAGE_SIZE), nullValue());
             assertThat(fragment.findPreference(GeneralKeys.KEY_GUIDANCE_HINT), nullValue());
             assertThat(fragment.findPreference(GeneralKeys.KEY_INSTANCE_SYNC), nullValue());
+            assertThat(fragment.findPreference(GeneralKeys.KEY_EXTERNAL_APP_RECORDING), nullValue());
         });
     }
 

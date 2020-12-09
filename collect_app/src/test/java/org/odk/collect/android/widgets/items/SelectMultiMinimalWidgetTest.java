@@ -14,6 +14,7 @@ import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.support.MockFormEntryPromptBuilder;
 import org.odk.collect.android.widgets.base.GeneralSelectMultiWidgetTest;
+import org.odk.collect.android.widgets.support.FakeWaitingForDataRegistry;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +31,7 @@ public class SelectMultiMinimalWidgetTest extends GeneralSelectMultiWidgetTest<S
     @NonNull
     @Override
     public SelectMultiMinimalWidget createWidget() {
-        return new SelectMultiMinimalWidget(activity, new QuestionDetails(formEntryPrompt, "formAnalyticsID"));
+        return new SelectMultiMinimalWidget(activity, new QuestionDetails(formEntryPrompt, "formAnalyticsID"), new FakeWaitingForDataRegistry());
     }
 
     @Test
@@ -62,7 +63,7 @@ public class SelectMultiMinimalWidgetTest extends GeneralSelectMultiWidgetTest<S
         SelectMultiData answer = getInitialAnswer();
         Selection selectedChoice = ((List<Selection>) answer.getValue()).get(0);
         when(formEntryPrompt.getSelectItemText(selectedChoice)).thenReturn(selectedChoice.getValue());
-        getSpyWidget().setBinaryData(Collections.singletonList(selectedChoice));
+        getSpyWidget().setData(Collections.singletonList(selectedChoice));
 
         assertThat(getSpyWidget().binding.answer.getText().toString(), is(selectedChoice.getValue()));
         getSpyWidget().clearAnswer();
@@ -75,7 +76,7 @@ public class SelectMultiMinimalWidgetTest extends GeneralSelectMultiWidgetTest<S
 
         SelectMultiData answer = getInitialAnswer();
         Selection selectedChoice = ((List<Selection>) answer.getValue()).get(0);
-        getSpyWidget().setBinaryData(Collections.singletonList(selectedChoice));
+        getSpyWidget().setData(Collections.singletonList(selectedChoice));
 
         verify(valueChangedListener).widgetValueChanged(getSpyWidget());
     }

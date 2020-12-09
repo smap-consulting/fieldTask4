@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.widgets.base.GeneralSelectOneWidgetTest;
+import org.odk.collect.android.widgets.support.FakeWaitingForDataRegistry;
 
 import java.util.Collections;
 
@@ -24,7 +25,7 @@ public class SelectOneMinimalWidgetTest extends GeneralSelectOneWidgetTest<Selec
     @NonNull
     @Override
     public SelectOneMinimalWidget createWidget() {
-        return new SelectOneMinimalWidget(activity, new QuestionDetails(formEntryPrompt, "formAnalyticsID"), false);
+        return new SelectOneMinimalWidget(activity, new QuestionDetails(formEntryPrompt, "formAnalyticsID"), false, new FakeWaitingForDataRegistry());
     }
 
     @Test
@@ -66,7 +67,7 @@ public class SelectOneMinimalWidgetTest extends GeneralSelectOneWidgetTest<Selec
         SelectOneData answer = getInitialAnswer();
         Selection selectedChoice = (Selection) answer.getValue();
         when(formEntryPrompt.getSelectItemText(selectedChoice)).thenReturn(selectedChoice.getValue());
-        getSpyWidget().setBinaryData(Collections.singletonList(selectedChoice));
+        getSpyWidget().setData(Collections.singletonList(selectedChoice));
 
         assertThat(getSpyWidget().binding.answer.getText().toString(), is(selectedChoice.getValue()));
         getSpyWidget().clearAnswer();
@@ -79,7 +80,7 @@ public class SelectOneMinimalWidgetTest extends GeneralSelectOneWidgetTest<Selec
 
         SelectOneData answer = getInitialAnswer();
         Selection selectedChoice = (Selection) answer.getValue();
-        getSpyWidget().setBinaryData(Collections.singletonList(selectedChoice));
+        getSpyWidget().setData(Collections.singletonList(selectedChoice));
 
         verify(valueChangedListener).widgetValueChanged(getSpyWidget());
     }

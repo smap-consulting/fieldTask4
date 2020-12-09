@@ -84,7 +84,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                 File[] instanceFolders = instancesPath.listFiles();
                 if (instanceFolders == null || instanceFolders.length == 0) {
                     Timber.i("[%d] Empty instance folder. Stopping scan process.", instance);
-                    Timber.d(TranslationHandler.getString(Collect.getInstance(), R.string.instance_scan_completed));
+                    Timber.d("Instance scan completed");
                     return currentStatus;
                 }
 
@@ -195,9 +195,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                     }
                 }
                 if (counter > 0) {
-                    currentStatus += String.format(
-                            TranslationHandler.getString(Collect.getInstance(), R.string.instance_scan_count),
-                            counter);
+                    currentStatus += TranslationHandler.getString(Collect.getInstance(), R.string.instance_scan_count, counter);
                 }
             }
         } finally {
@@ -238,10 +236,11 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                                          ContentValues values, InstancesDao instancesDao)
             throws EncryptionException, IOException {
 
-        Cursor instanceCursor = new InstancesDao().getInstancesCursorForFilePath(candidateInstance);
-        if (instanceCursor != null && instanceCursor.moveToFirst()) {
-            if (shouldInstanceBeEncrypted(formCursor)) {
-                encryptInstance(instanceCursor, candidateInstance, values, instancesDao);
+        try (Cursor instanceCursor = new InstancesDao().getInstancesCursorForFilePath(candidateInstance)) {
+            if (instanceCursor != null && instanceCursor.moveToFirst()) {
+                if (shouldInstanceBeEncrypted(formCursor)) {
+                    encryptInstance(instanceCursor, candidateInstance, values, instancesDao);
+                }
             }
         }
     }
