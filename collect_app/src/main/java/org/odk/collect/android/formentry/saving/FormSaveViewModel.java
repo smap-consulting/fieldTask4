@@ -34,6 +34,7 @@ import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.QuestionMediaManager;
 import org.odk.collect.async.Scheduler;
+import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.utilities.Clock;
 import org.odk.collect.utilities.Result;
 
@@ -81,14 +82,16 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
 
     private final Analytics analytics;
     private final Scheduler scheduler;
+    private final AudioRecorder audioRecorder;
 
-    public FormSaveViewModel(SavedStateHandle stateHandle, Clock clock, FormSaver formSaver, MediaUtils mediaUtils, Analytics analytics, Scheduler scheduler) {
+    public FormSaveViewModel(SavedStateHandle stateHandle, Clock clock, FormSaver formSaver, MediaUtils mediaUtils, Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder) {
         this.stateHandle = stateHandle;
         this.clock = clock;
         this.formSaver = formSaver;
         this.mediaUtils = mediaUtils;
         this.analytics = analytics;
         this.scheduler = scheduler;
+        this.audioRecorder = audioRecorder;
 
         if (stateHandle.get(ORIGINAL_FILES) != null) {
             originalFiles = stateHandle.get(ORIGINAL_FILES);
@@ -130,20 +133,26 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
             return;
         }
 
+        SaveRequest saveRequest = new SaveRequest(instanceContentURI, viewExiting, updatedSaveName, shouldFinalize);
         formController.getAuditEventLogger().flush();
 
-        SaveRequest saveRequest = new SaveRequest(instanceContentURI, viewExiting, updatedSaveName, shouldFinalize);
-
-        if (!requiresReasonToSave()) {
+        if (requiresReasonToSave()) {
+            this.saveResult.setValue(new SaveResult(SaveResult.State.CHANGE_REASON_REQUIRED, saveRequest));
+        } else if (viewExiting && audioRecorder.isRecording()) {
+            this.saveResult.setValue(new SaveResult(SaveResult.State.WAITING_TO_SAVE, saveRequest));
+            audioRecorder.stop();
+        } else {
             this.saveResult.setValue(new SaveResult(SaveResult.State.SAVING, saveRequest));
             saveToDisk(saveRequest);
-        } else {
-            this.saveResult.setValue(new SaveResult(SaveResult.State.CHANGE_REASON_REQUIRED, saveRequest));
         }
     }
 
     // Cleanup when user exits a form without saving
     public void ignoreChanges() {
+        if (audioRecorder.isRecording()) {
+            audioRecorder.cleanUp();
+        }
+
         ExternalDataManager manager = Collect.getInstance().getExternalDataManager();
         if (manager != null) {
             manager.close();
@@ -166,7 +175,27 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
         for (String filePath : recentFiles.values()) {
             mediaUtils.deleteMediaFile(filePath);
         }
+
         clearMediaFiles();
+    }
+
+    public void resumeSave() {
+        if (saveResult.getValue() != null) {
+            SaveRequest saveRequest = saveResult.getValue().request;
+
+            if (saveResult.getValue().getState() == SaveResult.State.CHANGE_REASON_REQUIRED) {
+                if (!saveReason()) {
+                    return;
+                } else if (saveRequest.viewExiting && audioRecorder.isRecording()) {
+                    this.saveResult.setValue(new SaveResult(SaveResult.State.WAITING_TO_SAVE, saveRequest));
+                    audioRecorder.stop();
+                    return;
+                }
+            }
+
+            this.saveResult.setValue(new SaveResult(SaveResult.State.SAVING, saveRequest));
+            saveToDisk(saveRequest);
+        }
     }
 
     @Nullable
@@ -191,28 +220,20 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
         this.reason = reason;
     }
 
-    public boolean saveReason() {
+    public String getReason() {
+        return reason;
+    }
+
+    private boolean saveReason() {
         if (reason == null || isBlank(reason) || formController == null) {
             return false;
         }
 
         formController.getAuditEventLogger().logEvent(AuditEvent.AuditEventType.CHANGE_REASON, null, true, null, clock.getCurrentTime(), reason);
-
-        if (saveResult.getValue() != null) {
-            SaveRequest request = saveResult.getValue().request;
-            saveResult.setValue(new SaveResult(SaveResult.State.SAVING, request));
-            saveToDisk(request);
-        }
-
         return true;
     }
 
-    public String getReason() {
-        return reason;
-    }
-
     private void saveToDisk(SaveRequest saveRequest) {
-
         saveTask = new SaveTask(saveRequest, formSaver, formController, mediaUtils, new SaveTask.Listener() {
             @Override
             public void onProgressPublished(String progress) {
@@ -323,8 +344,8 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
     }
 
     @Override
-    public LiveData<Result<String>> createAnswerFile(File file) {
-        MutableLiveData<Result<String>> liveData = new MutableLiveData<>(null);
+    public LiveData<Result<File>> createAnswerFile(File file) {
+        MutableLiveData<Result<File>> liveData = new MutableLiveData<>(null);
 
         isSavingAnswerFile.setValue(true);
         scheduler.immediate(() -> {
@@ -334,7 +355,7 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
             File[] answerFiles = new File(instanceDir).listFiles();
             for (File answerFile : answerFiles) {
                 if (FileUtils.getMd5Hash(answerFile).equals(newFileHash)) {
-                    return answerFile.getName();
+                    return answerFile;
                 }
             }
 
@@ -352,13 +373,12 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
                 return null;
             }
 
-            return newFileName;
-        }, fileName -> {
-            String fileName1 = fileName;
-            liveData.setValue(new Result<String>(fileName1));
+            return new File(newFilePath);
+        }, answerFile -> {
+            liveData.setValue(new Result<>(answerFile));
             isSavingAnswerFile.setValue(false);
 
-            if (fileName == null) {
+            if (answerFile == null) {
                 answerFileError.setValue(file.getAbsolutePath());
             }
         });
@@ -422,7 +442,8 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
             SAVED,
             SAVE_ERROR,
             FINALIZE_ERROR,
-            CONSTRAINT_ERROR
+            CONSTRAINT_ERROR,
+            WAITING_TO_SAVE
         }
 
         public SaveRequest getRequest() {
@@ -504,7 +525,7 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
     /**
      * The ViewModel factory here needs a reference to the Activity (the SavedStateRegistry) so
      * we need factory to be able to create it in Dagger (as we won't have access to the Activity).
-     *
+     * <p>
      * Could potentially be solved using Dagger's per Activity scopes.
      */
 

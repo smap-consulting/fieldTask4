@@ -40,14 +40,14 @@ import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.formentry.questions.QuestionTextSizeHelper;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
+import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.preferences.GuidanceHint;
 import org.odk.collect.android.utilities.AnimationUtils;
 import org.odk.collect.android.utilities.FormEntryPromptUtils;
-import org.odk.collect.android.utilities.PermissionUtils;
 import org.odk.collect.android.utilities.ScreenUtils;
-import org.odk.collect.android.utilities.SoftKeyboardUtils;
+import org.odk.collect.android.utilities.SoftKeyboardController;
 import org.odk.collect.android.utilities.StringUtils;
 import org.odk.collect.android.utilities.ThemeUtils;
 import org.odk.collect.android.utilities.ViewUtils;
@@ -78,7 +78,6 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
     private final View guidanceTextLayout;
     private final View textLayout;
     private final TextView warningText;
-    private PermissionUtils permissionUtils;
     private AtomicBoolean expanded;
     protected final ThemeUtils themeUtils;
     protected AudioHelper audioHelper;
@@ -99,6 +98,12 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
     @Inject
     public ScreenUtils screenUtils;
 
+    @Inject
+    public SoftKeyboardController softKeyboardController;
+
+    @Inject
+    PermissionsProvider permissionsProvider;
+
     public QuestionWidget(Context context, QuestionDetails questionDetails) {
         super(context);
         getComponent(context).inject(this);
@@ -106,10 +111,6 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         this.audioHelper = audioHelperFactory.create(context);
 
         themeUtils = new ThemeUtils(context);
-
-        if (context instanceof FormEntryActivity) {
-            permissionUtils = new PermissionUtils(R.style.Theme_Collect_Dialog_PermissionAlert);
-        }
 
         this.questionDetails = questionDetails;
         formEntryPrompt = questionDetails.getPrompt();
@@ -126,7 +127,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         helpTextView = setupHelpText(helpTextLayout.findViewById(R.id.help_text_view), formEntryPrompt);
         setupGuidanceTextAndLayout(helpTextLayout.findViewById(R.id.guidance_text_view), formEntryPrompt);
 
-        View answerView = onCreateAnswerView(context, getFormEntryPrompt(), getAnswerFontSize());
+        View answerView = onCreateAnswerView(context, questionDetails.getPrompt(), getAnswerFontSize());
         if (answerView != null) {
             addAnswerView(answerView);
         }
@@ -275,7 +276,7 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
     }
 
     public void setFocus(Context context) {
-        SoftKeyboardUtils.hideSoftKeyboard(this);
+        softKeyboardController.hideSoftKeyboard(this);
     }
 
     /**
@@ -429,12 +430,12 @@ public abstract class QuestionWidget extends FrameLayout implements Widget {
         return referenceManager;
     }
 
-    public PermissionUtils getPermissionUtils() {
-        return permissionUtils;
+    public PermissionsProvider getPermissionsProvider() {
+        return permissionsProvider;
     }
 
-    public void setPermissionUtils(PermissionUtils permissionUtils) {
-        this.permissionUtils = permissionUtils;
+    public void setPermissionsProvider(PermissionsProvider permissionsProvider) {
+        this.permissionsProvider = permissionsProvider;
     }
 
     public void setValueChangedListener(WidgetValueChangedListener valueChangedListener) {

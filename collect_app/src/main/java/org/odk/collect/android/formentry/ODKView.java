@@ -53,6 +53,7 @@ import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.odk.collect.android.R;
 import org.odk.collect.android.analytics.Analytics;
+import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.dao.helpers.ContentResolverHelper;
@@ -63,11 +64,12 @@ import org.odk.collect.android.formentry.media.AudioHelperFactory;
 import org.odk.collect.android.formentry.media.PromptAutoplayer;
 import org.odk.collect.android.formentry.questions.QuestionTextSizeHelper;
 import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
+import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.preferences.PreferencesProvider;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.FileUtils;
-import org.odk.collect.android.utilities.PermissionUtils;
 import org.odk.collect.android.utilities.QuestionFontSizeUtils;
 import org.odk.collect.android.utilities.QuestionMediaManager;
 import org.odk.collect.android.utilities.ScreenContext;
@@ -75,13 +77,16 @@ import org.odk.collect.android.utilities.ThemeUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.widgets.QuestionWidget;
 import org.odk.collect.android.widgets.StringWidget;
+import org.odk.collect.android.widgets.UrlWidget;
 import org.odk.collect.android.widgets.WidgetFactory;
 import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver;
 import org.odk.collect.android.widgets.utilities.AudioPlayer;
-import org.odk.collect.android.widgets.utilities.RecordingRequesterFactory;
+import org.odk.collect.android.widgets.utilities.ExternalAppRecordingRequester;
+import org.odk.collect.android.widgets.utilities.InternalRecordingRequester;
+import org.odk.collect.android.widgets.utilities.RecordingRequesterProvider;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 import org.odk.collect.audioclips.PlaybackFailedException;
-import org.odk.collect.audiorecorder.recording.AudioRecorderViewModel;
+import org.odk.collect.audiorecorder.recording.AudioRecorder;
 
 import java.io.File;
 import java.io.Serializable;
@@ -113,8 +118,6 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     private final ArrayList<QuestionWidget> widgets;
     private final AudioHelper audioHelper;
 
-    public static final String FIELD_LIST = "field-list";
-
     private WidgetValueChangedListener widgetValueChangedListener;
 
     @Inject
@@ -129,8 +132,13 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     @Inject
     ActivityAvailability activityAvailability;
 
+    @Inject
+    PermissionsProvider permissionsProvider;
+
     private final WidgetFactory widgetFactory;
     private final LifecycleOwner viewLifecycle;
+    private final AudioRecorder audioRecorder;
+    private final FormEntryViewModel formEntryViewModel;
 
     /**
      * Builds the view for a specified question or field-list of questions.
@@ -140,9 +148,12 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
      * @param groups          the group hierarchy that this question or field list is in
      * @param advancingPage   whether this view is being created after a forward swipe through the
      */
-    public ODKView(ComponentActivity context, final FormEntryPrompt[] questionPrompts, FormEntryCaption[] groups, boolean advancingPage, QuestionMediaManager questionMediaManager, WaitingForDataRegistry waitingForDataRegistry, AudioPlayer audioPlayer, AudioRecorderViewModel audioRecorderViewModel) {
+    @SuppressWarnings("PMD.ExcessiveParameterList")
+    public ODKView(ComponentActivity context, final FormEntryPrompt[] questionPrompts, FormEntryCaption[] groups, boolean advancingPage, QuestionMediaManager questionMediaManager, WaitingForDataRegistry waitingForDataRegistry, AudioPlayer audioPlayer, AudioRecorder audioRecorder, FormEntryViewModel formEntryViewModel, InternalRecordingRequester internalRecordingRequester, ExternalAppRecordingRequester externalAppRecordingRequester) {
         super(context);
         viewLifecycle = ((ScreenContext) context).getViewLifecycle();
+        this.audioRecorder = audioRecorder;
+        this.formEntryViewModel = formEntryViewModel;
 
         getComponent(context).inject(this);
         this.audioHelper = audioHelperFactory.create(context);
@@ -162,18 +173,21 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
             }
         }
 
-        PermissionUtils permissionUtils = new PermissionUtils(R.style.Theme_Collect_Dialog_PermissionAlert);
-
         this.widgetFactory = new WidgetFactory(
                 context,
                 readOnlyOverride,
                 preferencesProvider.getGeneralSharedPreferences().getBoolean(KEY_EXTERNAL_APP_RECORDING, true),
                 waitingForDataRegistry,
                 questionMediaManager,
-                analytics,
                 audioPlayer,
                 activityAvailability,
-                new RecordingRequesterFactory(waitingForDataRegistry, questionMediaManager, activityAvailability, audioRecorderViewModel, permissionUtils, context, viewLifecycle)
+                new RecordingRequesterProvider(
+                        internalRecordingRequester,
+                        externalAppRecordingRequester
+                ),
+                formEntryViewModel,
+                audioRecorder,
+                viewLifecycle
         );
 
         widgets = new ArrayList<>();
@@ -190,6 +204,8 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
 
         setupAudioErrors();
         autoplayIfNeeded(advancingPage);
+
+        logAnalyticsForWidgets();
     }
 
     private void setupAudioErrors() {
@@ -291,7 +307,7 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
      * Note: if the given question is of an unsupported type, a text widget will be created.
      */
     private QuestionWidget configureWidgetForQuestion(FormEntryPrompt question) {
-        QuestionWidget qw = widgetFactory.createWidgetFromPrompt(question);
+        QuestionWidget qw = widgetFactory.createWidgetFromPrompt(question, permissionsProvider);
         qw.setOnLongClickListener(this);
         qw.setValueChangedListener(this);
 
@@ -523,14 +539,23 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
                                     } else {
                                         throw new RuntimeException("The value for " + key + " must be a URI but it is " + answer);
                                     }
-                                    
-                                    if (uri != null) {
-                                        File destFile = FileUtils.createDestinationMediaFile(formController.getInstanceFile().getParent(), ContentResolverHelper.getFileExtensionFromUri(getContext(), uri));
-                                        //TODO might be better to use QuestionMediaManager in the future
-                                        FileUtils.saveAnswerFileFromUri(uri, destFile, getContext());
-                                        ((WidgetDataReceiver) questionWidget).setData(destFile);
-                                    }
-                                    questionWidget.showAnswerContainer();
+
+                                    permissionsProvider.requestReadUriPermission((Activity) getContext(), uri, getContext().getContentResolver(), new PermissionListener() {
+                                        @Override
+                                        public void granted() {
+                                            File destFile = FileUtils.createDestinationMediaFile(formController.getInstanceFile().getParent(), ContentResolverHelper.getFileExtensionFromUri(uri));
+                                            //TODO might be better to use QuestionMediaManager in the future
+                                            FileUtils.saveAnswerFileFromUri(uri, destFile, getContext());
+                                            ((WidgetDataReceiver) questionWidget).setData(destFile);
+
+                                            questionWidget.showAnswerContainer();
+                                        }
+
+                                        @Override
+                                        public void denied() {
+
+                                        }
+                                    });
                                 } catch (Exception | Error e) {
                                     Timber.w(e);
                                 }
@@ -653,8 +678,21 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
     }
 
     public void widgetValueChanged(QuestionWidget changedWidget) {
+        if (audioRecorder.isRecording()) {
+            formEntryViewModel.logFormEvent(AnalyticsEvents.ANSWER_WHILE_RECORDING);
+        }
+
         if (widgetValueChangedListener != null) {
             widgetValueChangedListener.widgetValueChanged(changedWidget);
+        }
+
+    }
+
+    private void logAnalyticsForWidgets() {
+        for (QuestionWidget widget : widgets) {
+            if (widget instanceof UrlWidget) {
+                formEntryViewModel.logFormEvent(AnalyticsEvents.URL_QUESTION);
+            }
         }
     }
 }

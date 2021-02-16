@@ -44,11 +44,11 @@ import org.javarosa.xpath.XPathParseTool;
 import org.javarosa.xpath.expr.XPathExpression;
 import org.odk.collect.android.exception.JavaRosaException;
 import org.odk.collect.android.external.ExternalDataUtil;
-import org.odk.collect.android.formentry.ODKView;
 import org.odk.collect.android.formentry.audit.AsyncTaskAuditEventWriter;
 import org.odk.collect.android.formentry.audit.AuditConfig;
 import org.odk.collect.android.formentry.audit.AuditEventLogger;
 import org.odk.collect.android.forms.FormDesignException;
+import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.FormNameUtils;
 
@@ -58,6 +58,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import timber.log.Timber;
 
@@ -183,7 +184,7 @@ public class FormController {
      */
     public String getXPath(FormIndex index) {
         String value;
-        switch (getEvent()) {
+        switch (getEvent(index)) {
             case FormEntryController.EVENT_BEGINNING_OF_FORM:
                 value = "beginningOfForm";
                 break;
@@ -212,6 +213,7 @@ public class FormController {
         return value;
     }
 
+    @Nullable
     public FormIndex getIndexFromXPath(String xpath) {
         switch (xpath) {
             case "beginningOfForm":
@@ -220,7 +222,7 @@ public class FormController {
                 return FormIndex.createEndOfFormIndex();
             case "unexpected":
                 Timber.e("Unexpected string from XPath");
-                throw new IllegalArgumentException("unexpected string from XPath");
+                return null;
             default:
                 FormIndex returned = null;
                 FormIndex saved = getFormIndex();
@@ -231,7 +233,6 @@ public class FormController {
                     int event = stepToNextEvent(true);
                     while (event != FormEntryController.EVENT_END_OF_FORM) {
                         String candidateXPath = getXPath(getFormIndex());
-                        // Log.i(t, "xpath: " + candidateXPath);
                         if (candidateXPath.equals(xpath)) {
                             returned = getFormIndex();
                             break;
@@ -371,11 +372,11 @@ public class FormController {
     private boolean groupIsFieldList(FormIndex index) {
         // if this isn't a group, return right away
         IFormElement element = formEntryController.getModel().getForm().getChild(index);
-        if (!(element instanceof GroupDef)) {
+        if (!(element instanceof GroupDef) || element.getAppearanceAttr() == null) {
             return false;
         }
 
-        return ODKView.FIELD_LIST.equalsIgnoreCase(element.getAppearanceAttr());
+        return element.getAppearanceAttr().toLowerCase(Locale.ENGLISH).contains(Appearances.FIELD_LIST);
     }
 
     private boolean repeatIsFieldList(FormIndex index) {
@@ -437,8 +438,6 @@ public class FormController {
         } else if (event == FormEntryController.EVENT_REPEAT) {
             return repeatIsFieldList(index);
         } else {
-            // right now we only test Questions and Groups. Should we also handle
-            // repeats?
             return false;
         }
 
@@ -516,6 +515,11 @@ public class FormController {
         try {
             return formEntryController.saveAnswer(index, data, true);
         } catch (Exception e) {
+            String dataType = data != null ? data.getClass().toString() : null;
+            String ref = index != null ? index.getReference().toString() : null;
+            Timber.w("Error saving answer of type %s with ref %s for index %s",
+                    dataType, ref, index);
+
             throw new JavaRosaException(e);
         }
     }
@@ -573,18 +577,14 @@ public class FormController {
                 // Handle nested field-list group
                 if (getEvent() == FormEntryController.EVENT_GROUP) {
                     FormIndex currentIndex = getFormIndex();
-                    IFormElement element = formEntryController.getModel().getForm().getChild(
-                            currentIndex);
-                    if (element instanceof GroupDef) {
-                        GroupDef gd = (GroupDef) element;
-                        if (ODKView.FIELD_LIST.equalsIgnoreCase(gd.getAppearanceAttr())) {
-                            // jump to outermost containing field-list
-                            FormEntryCaption[] fclist = this.getCaptionHierarchy(currentIndex);
-                            for (FormEntryCaption caption : fclist) {
-                                if (groupIsFieldList(caption.getIndex())) {
-                                    formEntryController.jumpToIndex(caption.getIndex());
-                                    break;
-                                }
+
+                    if (groupIsFieldList(currentIndex)) {
+                        // jump to outermost containing field-list
+                        FormEntryCaption[] fclist = this.getCaptionHierarchy(currentIndex);
+                        for (FormEntryCaption caption : fclist) {
+                            if (groupIsFieldList(caption.getIndex())) {
+                                formEntryController.jumpToIndex(caption.getIndex());
+                                break;
                             }
                         }
                     }
@@ -1315,5 +1315,9 @@ public class FormController {
      */
     public boolean currentFormCollectsBackgroundLocation() {
         return currentFormAuditsLocation() || getFormDef().hasAction(SetGeopointActionHandler.ELEMENT_NAME);
+    }
+
+    public IAnswerData getAnswer(TreeReference treeReference) {
+        return getFormDef().getMainInstance().resolveReference(treeReference).getValue();
     }
 }

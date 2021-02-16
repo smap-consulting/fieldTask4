@@ -13,7 +13,7 @@ import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
 import org.odk.collect.android.fragments.dialogs.SelectMultiMinimalDialog;
 import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.StringUtils;
-import org.odk.collect.android.utilities.WidgetAppearanceUtils;
+import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 import org.odk.collect.android.widgets.warnings.SpacesInUnderlyingValuesWarning;
 
@@ -39,12 +39,12 @@ public class SelectMultiMinimalWidget extends SelectMinimalWidget {
 
     @Override
     protected void showDialog() {
-        int numColumns = WidgetAppearanceUtils.getNumberOfColumns(getFormEntryPrompt(), screenUtils);
-        boolean noButtonsMode = WidgetAppearanceUtils.isCompactAppearance(getFormEntryPrompt()) || WidgetAppearanceUtils.isNoButtonsAppearance(getFormEntryPrompt());
+        int numColumns = Appearances.getNumberOfColumns(getFormEntryPrompt(), screenUtils);
+        boolean noButtonsMode = Appearances.isCompactAppearance(getFormEntryPrompt()) || Appearances.isNoButtonsAppearance(getFormEntryPrompt());
 
-        SelectMultiMinimalDialog dialog = new SelectMultiMinimalDialog(getSavedSelectedItems(),
-                WidgetAppearanceUtils.isFlexAppearance(getFormEntryPrompt()),
-                WidgetAppearanceUtils.isAutocomplete(getFormEntryPrompt()), getContext(), items,
+        SelectMultiMinimalDialog dialog = new SelectMultiMinimalDialog(new ArrayList<>(selectedItems),
+                Appearances.isFlexAppearance(getFormEntryPrompt()),
+                Appearances.isAutocomplete(getFormEntryPrompt()), getContext(), items,
                 getFormEntryPrompt(), getReferenceManager(),
                 getPlayColor(getFormEntryPrompt(), themeUtils), numColumns, noButtonsMode);
 
@@ -86,16 +86,12 @@ public class SelectMultiMinimalWidget extends SelectMinimalWidget {
         } else {
             StringBuilder builder = new StringBuilder();
             for (Selection selectedItem : selectedItems) {
-                builder.append(StringUtils.textToHtml(getFormEntryPrompt().getSelectItemText(selectedItem)));
+                builder.append(getFormEntryPrompt().getSelectItemText(selectedItem));
                 if (selectedItems.size() - 1 > selectedItems.indexOf(selectedItem)) {
                     builder.append(", ");
                 }
             }
-            binding.answer.setText(builder.toString());
+            binding.answer.setText(StringUtils.textToHtml(builder.toString()));
         }
-    }
-
-    private List<Selection> getSavedSelectedItems() {
-        return selectedItems;
     }
 }

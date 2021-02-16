@@ -10,22 +10,27 @@ import androidx.lifecycle.ViewModelProvider;
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.GroupDef;
+import org.javarosa.core.model.actions.recordaudio.RecordAudioActionHandler;
 import org.javarosa.form.api.FormEntryController;
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.analytics.Analytics;
+import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.exception.JavaRosaException;
 import org.odk.collect.android.formentry.audit.AuditEvent;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.utilities.Clock;
 
-import static org.odk.collect.android.analytics.AnalyticsEvents.ADD_REPEAT;
+import java.util.Objects;
+
 import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getRepeatGroupIndex;
 
 public class FormEntryViewModel extends ViewModel implements RequiresFormController {
 
-    private final Analytics analytics;
     private final Clock clock;
-    private final MutableLiveData<String> error = new MutableLiveData<>(null);
+    private final Analytics analytics;
+
+    private final MutableLiveData<FormError> error = new MutableLiveData<>(null);
+    private final MutableLiveData<Boolean> hasBackgroundRecording = new MutableLiveData<>(false);
 
     @Nullable
     private FormController formController;
@@ -34,14 +39,25 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
     private FormIndex jumpBackIndex;
 
     @SuppressWarnings("WeakerAccess")
-    public FormEntryViewModel(Analytics analytics, Clock clock) {
-        this.analytics = analytics;
+    public FormEntryViewModel(Clock clock, Analytics analytics) {
         this.clock = clock;
+        this.analytics = analytics;
     }
 
     @Override
     public void formLoaded(@NotNull FormController formController) {
         this.formController = formController;
+
+        boolean hasBackgroundRecording = formController.getFormDef().hasAction(RecordAudioActionHandler.ELEMENT_NAME);
+        this.hasBackgroundRecording.setValue(hasBackgroundRecording);
+
+        if (hasBackgroundRecording) {
+            analytics.logFormEvent(AnalyticsEvents.REQUESTS_BACKGROUND_AUDIO, getFormIdentifierHash());
+        }
+    }
+
+    public boolean isFormControllerSet() {
+        return formController != null;
     }
 
     @Nullable
@@ -53,7 +69,7 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
         }
     }
 
-    public LiveData<String> getError() {
+    public LiveData<FormError> getError() {
         return error;
     }
 
@@ -71,31 +87,24 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
         formController.jumpToNewRepeatPrompt();
     }
 
-    public void addRepeat(boolean fromPrompt) {
+    public void addRepeat() {
         if (formController == null) {
             return;
         }
 
-        if (jumpBackIndex != null) {
-            jumpBackIndex = null;
-            analytics.logEvent(ADD_REPEAT, "Inline", formController.getCurrentFormIdentifierHash());
-        } else if (fromPrompt) {
-            analytics.logEvent(ADD_REPEAT, "Prompt", formController.getCurrentFormIdentifierHash());
-        } else {
-            analytics.logEvent(ADD_REPEAT, "Hierarchy", formController.getCurrentFormIdentifierHash());
-        }
+        jumpBackIndex = null;
 
         try {
             formController.newRepeat();
         } catch (RuntimeException e) {
-            error.setValue(e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+            error.setValue(new NonFatal(e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
         }
 
         if (!formController.indexIsInFieldList()) {
             try {
                 formController.stepToNextScreenEvent();
             } catch (JavaRosaException e) {
-                error.setValue(e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+                error.setValue(new NonFatal(e.getCause() != null ? e.getCause().getMessage() : e.getMessage()));
             }
         }
     }
@@ -106,15 +115,13 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
         }
 
         if (jumpBackIndex != null) {
-            analytics.logEvent(ADD_REPEAT, "InlineDecline", formController.getCurrentFormIdentifierHash());
-
             formController.jumpToIndex(jumpBackIndex);
             jumpBackIndex = null;
         } else {
             try {
                 this.formController.stepToNextScreenEvent();
             } catch (JavaRosaException exception) {
-                error.setValue(exception.getCause().getMessage());
+                error.setValue(new NonFatal(exception.getCause().getMessage()));
             }
         }
     }
@@ -137,7 +144,7 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
         try {
             formController.stepToNextScreenEvent();
         } catch (JavaRosaException e) {
-            error.setValue(e.getCause().getMessage());
+            error.setValue(new NonFatal(e.getCause().getMessage()));
             return;
         }
 
@@ -153,7 +160,7 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
                 formController.stepToNextScreenEvent();
             }
         } catch (JavaRosaException e) {
-            error.setValue(e.getCause().getMessage());
+            error.setValue(new NonFatal(e.getCause().getMessage()));
             return;
         }
 
@@ -164,11 +171,29 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
         formController.getAuditEventLogger().logEvent(AuditEvent.AuditEventType.HIERARCHY, true, clock.getCurrentTime());
     }
 
+    public void logFormEvent(String event) {
+        analytics.logFormEvent(event, getFormIdentifierHash());
+    }
+
+    public LiveData<Boolean> hasBackgroundRecording() {
+        return hasBackgroundRecording;
+    }
+
+    private String getFormIdentifierHash() {
+        if (formController != null) {
+            return formController.getCurrentFormIdentifierHash();
+        } else {
+            return "";
+        }
+    }
+
     public static class Factory implements ViewModelProvider.Factory {
 
+        private final Clock clock;
         private final Analytics analytics;
 
-        public Factory(Analytics analytics) {
+        public Factory(Clock clock, Analytics analytics) {
+            this.clock = clock;
             this.analytics = analytics;
         }
 
@@ -176,7 +201,43 @@ public class FormEntryViewModel extends ViewModel implements RequiresFormControl
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new FormEntryViewModel(analytics, System::currentTimeMillis);
+            return (T) new FormEntryViewModel(clock, analytics);
+        }
+    }
+
+    public abstract static class FormError {
+
+    }
+
+    public static class NonFatal extends FormError {
+
+        private final String message;
+
+        public NonFatal(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            NonFatal nonFatal = (NonFatal) o;
+            return Objects.equals(message, nonFatal.message);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(message);
         }
     }
 }

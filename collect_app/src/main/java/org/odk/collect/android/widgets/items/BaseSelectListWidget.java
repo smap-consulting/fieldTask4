@@ -16,8 +16,7 @@ import org.odk.collect.android.adapters.AbstractSelectListAdapter;
 import org.odk.collect.android.databinding.SelectListWidgetAnswerBinding;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.SelectItemClickListener;
-import org.odk.collect.android.utilities.SoftKeyboardUtils;
-import org.odk.collect.android.utilities.WidgetAppearanceUtils;
+import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.widgets.interfaces.MultiChoiceWidget;
 import org.odk.collect.android.widgets.utilities.SearchQueryViewModel;
 
@@ -32,8 +31,8 @@ public abstract class BaseSelectListWidget extends ItemsWidget implements MultiC
     public BaseSelectListWidget(Context context, QuestionDetails questionDetails) {
         super(context, questionDetails);
         logAnalytics(questionDetails);
-        binding.choicesRecyclerView.initRecyclerView(setUpAdapter(), WidgetAppearanceUtils.isFlexAppearance(getQuestionDetails().getPrompt()));
-        if (WidgetAppearanceUtils.isAutocomplete(getQuestionDetails().getPrompt())) {
+        binding.choicesRecyclerView.initRecyclerView(setUpAdapter(), Appearances.isFlexAppearance(getQuestionDetails().getPrompt()));
+        if (Appearances.isAutocomplete(getQuestionDetails().getPrompt())) {
             setUpSearchBox();
         }
     }
@@ -46,8 +45,8 @@ public abstract class BaseSelectListWidget extends ItemsWidget implements MultiC
 
     @Override
     public void setFocus(Context context) {
-        if (WidgetAppearanceUtils.isAutocomplete(getQuestionDetails().getPrompt())) {
-            SoftKeyboardUtils.showSoftKeyboard(binding.choicesSearchBox);
+        if (Appearances.isAutocomplete(getQuestionDetails().getPrompt()) && !questionDetails.isReadOnly()) {
+            softKeyboardController.showSoftKeyboard(binding.choicesSearchBox);
         }
     }
 

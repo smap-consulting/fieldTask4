@@ -34,7 +34,8 @@ import org.odk.collect.android.listeners.AdvanceToNextListener;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.support.MockFormEntryPromptBuilder;
 import org.odk.collect.android.support.RobolectricHelpers;
-import org.odk.collect.android.utilities.WidgetAppearanceUtils;
+import org.odk.collect.android.utilities.SoftKeyboardController;
+import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.widgets.base.GeneralSelectOneWidgetTest;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.audioclips.Clip;
@@ -47,6 +48,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -67,6 +70,7 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
         if (isQuick()) {
             selectOneWidget.setListener(listener);
         }
+        selectOneWidget.setFocus(activity);
         return selectOneWidget;
     }
 
@@ -125,6 +129,27 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
     public void whenAutocompleteAppearanceDoesNotExist_shouldSearchBoxBeHidden() {
         when(formEntryPrompt.getAppearanceHint()).thenReturn("");
         assertThat(getSpyWidget().binding.choicesSearchBox.getVisibility(), is(View.GONE));
+    }
+
+    @Test
+    public void whenAutocompleteAppearanceDoesNotExist_shouldNotKeyboardBeDisplayed() {
+        SelectOneWidget widget = getSpyWidget();
+        verify(widget.softKeyboardController, never()).showSoftKeyboard(widget.binding.choicesSearchBox);
+    }
+
+    @Test
+    public void whenAutocompleteAppearanceExist_shouldKeyboardBeDisplayed() {
+        when(formEntryPrompt.getAppearanceHint()).thenReturn("autocomplete");
+        SelectOneWidget widget = getSpyWidget();
+        verify(widget.softKeyboardController).showSoftKeyboard(widget.binding.choicesSearchBox);
+    }
+
+    @Test
+    public void whenAutocompleteAppearanceExistAndWidgetIsReadOnly_shouldNotKeyboardBeDisplayed() {
+        when(formEntryPrompt.getAppearanceHint()).thenReturn("autocomplete");
+        when(formEntryPrompt.isReadOnly()).thenReturn(true);
+        SelectOneWidget widget = getSpyWidget();
+        verify(widget.softKeyboardController, never()).showSoftKeyboard(widget.binding.choicesSearchBox);
     }
 
     @Test
@@ -276,7 +301,7 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
 
         // No-buttons appearance
         formEntryPrompt = new MockFormEntryPromptBuilder(formEntryPrompt)
-                .withAppearance(WidgetAppearanceUtils.NO_BUTTONS)
+                .withAppearance(Appearances.NO_BUTTONS)
                 .build();
 
         populateRecyclerView(getWidget());
@@ -303,11 +328,16 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
             public Analytics providesAnalytics(Application application, GeneralSharedPreferences generalSharedPreferences) {
                 return analytics;
             }
+
+            @Override
+            public SoftKeyboardController provideSoftKeyboardController() {
+                return mock(SoftKeyboardController.class);
+            }
         });
     }
 
     private void clickChoice(SelectOneWidget widget, int index) {
-        if (WidgetAppearanceUtils.isNoButtonsAppearance(formEntryPrompt)) {
+        if (Appearances.isNoButtonsAppearance(formEntryPrompt)) {
             clickNoButtonChoice(widget, index);
         } else {
             clickButtonChoice(widget, index);
@@ -332,6 +362,6 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
     );
 
     private boolean isQuick() {
-        return WidgetAppearanceUtils.getSanitizedAppearanceHint(formEntryPrompt).contains("quick");
+        return Appearances.getSanitizedAppearanceHint(formEntryPrompt).contains("quick");
     }
 }

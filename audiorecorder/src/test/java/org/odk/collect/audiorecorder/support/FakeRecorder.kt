@@ -2,7 +2,8 @@ package org.odk.collect.audiorecorder.support
 
 import org.odk.collect.audiorecorder.recorder.Output
 import org.odk.collect.audiorecorder.recorder.Recorder
-import org.odk.collect.audiorecorder.recorder.RecordingException
+import org.odk.collect.audiorecorder.recording.MicInUseException
+import org.odk.collect.audiorecorder.recording.SetupException
 import java.io.File
 
 class FakeRecorder : Recorder {
@@ -16,6 +17,8 @@ class FakeRecorder : Recorder {
         }
 
     var file: File? = null
+        private set
+
     lateinit var output: Output
 
     private val _recordings = mutableListOf<Unit>()
@@ -23,7 +26,7 @@ class FakeRecorder : Recorder {
 
     private var recording = false
     private var cancelled = false
-    private var failOnStart = false
+    private var exception: Exception? = null
 
     override fun isRecording(): Boolean {
         return recording
@@ -33,15 +36,19 @@ class FakeRecorder : Recorder {
         return cancelled
     }
 
-    @Throws(RecordingException::class)
+    @Throws(SetupException::class, MicInUseException::class)
     override fun start(output: Output) {
-        if (!failOnStart) {
-            recording = true
-            cancelled = false
-            this.output = output
-            _recordings.add(Unit)
-        } else {
-            throw RecordingException()
+        exception.let {
+            if (it == null) {
+                recording = true
+                cancelled = false
+                this.output = output
+                _recordings.add(Unit)
+                val newFile = File.createTempFile("recording", ".mp3")
+                file = newFile
+            } else {
+                throw it
+            }
         }
     }
 
@@ -55,9 +62,7 @@ class FakeRecorder : Recorder {
 
     override fun stop(): File {
         recording = false
-        val newFile = File.createTempFile("recording", ".mp3")
-        file = newFile
-        return newFile
+        return file!!
     }
 
     override fun cancel() {
@@ -65,7 +70,7 @@ class FakeRecorder : Recorder {
         cancelled = true
     }
 
-    fun failOnStart() {
-        failOnStart = true
+    fun failOnStart(exception: Exception) {
+        this.exception = exception
     }
 }

@@ -18,7 +18,7 @@ limitations under the License.
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:paddingTop="@dimen/margin_standard">
+    android:paddingTop="@dimen/margin_large">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -37,9 +37,8 @@ limitations under the License.
             android:id="@+id/currentDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/play"
+            android:layout_above="@id/seekBar"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="@dimen/margin_standard"
             android:textColor="?colorOnSurface"
             android:textSize="@dimen/text_size_small"
             android:textStyle="bold"
@@ -49,9 +48,8 @@ limitations under the License.
             android:id="@+id/totalDuration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/play"
+            android:layout_above="@id/seekBar"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="@dimen/margin_standard"
             android:textColor="?colorOnSurface"
             android:textSize="@dimen/text_size_small"
             android:textStyle="bold"
@@ -61,16 +59,17 @@ limitations under the License.
             android:id="@+id/seekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/currentDuration"
+            android:layout_below="@+id/play"
             android:minHeight="24dp"
-            android:padding="@dimen/margin_standard"
+            android:paddingVertical="@dimen/margin_standard"
+            android:paddingStart="0dp"
+            android:paddingEnd="0dp"
             android:thumbOffset="3dp" />
     </RelativeLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_standard"
         android:orientation="horizontal">
 
         <com.google.android.material.button.MaterialButton
@@ -78,7 +77,6 @@ limitations under the License.
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
             android:text="@string/delete_answer_file"
             android:textColor="?colorError"
             app:icon="@drawable/ic_baseline_delete_outline_24"

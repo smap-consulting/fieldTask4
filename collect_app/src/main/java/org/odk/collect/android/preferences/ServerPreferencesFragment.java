@@ -47,9 +47,9 @@ import org.odk.collect.android.preferences.filters.ControlCharacterFilter;
 import org.odk.collect.android.preferences.filters.WhitespaceFilter;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.MultiClickGuard;
-import org.odk.collect.android.utilities.PermissionUtils;
+import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.utilities.PlayServicesChecker;
-import org.odk.collect.android.utilities.SoftKeyboardUtils;
+import org.odk.collect.android.utilities.SoftKeyboardController;
 import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.utilities.Validator;
 
@@ -87,6 +87,12 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
 
     @Inject
     ServerRepository serverRepository;
+
+    @Inject
+    SoftKeyboardController softKeyboardController;
+
+    @Inject
+    PermissionsProvider permissionsProvider;
 
     private ListPopupWindow listPopupWindow;
     private Preference selectedGoogleAccountPreference;
@@ -239,7 +245,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     }
 
     private void requestAccountsPermission() {
-        new PermissionUtils(R.style.Theme_Collect_Dialog_PermissionAlert).requestGetAccountsPermission(getActivity(), new PermissionListener() {
+        permissionsProvider.requestGetAccountsPermission(getActivity(), new PermissionListener() {
             @Override
             public void granted() {
                 Intent intent = accountsManager.getAccountChooserIntent();
@@ -259,7 +265,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
         if (event.getAction() == MotionEvent.ACTION_UP) {
             if (event.getX() >= (v.getWidth() - ((EditText) v)
                     .getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                SoftKeyboardUtils.hideSoftKeyboard(v);
+                softKeyboardController.hideSoftKeyboard(v);
                 listPopupWindow.show();
                 return true;
             }

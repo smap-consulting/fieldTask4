@@ -1,12 +1,12 @@
 package org.odk.collect.android.formentry;
 
+import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.instance.TreeReference;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.analytics.Analytics;
-import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.exception.JavaRosaException;
 import org.odk.collect.android.formentry.audit.AuditEvent;
 import org.odk.collect.android.formentry.audit.AuditEventLogger;
@@ -22,15 +22,15 @@ import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.only;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.odk.collect.android.formentry.FormEntryViewModel.NonFatal;
 
 @RunWith(RobolectricTestRunner.class)
+@SuppressWarnings("PMD.DoubleBraceInitialization")
 public class FormEntryViewModelTest {
 
     private FormEntryViewModel viewModel;
-    private Analytics analytics;
     private FormController formController;
     private FormIndex startingIndex;
     private AuditEventLogger auditEventLogger;
@@ -38,25 +38,24 @@ public class FormEntryViewModelTest {
 
     @Before
     public void setup() {
-        analytics = mock(Analytics.class);
-
         formController = mock(FormController.class);
         startingIndex = new FormIndex(null, 0, 0, new TreeReference());
         when(formController.getFormIndex()).thenReturn(startingIndex);
         when(formController.getCurrentFormIdentifierHash()).thenReturn("formIdentifierHash");
+        when(formController.getFormDef()).thenReturn(new FormDef());
 
         auditEventLogger = mock(AuditEventLogger.class);
         when(formController.getAuditEventLogger()).thenReturn(auditEventLogger);
 
         clock = mock(Clock.class);
 
-        viewModel = new FormEntryViewModel(analytics, clock);
+        viewModel = new FormEntryViewModel(clock, mock(Analytics.class));
         viewModel.formLoaded(formController);
     }
 
     @Test
     public void addRepeat_stepsToNextScreenEvent() throws Exception {
-        viewModel.addRepeat(true);
+        viewModel.addRepeat();
         verify(formController).stepToNextScreenEvent();
     }
 
@@ -64,8 +63,8 @@ public class FormEntryViewModelTest {
     public void addRepeat_whenThereIsAnErrorCreatingRepeat_setsErrorWithMessage() {
         doThrow(new RuntimeException(new IOException("OH NO"))).when(formController).newRepeat();
 
-        viewModel.addRepeat(true);
-        assertThat(viewModel.getError().getValue(), equalTo("OH NO"));
+        viewModel.addRepeat();
+        assertThat(viewModel.getError().getValue(), equalTo(new NonFatal("OH NO")));
     }
 
     @Test
@@ -76,16 +75,16 @@ public class FormEntryViewModelTest {
 
         doThrow(runtimeException).when(formController).newRepeat();
 
-        viewModel.addRepeat(true);
-        assertThat(viewModel.getError().getValue(), equalTo("Unknown issue occurred while adding a new group"));
+        viewModel.addRepeat();
+        assertThat(viewModel.getError().getValue(), equalTo(new NonFatal("Unknown issue occurred while adding a new group")));
     }
 
     @Test
     public void addRepeat_whenThereIsAnErrorSteppingToNextScreen_setsErrorWithMessage() throws Exception {
         when(formController.stepToNextScreenEvent()).thenThrow(new JavaRosaException(new IOException("OH NO")));
 
-        viewModel.addRepeat(true);
-        assertThat(viewModel.getError().getValue(), equalTo("OH NO"));
+        viewModel.addRepeat();
+        assertThat(viewModel.getError().getValue(), equalTo(new NonFatal("OH NO")));
     }
 
     @Test
@@ -96,46 +95,14 @@ public class FormEntryViewModelTest {
 
         when(formController.stepToNextScreenEvent()).thenThrow(javaRosaException);
 
-        viewModel.addRepeat(true);
-        assertThat(viewModel.getError().getValue(), equalTo("Unknown issue occurred while adding a new group"));
-    }
-
-    @Test
-    public void addRepeat_sendsAddRepeatPromptAnalyticsEvent() {
-        viewModel.addRepeat(true);
-        verify(analytics, only()).logEvent(AnalyticsEvents.ADD_REPEAT, "Prompt", "formIdentifierHash");
-    }
-
-    @Test
-    public void addRepeat_whenFromPromptIsFalse_sendsAddHierarchyAnalyticsEvent() {
-        viewModel.addRepeat(false);
-        verify(analytics, only()).logEvent(AnalyticsEvents.ADD_REPEAT, "Hierarchy", "formIdentifierHash");
-    }
-
-    @Test
-    public void promptForNewRepeat_thenAddRepeat_sendsAddRepeatInlineAnalyticsEvent() {
-        viewModel.promptForNewRepeat();
-        viewModel.addRepeat(true);
-        verify(analytics, only()).logEvent(AnalyticsEvents.ADD_REPEAT, "Inline", "formIdentifierHash");
-    }
-
-    @Test
-    public void promptForNewRepeat_thenCancelRepeatPrompt_sendsAddRepeatInlineDeclineAnalyticsEvent() {
-        viewModel.promptForNewRepeat();
-        viewModel.cancelRepeatPrompt();
-        verify(analytics, only()).logEvent(AnalyticsEvents.ADD_REPEAT, "InlineDecline", "formIdentifierHash");
-    }
-
-    @Test
-    public void cancelRepeatPrompt_doesNotLogInlineDeclineAnalytics() {
-        viewModel.cancelRepeatPrompt();
-        verify(analytics, never()).logEvent(AnalyticsEvents.ADD_REPEAT, "InlineDecline", "formIdentifierHash");
+        viewModel.addRepeat();
+        assertThat(viewModel.getError().getValue(), equalTo(new NonFatal("Unknown issue occurred while adding a new group")));
     }
 
     @Test
     public void cancelRepeatPrompt_afterPromptForNewRepeatAndAddRepeat_doesNotJumpBack() {
         viewModel.promptForNewRepeat();
-        viewModel.addRepeat(true);
+        viewModel.addRepeat();
 
         viewModel.cancelRepeatPrompt();
         verify(formController, never()).jumpToIndex(startingIndex);
@@ -156,7 +123,7 @@ public class FormEntryViewModelTest {
         when(formController.stepToNextScreenEvent()).thenThrow(new JavaRosaException(new IOException("OH NO")));
 
         viewModel.cancelRepeatPrompt();
-        assertThat(viewModel.getError().getValue(), equalTo("OH NO"));
+        assertThat(viewModel.getError().getValue(), equalTo(new NonFatal("OH NO")));
     }
 
     @Test

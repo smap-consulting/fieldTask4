@@ -7,12 +7,6 @@ public class AnalyticsEvents {
     }
 
     /**
-     * Used to measure how popular different methods of adding repeats are. The "action" should
-     * describe the way the repeat was added. The label should be the form hash identifier.
-     */
-    public static final String ADD_REPEAT = "AddRepeat";
-
-    /**
      * Track changes to the server URL setting. The action should be the scheme followed by a space
      * followed by one of Appspot, Ona, Kobo or Other. The label should be a hash of the URL.
      */
@@ -78,9 +72,11 @@ public class AnalyticsEvents {
     public static final String SCOPED_STORAGE_MIGRATION = "ScopedStorageMigration";
 
     /**
-     * Track attempts to download a form with the same formid/version as one already on the device.
+     * Track attempts to download a form with the same formid/version but different contents as one
+     * already on the device. We know this happens in the case of Central drafts but it should
+     * otherwise be rare.
      */
-    public static final String DOWNLOAD_SAME_FORMID_VERSION = "DownloadSameFormidVersion";
+    public static final String DOWNLOAD_SAME_FORMID_VERSION_DIFFERENT_HASH = "DownloadSameFormidVersionDifferentHash";
 
     /**
      * Track downloads initiated when there are no downloaded forms on the device. The action should
@@ -148,4 +144,57 @@ public class AnalyticsEvents {
      * should be a hash of the endpoint setting.
      */
     public static final String CUSTOM_ENDPOINT_SUB = "CustomEndpointSub";
+
+    /**
+     * Track usage of legacy Aggregate < 1 form list API code paths.
+     */
+    public static final String LEGACY_FORM_LIST = "LegacyFormList";
+
+    /**
+     * Tracks how often the audio player seek bar is used.
+     */
+    public static final String AUDIO_PLAYER_SEEK = "AudioPlayerSeek";
+
+    /**
+     * Tracks how often pause action is used while recording audio
+     */
+    public static final String AUDIO_RECORDING_PAUSE = "AudioRecordingPause";
+
+    /**
+     * Tracks usage or internal recording vs external recording vs choosing files for
+     * audio question
+     */
+    public static final String AUDIO_RECORDING_INTERNAL = "AudioRecordingInternal";
+    public static final String AUDIO_RECORDING_EXTERNAL = "AudioRecordingExternal";
+    public static final String AUDIO_RECORDING_CHOOSE = "AudioRecordingChoose";
+
+    /**
+     * Tracks how often questions are answered while an audio recording is being made
+     */
+    public static final String ANSWER_WHILE_RECORDING = "AnswerWhileRecording";
+
+    /**
+     * Tracks how many users have opted in to internal recording as their default
+     */
+    public static final String INTERNAL_RECORDING_OPT_IN = "InternalRecordingOptIn";
+
+    /**
+     * Tracks how often people see the URL question
+     */
+    public static final String URL_QUESTION = "UrlQuestion";
+
+    /**
+     * Track how many forms record background audio
+     */
+    public static final String REQUESTS_BACKGROUND_AUDIO = "RequestsBackgroundAudio";
+
+    /**
+     * Track how often background audio is disabled for a form
+     */
+    public static final String BACKGROUND_AUDIO_ENABLED = "BackgroundAudioEnabled";
+
+    /**
+     * Track how often background audio is enabled for a form
+     */
+    public static final String BACKGROUND_AUDIO_DISABLED = "BackgroundAudioDisabled";
 }

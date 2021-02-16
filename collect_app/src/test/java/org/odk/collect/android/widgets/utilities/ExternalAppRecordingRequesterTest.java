@@ -11,7 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.android.fakes.FakePermissionUtils;
+import org.odk.collect.android.fakes.FakePermissionsProvider;
+import org.odk.collect.android.formentry.FormEntryViewModel;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.widgets.support.FakeWaitingForDataRegistry;
@@ -19,15 +20,12 @@ import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowToast;
 
-import java.util.function.Consumer;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.odk.collect.android.widgets.support.QuestionWidgetHelpers.promptWithAnswer;
 import static org.robolectric.Shadows.shadowOf;
@@ -36,7 +34,7 @@ import static org.robolectric.Shadows.shadowOf;
 public class ExternalAppRecordingRequesterTest {
 
     private final ActivityAvailability activityAvailability = mock(ActivityAvailability.class);
-    private final FakePermissionUtils permissionUtils = new FakePermissionUtils();
+    private final FakePermissionsProvider permissionsProvider = new FakePermissionsProvider();
     private final FakeWaitingForDataRegistry waitingForDataRegistry = new FakeWaitingForDataRegistry();
 
     private Activity activity;
@@ -45,13 +43,13 @@ public class ExternalAppRecordingRequesterTest {
     @Before
     public void setup() {
         activity = Robolectric.buildActivity(Activity.class).get();
-        requester = new ExternalAppRecordingRequester(activity, activityAvailability, waitingForDataRegistry, permissionUtils);
+        requester = new ExternalAppRecordingRequester(activity, activityAvailability, waitingForDataRegistry, permissionsProvider, mock(FormEntryViewModel.class));
     }
 
     @Test
     public void requestRecording_whenIntentIsNotAvailable_doesNotStartAnyIntentAndCancelsWaitingForData() {
         when(activityAvailability.isActivityAvailable(any())).thenReturn(false);
-        permissionUtils.setPermissionGranted(true);
+        permissionsProvider.setPermissionGranted(true);
 
         requester.requestRecording(promptWithAnswer(null));
 
@@ -65,7 +63,7 @@ public class ExternalAppRecordingRequesterTest {
     @Test
     public void requestRecording_whenPermissionIsNotGranted_doesNotStartAnyIntentAndCancelsWaitingForData() {
         when(activityAvailability.isActivityAvailable(any())).thenReturn(true);
-        permissionUtils.setPermissionGranted(false);
+        permissionsProvider.setPermissionGranted(false);
 
         requester.requestRecording(promptWithAnswer(null));
 
@@ -77,7 +75,7 @@ public class ExternalAppRecordingRequesterTest {
     @Test
     public void requestRecording_whenPermissionIsGranted_startsRecordSoundIntentAndSetsWidgetWaitingForData() {
         when(activityAvailability.isActivityAvailable(any())).thenReturn(true);
-        permissionUtils.setPermissionGranted(true);
+        permissionsProvider.setPermissionGranted(true);
 
         FormEntryPrompt prompt = promptWithAnswer(null);
         requester.requestRecording(prompt);
@@ -91,12 +89,5 @@ public class ExternalAppRecordingRequesterTest {
         assertThat(intentForResult.requestCode, equalTo(ApplicationConstants.RequestCodes.AUDIO_CAPTURE));
 
         assertThat(waitingForDataRegistry.waiting.contains(prompt.getIndex()), equalTo(true));
-    }
-
-    @Test
-    public void onIsRecordingChanged_alwaysCallsBackWithFalse() {
-        Consumer<Boolean> listener = mock(Consumer.class);
-        requester.onIsRecordingBlocked(listener);
-        verify(listener).accept(false);
     }
 }

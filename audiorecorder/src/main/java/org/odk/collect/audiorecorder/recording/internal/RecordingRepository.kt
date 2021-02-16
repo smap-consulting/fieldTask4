@@ -4,13 +4,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import org.odk.collect.audiorecorder.recording.RecordingSession
 import java.io.File
+import java.io.Serializable
+import java.lang.Exception
 
 internal class RecordingRepository {
 
     private val _currentSession = MutableLiveData<RecordingSession?>(null)
     val currentSession: LiveData<RecordingSession?> = _currentSession
 
-    fun start(sessionId: String) {
+    fun start(sessionId: Serializable) {
         _currentSession.value = RecordingSession(sessionId, null, 0, 0, false)
     }
 
@@ -42,7 +44,7 @@ internal class RecordingRepository {
         _currentSession.value = null
     }
 
-    fun failToStart(sessionId: String) {
-        _currentSession.value = RecordingSession(sessionId, null, 0, 0, paused = false, failedToStart = true)
+    fun failToStart(sessionId: Serializable, exception: Exception) {
+        _currentSession.value = RecordingSession(sessionId, null, 0, 0, paused = false, failedToStart = exception)
     }
 }

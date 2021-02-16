@@ -124,7 +124,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
         final String formPath = path[0];
         if (formPath == null) {
             Timber.e("formPath is null");
-            errorMsg = "formPath is null, please post on the forum with a description of what you were doing when this happened.";
+            errorMsg = "formPath is null, please email support@getodk.org with a description of what you were doing when this happened.";
             return null;
         }
 
@@ -141,10 +141,12 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
             errorMsg = TranslationHandler.getString(Collect.getInstance(), R.string.too_complex_form);
         } catch (Exception | Error e) {
             Timber.w(e);
-            errorMsg = e.getMessage();
+            errorMsg = "An unknown error has occurred. Please ask your project leadership to email support@getodk.org with information about this form.";
+            errorMsg += "\n\n" + e.getMessage();
         }
 
         if (errorMsg != null || formDef == null) {
+            Timber.w("No exception loading form but errorMsg set");
             return null;
         }
 
@@ -203,11 +205,15 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
             // we are resuming after having terminated -- set index to this
             // position...
             FormIndex idx = fc.getIndexFromXPath(xpath);
-            fc.jumpToIndex(idx);
+            if (idx != null) {
+                fc.jumpToIndex(idx);
+            }
         }
         if (waitingXPath != null) {
             FormIndex idx = fc.getIndexFromXPath(waitingXPath);
-            fc.setIndexWaitingForData(idx);
+            if (idx != null) {
+                fc.setIndexWaitingForData(idx);
+            }
         }
         data = new FECWrapper(fc, usedSavepoint);
         return data;
@@ -228,6 +234,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
         String lastSavedSrc = FileUtils.getOrCreateLastSavedSrc(formXml);
         FormDef formDefFromXml = XFormUtils.getFormFromFormXml(formPath, lastSavedSrc);
         if (formDefFromXml == null) {
+            Timber.w("Error reading XForm file");
             errorMsg = "Error reading XForm file";
         } else {
             Timber.i("Loaded in %.3f seconds.",
@@ -310,16 +317,17 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
                     importData(instanceXml, fec);
                     formDef.initialize(false, instanceInit);
                 } catch (IOException | RuntimeException e) {
-                    Timber.e(e);
-
                     // Skip a savepoint file that is corrupted or 0-sized
                     if (usedSavepoint && !(e.getCause() instanceof XPathTypeMismatchException)) {
                         usedSavepoint = false;
                         instancePath = null;
                         formDef.initialize(true, instanceInit);
+                        Timber.e(e, "Bad savepoint");
                     } else {
                         // The saved instance is corrupted.
-                        throw e;
+                        Timber.e(e, "Corrupt saved instance");
+                        throw new RuntimeException("An unknown error has occurred. Please ask your project leadership to email support@getodk.org with information about this form."
+                            + "\n\n" + e.getMessage());
                     }
                 }
             } else {
