@@ -2,30 +2,28 @@ package org.odk.collect.android.application.initialization;
 
 import android.app.Application;
 import android.os.Handler;
-import android.util.Log;
 
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.startup.AppInitializer;
 
-import com.google.firebase.crashlytics.FirebaseCrashlytics;
-
-import net.danlew.android.joda.JodaTimeAndroid;
+import net.danlew.android.joda.JodaTimeInitializer;
 
 import org.javarosa.core.model.CoreModelModule;
 import org.javarosa.core.services.PrototypeManager;
 import org.javarosa.core.util.JavaRosaCoreModule;
 import org.javarosa.model.xform.XFormsModule;
 import org.javarosa.xform.parse.XFormParser;
+import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.BuildConfig;
-import org.odk.collect.android.analytics.Analytics;
-import org.odk.collect.android.application.AppStateProvider;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.preferences.FormUpdateMode;
 import org.odk.collect.android.geo.MapboxUtils;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.logic.actions.setgeopoint.CollectSetGeopointActionHandler;
-import org.odk.collect.android.preferences.AdminSharedPreferences;
-import org.odk.collect.android.preferences.GeneralSharedPreferences;
-import org.odk.collect.android.storage.StorageStateProvider;
+import org.odk.collect.android.preferences.FormUpdateMode;
+import org.odk.collect.android.preferences.GeneralKeys;
+import org.odk.collect.android.preferences.PreferencesDataSource;
+import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.storage.StorageInitializer;
 import org.odk.collect.utilities.UserAgentProvider;
 
 import java.util.Locale;
@@ -41,33 +39,32 @@ public class ApplicationInitializer {
     private final SettingsPreferenceMigrator preferenceMigrator;
     private final PropertyManager propertyManager;
     private final Analytics analytics;
-    private final GeneralSharedPreferences generalSharedPreferences;
-    private final AdminSharedPreferences adminSharedPreferences;
-    private final AppStateProvider appStateProvider;
-    private final StorageStateProvider storageStateProvider;
+    private final PreferencesDataSource generalPrefs;
+    private final PreferencesDataSource adminPrefs;
+    private final StorageInitializer storageInitializer;
 
     public ApplicationInitializer(Application context, UserAgentProvider userAgentProvider, SettingsPreferenceMigrator preferenceMigrator,
-                                  PropertyManager propertyManager, Analytics analytics, AppStateProvider appStateProvider, StorageStateProvider storageStateProvider) {
+                                  PropertyManager propertyManager, Analytics analytics, StorageInitializer storageInitializer, PreferencesDataSourceProvider preferencesDataSourceProvider) {
         this.context = context;
         this.userAgentProvider = userAgentProvider;
         this.preferenceMigrator = preferenceMigrator;
         this.propertyManager = propertyManager;
         this.analytics = analytics;
-        this.appStateProvider = appStateProvider;
-        this.storageStateProvider = storageStateProvider;
+        this.storageInitializer = storageInitializer;
 
-        generalSharedPreferences = GeneralSharedPreferences.getInstance();
-        adminSharedPreferences = AdminSharedPreferences.getInstance();
+        generalPrefs = preferencesDataSourceProvider.getGeneralPreferences();
+        adminPrefs = preferencesDataSourceProvider.getAdminPreferences();
     }
 
     public void initialize() {
+        initializeStorage();
         initializePreferences();
         initializeFrameworks();
         initializeLocale();
+    }
 
-        if (appStateProvider.isFreshInstall(context)) {
-            storageStateProvider.enableUsingScopedStorage();
-        }
+    private void initializeStorage() {
+        storageInitializer.createOdkDirsOnStorage();
     }
 
     private void initializePreferences() {
@@ -76,8 +73,8 @@ public class ApplicationInitializer {
     }
 
     private void initializeFrameworks() {
-        JodaTimeAndroid.init(context);
         initializeLogging();
+        AppInitializer.getInstance(context).initializeComponent(JodaTimeInitializer.class);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         initializeMapFrameworks();
         initializeJavaRosa();
@@ -85,7 +82,10 @@ public class ApplicationInitializer {
     }
 
     private void initializeAnalytics() {
-        FormUpdateMode formUpdateMode = getFormUpdateMode(context, generalSharedPreferences.getSharedPreferences());
+        boolean isAnalyticsEnabled = generalPrefs.getBoolean(GeneralKeys.KEY_ANALYTICS);
+        analytics.setAnalyticsCollectionEnabled(isAnalyticsEnabled);
+
+        FormUpdateMode formUpdateMode = getFormUpdateMode(context, generalPrefs);
         analytics.setUserProperty("FormUpdateMode", formUpdateMode.getValue(context));
     }
 
@@ -110,19 +110,19 @@ public class ApplicationInitializer {
 
     private void initializeLogging() {
         if (BuildConfig.BUILD_TYPE.equals("odkCollectRelease")) {
-            Timber.plant(new CrashReportingTree());
+            Timber.plant(new CrashReportingTree(analytics));
         } else {
             Timber.plant(new Timber.DebugTree());
         }
     }
 
     private void reloadSharedPreferences() {
-        generalSharedPreferences.reloadPreferences();
-        adminSharedPreferences.reloadPreferences();
+        generalPrefs.loadDefaultPreferencesIfNotExist();
+        adminPrefs.loadDefaultPreferencesIfNotExist();
     }
 
     private void performMigrations() {
-        preferenceMigrator.migrate(generalSharedPreferences.getSharedPreferences(), adminSharedPreferences.getSharedPreferences());
+        preferenceMigrator.migrate(generalPrefs, adminPrefs);
     }
 
     private void initializeMapFrameworks() {
@@ -136,22 +136,6 @@ public class ApplicationInitializer {
             MapboxUtils.initMapbox();
         } catch (Exception | Error ignore) {
             // ignored
-        }
-    }
-
-    private static class CrashReportingTree extends Timber.Tree {
-        @Override
-        protected void log(int priority, String tag, String message, Throwable t) {
-            if (priority == Log.VERBOSE || priority == Log.DEBUG || priority == Log.INFO) {
-                return;
-            }
-
-            FirebaseCrashlytics crashlytics = FirebaseCrashlytics.getInstance();
-            crashlytics.log((priority == Log.ERROR ? "E/" : "W/") + tag + ": " + message);
-
-            if (t != null && priority == Log.ERROR) {
-                crashlytics.recordException(t);
-            }
         }
     }
 }

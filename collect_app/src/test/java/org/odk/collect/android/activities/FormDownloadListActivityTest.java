@@ -13,16 +13,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.R;
-import org.odk.collect.android.activities.support.AlwaysGrantStoragePermissionsPermissionsProvider;
-import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.permissions.PermissionsChecker;
-import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.storage.StorageInitializer;
-import org.odk.collect.android.storage.StorageStateProvider;
-import org.odk.collect.android.permissions.PermissionsProvider;
 import org.robolectric.shadows.ShadowEnvironment;
 
 import static android.os.Environment.MEDIA_MOUNTED;
@@ -36,13 +31,17 @@ import static org.odk.collect.android.support.RobolectricHelpers.overrideAppDepe
 @RunWith(AndroidJUnit4.class)
 public class FormDownloadListActivityTest {
 
-    @Rule public MockitoRule rule = MockitoJUnit.rule();
+    @Rule
+    public MockitoRule rule = MockitoJUnit.rule();
 
-    @Mock Analytics analytics;
+    @Mock
+    Analytics analytics;
 
-    @Mock FormsDao formsDao;
+    @Mock
+    FormsDao formsDao;
 
-    @Before public void setup() {
+    @Before
+    public void setup() {
         overrideAppDependencyModule(new AppDependencyModule(analytics, formsDao));
         ShadowEnvironment.setExternalStorageState(MEDIA_MOUNTED); // Required for ODK directories to be created
     }
@@ -73,18 +72,13 @@ public class FormDownloadListActivityTest {
         }
 
         @Override
-        public Analytics providesAnalytics(Application application, GeneralSharedPreferences generalSharedPreferences) {
+        public Analytics providesAnalytics(Application application) {
             return analytics;
         }
 
         @Override
         public FormsDao provideFormsDao() {
             return formsDao;
-        }
-
-        @Override
-        public PermissionsProvider providesPermissionsProvider(PermissionsChecker permissionsChecker, StorageStateProvider storageStateProvider) {
-            return new AlwaysGrantStoragePermissionsPermissionsProvider(permissionsChecker, storageStateProvider);
         }
 
         @Override

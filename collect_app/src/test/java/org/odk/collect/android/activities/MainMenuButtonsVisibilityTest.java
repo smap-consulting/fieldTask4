@@ -7,17 +7,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.android.injection.config.AppDependencyModule;
-import org.odk.collect.android.preferences.AdminSharedPreferences;
-import org.odk.collect.android.storage.StorageStateProvider;
-import org.odk.collect.android.support.RobolectricHelpers;
+
+import org.odk.collect.android.preferences.PreferencesDataSource;
+import org.odk.collect.utilities.TestPreferencesProvider;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_DELETE_SAVED;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_EDIT_SAVED;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_GET_BLANK;
@@ -28,17 +25,12 @@ import static org.odk.collect.android.preferences.AdminKeys.KEY_VIEW_SENT;
 public class MainMenuButtonsVisibilityTest {
 
     private MainMenuActivity mainMenuActivity;
+    private final PreferencesDataSource adminPrefs = TestPreferencesProvider.getAdminPreferences();
 
     @Before
     public void setup() {
-        RobolectricHelpers.overrideAppDependencyModule(new AppDependencyModule() {
-            @Override
-            public StorageStateProvider providesStorageStateProvider() {
-                StorageStateProvider storageStateProvider = spy(new StorageStateProvider());
-                when(storageStateProvider.shouldPerformAutomaticMigration()).thenReturn(false);
-                return storageStateProvider;
-            }
-        });
+        adminPrefs.clear();
+        adminPrefs.loadDefaultPreferencesIfNotExist();
     }
 
     @Test
@@ -51,7 +43,7 @@ public class MainMenuButtonsVisibilityTest {
 
     @Test
     public void when_editSavedFormButtonIsDisabledInSettings_shouldBeGone() {
-        AdminSharedPreferences.getInstance().save(KEY_EDIT_SAVED, false);
+        adminPrefs.save(KEY_EDIT_SAVED, false);
         createActivity();
 
         Button editSavedFormButton = mainMenuActivity.findViewById(R.id.review_data);
@@ -68,7 +60,7 @@ public class MainMenuButtonsVisibilityTest {
 
     @Test
     public void when_sendFinalizedFormButtonIsDisabledInSettings_shouldBeGone() {
-        AdminSharedPreferences.getInstance().save(KEY_SEND_FINALIZED, false);
+        adminPrefs.save(KEY_SEND_FINALIZED, false);
         createActivity();
 
         Button sendFinalizedFormButton = mainMenuActivity.findViewById(R.id.send_data);
@@ -85,7 +77,7 @@ public class MainMenuButtonsVisibilityTest {
 
     @Test
     public void when_viewSentFormButtonIsDisabledInSettings_shouldBeGone() {
-        AdminSharedPreferences.getInstance().save(KEY_VIEW_SENT, false);
+        adminPrefs.save(KEY_VIEW_SENT, false);
         createActivity();
 
         Button viewSentFormButton = mainMenuActivity.findViewById(R.id.view_sent_forms);
@@ -102,7 +94,7 @@ public class MainMenuButtonsVisibilityTest {
 
     @Test
     public void when_getBlankFormButtonIsDisabledInSettings_shouldBeGone() {
-        AdminSharedPreferences.getInstance().save(KEY_GET_BLANK, false);
+        adminPrefs.save(KEY_GET_BLANK, false);
         createActivity();
 
         Button getBlankFormButton = mainMenuActivity.findViewById(R.id.get_forms);
@@ -119,7 +111,7 @@ public class MainMenuButtonsVisibilityTest {
 
     @Test
     public void when_deleteSavedFormButtonIsDisabledInSettings_shouldBeGone() {
-        AdminSharedPreferences.getInstance().save(KEY_DELETE_SAVED, false);
+        adminPrefs.save(KEY_DELETE_SAVED, false);
         createActivity();
 
         Button deleteSavedFormButton = mainMenuActivity.findViewById(R.id.manage_forms);

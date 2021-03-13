@@ -12,9 +12,7 @@ import org.odk.collect.android.gdrive.sheets.DriveApi;
 import org.odk.collect.android.gdrive.sheets.SheetsApi;
 import org.odk.collect.android.injection.config.AppDependencyModule;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
-import org.odk.collect.android.preferences.PreferencesProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
-import org.odk.collect.android.storage.migration.StorageMigrationService;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.utilities.UserAgentProvider;
 
@@ -34,8 +32,7 @@ public class TestDependencies extends AppDependencyModule {
 
     public final List<IdlingResource> idlingResources = asList(
             new SchedulerIdlingResource(scheduler),
-            new CountingTaskExecutorIdlingResource(countingTaskExecutorRule),
-            new IntentServiceIdlingResource(StorageMigrationService.SERVICE_NAME)
+            new CountingTaskExecutorIdlingResource(countingTaskExecutorRule)
     );
 
     @Override
@@ -49,7 +46,7 @@ public class TestDependencies extends AppDependencyModule {
     }
 
     @Override
-    public GoogleApiProvider providesGoogleApiProvider(Context context, PreferencesProvider preferencesProvider) {
+    public GoogleApiProvider providesGoogleApiProvider(Context context) {
         return new GoogleApiProvider(context) {
 
             @Override

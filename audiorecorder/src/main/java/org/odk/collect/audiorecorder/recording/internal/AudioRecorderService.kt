@@ -73,7 +73,7 @@ internal class AudioRecorderService : Service() {
             }
         }
 
-        return START_STICKY
+        return START_NOT_STICKY
     }
 
     private fun startRecording(sessionId: Serializable, output: Output) {
@@ -85,7 +85,7 @@ internal class AudioRecorderService : Service() {
             startUpdates()
         } catch (e: Exception) {
             notification.dismiss()
-            recordingRepository.failToStart(sessionId, e)
+            recordingRepository.failToStart(e)
         }
     }
 

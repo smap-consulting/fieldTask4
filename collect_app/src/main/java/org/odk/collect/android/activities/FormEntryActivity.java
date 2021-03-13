@@ -68,7 +68,7 @@ import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.odk.collect.android.R;
-import org.odk.collect.android.analytics.Analytics;
+import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AMRAppender;
 import org.odk.collect.android.audio.AudioControllerView;
@@ -131,13 +131,9 @@ import org.odk.collect.android.logic.ImmutableDisplayableQuestion;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.permissions.PermissionsChecker;
 import org.odk.collect.android.preferences.AdminKeys;
-import org.odk.collect.android.preferences.AdminSharedPreferences;
 import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.GeneralSharedPreferences;
-import org.odk.collect.android.preferences.PreferencesProvider;
 import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
 import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
-import org.odk.collect.android.storage.StorageInitializer;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.tasks.FormLoaderTask;
@@ -191,6 +187,8 @@ import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direct
 import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.FORWARDS;
 import static org.odk.collect.android.fragments.BarcodeWidgetScannerFragment.BARCODE_RESULT_KEY;
 import static org.odk.collect.android.preferences.AdminKeys.KEY_MOVING_BACKWARDS;
+import static org.odk.collect.android.preferences.GeneralKeys.KEY_COMPLETED_DEFAULT;
+import static org.odk.collect.android.preferences.GeneralKeys.KEY_NAVIGATION;
 import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnabled;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.android.utilities.DialogUtils.getDialog;
@@ -285,7 +283,6 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private String startingXPath;
     private String waitingXPath;
     private boolean newForm = true;
-    private boolean onResumeWasCalledWithoutPermissions;
     private boolean readPhoneStatePermissionRequestNeeded;
 
     private final CompositeDisposable compositeDisposable = new CompositeDisposable();
@@ -342,9 +339,6 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     SoftKeyboardController softKeyboardController;
 
     @Inject
-    PreferencesProvider preferencesProvider;
-
-    @Inject
     PermissionsChecker permissionsChecker;
 
     @Inject
@@ -381,7 +375,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         Collect.getInstance().getComponent().inject(this);
         setContentView(R.layout.form_entry);
         setupViewModels();
-        swipeHandler = new SwipeHandler(this);
+        swipeHandler = new SwipeHandler(this, preferencesDataSourceProvider.getGeneralPreferences().getString(KEY_NAVIGATION));
 
         compositeDisposable.add(eventBus
                 .register(ReadPhoneStatePermissionRxEvent.class)
@@ -406,7 +400,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 formEntryViewModel,
                 audioRecorder,
                 backgroundLocationViewModel,
-                backgroundAudioViewModel
+                backgroundAudioViewModel,
+                preferencesDataSourceProvider
         );
 
         nextButton = findViewById(R.id.form_forward_button);
@@ -423,46 +418,18 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
         if (savedInstanceState == null) {
             mediaLoadingFragment = new MediaLoadingFragment();
-            getFragmentManager().beginTransaction().add(mediaLoadingFragment, TAG_MEDIA_LOADING_FRAGMENT).commit();
+            getSupportFragmentManager().beginTransaction().add(mediaLoadingFragment, TAG_MEDIA_LOADING_FRAGMENT).commit();
         } else {
-            mediaLoadingFragment = (MediaLoadingFragment) getFragmentManager().findFragmentByTag(TAG_MEDIA_LOADING_FRAGMENT);
+            mediaLoadingFragment = (MediaLoadingFragment) getSupportFragmentManager().findFragmentByTag(TAG_MEDIA_LOADING_FRAGMENT);
         }
 
-        permissionsProvider.requestStoragePermissions(this, new PermissionListener() {
-            @Override
-            public void granted() {
-                // must be at the beginning of any activity that can be called from an external intent
-                try {
-                    new StorageInitializer().createOdkDirsOnStorage();
-                    setupFields(savedInstanceState);
-                    loadForm();
-
-                    /**
-                     * Since onResume is called after onCreate we check to see if
-                     * it was called without the permissions that are required. If so then
-                     * we call it.This is especially useful for cases where a user might revoke
-                     * permissions to storage and not know the implications it has on the form entry.
-                     */
-                    if (onResumeWasCalledWithoutPermissions) {
-                        onResume();
-                    }
-                } catch (RuntimeException e) {
-                    createErrorDialog(e.getMessage(), true);
-                    return;
-                }
-            }
-
-            @Override
-            public void denied() {
-                // The activity has to finish because ODK Collect cannot function without these permissions.
-                finishAndRemoveTask();
-            }
-        });
+        setupFields(savedInstanceState);
+        loadForm();
     }
 
     private void setupViewModels() {
         backgroundLocationViewModel = ViewModelProviders
-                .of(this, new BackgroundLocationViewModel.Factory(permissionsProvider))
+                .of(this, new BackgroundLocationViewModel.Factory(permissionsProvider, preferencesDataSourceProvider.getGeneralPreferences()))
                 .get(BackgroundLocationViewModel.class);
 
         backgroundAudioViewModel = new ViewModelProvider(this, backgroundAudioViewModelFactory).get(BackgroundAudioViewModel.class);
@@ -582,7 +549,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     }
 
     private void loadForm() {
-        allowMovingBackwards = (boolean) AdminSharedPreferences.getInstance().get(KEY_MOVING_BACKWARDS);
+        allowMovingBackwards = preferencesDataSourceProvider.getAdminPreferences().getBoolean(KEY_MOVING_BACKWARDS);
 
         // If a parse error message is showing then nothing else is loaded
         // Dialogs mid form just disappear on rotation.
@@ -676,7 +643,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                         formPath.lastIndexOf('.'))
                         + "_";
                 final String fileSuffix = ".xml.save";
-                File cacheDir = new File(storagePathProvider.getDirPath(StorageSubdirectory.CACHE));
+                File cacheDir = new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.CACHE));
                 File[] files = cacheDir.listFiles(pathname -> {
                     String name = pathname.getName();
                     return name.startsWith(filePrefix)
@@ -694,7 +661,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                                     candidate.getName().length()
                                             - fileSuffix.length());
                     File instanceDir = new File(
-                            storagePathProvider.getDirPath(StorageSubdirectory.INSTANCES) + File.separator
+                            storagePathProvider.getOdkDirPath(StorageSubdirectory.INSTANCES) + File.separator
                                     + instanceDirName);
                     File instanceFile = new File(instanceDir,
                             instanceDirName + ".xml");
@@ -1003,7 +970,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
             case R.id.menu_save:
                 // don't exit
-                saveForm(false, InstancesDaoHelper.isInstanceComplete(false), null, true);
+                saveForm(false, InstancesDaoHelper.isInstanceComplete(false, preferencesDataSourceProvider.getGeneralPreferences().getBoolean(KEY_COMPLETED_DEFAULT)), null, true);
                 return true;
         }
 
@@ -1308,7 +1275,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
         }
 
-        FormEndView endView = new FormEndView(this, formSaveViewModel.getFormName(), saveName, InstancesDaoHelper.isInstanceComplete(true), new FormEndView.Listener() {
+        FormEndView endView = new FormEndView(this, formSaveViewModel.getFormName(), saveName, InstancesDaoHelper.isInstanceComplete(true, preferencesDataSourceProvider.getGeneralPreferences().getBoolean(KEY_COMPLETED_DEFAULT)), new FormEndView.Listener() {
             @Override
             public void onSaveAsChanged(String saveAs) {
                 // Seems like this is needed for rotation?
@@ -1325,7 +1292,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
         });
 
-        if (!(boolean) AdminSharedPreferences.getInstance().get(AdminKeys.KEY_MARK_AS_FINALIZED)) {
+        if (!preferencesDataSourceProvider.getAdminPreferences().getBoolean(AdminKeys.KEY_MARK_AS_FINALIZED)) {
             endView.findViewById(R.id.mark_finished).setVisibility(View.GONE);
         }
 
@@ -1339,7 +1306,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         }
 
         // override the visibility settings based upon admin preferences
-        if (!(boolean) AdminSharedPreferences.getInstance().get(AdminKeys.KEY_SAVE_AS)) {
+        if (!preferencesDataSourceProvider.getAdminPreferences().getBoolean(AdminKeys.KEY_SAVE_AS)) {
             endView.findViewById(R.id.save_form_as).setVisibility(View.GONE);
             endView.findViewById(R.id.save_name).setVisibility(View.GONE);
         }
@@ -1485,8 +1452,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private boolean saveBeforeNextView(FormController formController) {
         if (formController.currentPromptIsQuestion()) {
             // get constraint behavior preference value with appropriate default
-            String constraintBehavior = (String) GeneralSharedPreferences.getInstance()
-                    .get(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
+            String constraintBehavior = preferencesDataSourceProvider.getGeneralPreferences().getString(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
 
             // if constraint behavior says we should validate on swipe, do so
             if (constraintBehavior.equals(GeneralKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
@@ -1823,8 +1789,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 onScreenRefresh();
 
                 // get constraint behavior preference value with appropriate default
-                String constraintBehavior = (String) GeneralSharedPreferences.getInstance()
-                        .get(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
+                String constraintBehavior = preferencesDataSourceProvider.getGeneralPreferences().getString(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
 
                 // an answer constraint was violated, so we need to display the proper toast(s)
                 // if constraint behavior is on_swipe, this will happen if we do a 'swipe' to the
@@ -1843,7 +1808,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
     @Override
     public void onSaveChangesClicked() {
-        saveForm(true, InstancesDaoHelper.isInstanceComplete(false), null, true);
+        saveForm(true, InstancesDaoHelper.isInstanceComplete(false, preferencesDataSourceProvider.getGeneralPreferences().getBoolean(KEY_COMPLETED_DEFAULT)), null, true);
     }
 
     @Nullable
@@ -1920,7 +1885,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                                         languages[whichButton]);
                                 String selection = FormsColumns.FORM_FILE_PATH
                                         + "=?";
-                                String[] selectArgs = {storagePathProvider.getFormDbPath(formPath)};
+                                String[] selectArgs = {storagePathProvider.getRelativeFormPath(formPath)};
                                 int updated = new FormsDao().updateForm(values, selection, selectArgs);
                                 Timber.i("Updated language to: %s in %d rows",
                                         languages[whichButton],
@@ -2004,12 +1969,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     protected void onResume() {
         super.onResume();
 
-        if (!permissionsProvider.areStoragePermissionsGranted()) {
-            onResumeWasCalledWithoutPermissions = true;
-            return;
-        }
-
-        String navigation = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_NAVIGATION);
+        String navigation = preferencesDataSourceProvider.getGeneralPreferences().getString(KEY_NAVIGATION);
         showNavigationButtons = navigation.contains(GeneralKeys.NAVIGATION_BUTTONS);
 
         findViewById(R.id.buttonholder).setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);

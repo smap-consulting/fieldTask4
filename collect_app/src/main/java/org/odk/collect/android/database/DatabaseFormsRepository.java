@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
+import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.forms.Form;
@@ -64,7 +65,11 @@ public class DatabaseFormsRepository implements FormsRepository {
 
     @Nullable
     @Override
-    public Form getOneByMd5Hash(String hash) {
+    public Form getOneByMd5Hash(@NotNull String hash) {
+        if (hash == null) {
+            throw new IllegalArgumentException("null hash");
+        }
+
         FormsDao formsDao = new FormsDao();
 
         try (Cursor cursor = formsDao.getFormsCursorForMd5Hash(hash)) {
@@ -106,8 +111,8 @@ public class DatabaseFormsRepository implements FormsRepository {
     @Override
     public Form save(Form form) {
         final ContentValues v = new ContentValues();
-        v.put(FORM_FILE_PATH, storagePathProvider.getFormDbPath(form.getFormFilePath()));
-        v.put(FORM_MEDIA_PATH, storagePathProvider.getFormDbPath(form.getFormMediaPath()));
+        v.put(FORM_FILE_PATH, storagePathProvider.getRelativeFormPath(form.getFormFilePath()));
+        v.put(FORM_MEDIA_PATH, storagePathProvider.getRelativeFormPath(form.getFormMediaPath()));
         v.put(DISPLAY_NAME, form.getDisplayName());
         v.put(JR_VERSION, form.getJrVersion());
         v.put(JR_FORM_ID, form.getJrFormId());

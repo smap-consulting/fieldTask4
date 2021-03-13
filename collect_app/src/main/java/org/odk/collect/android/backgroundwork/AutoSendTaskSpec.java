@@ -25,7 +25,7 @@ import androidx.work.WorkerParameters;
 
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.R;
-import org.odk.collect.android.analytics.Analytics;
+import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.forms.Form;
@@ -38,9 +38,8 @@ import org.odk.collect.android.instances.InstancesRepository;
 import org.odk.collect.android.network.NetworkStateProvider;
 import org.odk.collect.android.notifications.Notifier;
 import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.GeneralSharedPreferences;
-import org.odk.collect.android.storage.migration.StorageMigrationRepository;
 import org.odk.collect.android.permissions.PermissionsProvider;
+import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
 import org.odk.collect.async.TaskSpec;
 import org.odk.collect.async.WorkerAdapter;
 
@@ -51,9 +50,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 public class AutoSendTaskSpec implements TaskSpec {
-
-    @Inject
-    StorageMigrationRepository storageMigrationRepository;
 
     @Inject
     NetworkStateProvider connectivityProvider;
@@ -83,6 +79,9 @@ public class AutoSendTaskSpec implements TaskSpec {
     @Inject
     PermissionsProvider permissionsProvider;
 
+    @Inject
+    PreferencesDataSourceProvider preferencesDataSourceProvider;
+
     /**
      * If the app-level auto-send setting is enabled, send all finalized forms that don't specify not
      * to auto-send at the form level. If the app-level auto-send setting is disabled, send all
@@ -101,10 +100,6 @@ public class AutoSendTaskSpec implements TaskSpec {
         return () -> {
             Collect.getInstance().getComponent().inject(this);
 
-            if (storageMigrationRepository.isMigrationBeingPerformed()) {
-                return true;
-            }
-
             NetworkInfo currentNetworkInfo = connectivityProvider.getNetworkInfo();
             if (!Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) || !(networkTypeMatchesAutoSendSetting(currentNetworkInfo) || atLeastOneFormSpecifiesAutoSend())) {
                 if (!networkTypeMatchesAutoSendSetting(currentNetworkInfo)) {
@@ -117,7 +112,7 @@ public class AutoSendTaskSpec implements TaskSpec {
             return changeLock.withLock(acquiredLock -> {
                 if (acquiredLock) {
                     try {
-                        Pair<Boolean, String> results = new InstanceSubmitter(analytics, formsRepository, instancesRepository, googleAccountsManager, googleApiProvider, permissionsProvider).submitUnsubmittedInstances();
+                        Pair<Boolean, String> results = new InstanceSubmitter(analytics, formsRepository, instancesRepository, googleAccountsManager, googleApiProvider, permissionsProvider, preferencesDataSourceProvider).submitUnsubmittedInstances();
                         notifier.onSubmission(results.first, results.second);
                     } catch (SubmitException e) {
                         switch (e.getType()) {
@@ -158,7 +153,7 @@ public class AutoSendTaskSpec implements TaskSpec {
             return false;
         }
 
-        String autosend = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_AUTOSEND);
+        String autosend = preferencesDataSourceProvider.getGeneralPreferences().getString(GeneralKeys.KEY_AUTOSEND);
         boolean sendwifi = autosend.equals("wifi_only");
         boolean sendnetwork = autosend.equals("cellular_only");
         if (autosend.equals("wifi_and_cellular")) {

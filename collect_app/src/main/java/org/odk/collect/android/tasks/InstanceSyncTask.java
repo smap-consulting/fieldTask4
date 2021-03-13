@@ -18,7 +18,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.provider.BaseColumns;
 
 import org.apache.commons.io.FileUtils;
@@ -31,6 +30,7 @@ import org.odk.collect.android.instances.Instance;
 import org.odk.collect.android.listeners.DiskSyncListener;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.preferences.GeneralKeys;
+import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
 import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
@@ -63,6 +63,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
 
     private String currentStatus = "";
     private DiskSyncListener diskSyncListener;
+    private final PreferencesDataSourceProvider preferencesDataSourceProvider;
 
     public String getStatusMessage() {
         return currentStatus;
@@ -72,6 +73,10 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
         this.diskSyncListener = diskSyncListener;
     }
 
+    public InstanceSyncTask(PreferencesDataSourceProvider preferencesDataSourceProvider) {
+        this.preferencesDataSourceProvider = preferencesDataSourceProvider;
+    }
+
     @Override
     protected String doInBackground(Void... params) {
         int instance = ++counter;
@@ -79,7 +84,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
         StoragePathProvider storagePathProvider = new StoragePathProvider();
         try {
             List<String> candidateInstances = new LinkedList<>();
-            File instancesPath = new File(storagePathProvider.getDirPath(StorageSubdirectory.INSTANCES));
+            File instancesPath = new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.INSTANCES));
             if (instancesPath.exists() && instancesPath.isDirectory()) {
                 File[] instanceFolders = instancesPath.listFiles();
                 if (instanceFolders == null || instanceFolders.length == 0) {
@@ -141,9 +146,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
 
                 instancesDao.deleteInstancesFromInstanceFilePaths(filesToRemove);
 
-                final boolean instanceSyncFlag = PreferenceManager.getDefaultSharedPreferences(
-                        Collect.getInstance().getApplicationContext()).getBoolean(
-                        GeneralKeys.KEY_INSTANCE_SYNC, true);
+                final boolean instanceSyncFlag = preferencesDataSourceProvider.getGeneralPreferences().getBoolean(GeneralKeys.KEY_INSTANCE_SYNC);
 
                 int counter = 0;
                 // Begin parsing and add them to the content provider
@@ -170,7 +173,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
 
                                 // add missing fields into content values
                                 ContentValues values = new ContentValues();
-                                values.put(InstanceColumns.INSTANCE_FILE_PATH, storagePathProvider.getInstanceDbPath(candidateInstance));
+                                values.put(InstanceColumns.INSTANCE_FILE_PATH, storagePathProvider.getRelativeInstancePath(candidateInstance));
                                 values.put(InstanceColumns.SUBMISSION_URI, submissionUri);
                                 values.put(InstanceColumns.DISPLAY_NAME, formName);
                                 values.put(InstanceColumns.JR_FORM_ID, jrFormId);
@@ -264,7 +267,7 @@ public class InstanceSyncTask extends AsyncTask<Void, String, String> {
                 values.put(InstanceColumns.CAN_EDIT_WHEN_COMPLETE, Boolean.toString(false));
                 values.put(InstanceColumns.GEOMETRY_TYPE, (String) null);
                 values.put(InstanceColumns.GEOMETRY, (String) null);
-                instancesDao.updateInstance(values, InstanceColumns.INSTANCE_FILE_PATH + "=?", new String[]{new StoragePathProvider().getInstanceDbPath(candidateInstance)});
+                instancesDao.updateInstance(values, InstanceColumns.INSTANCE_FILE_PATH + "=?", new String[]{new StoragePathProvider().getRelativeInstancePath(candidateInstance)});
 
                 SaveFormToDisk.manageFilesAfterSavingEncryptedForm(instanceXml, submissionXml);
                 if (!EncryptionUtils.deletePlaintextFiles(instanceXml, null)) {

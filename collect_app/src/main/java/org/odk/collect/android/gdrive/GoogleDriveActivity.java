@@ -57,7 +57,6 @@ import org.odk.collect.android.listeners.TaskListener;
 import org.odk.collect.android.logic.DriveListItem;
 import org.odk.collect.android.network.NetworkStateProvider;
 import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.PreferencesProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.DialogUtils;
@@ -122,9 +121,6 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
 
     @Inject
     GoogleApiProvider googleApiProvider;
-
-    @Inject
-    PreferencesProvider preferencesProvider;
 
     @Inject
     FormsRepository formsRepository;
@@ -224,9 +220,9 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
                 R.string.sort_by_name_asc, R.string.sort_by_name_desc
         };
 
-        driveHelper = new DriveHelper(googleApiProvider.getDriveApi(preferencesProvider
-                .getGeneralSharedPreferences()
-                .getString(GeneralKeys.KEY_SELECTED_GOOGLE_ACCOUNT, "")));
+        driveHelper = new DriveHelper(googleApiProvider.getDriveApi(preferencesDataSourceProvider
+                .getGeneralPreferences()
+                .getString(GeneralKeys.KEY_SELECTED_GOOGLE_ACCOUNT)));
         getResultsFromApi();
     }
 
@@ -798,7 +794,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
         FormsDao formsDao = new FormsDao();
         for (DriveListItem item : driveList) {
             if (item.getType() == DriveListItem.FILE) {
-                try (Cursor cursor = formsDao.getFormsCursorForFormFilePath(storagePathProvider.getDirPath(StorageSubdirectory.FORMS) + File.separator + item.getName())) {
+                try (Cursor cursor = formsDao.getFormsCursorForFormFilePath(storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS) + File.separator + item.getName())) {
                     if (cursor != null && cursor.moveToFirst() && (isNewerFormVersionAvailable(item) || areNewerMediaFilesAvailable(item))) {
                         item.setNewerVersion(true);
                     }
@@ -808,7 +804,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
     }
 
     private boolean isNewerFormVersionAvailable(DriveListItem item) {
-        Long lastModifiedLocal = new File(storagePathProvider.getDirPath(StorageSubdirectory.FORMS) + File.separator + item.getName()).lastModified();
+        Long lastModifiedLocal = new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS) + File.separator + item.getName()).lastModified();
         Long lastModifiedServer = item.getDate().getValue();
         return lastModifiedServer > lastModifiedLocal;
     }
@@ -826,7 +822,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
 
             if (mediaFileList != null) {
                 for (com.google.api.services.drive.model.File mediaFile : mediaFileList) {
-                    File localMediaFile = new File(storagePathProvider.getDirPath(StorageSubdirectory.FORMS) + File.separator + mediaDirName + File.separator + mediaFile.getName());
+                    File localMediaFile = new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS) + File.separator + mediaDirName + File.separator + mediaFile.getName());
                     if (!localMediaFile.exists()) {
                         return true;
                     } else {
@@ -889,7 +885,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
                     }
 
                     if (mediaFileList != null) {
-                        FileUtils.createFolder(storagePathProvider.getDirPath(StorageSubdirectory.FORMS) + File.separator + mediaDirName);
+                        FileUtils.createFolder(storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS) + File.separator + mediaDirName);
 
                         for (com.google.api.services.drive.model.File mediaFile : mediaFileList) {
                             String filePath = mediaDirName + File.separator + mediaFile.getName();
@@ -907,7 +903,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
         }
 
         private void downloadFile(@NonNull String fileId, String fileName) throws IOException {
-            File file = new File(storagePathProvider.getDirPath(StorageSubdirectory.FORMS) + File.separator + fileName);
+            File file = new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS) + File.separator + fileName);
             driveHelper.downloadFile(fileId, file);
 
             // If the form already exists in the DB and is soft deleted we need to restore it
