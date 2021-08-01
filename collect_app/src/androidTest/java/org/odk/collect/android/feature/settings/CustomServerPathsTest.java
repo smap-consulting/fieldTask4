@@ -16,7 +16,7 @@ import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.StubOpenRosaServer;
-import org.odk.collect.android.support.pages.GeneralSettingsPage;
+import org.odk.collect.android.support.pages.ProjectSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.pages.ServerSettingsPage;
 import org.odk.collect.utilities.UserAgentProvider;
@@ -45,8 +45,8 @@ public class CustomServerPathsTest {
         server.setFormListPath("/customPath");
         server.addForm("Custom path form", "one-question", "1", "one-question.xml");
 
-        new MainMenuPage(rule)
-                .clickOnMenu()
+        new MainMenuPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickServerSettings()
                 .clickOnURL()
@@ -57,9 +57,9 @@ public class CustomServerPathsTest {
                 .inputText("/customPath")
                 .clickOKOnDialog()
                 .assertText("/customPath")
-                .pressBack(new ServerSettingsPage(rule))
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new ServerSettingsPage())
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
 
                 .clickGetBlankForm()
                 .assertText("Custom path form");
@@ -69,12 +69,12 @@ public class CustomServerPathsTest {
     public void changingSubmissionPathInSettings_changesSubmissionUploadPath() {
         server.setFormSubmissionPath("/customPath");
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("One Question")
                 .swipeToEndScreen()
                 .clickSaveAndExit()
 
-                .clickOnMenu()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickServerSettings()
                 .clickOnURL()
@@ -85,9 +85,9 @@ public class CustomServerPathsTest {
                 .inputText("/customPath")
                 .clickOKOnDialog()
                 .assertText("/customPath")
-                .pressBack(new ServerSettingsPage(rule))
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new ServerSettingsPage())
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
 
                 .clickSendFinalizedForm(1)
                 .clickOnForm("One Question")

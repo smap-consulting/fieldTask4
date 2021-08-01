@@ -3,36 +3,36 @@ package org.odk.collect.android.widgets.utilities;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.javarosa.core.model.data.GeoPointData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.robolectric.RobolectricTestRunner;
 
 import static junit.framework.TestCase.assertEquals;
 import static org.odk.collect.android.widgets.support.GeoWidgetHelpers.getRandomDoubleArray;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class GeoWidgetUtilsTest {
     private final Context context = ApplicationProvider.getApplicationContext();
     private final GeoPointData answer = new GeoPointData(getRandomDoubleArray());
 
     @Test
     public void getAnswerToDisplay_whenAnswerIsNull_returnsEmptyString() {
-        assertEquals(GeoWidgetUtils.getAnswerToDisplay(context, null), "");
+        assertEquals(GeoWidgetUtils.getGeoPointAnswerToDisplay(context, null), "");
     }
 
     @Test
     public void getAnswerToDisplay_whenAnswerIsNotConvertible_returnsEmptyString() {
-        assertEquals(GeoWidgetUtils.getAnswerToDisplay(context, "blah"), "");
+        assertEquals(GeoWidgetUtils.getGeoPointAnswerToDisplay(context, "blah"), "");
     }
 
     @Test
     public void getAnswerToDisplay_whenAnswerIsNotNullAndConvertible_returnsAnswer() {
         String stringAnswer = answer.getDisplayText();
         String[] parts = stringAnswer.split(" ");
-        assertEquals(GeoWidgetUtils.getAnswerToDisplay(context, stringAnswer), context.getString(
+        assertEquals(GeoWidgetUtils.getGeoPointAnswerToDisplay(context, stringAnswer), context.getString(
                 R.string.gps_result,
                 GeoWidgetUtils.convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[0]), "lat"),
                 GeoWidgetUtils.convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[1]), "lon"),

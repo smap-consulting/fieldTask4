@@ -2,7 +2,6 @@ package org.odk.collect.android.support.pages;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.test.espresso.Espresso;
-import androidx.test.rule.ActivityTestRule;
 
 import org.hamcrest.Matchers;
 import org.odk.collect.android.R;
@@ -31,8 +30,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     private final String formName;
 
-    public FormEntryPage(String formName, ActivityTestRule rule) {
-        super(rule);
+    public FormEntryPage(String formName) {
         this.formName = formName;
     }
 
@@ -87,12 +85,12 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public FormEndPage swipeToEndScreen() {
         flingLeft();
-        return waitFor(() -> new FormEndPage(formName, rule).assertOnPage());
+        return waitFor(() -> new FormEndPage(formName).assertOnPage());
     }
 
     public ErrorDialog swipeToNextQuestionWithError() {
         flingLeft();
-        return new ErrorDialog(rule).assertOnPage();
+        return new ErrorDialog().assertOnPage();
     }
 
     public FormEntryPage swipeToNextQuestionWithConstraintViolation(String constraintText) {
@@ -107,14 +105,20 @@ public class FormEntryPage extends Page<FormEntryPage> {
         return this;
     }
 
-    public GeneralSettingsPage clickGeneralSettings() {
-        onView(withText(getTranslatedString(R.string.general_preferences))).perform(click());
-        return new GeneralSettingsPage(rule).assertOnPage();
+    public ProjectSettingsPage clickGeneralSettings() {
+        onView(withText(getTranslatedString(R.string.project_settings))).perform(click());
+        return new ProjectSettingsPage().assertOnPage();
     }
 
-    public FormEntryPage checkAreNavigationButtonsDisplayed() {
+    public FormEntryPage assertNavigationButtonsAreDisplayed() {
         onView(withId(R.id.form_forward_button)).check(matches(isDisplayed()));
         onView(withId(R.id.form_back_button)).check(matches(isDisplayed()));
+        return this;
+    }
+
+    public FormEntryPage assertNavigationButtonsAreHidden() {
+        onView(withId(R.id.form_forward_button)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.form_back_button)).check(matches(not(isDisplayed())));
         return this;
     }
 
@@ -146,7 +150,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public FormHierarchyPage clickGoToArrow() {
         onView(withId(R.id.menu_goto)).perform(click());
-        return new FormHierarchyPage(formName, rule).assertOnPage();
+        return new FormHierarchyPage(formName).assertOnPage();
     }
 
     public FormEntryPage clickWidgetButton() {
@@ -178,7 +182,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public FormEndPage clickForwardButtonToEndScreen() {
         onView(withText(getTranslatedString(R.string.form_forward))).perform(click());
-        return new FormEndPage(formName, rule).assertOnPage();
+        return new FormEndPage(formName).assertOnPage();
     }
 
     public FormEntryPage clickBackwardButton() {
@@ -193,7 +197,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public FormEndPage clickOnDoNotAddGroupEndingForm() {
         clickOnString(R.string.dont_add_repeat);
-        return new FormEndPage(formName, rule).assertOnPage();
+        return new FormEndPage(formName).assertOnPage();
     }
 
     public FormEntryPage clickOnAddGroup() {
@@ -201,9 +205,14 @@ public class FormEntryPage extends Page<FormEntryPage> {
         return this;
     }
 
+    public FormEntryPage clickSave() {
+        onView(withId(R.id.menu_save)).perform(click());
+        return this;
+    }
+
     public ChangesReasonPromptPage clickSaveWithChangesReasonPrompt() {
         onView(withId(R.id.menu_save)).perform(click());
-        return new ChangesReasonPromptPage(formName, rule).assertOnPage();
+        return new ChangesReasonPromptPage(formName).assertOnPage();
     }
 
     public FormEntryPage checkBackNavigationButtonIsNotsDisplayed() {
@@ -224,7 +233,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public AddNewRepeatDialog clickPlus(String repeatName) {
         onView(withId(R.id.menu_add_repeat)).perform(click());
-        return new AddNewRepeatDialog(repeatName, rule).assertOnPage();
+        return new AddNewRepeatDialog(repeatName).assertOnPage();
     }
 
     public FormEntryPage longPressOnView(int id, int index) {
@@ -245,7 +254,7 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public AddNewRepeatDialog swipeToNextQuestionWithRepeatGroup(String repeatName) {
         flingLeft();
-        return waitFor(() -> new AddNewRepeatDialog(repeatName, rule).assertOnPage());
+        return waitFor(() -> new AddNewRepeatDialog(repeatName).assertOnPage());
     }
 
     public FormEntryPage answerQuestion(String question, String answer) {
@@ -297,27 +306,27 @@ public class FormEntryPage extends Page<FormEntryPage> {
 
     public OkDialog swipeToEndScreenWhileRecording() {
         flingLeft();
-        OkDialog okDialog = new OkDialog(rule).assertOnPage();
+        OkDialog okDialog = new OkDialog().assertOnPage();
         assertText(R.string.recording_warning);
         return okDialog;
     }
 
     public OkDialog clickGoToArrowWhileRecording() {
         onView(withId(R.id.menu_goto)).perform(click());
-        OkDialog okDialog = new OkDialog(rule).assertOnPage();
+        OkDialog okDialog = new OkDialog().assertOnPage();
         assertText(R.string.recording_warning);
         return okDialog;
     }
 
     public OkDialog clickGeneralSettingsWhileRecording() {
-        onView(withText(getTranslatedString(R.string.general_preferences))).perform(click());
-        OkDialog okDialog = new OkDialog(rule).assertOnPage();
+        onView(withText(getTranslatedString(R.string.project_settings))).perform(click());
+        OkDialog okDialog = new OkDialog().assertOnPage();
         assertText(R.string.recording_warning);
         return okDialog;
     }
 
     public CancelRecordingDialog clickRecordAudio() {
         clickOnString(R.string.record_audio);
-        return new CancelRecordingDialog(formName, rule);
+        return new CancelRecordingDialog(formName);
     }
 }

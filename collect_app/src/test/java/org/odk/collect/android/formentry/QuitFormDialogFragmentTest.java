@@ -8,6 +8,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.testing.FragmentScenario;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,10 +17,11 @@ import org.odk.collect.android.R;
 import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.formentry.saving.FormSaveViewModel;
 import org.odk.collect.android.injection.config.AppDependencyModule;
-import org.odk.collect.android.support.RobolectricHelpers;
+import org.odk.collect.android.projects.CurrentProjectProvider;
+import org.odk.collect.android.support.CollectHelpers;
+import org.odk.collect.testshared.RobolectricHelpers;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.shadows.ShadowDialog;
 
 import static android.view.View.GONE;
@@ -31,16 +33,16 @@ import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class QuitFormDialogFragmentTest {
 
     private final FormSaveViewModel formSaveViewModel = mock(FormSaveViewModel.class);
 
     @Before
     public void setup() {
-        RobolectricHelpers.overrideAppDependencyModule(new AppDependencyModule() {
+        CollectHelpers.overrideAppDependencyModule(new AppDependencyModule() {
             @Override
-            public FormSaveViewModel.FactoryFactory providesFormSaveViewModelFactoryFactory(Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder) {
+            public FormSaveViewModel.FactoryFactory providesFormSaveViewModelFactoryFactory(Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder, CurrentProjectProvider currentProjectProvider) {
                 return (owner, defaultArgs) -> new ViewModelProvider.Factory() {
 
                     @NonNull
@@ -55,7 +57,7 @@ public class QuitFormDialogFragmentTest {
 
     @Test
     public void shouldShowCorrectButtons() {
-        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class);
+        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class, R.style.Theme_Collect_Light);
         fragmentScenario.onFragment(fragment -> {
             AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
             assertThat(dialog.getButton(DialogInterface.BUTTON_POSITIVE).getVisibility(), equalTo(GONE));
@@ -66,7 +68,7 @@ public class QuitFormDialogFragmentTest {
 
     @Test
     public void shouldShowCorrectTitle_whenNoFormIsLoaded() {
-        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class);
+        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class, R.style.Theme_Collect_Light);
         fragmentScenario.onFragment(fragment -> {
             AlertDialog dialog = (AlertDialog) fragment.getDialog();
             TextView dialogTitle = dialog.findViewById(R.id.alertTitle);
@@ -78,7 +80,7 @@ public class QuitFormDialogFragmentTest {
     public void shouldShowCorrectTitle_whenFormIsLoaded() {
         when(formSaveViewModel.getFormName()).thenReturn("blah");
 
-        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class);
+        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class, R.style.Theme_Collect_Light);
         fragmentScenario.onFragment(fragment -> {
             AlertDialog dialog = (AlertDialog) fragment.getDialog();
             TextView dialogTitle = dialog.findViewById(R.id.alertTitle);
@@ -88,7 +90,7 @@ public class QuitFormDialogFragmentTest {
 
     @Test
     public void dialogIsCancellable() {
-        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class);
+        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class, R.style.Theme_Collect_Light);
         fragmentScenario.onFragment(fragment -> {
             assertThat(fragment.isCancelable(), equalTo(true));
         });
@@ -96,12 +98,13 @@ public class QuitFormDialogFragmentTest {
 
     @Test
     public void clickingCancel_shouldDismissTheDialog() {
-        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class);
+        FragmentScenario<QuitFormDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(QuitFormDialogFragment.class, R.style.Theme_Collect_Light);
         fragmentScenario.onFragment(fragment -> {
             AlertDialog dialog = (AlertDialog) fragment.getDialog();
             assertTrue(dialog.isShowing());
 
             dialog.getButton(DialogInterface.BUTTON_NEGATIVE).performClick();
+            RobolectricHelpers.runLooper();
             assertFalse(dialog.isShowing());
         });
     }

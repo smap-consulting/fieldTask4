@@ -2,6 +2,7 @@ package org.odk.collect.android.support;
 
 import android.view.View;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.PerformException;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
@@ -9,12 +10,11 @@ import androidx.test.espresso.util.HumanReadables;
 import androidx.test.espresso.util.TreeIterables;
 
 import org.hamcrest.Matcher;
-import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
+import org.odk.collect.android.TestSettingsProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
-import org.odk.collect.utilities.TestPreferencesProvider;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
+import org.odk.collect.shared.Settings;
 
 import java.io.Closeable;
 import java.io.File;
@@ -28,7 +28,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 public final class TestUtils {
-    private static final PreferencesDataSource GENERAL_PREFS = TestPreferencesProvider.getGeneralPreferences();
+    private static final Settings GENERAL_PREFS = TestSettingsProvider.getGeneralSettings();
 
     private TestUtils() {
 
@@ -94,8 +94,8 @@ public final class TestUtils {
         }
     }
 
-    public static void resetInstancesContentProvider() {
-        Collect.getInstance().getContentResolver().delete(InstanceColumns.CONTENT_URI, null, null);
+    public static void resetInstances() {
+        new InstancesRepositoryProvider(ApplicationProvider.getApplicationContext()).get().deleteAll();
     }
 
     public static void assertMatches(String expectedPattern, Object actual) {

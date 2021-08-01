@@ -1,49 +1,36 @@
 package org.odk.collect.android.database;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.forms.FormsRepository;
-import org.odk.collect.android.forms.FormsRepositoryTest;
-import org.odk.collect.android.injection.config.AppDependencyModule;
-import org.odk.collect.android.storage.StorageInitializer;
-import org.odk.collect.android.storage.StoragePathProvider;
-import org.odk.collect.android.storage.StorageSubdirectory;
-import org.odk.collect.android.support.RobolectricHelpers;
-import org.odk.collect.utilities.Clock;
+import org.odk.collect.android.database.forms.DatabaseFormsRepository;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.formstest.FormsRepositoryTest;
+import org.odk.collect.shared.TempFiles;
+
+import java.io.File;
+import java.util.function.Supplier;
 
 @RunWith(AndroidJUnit4.class)
 public class DatabaseFormsRepositoryTest extends FormsRepositoryTest {
 
-    private StoragePathProvider storagePathProvider;
-
-    @Before
-    public void setup() {
-        RobolectricHelpers.mountExternalStorage();
-        storagePathProvider = new StoragePathProvider();
-        new StorageInitializer().createOdkDirsOnStorage();
-    }
+    private final File dbDir = TempFiles.createTempDir();
+    private final File formsDir = TempFiles.createTempDir();
+    private final File cacheDir = TempFiles.createTempDir();
 
     @Override
     public FormsRepository buildSubject() {
-        return new DatabaseFormsRepository();
+        return new DatabaseFormsRepository(ApplicationProvider.getApplicationContext(), dbDir.getAbsolutePath(), formsDir.getAbsolutePath(), cacheDir.getAbsolutePath(), System::currentTimeMillis);
     }
 
     @Override
-    public FormsRepository buildSubject(Clock clock) {
-        RobolectricHelpers.overrideAppDependencyModule(new AppDependencyModule() {
-            @Override
-            public Clock providesClock() {
-                return clock;
-            }
-        });
-
-        return buildSubject();
+    public FormsRepository buildSubject(Supplier<Long> clock) {
+        return new DatabaseFormsRepository(ApplicationProvider.getApplicationContext(), dbDir.getAbsolutePath(), formsDir.getAbsolutePath(), cacheDir.getAbsolutePath(), clock);
     }
 
     @Override
     public String getFormFilesPath() {
-        return storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS);
+        return formsDir.getAbsolutePath();
     }
 }

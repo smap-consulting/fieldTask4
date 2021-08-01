@@ -53,11 +53,19 @@ public class VersionInformation {
         }
     }
 
+    public String getVersionToDisplay() {
+        if (getBetaNumber() != null) {
+            return getSemanticVersion() + " Beta " + getBetaNumber();
+        } else {
+            return getSemanticVersion();
+        }
+    }
+
     public boolean isRelease() {
         return getVersionDescriptionComponents().length == 1;
     }
 
-    private boolean isBeta() {
+    public boolean isBeta() {
         return versionDescriptionProvider.getVersionDescription().contains("beta");
     }
 

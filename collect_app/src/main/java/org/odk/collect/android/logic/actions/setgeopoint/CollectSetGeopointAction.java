@@ -23,16 +23,15 @@ import com.google.android.gms.location.LocationListener;
 import org.javarosa.core.model.actions.setgeopoint.SetGeopointAction;
 import org.javarosa.core.model.instance.TreeReference;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.location.client.GoogleFusedLocationClient;
-import org.odk.collect.android.location.client.MaxAccuracyWithinTimeoutLocationClient;
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.injection.DaggerUtils;
+import org.odk.collect.location.GoogleFusedLocationClient;
+import org.odk.collect.android.location.client.MaxAccuracyWithinTimeoutLocationClientWrapper;
 import org.odk.collect.android.utilities.GeoUtils;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 
 import timber.log.Timber;
 
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_BACKGROUND_LOCATION;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_BACKGROUND_LOCATION;
 
 /**
  * An Android-specific implementation of {@link SetGeopointAction}.
@@ -53,8 +52,7 @@ import static org.odk.collect.android.preferences.GeneralKeys.KEY_BACKGROUND_LOC
 public class CollectSetGeopointAction extends SetGeopointAction implements LocationListener {
     private static final int SECONDS_TO_CONSIDER_UPDATES = 20;
 
-    private MaxAccuracyWithinTimeoutLocationClient maxAccuracyLocationClient;
-    private PreferencesDataSource generalPrefs;
+    private MaxAccuracyWithinTimeoutLocationClientWrapper maxAccuracyLocationClient;
 
     public CollectSetGeopointAction() {
         // For serialization
@@ -63,19 +61,18 @@ public class CollectSetGeopointAction extends SetGeopointAction implements Locat
     // Needed to set the action name.
     CollectSetGeopointAction(TreeReference targetReference) {
         super(targetReference);
-        generalPrefs = new PreferencesDataSourceProvider(Collect.getInstance()).getGeneralPreferences();
     }
 
     @Override
     public void requestLocationUpdates() {
         // Do initialization on first location request so the client doesn't need to be serialized
         if (maxAccuracyLocationClient == null) {
-            maxAccuracyLocationClient = new MaxAccuracyWithinTimeoutLocationClient(new GoogleFusedLocationClient(Collect.getInstance()), this);
+            maxAccuracyLocationClient = new MaxAccuracyWithinTimeoutLocationClientWrapper(new GoogleFusedLocationClient(Collect.getInstance()), this);
         }
 
         // Only start acquiring location if the Collect preference allows it and Google Play
         // Services are available. If it's not allowed, leave the target field blank.
-        if (generalPrefs.getBoolean(KEY_BACKGROUND_LOCATION)
+        if (isBackgroundLocationEnabled()
             && new PlayServicesChecker().isGooglePlayServicesAvailable(Collect.getInstance().getApplicationContext())) {
             maxAccuracyLocationClient.requestLocationUpdates(SECONDS_TO_CONSIDER_UPDATES);
         }
@@ -91,7 +88,7 @@ public class CollectSetGeopointAction extends SetGeopointAction implements Locat
      */
     @Override
     public void onLocationChanged(Location location) {
-        if (generalPrefs.getBoolean(KEY_BACKGROUND_LOCATION)) {
+        if (isBackgroundLocationEnabled()) {
             Timber.i("Setgeopoint action for " + getContextualizedTargetReference() + ": location update");
 
             String formattedLocation = GeoUtils.formatLocationResultString(location);
@@ -99,5 +96,13 @@ public class CollectSetGeopointAction extends SetGeopointAction implements Locat
         } else {
             saveLocationValue("");
         }
+    }
+
+    private boolean isBackgroundLocationEnabled() {
+        return DaggerUtils
+                .getComponent(Collect.getInstance())
+                .settingsProvider()
+                .getGeneralSettings()
+                .getBoolean(KEY_BACKGROUND_LOCATION);
     }
 }

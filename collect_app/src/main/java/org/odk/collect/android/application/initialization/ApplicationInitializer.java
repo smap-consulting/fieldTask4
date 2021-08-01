@@ -16,60 +16,64 @@ import org.javarosa.xform.parse.XFormParser;
 import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.application.Collect;
+import org.odk.collect.android.application.initialization.upgrade.AppUpgrader;
 import org.odk.collect.android.geo.MapboxUtils;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.logic.actions.setgeopoint.CollectSetGeopointActionHandler;
-import org.odk.collect.android.preferences.FormUpdateMode;
-import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
 import org.odk.collect.android.storage.StorageInitializer;
+import org.odk.collect.android.utilities.LaunchState;
+import org.odk.collect.projects.ProjectsRepository;
 import org.odk.collect.utilities.UserAgentProvider;
 
 import java.util.Locale;
 
 import timber.log.Timber;
 
-import static org.odk.collect.android.configure.SettingsUtils.getFormUpdateMode;
-
 public class ApplicationInitializer {
 
     private final Application context;
     private final UserAgentProvider userAgentProvider;
-    private final SettingsPreferenceMigrator preferenceMigrator;
     private final PropertyManager propertyManager;
     private final Analytics analytics;
-    private final PreferencesDataSource generalPrefs;
-    private final PreferencesDataSource adminPrefs;
     private final StorageInitializer storageInitializer;
+    private final LaunchState launchState;
+    private final AppUpgrader appUpgrader;
+    private final AnalyticsInitializer analyticsInitializer;
+    private final ProjectsRepository projectsRepository;
 
-    public ApplicationInitializer(Application context, UserAgentProvider userAgentProvider, SettingsPreferenceMigrator preferenceMigrator,
-                                  PropertyManager propertyManager, Analytics analytics, StorageInitializer storageInitializer, PreferencesDataSourceProvider preferencesDataSourceProvider) {
+    public ApplicationInitializer(Application context, UserAgentProvider userAgentProvider,
+                                  PropertyManager propertyManager, Analytics analytics,
+                                  StorageInitializer storageInitializer, LaunchState launchState,
+                                  AppUpgrader appUpgrader,
+                                  AnalyticsInitializer analyticsInitializer, ProjectsRepository projectsRepository) {
         this.context = context;
         this.userAgentProvider = userAgentProvider;
-        this.preferenceMigrator = preferenceMigrator;
         this.propertyManager = propertyManager;
         this.analytics = analytics;
         this.storageInitializer = storageInitializer;
-
-        generalPrefs = preferencesDataSourceProvider.getGeneralPreferences();
-        adminPrefs = preferencesDataSourceProvider.getAdminPreferences();
+        this.launchState = launchState;
+        this.appUpgrader = appUpgrader;
+        this.analyticsInitializer = analyticsInitializer;
+        this.projectsRepository = projectsRepository;
     }
 
     public void initialize() {
         initializeStorage();
-        initializePreferences();
+        performUpgradeIfNeeded();
         initializeFrameworks();
         initializeLocale();
+
+        launchState.appLaunched();
+    }
+
+    private void performUpgradeIfNeeded() {
+        if (launchState.isUpgradedFirstLaunch()) {
+            appUpgrader.upgrade();
+        }
     }
 
     private void initializeStorage() {
         storageInitializer.createOdkDirsOnStorage();
-    }
-
-    private void initializePreferences() {
-        performMigrations();
-        reloadSharedPreferences();
     }
 
     private void initializeFrameworks() {
@@ -78,15 +82,8 @@ public class ApplicationInitializer {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         initializeMapFrameworks();
         initializeJavaRosa();
-        initializeAnalytics();
-    }
-
-    private void initializeAnalytics() {
-        boolean isAnalyticsEnabled = generalPrefs.getBoolean(GeneralKeys.KEY_ANALYTICS);
-        analytics.setAnalyticsCollectionEnabled(isAnalyticsEnabled);
-
-        FormUpdateMode formUpdateMode = getFormUpdateMode(context, generalPrefs);
-        analytics.setUserProperty("FormUpdateMode", formUpdateMode.getValue(context));
+        analyticsInitializer.initialize();
+        new UserPropertiesInitializer(analytics, projectsRepository).initialize();
     }
 
     private void initializeLocale() {
@@ -114,15 +111,6 @@ public class ApplicationInitializer {
         } else {
             Timber.plant(new Timber.DebugTree());
         }
-    }
-
-    private void reloadSharedPreferences() {
-        generalPrefs.loadDefaultPreferencesIfNotExist();
-        adminPrefs.loadDefaultPreferencesIfNotExist();
-    }
-
-    private void performMigrations() {
-        preferenceMigrator.migrate(generalPrefs, adminPrefs);
     }
 
     private void initializeMapFrameworks() {

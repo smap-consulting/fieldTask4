@@ -17,6 +17,7 @@ package org.odk.collect.android.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,18 +29,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.loader.content.CursorLoader;
+import androidx.loader.content.Loader;
 
+import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.InstanceListCursorAdapter;
-import org.odk.collect.android.dao.InstancesDao;
-import org.odk.collect.android.forms.FormsRepository;
+import org.odk.collect.android.dao.CursorLoaderFactory;
+import org.odk.collect.android.database.instances.DatabaseInstanceColumns;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.instances.InstancesRepository;
 import org.odk.collect.android.listeners.DeleteInstancesListener;
-import org.odk.collect.android.listeners.DiskSyncListener;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
+import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.tasks.DeleteInstancesTask;
-import org.odk.collect.android.tasks.InstanceSyncTask;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.android.utilities.ToastUtils;
 
 import javax.inject.Inject;
@@ -53,20 +55,21 @@ import timber.log.Timber;
  * @author Carl Hartung (carlhartung@gmail.com)
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
-public class SavedFormListFragment extends InstanceListFragment
-        implements DeleteInstancesListener, DiskSyncListener, View.OnClickListener {
+public class SavedFormListFragment extends InstanceListFragment implements DeleteInstancesListener, View.OnClickListener {
     private static final String DATA_MANAGER_LIST_SORTING_ORDER = "dataManagerListSortingOrder";
 
     DeleteInstancesTask deleteInstancesTask;
     private AlertDialog alertDialog;
-    private InstanceSyncTask instanceSyncTask;
     private ProgressDialog progressDialog;
 
     @Inject
-    InstancesRepository instancesRepository;
+    InstancesRepositoryProvider instancesRepositoryProvider;
 
     @Inject
-    FormsRepository formsRepository;
+    FormsRepositoryProvider formsRepositoryProvider;
+
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -87,9 +90,6 @@ public class SavedFormListFragment extends InstanceListFragment
         toggleButton.setOnClickListener(this);
 
         setupAdapter();
-        instanceSyncTask = new InstanceSyncTask(preferencesDataSourceProvider);
-        instanceSyncTask.setDiskSyncListener(this);
-        instanceSyncTask.execute();
 
         super.onViewCreated(rootView, savedInstanceState);
     }
@@ -99,9 +99,6 @@ public class SavedFormListFragment extends InstanceListFragment
         // hook up to receive completion events
         if (deleteInstancesTask != null) {
             deleteInstancesTask.setDeleteListener(this);
-        }
-        if (instanceSyncTask != null) {
-            instanceSyncTask.setDiskSyncListener(this);
         }
         super.onResume();
         // async task may have completed while we were reorienting...
@@ -116,24 +113,14 @@ public class SavedFormListFragment extends InstanceListFragment
         if (deleteInstancesTask != null) {
             deleteInstancesTask.setDeleteListener(null);
         }
-        if (instanceSyncTask != null) {
-            instanceSyncTask.setDiskSyncListener(null);
-        }
         if (alertDialog != null && alertDialog.isShowing()) {
             alertDialog.dismiss();
         }
         super.onPause();
     }
 
-    @Override
-    public void syncComplete(@NonNull String result) {
-        Timber.i("Disk scan complete");
-        hideProgressBarAndAllow();
-        showSnackbar(result);
-    }
-
     private void setupAdapter() {
-        String[] data = {InstanceColumns.DISPLAY_NAME};
+        String[] data = {DatabaseInstanceColumns.DISPLAY_NAME};
         int[] view = {R.id.form_title};
 
         listAdapter = new InstanceListCursorAdapter(getActivity(),
@@ -149,7 +136,7 @@ public class SavedFormListFragment extends InstanceListFragment
 
     @Override
     protected CursorLoader getCursorLoader() {
-        return new InstancesDao().getSavedInstancesCursorLoader(getFilterText(), getSortingOrder());
+        return new CursorLoaderFactory(currentProjectProvider).createSavedInstancesCursorLoader(getFilterText(), getSortingOrder());
     }
 
     /**
@@ -195,7 +182,7 @@ public class SavedFormListFragment extends InstanceListFragment
             progressDialog.setCancelable(false);
             progressDialog.show();
 
-            deleteInstancesTask = new DeleteInstancesTask(instancesRepository, formsRepository);
+            deleteInstancesTask = new DeleteInstancesTask(instancesRepositoryProvider.get(), formsRepositoryProvider.get());
             deleteInstancesTask.setDeleteListener(this);
             deleteInstancesTask.execute(getCheckedIdObjects());
         } else {
@@ -231,6 +218,7 @@ public class SavedFormListFragment extends InstanceListFragment
         }
         deleteButton.setEnabled(false);
 
+        updateAdapter();
         progressDialog.dismiss();
     }
 
@@ -262,4 +250,9 @@ public class SavedFormListFragment extends InstanceListFragment
         }
     }
 
+    @Override
+    public void onLoadFinished(@NonNull @NotNull Loader<Cursor> loader, Cursor cursor) {
+        super.onLoadFinished(loader, cursor);
+        hideProgressBarAndAllow();
+    }
 }

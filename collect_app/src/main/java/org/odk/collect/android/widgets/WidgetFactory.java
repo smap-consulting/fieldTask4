@@ -27,11 +27,12 @@ import org.odk.collect.android.formentry.FormEntryViewModel;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.geo.MapProvider;
 import org.odk.collect.android.permissions.PermissionsProvider;
+import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.utilities.CameraUtils;
-import org.odk.collect.android.utilities.CustomTabHelper;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
+import org.odk.collect.android.utilities.ExternalWebPageHelper;
 import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.QuestionMediaManager;
 import org.odk.collect.android.widgets.items.LabelWidget;
@@ -80,7 +81,6 @@ public class WidgetFactory {
     private final AudioRecorder audioRecorder;
     private final LifecycleOwner viewLifecycle;
 
-    @SuppressWarnings("PMD.ExcessiveParameterList")
     public WidgetFactory(Activity activity,
                          boolean readOnlyOverride,
                          boolean useExternalRecorder,
@@ -170,7 +170,7 @@ public class WidgetFactory {
                         } else if (appearance.contains(Appearances.NUMBERS)) {
                             questionWidget = new StringNumberWidget(context, questionDetails);
                         } else if (appearance.equals(Appearances.URL)) {
-                            questionWidget = new UrlWidget(context, questionDetails, new CustomTabHelper());
+                            questionWidget = new UrlWidget(context, questionDetails, new ExternalWebPageHelper());
                         } else {
                             questionWidget = new StringWidget(context, questionDetails);
                         }
@@ -189,19 +189,20 @@ public class WidgetFactory {
                 break;
             case Constants.CONTROL_IMAGE_CHOOSE:
                 if (appearance.equals(Appearances.SIGNATURE)) {
-                    questionWidget = new SignatureWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry);
+                    questionWidget = new SignatureWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry, new StoragePathProvider().getTmpImageFilePath());
                 } else if (appearance.contains(Appearances.ANNOTATE)) {
-                    questionWidget = new AnnotateWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry);
+                    questionWidget = new AnnotateWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry, new StoragePathProvider().getTmpImageFilePath());
                 } else if (appearance.equals(Appearances.DRAW)) {
-                    questionWidget = new DrawWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry);
+                    questionWidget = new DrawWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry, new StoragePathProvider().getTmpImageFilePath());
                 } else if (appearance.startsWith(Appearances.EX)) {
                     questionWidget = new ExImageWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry, new MediaUtils(), new ExternalAppIntentProvider(), activityAvailability);
                 } else {
-                    questionWidget = new ImageWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry);
+                    questionWidget = new ImageWidget(context, questionDetails, questionMediaManager, waitingForDataRegistry, new StoragePathProvider().getTmpImageFilePath());
                 }
                 break;
             case Constants.CONTROL_OSM_CAPTURE:
-                questionWidget = new OSMWidget(context, questionDetails, waitingForDataRegistry);
+                questionWidget = new OSMWidget(context, questionDetails, waitingForDataRegistry,
+                        new ActivityAvailability(context), Collect.getInstance().getFormController());
                 break;
             case Constants.CONTROL_AUDIO_CAPTURE:
                 RecordingRequester recordingRequester = recordingRequesterProvider.create(prompt, useExternalRecorder);

@@ -19,20 +19,12 @@
 package org.odk.collect.android.gdrive;
 
 import android.app.Activity;
-
-import androidx.appcompat.app.AlertDialog;
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
@@ -40,27 +32,32 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.drive.Drive;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormListActivity;
 import org.odk.collect.android.adapters.FileArrayAdapter;
-import org.odk.collect.android.dao.FormsDao;
 import org.odk.collect.android.exception.MultipleFoldersFoundException;
-import org.odk.collect.android.forms.Form;
-import org.odk.collect.android.forms.FormsRepository;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.FormsRepository;
 import org.odk.collect.android.gdrive.sheets.DriveHelper;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.listeners.TaskListener;
 import org.odk.collect.android.logic.DriveListItem;
 import org.odk.collect.android.network.NetworkStateProvider;
-import org.odk.collect.android.preferences.GeneralKeys;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
+import org.odk.collect.shared.strings.Md5;
 
 import java.io.File;
 import java.io.IOException;
@@ -123,7 +120,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
     GoogleApiProvider googleApiProvider;
 
     @Inject
-    FormsRepository formsRepository;
+    FormsRepositoryProvider formsRepositoryProvider;
 
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -220,9 +217,9 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
                 R.string.sort_by_name_asc, R.string.sort_by_name_desc
         };
 
-        driveHelper = new DriveHelper(googleApiProvider.getDriveApi(preferencesDataSourceProvider
-                .getGeneralPreferences()
-                .getString(GeneralKeys.KEY_SELECTED_GOOGLE_ACCOUNT)));
+        driveHelper = new DriveHelper(googleApiProvider.getDriveApi(settingsProvider
+                .getGeneralSettings()
+                .getString(ProjectKeys.KEY_SELECTED_GOOGLE_ACCOUNT)));
         getResultsFromApi();
     }
 
@@ -791,13 +788,11 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
     }
 
     private void checkFormUpdates() {
-        FormsDao formsDao = new FormsDao();
         for (DriveListItem item : driveList) {
             if (item.getType() == DriveListItem.FILE) {
-                try (Cursor cursor = formsDao.getFormsCursorForFormFilePath(storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS) + File.separator + item.getName())) {
-                    if (cursor != null && cursor.moveToFirst() && (isNewerFormVersionAvailable(item) || areNewerMediaFilesAvailable(item))) {
-                        item.setNewerVersion(true);
-                    }
+                Form form = new FormsRepositoryProvider(getApplicationContext()).get().getOneByPath(storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS) + File.separator + item.getName());
+                if (form != null && (isNewerFormVersionAvailable(item) || areNewerMediaFilesAvailable(item))) {
+                    item.setNewerVersion(true);
                 }
             }
         }
@@ -907,10 +902,11 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
             driveHelper.downloadFile(fileId, file);
 
             // If the form already exists in the DB and is soft deleted we need to restore it
-            String md5Hash = FileUtils.getMd5Hash(file);
+            String md5Hash = Md5.getMd5Hash(file);
+            FormsRepository formsRepository = formsRepositoryProvider.get();
             Form form = formsRepository.getOneByMd5Hash(md5Hash);
             if (form != null && form.isDeleted()) {
-                formsRepository.restore(form.getId());
+                formsRepository.restore(form.getDbId());
             }
         }
 

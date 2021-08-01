@@ -25,9 +25,10 @@ public class UserSettingsTest {
     @Test
     public void typeOption_ShouldNotBeVisible() {
         //TestCase1
-        new MainMenuPage(rule)
-                .clickOnMenu()
-                .clickAdminSettings()
+        new MainMenuPage()
+                .openProjectSettings()
+                .clickGeneralSettings()
+                .clickAccessControl()
                 .openUserSettings()
                 .assertTextDoesNotExist("Type")
                 .assertTextDoesNotExist("Submission transport")

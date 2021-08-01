@@ -16,34 +16,33 @@
 
 package org.odk.collect.android.feature.formentry;
 
-import android.Manifest;
-
-import androidx.test.rule.GrantPermissionRule;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.ResetStateRule;
+import org.odk.collect.android.support.CopyFormRule;
+import org.odk.collect.android.support.TestDependencies;
+import org.odk.collect.android.support.TestRuleChain;
+import org.odk.collect.android.support.pages.MainMenuPage;
+import org.odk.collect.android.support.pages.SendFinalizedFormPage;
+import org.odk.collect.forms.instances.Instance;
 
 public class EncryptedFormTest {
 
-    @Rule
+    TestDependencies testDependencies = new TestDependencies();
+
     public CollectTestRule rule = new CollectTestRule();
 
     @Rule
-    public RuleChain copyFormChain = RuleChain
-            .outerRule(GrantPermissionRule.grant(Manifest.permission.READ_PHONE_STATE))
-            .around(new ResetStateRule())
+    public RuleChain copyFormChain = TestRuleChain.chain(testDependencies)
             .around(new CopyFormRule("encrypted.xml"))
-            .around(new CopyFormRule("encrypted-no-instanceID.xml"));
+            .around(new CopyFormRule("encrypted-no-instanceID.xml"))
+            .around(rule);
 
     @Test
     public void instanceOfEncryptedForm_cantBeEditedWhenFinalized() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .startBlankForm("encrypted")
                 .assertQuestion("Question 1")
                 .swipeToEndScreen()
@@ -56,8 +55,31 @@ public class EncryptedFormTest {
     }
 
     @Test
+    public void instanceOfEncryptedForm_cantBeViewedAfterSending() {
+        rule.startAtMainMenu()
+                .setServer(testDependencies.server.getURL())
+
+                .startBlankForm("encrypted")
+                .assertQuestion("Question 1")
+                .swipeToEndScreen()
+                .clickSaveAndExit()
+
+                .clickSendFinalizedForm(1)
+                .clickOnForm("encrypted")
+                .clickSendSelected()
+                .clickOK(new SendFinalizedFormPage())
+                .pressBack(new MainMenuPage())
+
+                .clickViewSentForm(1)
+                .clickOnText("encrypted")
+                .assertText(R.string.encrypted_form)
+                .assertOnPage();
+    }
+
+    //TestCase47
+    @Test
     public void instanceOfEncryptedFormWithoutInstanceID_failsFinalizationWithMessage() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .startBlankForm("encrypted-no-instanceID")
                 .assertQuestion("Question 1")
                 .swipeToEndScreen()

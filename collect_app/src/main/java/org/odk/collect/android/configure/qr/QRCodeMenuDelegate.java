@@ -9,8 +9,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.preferences.JsonPreferencesGenerator;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.FileProvider;
 import org.odk.collect.android.utilities.MenuDelegate;
@@ -30,15 +29,15 @@ public class QRCodeMenuDelegate implements MenuDelegate {
     private String qrFilePath;
 
     QRCodeMenuDelegate(FragmentActivity activity, ActivityAvailability activityAvailability, QRCodeGenerator qrCodeGenerator,
-                       JsonPreferencesGenerator jsonPreferencesGenerator, FileProvider fileProvider,
-                       PreferencesDataSourceProvider preferencesDataSourceProvider, Scheduler scheduler) {
+                       AppConfigurationGenerator appConfigurationGenerator, FileProvider fileProvider,
+                       SettingsProvider settingsProvider, Scheduler scheduler) {
         this.activity = activity;
         this.activityAvailability = activityAvailability;
         this.fileProvider = fileProvider;
 
         QRCodeViewModel qrCodeViewModel = new ViewModelProvider(
                 activity,
-                new QRCodeViewModel.Factory(qrCodeGenerator, jsonPreferencesGenerator, preferencesDataSourceProvider, scheduler)
+                new QRCodeViewModel.Factory(qrCodeGenerator, appConfigurationGenerator, settingsProvider, scheduler)
         ).get(QRCodeViewModel.class);
         qrCodeViewModel.getFilePath().observe(activity, filePath -> {
             if (filePath != null) {
@@ -49,7 +48,7 @@ public class QRCodeMenuDelegate implements MenuDelegate {
 
     @Override
     public void onCreateOptionsMenu(MenuInflater menuInflater, Menu menu) {
-        menuInflater.inflate(R.menu.settings_menu, menu);
+        menuInflater.inflate(R.menu.qr_code_scan_menu, menu);
     }
 
     @Override

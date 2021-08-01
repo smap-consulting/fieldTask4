@@ -2,20 +2,21 @@ package org.odk.collect.android.support;
 
 import android.content.Context;
 
-import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.preference.PreferenceManager;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-import org.odk.collect.android.application.Collect;
-
+import org.odk.collect.android.TestSettingsProvider;
+import org.odk.collect.android.database.DatabaseConnection;
+import org.odk.collect.android.injection.DaggerUtils;
+import org.odk.collect.android.injection.config.AppDependencyComponent;
 import org.odk.collect.android.injection.config.AppDependencyModule;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
-import org.odk.collect.android.provider.FormsProvider;
-import org.odk.collect.android.provider.InstanceProvider;
+import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.utilities.MultiClickGuard;
-import org.odk.collect.utilities.TestPreferencesProvider;
+import org.odk.collect.android.views.DecoratedBarcodeView;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,7 @@ import static org.apache.commons.io.FileUtils.deleteDirectory;
 public class ResetStateRule implements TestRule {
 
     private final AppDependencyModule appDependencyModule;
-    private final PreferencesDataSourceProvider preferencesDataSourceProvider = TestPreferencesProvider.getPreferencesRepository();
+    private final SettingsProvider settingsProvider = TestSettingsProvider.getSettingsProvider();
 
     public ResetStateRule() {
         this(null);
@@ -50,22 +51,25 @@ public class ResetStateRule implements TestRule {
 
         @Override
         public void evaluate() throws Throwable {
-            Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+            Context context = ApplicationProvider.getApplicationContext();
 
             resetDagger();
-            clearPrefs();
+            clearPrefs(context);
             clearDisk();
             setTestState();
 
-            // Reinitialize any application state with new deps/state
-            ((Collect) context.getApplicationContext()).getComponent().applicationInitializer().initialize();
+            AppDependencyComponent component = DaggerUtils.getComponent(context.getApplicationContext());
 
+            // Reinitialize any application state with new deps/state
+            component.applicationInitializer().initialize();
             base.evaluate();
         }
     }
 
     private void setTestState() {
         MultiClickGuard.test = true;
+        DecoratedBarcodeView.test = true;
+        CopyFormRule.projectCreated = false;
     }
 
     private void clearDisk() {
@@ -76,23 +80,22 @@ public class ResetStateRule implements TestRule {
             throw new RuntimeException(e);
         }
 
-        FormsProvider.recreateDatabaseHelper();
-        InstanceProvider.recreateDatabaseHelper();
+        DatabaseConnection.closeAll();
     }
 
     private void resetDagger() {
-        if (appDependencyModule != null) {
-            CollectHelpers.overrideAppDependencyModule(appDependencyModule);
-        } else {
+        if (appDependencyModule == null) {
             CollectHelpers.overrideAppDependencyModule(new AppDependencyModule());
+        } else {
+            CollectHelpers.overrideAppDependencyModule(appDependencyModule);
         }
     }
 
-    private void clearPrefs() {
-        preferencesDataSourceProvider.getGeneralPreferences().clear();
-        preferencesDataSourceProvider.getGeneralPreferences().loadDefaultPreferencesIfNotExist();
-        preferencesDataSourceProvider.getAdminPreferences().clear();
-        preferencesDataSourceProvider.getAdminPreferences().loadDefaultPreferencesIfNotExist();
-        preferencesDataSourceProvider.getMetaPreferences().clear();
+    private void clearPrefs(Context context) {
+        settingsProvider.clearAll();
+
+        // Delete legacy prefs in case older version of app was run on test device
+        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().apply();
+        context.getSharedPreferences("admin_prefs", Context.MODE_PRIVATE).edit().clear().apply();
     }
 }

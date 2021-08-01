@@ -14,8 +14,6 @@
 
 package org.odk.collect.android.utilities;
 
-import android.content.ContentResolver;
-import android.database.Cursor;
 import android.net.Uri;
 import android.util.Base64;
 
@@ -28,12 +26,13 @@ import org.kxml2.kdom.Element;
 import org.kxml2.kdom.Node;
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.database.DatabaseFormsRepository;
 import org.odk.collect.android.exception.EncryptionException;
 import org.odk.collect.android.javarosawrapper.FormController.InstanceMetadata;
-import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
+import org.odk.collect.android.external.FormsContract;
+import org.odk.collect.android.external.InstancesContract;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.shared.strings.Md5;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -178,7 +177,7 @@ public class EncryptionUtils {
         }
 
         public void appendFileSignatureSource(File file) {
-            String md5Hash = FileUtils.getMd5Hash(file);
+            String md5Hash = Md5.getMd5Hash(file);
             appendElementSignatureSource(file.getName() + "::" + md5Hash);
         }
 
@@ -250,107 +249,78 @@ public class EncryptionUtils {
     /**
      * Retrieve the encryption information for this uri.
      *
-     * @param   uri either an instance URI (if previously saved) or a form URI
-     * @param   instanceMetadata the metadata for this instance used to check if the form definition
-     *                           defines an instanceID
-     * @return  an {@link EncryptedFormInformation} object if the form definition requests encryption
-     *          and the record can be encrypted. {@code null} if the form definition does not request
-     *          encryption or if the BouncyCastle implementation is not present.
-     *
-     * @throws  EncryptionException if the form definition requests encryption but the record can't
-     *                              be encrypted
+     * @param uri              an Instance uri
+     * @param instanceMetadata the metadata for this instance used to check if the form definition
+     *                         defines an instanceID
+     * @return an {@link EncryptedFormInformation} object if the form definition requests encryption
+     * and the record can be encrypted. {@code null} if the form definition does not request
+     * encryption or if the BouncyCastle implementation is not present.
+     * @throws EncryptionException if the form definition requests encryption but the record can't
+     *                             be encrypted
      */
-    public static EncryptedFormInformation getEncryptedFormInformation(Uri uri,
-            InstanceMetadata instanceMetadata) throws EncryptionException {
-        ContentResolver cr = Collect.getInstance().getContentResolver();
-
+    public static EncryptedFormInformation getEncryptedFormInformation(Uri uri, InstanceMetadata instanceMetadata) throws EncryptionException {
         // fetch the form information
         String formId;
         String formVersion;
         PublicKey pk;
 
-        Cursor formCursor = null;
-        try {
-            if (InstanceColumns.CONTENT_ITEM_TYPE.equals(cr.getType(uri))) {
-                String[] selectionArgs;
-                String selection = FormsColumns.JR_FORM_ID + " =? AND ";
-                try (Cursor instanceCursor = cr.query(uri, null, null, null, null)) {
-                    if (instanceCursor.getCount() != 1) {
-                        String msg = TranslationHandler.getString(Collect.getInstance(), R.string.not_exactly_one_record_for_this_instance);
-                        Timber.e(msg);
-                        throw new EncryptionException(msg, null);
-                    }
-                    instanceCursor.moveToFirst();
-                    formId = instanceCursor.getString(instanceCursor.getColumnIndex(InstanceColumns.JR_FORM_ID));
-                    int idxJrVersion = instanceCursor.getColumnIndex(InstanceColumns.JR_VERSION);
-                    formVersion = instanceCursor.getString(idxJrVersion);
-                    if (!instanceCursor.isNull(idxJrVersion)) {
-                        selectionArgs = new String[]{formId, instanceCursor.getString(idxJrVersion)};
-                        selection += FormsColumns.JR_VERSION + "=?";
-                    } else {
-                        selectionArgs = new String[]{formId};
-                        selection += FormsColumns.JR_VERSION + " IS NULL";
-                    }
-                }
+        Form form = null;
 
-                formCursor = new FormsDao().getFormsCursor(selection, selectionArgs);
-
-                // OK to finalize with form definition that was soft-deleted. OK if there are multiple
-                // forms with the same formid/version as long as only one is active (not deleted).
-                if (formCursor.getCount() == 0 || new DatabaseFormsRepository().getAllNotDeletedByFormIdAndVersion(formId, formVersion).size() > 1) {
-                    String msg = TranslationHandler.getString(Collect.getInstance(), R.string.not_exactly_one_blank_form_for_this_form_id);
-                    Timber.d(msg);
-                    throw new EncryptionException(msg, null);
-                }
-                formCursor.moveToFirst();
-            } else if (FormsColumns.CONTENT_ITEM_TYPE.equals(cr.getType(uri))) {
-                formCursor = cr.query(uri, null, null, null, null);
-                if (formCursor.getCount() != 1) {
-                    String msg = TranslationHandler.getString(Collect.getInstance(), R.string.not_exactly_one_blank_form_for_this_form_id);
-                    Timber.d(msg);
-                    throw new EncryptionException(msg, null);
-                }
-                formCursor.moveToFirst();
+        if (InstancesContract.CONTENT_ITEM_TYPE.equals(Collect.getInstance().getContentResolver().getType(uri))) {
+            Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().get(ContentUriHelper.getIdFromUri(uri));
+            if (instance == null) {
+                String msg = TranslationHandler.getString(Collect.getInstance(), R.string.not_exactly_one_record_for_this_instance);
+                Timber.e(msg);
+                throw new EncryptionException(msg, null);
             }
 
-            formId = formCursor.getString(formCursor.getColumnIndex(FormsColumns.JR_FORM_ID));
-            if (formId == null || formId.length() == 0) {
-                String msg = TranslationHandler.getString(Collect.getInstance(), R.string.no_form_id_specified);
+            formId = instance.getFormId();
+            formVersion = instance.getFormVersion();
+
+            List<Form> forms = new FormsRepositoryProvider(Collect.getInstance()).get().getAllByFormIdAndVersion(formId, formVersion);
+
+            // OK to finalize with form definition that was soft-deleted. OK if there are multiple
+            // forms with the same formid/version as long as only one is active (not deleted).
+            if (forms.isEmpty() || new FormsRepositoryProvider(Collect.getInstance()).get().getAllNotDeletedByFormIdAndVersion(formId, formVersion).size() > 1) {
+                String msg = TranslationHandler.getString(Collect.getInstance(), R.string.not_exactly_one_blank_form_for_this_form_id);
                 Timber.d(msg);
                 throw new EncryptionException(msg, null);
             }
-            int idxVersion = formCursor.getColumnIndex(FormsColumns.JR_VERSION);
-            int idxBase64RsaPublicKey = formCursor.getColumnIndex(
-                    FormsColumns.BASE64_RSA_PUBLIC_KEY);
-            formVersion = formCursor.isNull(idxVersion) ? null : formCursor.getString(idxVersion);
-            String base64RsaPublicKey = formCursor.isNull(idxBase64RsaPublicKey)
-                    ? null : formCursor.getString(idxBase64RsaPublicKey);
 
-            if (base64RsaPublicKey == null || base64RsaPublicKey.length() == 0) {
-                return null; // this is legitimately not an encrypted form
-            }
+            form = forms.get(0);
+        } else if (FormsContract.CONTENT_ITEM_TYPE.equals(Collect.getInstance().getContentResolver().getType(uri))) {
+            throw new IllegalArgumentException("Can't get encryption info for Form URI!");
+        }
 
-            byte[] publicKey = Base64.decode(base64RsaPublicKey, Base64.NO_WRAP);
-            X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKey);
-            KeyFactory kf;
-            try {
-                kf = KeyFactory.getInstance(RSA_ALGORITHM);
-            } catch (NoSuchAlgorithmException e) {
-                String msg = TranslationHandler.getString(Collect.getInstance(), R.string.phone_does_not_support_rsa);
-                Timber.d(e, "%s due to %s ", msg, e.getMessage());
-                throw new EncryptionException(msg, e);
-            }
-            try {
-                pk = kf.generatePublic(publicKeySpec);
-            } catch (InvalidKeySpecException e) {
-                String msg = TranslationHandler.getString(Collect.getInstance(), R.string.invalid_rsa_public_key);
-                Timber.d(e, "%s due to %s ", msg, e.getMessage());
-                throw new EncryptionException(msg, e);
-            }
-        } finally {
-            if (formCursor != null) {
-                formCursor.close();
-            }
+        formId = form.getFormId();
+        if (formId == null || formId.length() == 0) {
+            String msg = TranslationHandler.getString(Collect.getInstance(), R.string.no_form_id_specified);
+            Timber.d(msg);
+            throw new EncryptionException(msg, null);
+        }
+        formVersion = form.getVersion();
+        String base64RsaPublicKey = form.getBASE64RSAPublicKey();
+
+        if (base64RsaPublicKey == null) {
+            return null; // this is legitimately not an encrypted form
+        }
+
+        byte[] publicKey = Base64.decode(base64RsaPublicKey, Base64.NO_WRAP);
+        X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKey);
+        KeyFactory kf;
+        try {
+            kf = KeyFactory.getInstance(RSA_ALGORITHM);
+        } catch (NoSuchAlgorithmException e) {
+            String msg = TranslationHandler.getString(Collect.getInstance(), R.string.phone_does_not_support_rsa);
+            Timber.d(e, "%s due to %s ", msg, e.getMessage());
+            throw new EncryptionException(msg, e);
+        }
+        try {
+            pk = kf.generatePublic(publicKeySpec);
+        } catch (InvalidKeySpecException e) {
+            String msg = TranslationHandler.getString(Collect.getInstance(), R.string.invalid_rsa_public_key);
+            Timber.d(e, "%s due to %s ", msg, e.getMessage());
+            throw new EncryptionException(msg, e);
         }
 
         // submission must have an OpenRosa metadata block with a non-null instanceID
@@ -366,7 +336,7 @@ public class EncryptionUtils {
             String msg;
             if (e instanceof NoSuchAlgorithmException) {
                 msg = "No BouncyCastle implementation of symmetric algorithm!";
-            } else if (e instanceof  NoSuchProviderException) {
+            } else if (e instanceof NoSuchProviderException) {
                 msg = "No BouncyCastle provider implementation of symmetric algorithm!";
             } else {
                 msg = "No BouncyCastle provider for padding implementation of symmetric algorithm!";
@@ -460,7 +430,7 @@ public class EncryptionUtils {
     }
 
     private static List<File> encryptSubmissionFiles(File instanceXml,
-            File submissionXml, EncryptedFormInformation formInfo)
+                                                     File submissionXml, EncryptedFormInformation formInfo)
             throws IOException, EncryptionException {
         // NOTE: assume the directory containing the instanceXml contains ONLY
         // files related to this one instance.
@@ -503,11 +473,11 @@ public class EncryptionUtils {
     /**
      * Constructs the encrypted attachments, encrypted form xml, and the
      * plaintext submission manifest (with signature) for the form submission.
-     *
+     * <p>
      * Does not delete any of the original files.
      */
     public static void generateEncryptedSubmission(File instanceXml,
-            File submissionXml, EncryptedFormInformation formInfo)
+                                                   File submissionXml, EncryptedFormInformation formInfo)
             throws IOException, EncryptionException {
         // submissionXml is the submission data to be published to Aggregate
         if (!submissionXml.exists() || !submissionXml.isFile()) {

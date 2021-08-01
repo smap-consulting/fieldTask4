@@ -12,24 +12,32 @@ references:
 jobs:
   compile:
     <<: *android_config
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx1024m" -Dkotlin.compiler.execution.strategy=in-process'
     steps:
       - checkout
-
+      - run:
+          name: Generate combined build.gradle file for cache key
+          command: cat build.gradle */build.gradle .circleci/gradle.properties > deps.txt
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "collect_app/build.gradle" }}
+          key: deps-{{ checksum "deps.txt" }}
       - run:
           name: Download dependencies
           command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 androidDependencies
+      - run:
+          name: Copy gradle config
+          command: cp .circleci/gradle.properties ~/.gradle/gradle.properties
       - save_cache:
           paths:
             - ~/.gradle
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "collect_app/build.gradle" }}
+          key: deps-{{ checksum "deps.txt" }}
+
+      - run:
+          name: Download Robolectric deps
+          command: ./download-robolectric-deps.sh
 
       - run:
           name: Compile code
           command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 assembleDebug
+
       - persist_to_workspace:
           root: ~/work
           paths:
@@ -37,13 +45,11 @@ jobs:
 
   check_quality:
     <<: *android_config
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx1024m" -Dkotlin.compiler.execution.strategy=in-process'
     steps:
       - attach_workspace:
           at: ~/work
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "collect_app/build.gradle" }}
+          key: deps-{{ checksum "deps.txt" }}
 
       - run:
           name: Run code quality checks
@@ -54,14 +60,21 @@ jobs:
 
   test_modules:
     <<: *android_config
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx1024m" -Dkotlin.compiler.execution.strategy=in-process'
     steps:
       - attach_workspace:
           at: ~/work
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "collect_app/build.gradle" }}
+          key: deps-{{ checksum "deps.txt" }}
 
+      - run:
+          name: Run shared unit tests
+          command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 shared:test
+      - run:
+          name: Run androidshared unit tests
+          command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 androidshared:testDebug
+      - run:
+          name: Run formtest unit tests
+          command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 formstest:test
       - run:
           name: Run async unit tests
           command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 async:testDebug
@@ -69,14 +82,17 @@ jobs:
           name: Run strings unit tests
           command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 strings:testDebug
       - run:
-          name: Run material unit tests
-          command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 material:testDebug
-      - run:
           name: Run audioclips unit tests
           command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 audioclips:testDebug
       - run:
           name: Run audiorecorder unit tests
           command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 audiorecorder:testDebug
+      - run:
+          name: Run projects unit tests
+          command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 projects:testDebug
+      - run:
+          name: Run location unit tests
+          command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 location:testDebug
 
       - store_artifacts:
           path: collect_app/build/reports
@@ -86,17 +102,28 @@ jobs:
 
   test_app:
     <<: *android_config
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx1024m" -Dkotlin.compiler.execution.strategy=in-process'
+    parallelism: 4
     steps:
       - attach_workspace:
           at: ~/work
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "collect_app/build.gradle" }}
+          key: deps-{{ checksum "deps.txt" }}
+
+      - run:
+          name: Generate list of test classes
+          command: .circleci/generate-app-test-list.sh
+
+      - run:
+          name: Generate list of tests for this fork
+          command: |
+            cat .circleci/collect_app_test_classes.txt | circleci tests split > .circleci/fork_test_classes.txt && \
+            echo "Tests for this fork:" && \
+            cat .circleci/fork_test_classes.txt
 
       - run:
           name: Run app unit tests
-          command: ./gradlew -PdisablePreDex --no-daemon --max-workers=2 collect_app:testDebug
+          command: |
+            ./gradlew -PdisablePreDex --no-daemon --max-workers=2 collect_app:testDebug $(cat .circleci/fork_test_classes.txt | awk '{for (i=1; i<=NF; i++) printf "--tests %s ",$i}')
 
       - store_artifacts:
           path: collect_app/build/reports
@@ -106,13 +133,11 @@ jobs:
 
   build_instrumented:
     <<: *android_config
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx1024m" -Dkotlin.compiler.execution.strategy=in-process'
     steps:
       - attach_workspace:
           at: ~/work
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "collect_app/build.gradle" }}
+          key: deps-{{ checksum "deps.txt" }}
 
       - run:
           name: Assemble connected test build
@@ -120,13 +145,11 @@ jobs:
 
   test_instrumented:
     <<: *android_config
-    environment:
-      GRADLE_OPTS: '-Dorg.gradle.jvmargs="-Xmx1024m" -Dkotlin.compiler.execution.strategy=in-process'
     steps:
       - attach_workspace:
           at: ~/work
       - restore_cache:
-          key: jars-{{ checksum "build.gradle" }}-{{ checksum  "collect_app/build.gradle" }}
+          key: deps-{{ checksum "deps.txt" }}
 
       - run:
           name: Assemble test build

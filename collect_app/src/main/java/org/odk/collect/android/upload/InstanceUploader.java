@@ -14,29 +14,39 @@
 
 package org.odk.collect.android.upload;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.dao.InstancesDao;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
-import org.odk.collect.android.utilities.ApplicationConstants;
+import org.odk.collect.android.formmanagement.InstancesAppState;
+import org.odk.collect.android.injection.DaggerUtils;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.forms.instances.InstancesRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public abstract class InstanceUploader {
+
+    @Inject
+    InstancesRepositoryProvider instancesRepositoryProvider;
+
+    @Inject
+    InstancesAppState instancesAppState;
+
+    public InstanceUploader() {
+        DaggerUtils.getComponent(Collect.getInstance()).inject(this);
+    }
+
     public static final String FAIL = "Error: ";
 
     /**
      * Uploads the specified instance to the specified destination URL. It may return a custom
      * success message on completion or null if none is available. Errors result in an UploadException.
-     *
+     * <p>
      * Updates the database status for the instance.
      */
     @Nullable
@@ -49,55 +59,30 @@ public abstract class InstanceUploader {
      * Returns a list of Instance objects corresponding to the database IDs passed in.
      */
     public List<Instance> getInstancesFromIds(Long... instanceDatabaseIds) {
-        List<Instance> instancesToUpload = new ArrayList<>();
-        InstancesDao dao = new InstancesDao();
+        List<Instance> instances = new ArrayList<>();
 
-        // Split the queries to avoid exceeding SQLITE_MAX_VARIABLE_NUMBER
-        int counter = 0;
-        while (counter * ApplicationConstants.SQLITE_MAX_VARIABLE_NUMBER < instanceDatabaseIds.length) {
-            int low = counter * ApplicationConstants.SQLITE_MAX_VARIABLE_NUMBER;
-            int high = (counter + 1) * ApplicationConstants.SQLITE_MAX_VARIABLE_NUMBER;
-            if (high > instanceDatabaseIds.length) {
-                high = instanceDatabaseIds.length;
-            }
-
-            StringBuilder selectionBuf = new StringBuilder(InstanceColumns._ID + " IN (");
-            String[] selectionArgs = new String[high - low];
-            for (int i = 0; i < (high - low); i++) {
-                if (i > 0) {
-                    selectionBuf.append(',');
-                }
-                selectionBuf.append('?');
-                selectionArgs[i] = instanceDatabaseIds[i + low].toString();
-            }
-
-            selectionBuf.append(')');
-            String selection = selectionBuf.toString();
-
-            Cursor c = dao.getInstancesCursor(selection, selectionArgs);
-            instancesToUpload.addAll(dao.getInstancesFromCursor(c));
-
-            counter++;
+        for (Long id : instanceDatabaseIds) {
+            instances.add(new InstancesRepositoryProvider(Collect.getInstance()).get().get(id));
         }
 
-        return instancesToUpload;
+        return instances;
     }
 
-    public void saveSuccessStatusToDatabase(Instance instance) {
-        Uri instanceDatabaseUri = Uri.withAppendedPath(InstanceColumns.CONTENT_URI,
-                instance.getId().toString());
+    public void submissionComplete(Instance instance, boolean successful) {
+        InstancesRepository instancesRepository = instancesRepositoryProvider.get();
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(InstanceColumns.STATUS, Instance.STATUS_SUBMITTED);
-        Collect.getInstance().getContentResolver().update(instanceDatabaseUri, contentValues, null, null);
-    }
+        if (successful) {
+            instancesRepository.save(new Instance.Builder(instance)
+                    .status(Instance.STATUS_SUBMITTED)
+                    .build()
+            );
+        } else {
+            instancesRepository.save(new Instance.Builder(instance)
+                    .status(Instance.STATUS_SUBMISSION_FAILED)
+                    .build()
+            );
+        }
 
-    public void saveFailedStatusToDatabase(Instance instance) {
-        Uri instanceDatabaseUri = Uri.withAppendedPath(InstanceColumns.CONTENT_URI,
-                instance.getId().toString());
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(InstanceColumns.STATUS, Instance.STATUS_SUBMISSION_FAILED);
-        Collect.getInstance().getContentResolver().update(instanceDatabaseUri, contentValues, null, null);
+        instancesAppState.update();
     }
 }

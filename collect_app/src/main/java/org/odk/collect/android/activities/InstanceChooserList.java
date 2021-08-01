@@ -14,34 +14,33 @@
 
 package org.odk.collect.android.activities;
 
-import androidx.appcompat.app.AlertDialog;
-import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.loader.app.LoaderManager;
-import androidx.loader.content.Loader;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.TextView;
-
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
+
 import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.InstanceListCursorAdapter;
-import org.odk.collect.android.dao.InstancesDao;
+import org.odk.collect.android.dao.CursorLoaderFactory;
+import org.odk.collect.android.database.instances.DatabaseInstanceColumns;
+import org.odk.collect.android.external.InstancesContract;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.listeners.DiskSyncListener;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
-import org.odk.collect.android.tasks.InstanceSyncTask;
+import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.MultiClickGuard;
+import org.odk.collect.forms.instances.Instance;
 
-import timber.log.Timber;
+import javax.inject.Inject;
 
 /**
  * Responsible for displaying all the valid instances in the instance directory.
@@ -49,16 +48,16 @@ import timber.log.Timber;
  * @author Yaw Anokwa (yanokwa@gmail.com)
  * @author Carl Hartung (carlhartung@gmail.com)
  */
-public class InstanceChooserList extends InstanceListActivity implements
-        DiskSyncListener, AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class InstanceChooserList extends InstanceListActivity implements AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     private static final String INSTANCE_LIST_ACTIVITY_SORTING_ORDER = "instanceListActivitySortingOrder";
     private static final String VIEW_SENT_FORM_SORTING_ORDER = "ViewSentFormSortingOrder";
 
     private static final boolean DO_NOT_EXIT = false;
 
-    private InstanceSyncTask instanceSyncTask;
-
     private boolean editMode;
+
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,7 +70,7 @@ public class InstanceChooserList extends InstanceListActivity implements
 
             setTitle(getString(R.string.review_data));
             editMode = true;
-            sortingOptions = new int[] {
+            sortingOptions = new int[]{
                     R.string.sort_by_name_asc, R.string.sort_by_name_desc,
                     R.string.sort_by_date_asc, R.string.sort_by_date_desc,
                     R.string.sort_by_status_asc, R.string.sort_by_status_desc
@@ -79,7 +78,7 @@ public class InstanceChooserList extends InstanceListActivity implements
         } else {
             setTitle(getString(R.string.view_sent_forms));
 
-            sortingOptions = new int[] {
+            sortingOptions = new int[]{
                     R.string.sort_by_name_asc, R.string.sort_by_name_desc,
                     R.string.sort_by_date_asc, R.string.sort_by_date_desc
             };
@@ -91,9 +90,6 @@ public class InstanceChooserList extends InstanceListActivity implements
 
     private void init() {
         setupAdapter();
-        instanceSyncTask = new InstanceSyncTask(preferencesDataSourceProvider);
-        instanceSyncTask.setDiskSyncListener(this);
-        instanceSyncTask.execute();
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
@@ -105,9 +101,8 @@ public class InstanceChooserList extends InstanceListActivity implements
         if (MultiClickGuard.allowClick(getClass().getName())) {
             if (view.isEnabled()) {
                 Cursor c = (Cursor) listView.getAdapter().getItem(position);
-                Uri instanceUri =
-                        ContentUris.withAppendedId(InstanceColumns.CONTENT_URI,
-                                c.getLong(c.getColumnIndex(InstanceColumns._ID)));
+                long instanceId = c.getLong(c.getColumnIndex(DatabaseInstanceColumns._ID));
+                Uri instanceUri = InstancesContract.getUri(currentProjectProvider.getCurrentProject().getUuid(), instanceId);
 
                 String action = getIntent().getAction();
                 if (Intent.ACTION_PICK.equals(action)) {
@@ -117,9 +112,9 @@ public class InstanceChooserList extends InstanceListActivity implements
                     // the form can be edited if it is incomplete or if, when it was
                     // marked as complete, it was determined that it could be edited
                     // later.
-                    String status = c.getString(c.getColumnIndex(InstanceColumns.STATUS));
+                    String status = c.getString(c.getColumnIndex(DatabaseInstanceColumns.STATUS));
                     String strCanEditWhenComplete =
-                            c.getString(c.getColumnIndex(InstanceColumns.CAN_EDIT_WHEN_COMPLETE));
+                            c.getString(c.getColumnIndex(DatabaseInstanceColumns.CAN_EDIT_WHEN_COMPLETE));
 
                     boolean canEdit = status.equals(Instance.STATUS_INCOMPLETE)
                             || Boolean.parseBoolean(strCanEditWhenComplete);
@@ -130,7 +125,9 @@ public class InstanceChooserList extends InstanceListActivity implements
                     }
                     // caller wants to view/edit a form, so launch formentryactivity
                     Intent parentIntent = this.getIntent();
-                    Intent intent = new Intent(Intent.ACTION_EDIT, instanceUri);
+                    Intent intent = new Intent(this, FormEntryActivity.class);
+                    intent.setAction(Intent.ACTION_EDIT);
+                    intent.setData(instanceUri);
                     String formMode = parentIntent.getStringExtra(ApplicationConstants.BundleKeys.FORM_MODE);
                     if (formMode == null || ApplicationConstants.FormModes.EDIT_SAVED.equalsIgnoreCase(formMode)) {
                         intent.putExtra(ApplicationConstants.BundleKeys.FORM_MODE, ApplicationConstants.FormModes.EDIT_SAVED);
@@ -147,34 +144,8 @@ public class InstanceChooserList extends InstanceListActivity implements
         }
     }
 
-    @Override
-    protected void onResume() {
-        if (instanceSyncTask != null) {
-            instanceSyncTask.setDiskSyncListener(this);
-            if (instanceSyncTask.getStatus() == AsyncTask.Status.FINISHED) {
-                syncComplete(instanceSyncTask.getStatusMessage());
-            }
-        }
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        if (instanceSyncTask != null) {
-            instanceSyncTask.setDiskSyncListener(null);
-        }
-        super.onPause();
-    }
-
-    @Override
-    public void syncComplete(@NonNull String result) {
-        Timber.i("Disk scan complete");
-        hideProgressBarAndAllow();
-        showSnackbar(result);
-    }
-
     private void setupAdapter() {
-        String[] data = {InstanceColumns.DISPLAY_NAME, InstanceColumns.DELETED_DATE};
+        String[] data = {DatabaseInstanceColumns.DISPLAY_NAME, DatabaseInstanceColumns.DELETED_DATE};
         int[] view = {R.id.form_title, R.id.form_subtitle2};
 
         boolean shouldCheckDisabled = !editMode;
@@ -198,15 +169,15 @@ public class InstanceChooserList extends InstanceListActivity implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         showProgressBar();
         if (editMode) {
-            return new InstancesDao().getUnsentInstancesCursorLoader(getFilterText(), getSortingOrder());
+            return new CursorLoaderFactory(currentProjectProvider).createEditableInstancesCursorLoader(getFilterText(), getSortingOrder());
         } else {
-            return new InstancesDao().getSentInstancesCursorLoader(getFilterText(), getSortingOrder());
+            return new CursorLoaderFactory(currentProjectProvider).createSentInstancesCursorLoader(getFilterText(), getSortingOrder());
         }
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        hideProgressBarIfAllowed();
+        hideProgressBarAndAllow();
         listAdapter.swapCursor(cursor);
     }
 

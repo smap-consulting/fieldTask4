@@ -25,11 +25,11 @@ import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
-import org.odk.collect.android.provider.InstanceProvider;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.android.external.InstanceProvider;
+import org.odk.collect.android.database.instances.DatabaseInstanceColumns;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -57,29 +57,25 @@ public class InstanceListCursorAdapter extends SimpleCursorAdapter {
         setUpSubtext(view);
 
         // Some form lists never contain disabled items; if so, we're done.
+        // Update: This only seems to be the case in Edit Saved Forms and it's not clear why...
         if (!shouldCheckDisabled) {
             return view;
         }
 
-        String formId = getCursor().getString(getCursor().getColumnIndex(InstanceColumns.JR_FORM_ID));
-        Cursor cursor = new FormsDao().getFormsCursorForFormId(formId);
-
         boolean formExists = false;
         boolean isFormEncrypted = false;
-        if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    int base64RSAPublicKeyColumnIndex = cursor.getColumnIndex(FormsColumns.BASE64_RSA_PUBLIC_KEY);
-                    String base64RSAPublicKey = cursor.getString(base64RSAPublicKeyColumnIndex);
-                    isFormEncrypted = base64RSAPublicKey != null && !base64RSAPublicKey.isEmpty();
-                    formExists = true;
-                }
-            } finally {
-                cursor.close();
-            }
+
+        String formId = getCursor().getString(getCursor().getColumnIndex(DatabaseInstanceColumns.JR_FORM_ID));
+        String formVersion = getCursor().getString(getCursor().getColumnIndex(DatabaseInstanceColumns.JR_VERSION));
+        Form form = new FormsRepositoryProvider(context.getApplicationContext()).get().getLatestByFormIdAndVersion(formId, formVersion);
+
+        if (form != null) {
+            String base64RSAPublicKey = form.getBASE64RSAPublicKey();
+            formExists = true;
+            isFormEncrypted = base64RSAPublicKey != null;
         }
 
-        long date = getCursor().getLong(getCursor().getColumnIndex(InstanceColumns.DELETED_DATE));
+        long date = getCursor().getLong(getCursor().getColumnIndex(DatabaseInstanceColumns.DELETED_DATE));
 
         if (date != 0 || !formExists || isFormEncrypted) {
             String disabledMessage;
@@ -139,8 +135,8 @@ public class InstanceListCursorAdapter extends SimpleCursorAdapter {
     }
 
     private void setUpSubtext(View view) {
-        long lastStatusChangeDate = getCursor().getLong(getCursor().getColumnIndex(InstanceColumns.LAST_STATUS_CHANGE_DATE));
-        String status = getCursor().getString(getCursor().getColumnIndex(InstanceColumns.STATUS));
+        long lastStatusChangeDate = getCursor().getLong(getCursor().getColumnIndex(DatabaseInstanceColumns.LAST_STATUS_CHANGE_DATE));
+        String status = getCursor().getString(getCursor().getColumnIndex(DatabaseInstanceColumns.STATUS));
         String subtext = InstanceProvider.getDisplaySubtext(context, status, new Date(lastStatusChangeDate));
 
         final TextView formSubtitle = view.findViewById(R.id.form_subtitle);
@@ -148,7 +144,7 @@ public class InstanceListCursorAdapter extends SimpleCursorAdapter {
     }
 
     private void setImageFromStatus(ImageView imageView) {
-        String formStatus = getCursor().getString(getCursor().getColumnIndex(InstanceColumns.STATUS));
+        String formStatus = getCursor().getString(getCursor().getColumnIndex(DatabaseInstanceColumns.STATUS));
 
         int imageResourceId = getFormStateImageResourceIdForStatus(formStatus);
         imageView.setImageResource(imageResourceId);

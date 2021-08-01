@@ -19,12 +19,6 @@ public class AnalyticsEvents {
     public static final String SET_FALLBACK_SHEETS_URL = "SetFallbackSheetsUrl";
 
     /**
-     * Track displays of the splash screen that are not on first launch. The action should be a hash
-     * of the splash path.
-     */
-    public static final String SHOW_SPLASH_SCREEN = "ShowSplashScreen";
-
-    /**
      * Track video requests with high resolution setting turned off. The action should be a hash of
      * the form definition.
      */
@@ -74,25 +68,6 @@ public class AnalyticsEvents {
     public static final String DOWNLOAD_SAME_FORMID_VERSION_DIFFERENT_HASH = "DownloadSameFormidVersionDifferentHash";
 
     /**
-     * Track downloads initiated when there are no downloaded forms on the device. The action should
-     * be in the format: {number of downloaded forms}/{total forms}-{form server hash}
-     *
-     * Questions to answer to help shape new on-boarding and multi-tenancy experience:
-     *      - Does it look like some projects instruct data collectors to download all forms on
-     *      first launch and others to download a subset?
-     *      - If it looks like there's a clear process split, which of the two processes is most
-     *      common? Is project scale or number of forms hosted on server relevant to the process?
-     *      - Are subsequent manual downloads common? Are all forms downloaded or a subset?
-     */
-    public static final String FIRST_FORM_DOWNLOAD = "FirstFormDownload";
-
-    /**
-     * Download a subset of available forms. The action should be in the format:
-     * {number of downloaded forms}/{total forms}-{form server hash}
-     */
-    public static final String SUBSEQUENT_FORM_DOWNLOAD = "SubsequentFormDownload";
-
-    /**
      * Used to measure how popular the refresh button on Fill Blank Forms is. The button
      * only displays when Match Exactly is enabled. Right now the action passed is "Manual". This
      * means that we could extend the event to track auto or other syncs in the future.
@@ -110,28 +85,10 @@ public class AnalyticsEvents {
     public static final String MATCH_EXACTLY_SYNC_COMPLETED = "MatchExactlySyncCompleted";
 
     /**
-     * Track the outcome of a QR code scan. Used to see whether changes in UX or documentation are
-     * needed to get users to a successful state. The action should be the outcome. The label should
-     * be a hash of the settings represented by the code.
-     */
-    public static final String SETTINGS_IMPORT_QR = "SettingsImportQr";
-
-    /**
-     * Track the outcome of a QR code read from image. The action should be the outcome. The label should
-     * be a hash of the settings represented by the code.
-     */
-    public static final String SETTINGS_IMPORT_QR_IMAGE = "SettingsImportQrImage";
-
-    /**
      * Track submissions to a URL with a custom submission endpoint configured in settings. The action
      * should be a hash of the endpoint setting.
      */
     public static final String CUSTOM_ENDPOINT_SUB = "CustomEndpointSub";
-
-    /**
-     * Track usage of legacy Aggregate < 1 form list API code paths.
-     */
-    public static final String LEGACY_FORM_LIST = "LegacyFormList";
 
     /**
      * Tracks how often the audio player seek bar is used.
@@ -180,4 +137,104 @@ public class AnalyticsEvents {
      * Track how often background audio is enabled for a form
      */
     public static final String BACKGROUND_AUDIO_DISABLED = "BackgroundAudioDisabled";
+
+    /**
+     * Tracks if any forms are being used as part of a workflow where instances are imported
+     * from disk
+     */
+    public static final String IMPORT_INSTANCE = "ImportInstance";
+
+    /**
+     * Tracks if any forms are being used as part of a workflow where instances are imported
+     * from disk and then encrypted
+     */
+    public static final String IMPORT_AND_ENCRYPT_INSTANCE = "ImportAndEncryptInstance";
+
+    /**
+     * Tracks how often forms are added using disk sync rather than from a server
+     */
+    public static final String IMPORT_FORM = "ImportForm";
+
+    /**
+     * Tracks responses from OpenMapKit to the OSMWidget
+     */
+    public static final String OPEN_MAP_KIT_RESPONSE = "OpenMapKitResponse";
+
+    /**
+     * Tracks how often users create shortcuts to forms
+     */
+    public static final String CREATE_SHORTCUT = "CreateShortcut";
+
+    /**
+     * Tracks how often instances that have been deleted on disk are opened for editing/viewing
+     */
+    public static final String OPEN_DELETED_INSTANCE = "OpenDeletedInstance";
+
+    /**
+     * Tracks how often users switch between projects
+     */
+    public static final String SWITCH_PROJECT = "ProjectSwitch";
+
+    /**
+     * Tracks how often users choose to try the demo project
+     */
+    public static final String TRY_DEMO = "ProjectCreateDemo";
+
+    /**
+     * Tracks how often projects are created using QR codes.
+     **/
+    public static final String QR_CREATE_PROJECT = "ProjectCreateQR";
+
+    /**
+     * Tracks how often projects are created by manually entering details.
+     */
+    public static final String MANUAL_CREATE_PROJECT = "ProjectCreateManual";
+
+    /**
+     * Tracks how often a Google account is used to configure a manually created project
+     */
+    public static final String GOOGLE_ACCOUNT_PROJECT = "ProjectCreateGoogle";
+
+    /**
+     * Tracks how often projects with the same connection settings as an existing one are attempted
+     * to be created.
+     */
+    public static final String DUPLICATE_PROJECT = "ProjectCreateDuplicate";
+
+    /**
+     * Tracks how often users try to create projects with the same connection settings but then decide
+     * to switch to an existing project instead. This will give us a sense of whether users are getting
+     * confused about project identity and trying to recreate the same one multiple times.
+     */
+    public static final String DUPLICATE_PROJECT_SWITCH = "ProjectCreateDuplicateSwitch";
+
+    /**
+     * Tracks how often users delete projects
+     */
+    public static final String DELETE_PROJECT = "ProjectDelete";
+
+    /**
+     * These events track how often users change project display settings
+     **/
+    public static final String CHANGE_PROJECT_NAME = "ProjectChangeName";
+    public static final String CHANGE_PROJECT_ICON = "ProjectChangeIcon";
+    public static final String CHANGE_PROJECT_COLOR = "ProjectChangeColor";
+
+    /**
+     * Tracks how often users reconfigure a project using QR codes
+     */
+    public static final String RECONFIGURE_PROJECT = "ProjectReconfigure";
+
+    /**
+     * These track how often the external edit or view actions are used for forms or instances.
+     * One event tracks when a project ID is included with the action URI and the other tracks when
+     * it's not included.
+     */
+    public static final String FORM_ACTION_WITH_PROJECT_ID = "FormActionWithProjectId";
+    public static final String FORM_ACTION_WITHOUT_PROJECT_ID = "FormActionWithoutProjectId";
+
+    /**
+     * Tracks how often an external edit or view action includes an extra we'd like to deprecate.
+     */
+    public static final String FORM_ACTION_WITH_FORM_MODE_EXTRA = "FormActionWithFormModeExtra";
 }

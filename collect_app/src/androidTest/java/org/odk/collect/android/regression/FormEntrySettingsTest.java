@@ -11,9 +11,9 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.ResetStateRule;
-import org.odk.collect.android.support.pages.AdminSettingsPage;
+import org.odk.collect.android.support.pages.AccessControlPage;
 import org.odk.collect.android.support.pages.ExitFormDialog;
-import org.odk.collect.android.support.pages.GeneralSettingsPage;
+import org.odk.collect.android.support.pages.ProjectSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
 //Issue NODK-243
@@ -31,16 +31,17 @@ public class FormEntrySettingsTest {
     @SuppressWarnings("PMD.AvoidCallingFinalize")
     @Test
     public void movingBackwards_shouldBeTurnedOn() {
-        new MainMenuPage(rule)
-                .clickOnMenu()
+        new MainMenuPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .openFormManagement()
                 .openConstraintProcessing()
                 .clickOnString(R.string.constraint_behavior_on_finalize)
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
-                .clickOnMenu()
-                .clickAdminSettings()
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
+                .openProjectSettings()
+                .clickGeneralSettings()
+                .clickAccessControl()
                 .clickFormEntrySettings()
                 .clickMovingBackwards()
                 .assertText(R.string.moving_backwards_disabled_title)
@@ -48,23 +49,24 @@ public class FormEntrySettingsTest {
                 .assertText(R.string.no)
                 .clickOnString(R.string.yes)
                 .checkIfSaveFormOptionIsDisabled()
-                .pressBack(new AdminSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
-                .clickOnMenu()
+                .pressBack(new AccessControlPage())
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .openFormManagement()
                 .scrollToConstraintProcessing()
                 .checkIfConstraintProcessingIsDisabled()
                 .assertTextDoesNotExist(R.string.constraint_behavior_on_finalize)
                 .assertText(R.string.constraint_behavior_on_swipe)
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
                 .checkIfElementIsGone(R.id.review_data)
                 .startBlankForm("All widgets")
                 .swipeToNextQuestion()
                 .closeSoftKeyboard()
                 .swipeToPreviousQuestion("String widget")
-                .pressBack(new ExitFormDialog("All widgets", rule))
+                .pressBack(new ExitFormDialog("All widgets"))
                 .assertText(R.string.do_not_save)
                 .assertTextDoesNotExist(R.string.keep_changes)
                 .clickOnString(R.string.do_not_save);

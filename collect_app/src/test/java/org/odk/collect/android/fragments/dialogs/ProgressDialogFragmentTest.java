@@ -11,8 +11,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.RobolectricHelpers;
-import org.robolectric.annotation.LooperMode;
+import org.odk.collect.fragmentstest.DialogFragmentTest;
 
 import static android.os.Looper.getMainLooper;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -21,16 +20,14 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.robolectric.Shadows.shadowOf;
-import static org.robolectric.annotation.LooperMode.Mode.PAUSED;
 import static org.robolectric.shadows.ShadowView.innerText;
 
 @RunWith(AndroidJUnit4.class)
-@LooperMode(PAUSED)
 public class ProgressDialogFragmentTest {
 
     @Test
     public void setTitle_updatesTitle() {
-        FragmentScenario<ProgressDialogFragment> scenario = RobolectricHelpers.launchDialogFragment(ProgressDialogFragment.class);
+        FragmentScenario<ProgressDialogFragment> scenario = DialogFragmentTest.launchDialogFragment(ProgressDialogFragment.class);
         scenario.onFragment(fragment -> {
             fragment.setTitle("blah");
             CharSequence message = shadowOf(fragment.getDialog()).getTitle();
@@ -40,7 +37,7 @@ public class ProgressDialogFragmentTest {
 
     @Test
     public void recreate_persistsTitle() {
-        FragmentScenario<ProgressDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(ProgressDialogFragment.class);
+        FragmentScenario<ProgressDialogFragment> fragmentScenario = DialogFragmentTest.launchDialogFragment(ProgressDialogFragment.class);
         fragmentScenario.onFragment(fragment -> {
             fragment.setTitle("blah");
         });
@@ -54,7 +51,7 @@ public class ProgressDialogFragmentTest {
 
     @Test
     public void whenMessageNotSet_showsProgressBar() {
-        FragmentScenario<ProgressDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(ProgressDialogFragment.class);
+        FragmentScenario<ProgressDialogFragment> fragmentScenario = DialogFragmentTest.launchDialogFragment(ProgressDialogFragment.class);
         fragmentScenario.onFragment(fragment -> {
             View dialogView = fragment.getDialogView();
             assertThat(dialogView.findViewById(R.id.progress_bar).getVisibility(), is(View.VISIBLE));
@@ -63,7 +60,7 @@ public class ProgressDialogFragmentTest {
 
     @Test
     public void setMessage_updatesMessage() {
-        FragmentScenario<ProgressDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(ProgressDialogFragment.class);
+        FragmentScenario<ProgressDialogFragment> fragmentScenario = DialogFragmentTest.launchDialogFragment(ProgressDialogFragment.class);
         fragmentScenario.onFragment(fragment -> {
             View dialogView = fragment.getDialogView();
 
@@ -74,7 +71,7 @@ public class ProgressDialogFragmentTest {
 
     @Test
     public void recreate_persistsMessage() {
-        FragmentScenario<ProgressDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(ProgressDialogFragment.class);
+        FragmentScenario<ProgressDialogFragment> fragmentScenario = DialogFragmentTest.launchDialogFragment(ProgressDialogFragment.class);
         fragmentScenario.onFragment(fragment -> {
             fragment.setMessage("blah");
         });
@@ -91,7 +88,7 @@ public class ProgressDialogFragmentTest {
         Bundle args = new Bundle();
         args.putBoolean(ProgressDialogFragment.CANCELABLE, false);
 
-        FragmentScenario<ProgressDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(ProgressDialogFragment.class, args);
+        FragmentScenario<ProgressDialogFragment> fragmentScenario = DialogFragmentTest.launchDialogFragment(ProgressDialogFragment.class, args);
         fragmentScenario.onFragment(fragment -> {
             assertThat(shadowOf(fragment.getDialog()).isCancelable(), equalTo(false));
         });
@@ -99,7 +96,7 @@ public class ProgressDialogFragmentTest {
 
     @Test
     public void cancelling_callsCancelOnCancellable() {
-        FragmentScenario<TestProgressDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(TestProgressDialogFragment.class);
+        FragmentScenario<TestProgressDialogFragment> fragmentScenario = DialogFragmentTest.launchDialogFragment(TestProgressDialogFragment.class);
         fragmentScenario.onFragment(fragment -> {
             ProgressDialogFragment.Cancellable cancellable = mock(ProgressDialogFragment.Cancellable.class);
             fragment.setCancellableCallback(cancellable);
@@ -111,7 +108,7 @@ public class ProgressDialogFragmentTest {
 
     @Test
     public void whenThereIsCancelButtonText_clickingCancel_dismissesAndCallsCancelOnCancellable() {
-        FragmentScenario<TestProgressDialogFragment> fragmentScenario = RobolectricHelpers.launchDialogFragment(TestProgressDialogFragment.class);
+        FragmentScenario<TestProgressDialogFragment> fragmentScenario = DialogFragmentTest.launchDialogFragment(TestProgressDialogFragment.class);
 
         fragmentScenario.onFragment(fragment -> {
             ProgressDialogFragment.Cancellable cancellable = mock(ProgressDialogFragment.Cancellable.class);

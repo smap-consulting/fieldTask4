@@ -1,7 +1,5 @@
 package org.odk.collect.android.support.pages;
 
-import androidx.test.rule.ActivityTestRule;
-
 import org.odk.collect.android.R;
 
 import static androidx.test.espresso.Espresso.onView;
@@ -14,10 +12,6 @@ import static org.hamcrest.core.AllOf.allOf;
 
 public class SendFinalizedFormPage extends Page<SendFinalizedFormPage> {
 
-    public SendFinalizedFormPage(ActivityTestRule rule) {
-        super(rule);
-    }
-
     @Override
     public SendFinalizedFormPage assertOnPage() {
         onView(allOf(withText(getTranslatedString(R.string.send_data)), isDescendantOfA(withId(R.id.toolbar)))).check(matches(isDisplayed()));
@@ -29,8 +23,13 @@ public class SendFinalizedFormPage extends Page<SendFinalizedFormPage> {
         return this;
     }
 
-    public SendFinalizedFormPage clickSendSelected() {
+    public OkDialog clickSendSelected() {
         clickOnText(getTranslatedString(R.string.send_selected_data));
-        return this;
+        return new OkDialog();
+    }
+
+    public ServerAuthDialog clickSendSelectedWithAuthenticationError() {
+        clickOnText(getTranslatedString(R.string.send_selected_data));
+        return new ServerAuthDialog().assertOnPage();
     }
 }

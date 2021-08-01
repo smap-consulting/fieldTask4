@@ -33,20 +33,21 @@ import org.javarosa.xform.util.XFormUtils;
 import org.javarosa.xpath.XPathTypeMismatchException;
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
+import org.odk.collect.android.externaldata.ExternalAnswerResolver;
+import org.odk.collect.android.externaldata.ExternalDataHandler;
+import org.odk.collect.android.externaldata.ExternalDataManager;
+import org.odk.collect.android.externaldata.ExternalDataManagerImpl;
+import org.odk.collect.android.externaldata.ExternalDataReader;
+import org.odk.collect.android.externaldata.ExternalDataReaderImpl;
+import org.odk.collect.android.externaldata.handler.ExternalDataHandlerPull;
 import org.odk.collect.android.fastexternalitemset.ItemsetDbAdapter;
-import org.odk.collect.android.external.ExternalAnswerResolver;
-import org.odk.collect.android.external.ExternalDataHandler;
-import org.odk.collect.android.external.ExternalDataManager;
-import org.odk.collect.android.external.ExternalDataManagerImpl;
-import org.odk.collect.android.external.ExternalDataReader;
-import org.odk.collect.android.external.ExternalDataReaderImpl;
-import org.odk.collect.android.external.handler.ExternalDataHandlerPull;
-import org.odk.collect.android.listeners.FormLoaderListener;
 import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.android.listeners.FormLoaderListener;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.FormDefCache;
 import org.odk.collect.android.utilities.TranslationHandler;
 import org.odk.collect.android.utilities.ZipUtils;
+import org.odk.collect.shared.strings.Md5;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -59,7 +60,7 @@ import java.util.Map;
 import au.com.bytecode.opencsv.CSVReader;
 import timber.log.Timber;
 
-import static org.odk.collect.android.forms.FormUtils.setupReferenceManagerForForm;
+import static org.odk.collect.android.utilities.FormUtils.setupReferenceManagerForForm;
 
 /**
  * Background task for loading a form.
@@ -259,7 +260,7 @@ public class FormLoaderTask extends AsyncTask<String, String, FormLoaderTask.FEC
         final File csv = new File(formMediaDir.getAbsolutePath() + "/" + ITEMSETS_CSV);
         String csvmd5 = null;
         if (csv.exists()) {
-            csvmd5 = FileUtils.getMd5Hash(csv);
+            csvmd5 = Md5.getMd5Hash(csv);
             boolean readFile = false;
             final ItemsetDbAdapter ida = new ItemsetDbAdapter();
             ida.open();

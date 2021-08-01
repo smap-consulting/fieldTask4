@@ -20,10 +20,10 @@ import android.content.Context;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.instances.InstancesRepository;
-import org.odk.collect.android.forms.Form;
-import org.odk.collect.android.forms.FormsRepository;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.forms.instances.InstancesRepository;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.FormsRepository;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -66,7 +66,7 @@ public class InstanceUploaderUtils {
         StringBuilder uploadResultMessage = new StringBuilder();
         if (instance != null) {
             String name = instance.getDisplayName();
-            String text = localizeDefaultAggregateSuccessfulText(resultMessagesByInstanceId.get(instance.getId().toString()));
+            String text = localizeDefaultAggregateSuccessfulText(resultMessagesByInstanceId.get(instance.getDbId().toString()));
             uploadResultMessage
                     .append(name)
                     .append(" - ")
@@ -104,5 +104,22 @@ public class InstanceUploaderUtils {
         }
 
         return form.getAutoDelete() == null ? isAutoDeleteAppSettingEnabled : Boolean.valueOf(form.getAutoDelete());
+    }
+
+    /**
+     * Returns whether a form with the specified form_id should be auto-sent given the current
+     * app-level auto-send settings. Returns false if there is no form with the specified form_id.
+     * <p>
+     * A form should be auto-sent if auto-send is on at the app level AND this form doesn't override
+     * auto-send settings OR if auto-send is on at the form-level.
+     *
+     * @param isAutoSendAppSettingEnabled whether the auto-send option is enabled at the app level
+     */
+    public static boolean shouldFormBeSent(FormsRepository formsRepository, String jrFormId, String jrFormVersion, boolean isAutoSendAppSettingEnabled) {
+        Form form = formsRepository.getLatestByFormIdAndVersion(jrFormId, jrFormVersion);
+        if (form == null) {
+            return false;
+        }
+        return form.getAutoSend() == null ? isAutoSendAppSettingEnabled : Boolean.valueOf(form.getAutoSend());
     }
 }

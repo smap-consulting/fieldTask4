@@ -2,20 +2,18 @@ package org.odk.collect.android.formmanagement;
 
 import com.google.common.io.Files;
 
-import org.javarosa.core.reference.ReferenceManager;
 import org.junit.Test;
 import org.odk.collect.analytics.Analytics;
-import org.odk.collect.android.forms.Form;
-import org.odk.collect.android.forms.FormListItem;
-import org.odk.collect.android.forms.FormSource;
-import org.odk.collect.android.forms.FormSourceException;
-import org.odk.collect.android.forms.FormsRepository;
-import org.odk.collect.android.forms.ManifestFile;
-import org.odk.collect.android.forms.MediaFile;
-import org.odk.collect.android.support.FormUtils;
-import org.odk.collect.android.support.InMemFormsRepository;
-import org.odk.collect.android.utilities.FileUtils;
-import org.odk.collect.android.utilities.WebCredentialsUtils;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.FormListItem;
+import org.odk.collect.forms.FormSource;
+import org.odk.collect.forms.FormSourceException;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.forms.ManifestFile;
+import org.odk.collect.forms.MediaFile;
+import org.odk.collect.formstest.FormUtils;
+import org.odk.collect.formstest.InMemFormsRepository;
+import org.odk.collect.shared.strings.Md5;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -39,10 +37,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.odk.collect.android.analytics.AnalyticsEvents.DOWNLOAD_SAME_FORMID_VERSION_DIFFERENT_HASH;
-import static org.odk.collect.android.storage.StoragePathProvider.getAbsoluteFilePath;
-import static org.odk.collect.android.support.FormUtils.buildForm;
-import static org.odk.collect.android.support.FormUtils.createXFormBody;
 import static org.odk.collect.android.utilities.FileUtils.read;
+import static org.odk.collect.formstest.FormUtils.buildForm;
+import static org.odk.collect.formstest.FormUtils.createXFormBody;
+import static org.odk.collect.shared.PathUtils.getAbsoluteFilePath;
 
 @SuppressWarnings("PMD.DoubleBraceInitialization")
 public class ServerFormDownloaderTest {
@@ -59,7 +57,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 null);
@@ -67,13 +65,13 @@ public class ServerFormDownloaderTest {
         FormSource formSource = mock(FormSource.class);
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
         downloader.downloadForm(serverFormDetails, null, null);
 
         List<Form> allForms = formsRepository.getAll();
         assertThat(allForms.size(), is(1));
         Form form = allForms.get(0);
-        assertThat(form.getJrFormId(), is("id"));
+        assertThat(form.getFormId(), is("id"));
 
         File formFile = new File(getAbsoluteFilePath(formsDir.getAbsolutePath(), form.getFormFilePath()));
         assertThat(formFile.exists(), is(true));
@@ -88,7 +86,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 null);
@@ -96,7 +94,7 @@ public class ServerFormDownloaderTest {
         FormSource formSource = mock(FormSource.class);
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
         downloader.downloadForm(serverFormDetails, null, null);
 
         String xformUpdate = createXFormBody("id", "updated");
@@ -105,7 +103,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUpdatedUrl",
                 "id",
                 "updated",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xformUpdate.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xformUpdate.getBytes())),
                 true,
                 false,
                 null);
@@ -129,7 +127,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 null);
@@ -137,7 +135,7 @@ public class ServerFormDownloaderTest {
         FormSource formSource = mock(FormSource.class);
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
         downloader.downloadForm(serverFormDetails, null, null);
 
         String xformUpdate = FormUtils.createXFormBody("id", "version", "A different title");
@@ -146,7 +144,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xformUpdate.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xformUpdate.getBytes())),
                 true,
                 false,
                 null);
@@ -163,6 +161,31 @@ public class ServerFormDownloaderTest {
     }
 
     @Test
+    public void whenFormListMissingHash_throwsError() throws Exception {
+        String xform = createXFormBody("id", "version");
+        ServerFormDetails serverFormDetails = new ServerFormDetails(
+                "Form",
+                "http://downloadUrl",
+                "id",
+                "version",
+                null,
+                true,
+                false,
+                null);
+
+        FormSource formSource = mock(FormSource.class);
+        when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
+
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
+        try {
+            downloader.downloadForm(serverFormDetails, null, null);
+            fail("Expected exception because of missing form hash");
+        } catch (FormDownloadException e) {
+            // pass
+        }
+    }
+
+    @Test
     public void whenFormHasMediaFiles_downloadsAndSavesFormAndMediaFiles() throws Exception {
         String xform = createXFormBody("id", "version");
         ServerFormDetails serverFormDetails = new ServerFormDetails(
@@ -170,7 +193,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 new ManifestFile("", asList(
@@ -183,13 +206,13 @@ public class ServerFormDownloaderTest {
         when(formSource.fetchMediaFile("http://file1")).thenReturn(new ByteArrayInputStream("contents1".getBytes()));
         when(formSource.fetchMediaFile("http://file2")).thenReturn(new ByteArrayInputStream("contents2".getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
         downloader.downloadForm(serverFormDetails, null, null);
 
         List<Form> allForms = formsRepository.getAll();
         assertThat(allForms.size(), is(1));
         Form form = allForms.get(0);
-        assertThat(form.getJrFormId(), is("id"));
+        assertThat(form.getFormId(), is("id"));
 
         File formFile = new File(getAbsoluteFilePath(formsDir.getAbsolutePath(), form.getFormFilePath()));
         assertThat(formFile.exists(), is(true));
@@ -216,7 +239,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 new ManifestFile("", asList(
@@ -229,7 +252,7 @@ public class ServerFormDownloaderTest {
         when(formSource.fetchMediaFile("http://file1")).thenReturn(new ByteArrayInputStream("contents1".getBytes()));
         when(formSource.fetchMediaFile("http://file2")).thenReturn(new ByteArrayInputStream("contents2".getBytes()));
 
-        FormMetadataParser formMetadataParser = new FormMetadataParser(ReferenceManager.instance()) {
+        FormMetadataParser formMetadataParser = new FormMetadataParser() {
             @Override
             public Map<String, String> parse(File file, File mediaDir) {
                 File[] mediaFiles = mediaDir.listFiles();
@@ -252,7 +275,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 new ManifestFile("", asList(
@@ -263,7 +286,7 @@ public class ServerFormDownloaderTest {
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
         when(formSource.fetchMediaFile("http://file1")).thenThrow(new FormSourceException.FetchError());
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
 
         try {
             downloader.downloadForm(serverFormDetails, null, null);
@@ -276,14 +299,14 @@ public class ServerFormDownloaderTest {
     }
 
     @Test
-    public void whenFormHasMediaFiles_andWritingMediaFilesFails_throwsFormDownloadExceptionAndDoesNotSaveAnything() throws Exception {
+    public void whenFormHasMediaFiles_andFileExistsInMediaDirPath_throwsFormDownloadExceptionAndDoesNotSaveAnything() throws Exception {
         String xform = createXFormBody("id", "version");
         ServerFormDetails serverFormDetails = new ServerFormDetails(
                 "Form",
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 new ManifestFile("", asList(
@@ -297,7 +320,7 @@ public class ServerFormDownloaderTest {
         // Create file where media dir would go
         assertThat(new File(formsDir, "Form-media").createNewFile(), is(true));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
 
         try {
             downloader.downloadForm(serverFormDetails, null, null);
@@ -317,7 +340,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 new ManifestFile("", asList(
@@ -330,7 +353,7 @@ public class ServerFormDownloaderTest {
         when(formSource.fetchMediaFile("http://file1")).thenReturn(new ByteArrayInputStream("contents".getBytes()));
         when(formSource.fetchMediaFile("http://file2")).thenReturn(new ByteArrayInputStream("contents".getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
         RecordingProgressReporter progressReporter = new RecordingProgressReporter();
         downloader.downloadForm(serverFormDetails, progressReporter, null);
 
@@ -349,9 +372,9 @@ public class ServerFormDownloaderTest {
         ServerFormDetails serverFormDetails = new ServerFormDetails(
                 form.getDisplayName(),
                 "http://downloadUrl",
-                form.getJrFormId(),
-                form.getJrVersion(),
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                form.getFormId(),
+                form.getVersion(),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 null);
@@ -359,7 +382,7 @@ public class ServerFormDownloaderTest {
         FormSource formSource = mock(FormSource.class);
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
         downloader.downloadForm(serverFormDetails, null, null);
         assertThat(formsRepository.get(1L).isDeleted(), is(false));
     }
@@ -381,9 +404,9 @@ public class ServerFormDownloaderTest {
         ServerFormDetails serverFormDetails = new ServerFormDetails(
                 form2.getDisplayName(),
                 "http://downloadUrl",
-                form2.getJrFormId(),
-                form2.getJrVersion(),
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform2.getBytes())),
+                form2.getFormId(),
+                form2.getVersion(),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform2.getBytes())),
                 true,
                 false,
                 null);
@@ -391,7 +414,7 @@ public class ServerFormDownloaderTest {
         FormSource formSource = mock(FormSource.class);
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform2.getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
         downloader.downloadForm(serverFormDetails, null, null);
         assertThat(formsRepository.get(1L).isDeleted(), is(true));
         assertThat(formsRepository.get(2L).isDeleted(), is(false));
@@ -411,9 +434,9 @@ public class ServerFormDownloaderTest {
         ServerFormDetails serverFormDetails = new ServerFormDetails(
                 form2.getDisplayName(),
                 "http://downloadUrl",
-                form2.getJrFormId(),
-                form2.getJrVersion(),
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform2.getBytes())),
+                form2.getFormId(),
+                form2.getVersion(),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform2.getBytes())),
                 true,
                 false,
                 null);
@@ -422,11 +445,11 @@ public class ServerFormDownloaderTest {
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform2.getBytes()));
 
         Analytics mockAnalytics = mock(Analytics.class);
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mockAnalytics);
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mockAnalytics);
         downloader.downloadForm(serverFormDetails, null, null);
 
-        String formIdentifier = form.getDisplayName() + " " + form.getJrFormId();
-        String formIdHash = FileUtils.getMd5Hash(new ByteArrayInputStream(formIdentifier.getBytes()));
+        String formIdentifier = form.getDisplayName() + " " + form.getFormId();
+        String formIdHash = Md5.getMd5Hash(new ByteArrayInputStream(formIdentifier.getBytes()));
 
         verify(mockAnalytics).logFormEvent(DOWNLOAD_SAME_FORMID_VERSION_DIFFERENT_HASH, formIdHash);
     }
@@ -444,9 +467,9 @@ public class ServerFormDownloaderTest {
         ServerFormDetails serverFormDetails = new ServerFormDetails(
                 form.getDisplayName(),
                 "http://downloadUrl",
-                form.getJrFormId(),
-                form.getJrVersion(),
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                form.getFormId(),
+                form.getVersion(),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 null);
@@ -455,7 +478,7 @@ public class ServerFormDownloaderTest {
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
 
         Analytics mockAnalytics = mock(Analytics.class);
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mockAnalytics);
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mockAnalytics);
         downloader.downloadForm(serverFormDetails, null, null);
         verifyNoInteractions(mockAnalytics);
     }
@@ -472,9 +495,9 @@ public class ServerFormDownloaderTest {
         ServerFormDetails serverFormDetails = new ServerFormDetails(
                 form2.getDisplayName(),
                 "http://downloadUrl/draft.xml",
-                form2.getJrFormId(),
-                form2.getJrVersion(),
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform2.getBytes())),
+                form2.getFormId(),
+                form2.getVersion(),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform2.getBytes())),
                 true,
                 false,
                 null);
@@ -483,7 +506,7 @@ public class ServerFormDownloaderTest {
         when(formSource.fetchForm("http://downloadUrl/draft.xml")).thenReturn(new ByteArrayInputStream(xform2.getBytes()));
 
         Analytics mockAnalytics = mock(Analytics.class);
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mockAnalytics);
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mockAnalytics);
         downloader.downloadForm(serverFormDetails, null, null);
 
         verifyNoInteractions(mockAnalytics);
@@ -498,7 +521,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 null);
@@ -506,7 +529,7 @@ public class ServerFormDownloaderTest {
         FormSource formSource = mock(FormSource.class);
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
 
         // Initial download
         downloader.downloadForm(serverFormDetails, null, null);
@@ -516,7 +539,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 false,
                 false,
                 null);
@@ -533,6 +556,62 @@ public class ServerFormDownloaderTest {
     }
 
     @Test
+    public void whenFormAlreadyDownloaded_andFormHasNewMediaFiles_updatesMediaFiles() throws Exception {
+        String xform = createXFormBody("id", "version");
+        ServerFormDetails serverFormDetails = new ServerFormDetails(
+                "Form",
+                "http://downloadUrl",
+                "id",
+                "version",
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                true,
+                false,
+                new ManifestFile("", asList(
+                        new MediaFile("file1", "md5:" + Md5.getMd5Hash(new ByteArrayInputStream("contents".getBytes())), "http://file1")
+                )));
+
+        FormSource formSource = mock(FormSource.class);
+        when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
+        when(formSource.fetchMediaFile("http://file1")).thenReturn(new ByteArrayInputStream("contents".getBytes()));
+
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
+
+        // Initial download
+        downloader.downloadForm(serverFormDetails, null, null);
+
+        ServerFormDetails serverFormDetailsUpdatedMediaFile = new ServerFormDetails(
+                "Form",
+                "http://downloadUrl",
+                "id",
+                "version",
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                false,
+                false,
+                new ManifestFile("", asList(
+                        new MediaFile("file1", "md5:" + Md5.getMd5Hash(new ByteArrayInputStream("contents-updated".getBytes())), "http://file1")
+                )));
+
+        when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
+        when(formSource.fetchMediaFile("http://file1")).thenReturn(new ByteArrayInputStream("contents-updated".getBytes()));
+
+        // Second download
+        downloader.downloadForm(serverFormDetailsUpdatedMediaFile, null, null);
+
+        List<Form> allForms = formsRepository.getAll();
+        assertThat(allForms.size(), is(1));
+        Form form = allForms.get(0);
+        assertThat(form.getFormId(), is("id"));
+
+        File formFile = new File(getAbsoluteFilePath(formsDir.getAbsolutePath(), form.getFormFilePath()));
+        assertThat(formFile.exists(), is(true));
+        assertThat(new String(read(formFile)), is(xform));
+
+        File mediaFile1 = new File(form.getFormMediaPath() + "/file1");
+        assertThat(mediaFile1.exists(), is(true));
+        assertThat(new String(read(mediaFile1)), is("contents-updated"));
+    }
+
+    @Test
     public void whenFormAlreadyDownloaded_andFormHasNewMediaFiles_andMediaFetchFails_throwsFormDownloadException() throws Exception {
         String xform = createXFormBody("id", "version");
         ServerFormDetails serverFormDetails = new ServerFormDetails(
@@ -540,18 +619,18 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 new ManifestFile("", asList(
-                        new MediaFile("file1", "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream("contents".getBytes())), "http://file1")
+                        new MediaFile("file1", "md5:" + Md5.getMd5Hash(new ByteArrayInputStream("contents".getBytes())), "http://file1")
                 )));
 
         FormSource formSource = mock(FormSource.class);
         when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
         when(formSource.fetchMediaFile("http://file1")).thenReturn(new ByteArrayInputStream("contents".getBytes()));
 
-        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formSource, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
 
         // Initial download
         downloader.downloadForm(serverFormDetails, null, null);
@@ -562,11 +641,11 @@ public class ServerFormDownloaderTest {
                     "http://downloadUrl",
                     "id",
                     "version",
-                    "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                    "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                     false,
                     false,
                     new ManifestFile("", asList(
-                            new MediaFile("file1", "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream("contents-updated".getBytes())), "http://file1")
+                            new MediaFile("file1", "md5:" + Md5.getMd5Hash(new ByteArrayInputStream("contents-updated".getBytes())), "http://file1")
                     )));
 
             when(formSource.fetchForm("http://downloadUrl")).thenReturn(new ByteArrayInputStream(xform.getBytes()));
@@ -578,7 +657,7 @@ public class ServerFormDownloaderTest {
             List<Form> allForms = formsRepository.getAll();
             assertThat(allForms.size(), is(1));
             Form form = allForms.get(0);
-            assertThat(form.getJrFormId(), is("id"));
+            assertThat(form.getFormId(), is("id"));
 
             File formFile = new File(getAbsoluteFilePath(formsDir.getAbsolutePath(), form.getFormFilePath()));
             assertThat(formFile.exists(), is(true));
@@ -594,13 +673,13 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 null);
 
         CancelAfterFormDownloadFormSource formListApi = new CancelAfterFormDownloadFormSource(xform);
-        ServerFormDownloader downloader = new ServerFormDownloader(formListApi, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formListApi, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
 
         try {
             downloader.downloadForm(serverFormDetails, null, formListApi);
@@ -620,7 +699,7 @@ public class ServerFormDownloaderTest {
                 "http://downloadUrl",
                 "id",
                 "version",
-                "md5:" + FileUtils.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
+                "md5:" + Md5.getMd5Hash(new ByteArrayInputStream(xform.getBytes())),
                 true,
                 false,
                 new ManifestFile("", asList(
@@ -629,7 +708,7 @@ public class ServerFormDownloaderTest {
                 )));
 
         CancelAfterMediaFileDownloadFormSource formListApi = new CancelAfterMediaFileDownloadFormSource(xform);
-        ServerFormDownloader downloader = new ServerFormDownloader(formListApi, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(ReferenceManager.instance()), mock(Analytics.class));
+        ServerFormDownloader downloader = new ServerFormDownloader(formListApi, formsRepository, cacheDir, formsDir.getAbsolutePath(), new FormMetadataParser(), mock(Analytics.class));
 
         try {
             downloader.downloadForm(serverFormDetails, null, formListApi);
@@ -690,16 +769,6 @@ public class ServerFormDownloaderTest {
         }
 
         @Override
-        public void updateUrl(String url) {
-
-        }
-
-        @Override
-        public void updateWebCredentialsUtils(WebCredentialsUtils webCredentialsUtils) {
-
-        }
-
-        @Override
         public Boolean get() {
             return isCancelled;
         }
@@ -723,16 +792,6 @@ public class ServerFormDownloaderTest {
         public InputStream fetchMediaFile(String mediaFileURL) throws FormSourceException {
             isCancelled = true;
             return new ByteArrayInputStream("contents".getBytes());
-        }
-
-        @Override
-        public void updateUrl(String url) {
-
-        }
-
-        @Override
-        public void updateWebCredentialsUtils(WebCredentialsUtils webCredentialsUtils) {
-
         }
 
         @Override

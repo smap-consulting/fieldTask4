@@ -12,7 +12,7 @@ import org.odk.collect.android.openrosa.HttpHeadResult;
 import org.odk.collect.android.openrosa.HttpPostResult;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
 import org.odk.collect.android.openrosa.OpenRosaServerClient;
-import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.shared.strings.Md5;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -99,7 +99,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
         if (HTTP_CONTENT_TYPE_TEXT_XML.equals(contentType)) {
             byte[] bytes = IOUtils.toByteArray(downloadStream);
             downloadStream = new ByteArrayInputStream(bytes);
-            hash = FileUtils.getMd5Hash(new ByteArrayInputStream(bytes));
+            hash = Md5.getMd5Hash(new ByteArrayInputStream(bytes));
         }
 
         Map<String, String> responseHeaders = new HashMap<>();
@@ -138,7 +138,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
 
     @NonNull
     @Override
-    public HttpPostResult uploadSubmissionFile(@NonNull List<File> fileList, @NonNull File submissionFile, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
+    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile, @NonNull List<File> fileList, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
         HttpPostResult postResult = null;
 
         boolean first = true;

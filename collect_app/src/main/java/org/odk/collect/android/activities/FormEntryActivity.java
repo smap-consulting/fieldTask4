@@ -15,12 +15,10 @@
 package org.odk.collect.android.activities;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
 import android.location.LocationManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -52,9 +50,6 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
-
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.SelectChoice;
@@ -67,20 +62,20 @@ import org.javarosa.form.api.FormEntryPrompt;
 import org.jetbrains.annotations.NotNull;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
-import org.odk.collect.android.R;
 import org.odk.collect.analytics.Analytics;
+import org.odk.collect.android.R;
+import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AMRAppender;
 import org.odk.collect.android.audio.AudioControllerView;
 import org.odk.collect.android.audio.M4AAppender;
-import org.odk.collect.android.backgroundwork.FormSubmitManager;
-import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.dao.helpers.ContentResolverHelper;
-import org.odk.collect.android.dao.helpers.FormsDaoHelper;
+import org.odk.collect.android.backgroundwork.InstanceSubmitScheduler;
 import org.odk.collect.android.dao.helpers.InstancesDaoHelper;
 import org.odk.collect.android.events.ReadPhoneStatePermissionRxEvent;
 import org.odk.collect.android.events.RxEventBus;
 import org.odk.collect.android.exception.JavaRosaException;
+import org.odk.collect.android.external.FormsContract;
+import org.odk.collect.android.external.InstancesContract;
 import org.odk.collect.android.formentry.BackgroundAudioPermissionDialogFragment;
 import org.odk.collect.android.formentry.BackgroundAudioViewModel;
 import org.odk.collect.android.formentry.FormEndView;
@@ -107,9 +102,6 @@ import org.odk.collect.android.formentry.saving.FormSaveViewModel;
 import org.odk.collect.android.formentry.saving.SaveAnswerFileErrorDialogFragment;
 import org.odk.collect.android.formentry.saving.SaveAnswerFileProgressDialogFragment;
 import org.odk.collect.android.formentry.saving.SaveFormProgressDialogFragment;
-import org.odk.collect.android.forms.Form;
-import org.odk.collect.android.forms.FormDesignException;
-import org.odk.collect.android.forms.FormsRepository;
 import org.odk.collect.android.fragments.MediaLoadingFragment;
 import org.odk.collect.android.fragments.dialogs.CustomDatePickerDialog;
 import org.odk.collect.android.fragments.dialogs.CustomTimePickerDialog;
@@ -118,22 +110,22 @@ import org.odk.collect.android.fragments.dialogs.NumberPickerDialog;
 import org.odk.collect.android.fragments.dialogs.ProgressDialogFragment;
 import org.odk.collect.android.fragments.dialogs.RankingWidgetDialog;
 import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
+import org.odk.collect.android.instancemanagement.InstanceDeleter;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.javarosawrapper.FormController.FailedConstraint;
+import org.odk.collect.android.javarosawrapper.FormDesignException;
 import org.odk.collect.android.listeners.AdvanceToNextListener;
 import org.odk.collect.android.listeners.FormLoaderListener;
 import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.listeners.SavePointListener;
 import org.odk.collect.android.listeners.SwipeHandler;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
-import org.odk.collect.android.logic.FormInfo;
 import org.odk.collect.android.logic.ImmutableDisplayableQuestion;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.permissions.PermissionsChecker;
-import org.odk.collect.android.preferences.AdminKeys;
-import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
+import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.tasks.FormLoaderTask;
@@ -141,9 +133,12 @@ import org.odk.collect.android.tasks.SaveFormIndexTask;
 import org.odk.collect.android.tasks.SavePointTask;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.ApplicationConstants;
+import org.odk.collect.android.utilities.ContentUriHelper;
 import org.odk.collect.android.utilities.DestroyableLifecyleOwner;
 import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 import org.odk.collect.android.utilities.ScreenContext;
@@ -163,6 +158,9 @@ import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.audioclips.AudioClipViewModel;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.forms.instances.Instance;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -182,13 +180,13 @@ import static android.content.DialogInterface.BUTTON_NEGATIVE;
 import static android.content.DialogInterface.BUTTON_POSITIVE;
 import static android.view.animation.AnimationUtils.loadAnimation;
 import static org.javarosa.form.api.FormEntryController.EVENT_PROMPT_NEW_REPEAT;
+import static org.odk.collect.android.analytics.AnalyticsEvents.OPEN_MAP_KIT_RESPONSE;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SAVE_INCOMPLETE;
 import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.BACKWARDS;
 import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.FORWARDS;
-import static org.odk.collect.android.fragments.BarcodeWidgetScannerFragment.BARCODE_RESULT_KEY;
-import static org.odk.collect.android.preferences.AdminKeys.KEY_MOVING_BACKWARDS;
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_COMPLETED_DEFAULT;
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_NAVIGATION;
+import static org.odk.collect.android.preferences.keys.ProtectedProjectKeys.KEY_MOVING_BACKWARDS;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_COMPLETED_DEFAULT;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_NAVIGATION;
 import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnabled;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.android.utilities.DialogUtils.getDialog;
@@ -219,11 +217,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private static final boolean EVALUATE_CONSTRAINTS = true;
     public static final boolean DO_NOT_EVALUATE_CONSTRAINTS = false;
 
-    // Extra returned from gp activity
-    public static final String LOCATION_RESULT = "LOCATION_RESULT";
-    public static final String BEARING_RESULT = "BEARING_RESULT";
-    public static final String GEOSHAPE_RESULTS = "GEOSHAPE_RESULTS";
-    public static final String ANSWER_KEY = "ANSWER_KEY";
+    public static final String ANSWER_KEY = "value"; // this value can not be changed because it is also used by external apps
 
     public static final String KEY_INSTANCES = "instances";
     public static final String KEY_SUCCESS = "success";
@@ -249,7 +243,6 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     // Tracks whether we are autosaving
     public static final String KEY_AUTO_SAVED = "autosaved";
 
-    public static final String EXTRA_TESTING_PATH = "testingPath";
     public static final String KEY_READ_PHONE_STATE_PERMISSION_REQUEST_NEEDED = "readPhoneStatePermissionRequestNeeded";
 
     private boolean autoSaved;
@@ -315,13 +308,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     StoragePathProvider storagePathProvider;
 
     @Inject
-    FormsRepository formsRepository;
+    FormsRepositoryProvider formsRepositoryProvider;
+    private FormsRepository formsRepository;
 
     @Inject
     PropertyManager propertyManager;
 
     @Inject
-    FormSubmitManager formSubmitManager;
+    InstanceSubmitScheduler instanceSubmitScheduler;
 
     @Inject
     Scheduler scheduler;
@@ -350,6 +344,9 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     @Inject
     BackgroundAudioViewModel.Factory backgroundAudioViewModelFactory;
 
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
+
     private final LocationProvidersReceiver locationProvidersReceiver = new LocationProvidersReceiver();
 
     private SwipeHandler swipeHandler;
@@ -372,10 +369,13 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         Collect.getInstance().getComponent().inject(this);
+        formsRepository = formsRepositoryProvider.get();
+
         setContentView(R.layout.form_entry);
         setupViewModels();
-        swipeHandler = new SwipeHandler(this, preferencesDataSourceProvider.getGeneralPreferences().getString(KEY_NAVIGATION));
+        swipeHandler = new SwipeHandler(this, settingsProvider.getGeneralSettings());
 
         compositeDisposable.add(eventBus
                 .register(ReadPhoneStatePermissionRxEvent.class)
@@ -401,7 +401,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 audioRecorder,
                 backgroundLocationViewModel,
                 backgroundAudioViewModel,
-                preferencesDataSourceProvider
+                settingsProvider
         );
 
         nextButton = findViewById(R.id.form_forward_button);
@@ -429,7 +429,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
     private void setupViewModels() {
         backgroundLocationViewModel = ViewModelProviders
-                .of(this, new BackgroundLocationViewModel.Factory(permissionsProvider, preferencesDataSourceProvider.getGeneralPreferences()))
+                .of(this, new BackgroundLocationViewModel.Factory(permissionsProvider, settingsProvider.getGeneralSettings()))
                 .get(BackgroundLocationViewModel.class);
 
         backgroundAudioViewModel = new ViewModelProvider(this, backgroundAudioViewModelFactory).get(BackgroundAudioViewModel.class);
@@ -549,7 +549,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     }
 
     private void loadForm() {
-        allowMovingBackwards = preferencesDataSourceProvider.getAdminPreferences().getBoolean(KEY_MOVING_BACKWARDS);
+        allowMovingBackwards = settingsProvider.getAdminSettings().getBoolean(KEY_MOVING_BACKWARDS);
 
         // If a parse error message is showing then nothing else is loaded
         // Dialogs mid form just disappear on rotation.
@@ -597,26 +597,30 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             uriMimeType = getContentResolver().getType(uri);
         }
 
-        if (uriMimeType == null && intent.hasExtra(EXTRA_TESTING_PATH)) {
-            formPath = intent.getStringExtra(EXTRA_TESTING_PATH);
+        if (uriMimeType != null && uriMimeType.equals(InstancesContract.CONTENT_ITEM_TYPE)) {
+            Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().get(ContentUriHelper.getIdFromUri(uri));
 
-        } else if (uriMimeType != null && uriMimeType.equals(InstanceColumns.CONTENT_ITEM_TYPE)) {
-            FormInfo formInfo = ContentResolverHelper.getFormDetails(uri);
-
-            if (formInfo == null) {
+            if (instance == null) {
                 createErrorDialog(getString(R.string.bad_uri, uri), true);
                 return;
             }
 
-            instancePath = formInfo.getInstancePath();
-            List<Form> candidateForms = formsRepository.getAllByFormIdAndVersion(formInfo.getFormId(), formInfo.getFormVersion());
+            instancePath = instance.getInstanceFilePath();
+            if (!new File(instancePath).exists()) {
+                analytics.logEvent(AnalyticsEvents.OPEN_DELETED_INSTANCE);
+                new InstanceDeleter(new InstancesRepositoryProvider(Collect.getInstance()).get(), formsRepository).delete(instance.getDbId());
+                createErrorDialog(getString(R.string.instance_deleted_message), true);
+                return;
+            }
+
+            List<Form> candidateForms = formsRepository.getAllByFormIdAndVersion(instance.getFormId(), instance.getFormVersion());
 
             if (candidateForms.isEmpty()) {
                 createErrorDialog(getString(
                         R.string.parent_form_not_present,
-                        formInfo.getFormId())
-                                + ((formInfo.getFormVersion() == null) ? ""
-                                : "\n" + getString(R.string.version) + " " + formInfo.getFormVersion()),
+                        instance.getFormId())
+                                + ((instance.getFormVersion() == null) ? ""
+                                : "\n" + getString(R.string.version) + " " + instance.getFormVersion()),
                         true);
                 return;
             } else if (candidateForms.stream().filter(f -> !f.isDeleted()).count() > 1) {
@@ -624,10 +628,13 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 return;
             }
 
-            formPath = storagePathProvider.getAbsoluteFormFilePath(candidateForms.get(0).getFormFilePath());
-        } else if (uriMimeType != null
-                && uriMimeType.equals(FormsColumns.CONTENT_ITEM_TYPE)) {
-            formPath = ContentResolverHelper.getFormPath(uri);
+            formPath = candidateForms.get(0).getFormFilePath();
+        } else if (uriMimeType != null && uriMimeType.equals(FormsContract.CONTENT_ITEM_TYPE)) {
+            Form form = formsRepositoryProvider.get().get(ContentUriHelper.getIdFromUri(uri));
+            if (form != null) {
+                formPath = form.getFormFilePath();
+            }
+
             if (formPath == null) {
                 createErrorDialog(getString(R.string.bad_uri, uri), true);
                 return;
@@ -638,42 +645,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                  * Savepoints for forms that were explicitly saved will be recovered when that
                  * explicitly saved instance is edited via edit-saved-form.
                  */
-                final String filePrefix = formPath.substring(
-                        formPath.lastIndexOf('/') + 1,
-                        formPath.lastIndexOf('.'))
-                        + "_";
-                final String fileSuffix = ".xml.save";
-                File cacheDir = new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.CACHE));
-                File[] files = cacheDir.listFiles(pathname -> {
-                    String name = pathname.getName();
-                    return name.startsWith(filePrefix)
-                            && name.endsWith(fileSuffix);
-                });
-
-                /**
-                 * See if any of these savepoints are for a filled-in form that has never
-                 * been explicitly saved by the user.
-                 */
-                for (File candidate : files) {
-                    String instanceDirName = candidate.getName()
-                            .substring(
-                                    0,
-                                    candidate.getName().length()
-                                            - fileSuffix.length());
-                    File instanceDir = new File(
-                            storagePathProvider.getOdkDirPath(StorageSubdirectory.INSTANCES) + File.separator
-                                    + instanceDirName);
-                    File instanceFile = new File(instanceDir,
-                            instanceDirName + ".xml");
-                    if (instanceDir.exists()
-                            && instanceDir.isDirectory()
-                            && !instanceFile.exists()) {
-                        // yes! -- use this savepoint file
-                        instancePath = instanceFile
-                                .getAbsolutePath();
-                        break;
-                    }
-                }
+                instancePath = loadSavePoint();
             }
         } else {
             Timber.i("Unrecognized URI: %s", uri);
@@ -684,6 +656,51 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         formLoaderTask = new FormLoaderTask(instancePath, null, null);
         showIfNotShowing(FormLoadingDialogFragment.class, getSupportFragmentManager());
         formLoaderTask.execute(formPath);
+    }
+
+    private String loadSavePoint() {
+        final String filePrefix = formPath.substring(
+                formPath.lastIndexOf('/') + 1,
+                formPath.lastIndexOf('.'))
+                + "_";
+        final String fileSuffix = ".xml.save";
+        File cacheDir = new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.CACHE));
+        File[] files = cacheDir.listFiles(pathname -> {
+            String name = pathname.getName();
+            return name.startsWith(filePrefix)
+                    && name.endsWith(fileSuffix);
+        });
+
+        if (files != null) {
+            /**
+             * See if any of these savepoints are for a filled-in form that has never
+             * been explicitly saved by the user.
+             */
+            for (File candidate : files) {
+                String instanceDirName = candidate.getName()
+                        .substring(
+                                0,
+                                candidate.getName().length()
+                                        - fileSuffix.length());
+                File instanceDir = new File(
+                        storagePathProvider.getOdkDirPath(StorageSubdirectory.INSTANCES) + File.separator
+                                + instanceDirName);
+                File instanceFile = new File(instanceDir,
+                        instanceDirName + ".xml");
+                if (instanceDir.exists()
+                        && instanceDir.isDirectory()
+                        && !instanceFile.exists()) {
+                    // yes! -- use this savepoint file
+                    return instanceFile
+                            .getAbsolutePath();
+                }
+            }
+
+        } else {
+            Timber.e("Couldn't access cache directory when looking for save points!");
+        }
+
+        return null;
     }
 
 
@@ -784,39 +801,10 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             return;
         }
 
-        // Handling results returned by the Zxing Barcode scanning library is done outside the
-        // switch statement because IntentIntegrator.REQUEST_CODE is not final.
-        // TODO: see if we can update the ZXing Android Embedded dependency to 3.6.0.
-        // https://github.com/journeyapps/zxing-android-embedded#adding-aar-dependency-with-gradle
-        // makes it unclear
-        IntentResult barcodeScannerResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
-        if (barcodeScannerResult != null) {
-            if (barcodeScannerResult.getContents() == null) {
-                // request was canceled...
-                Timber.i("QR code scanning cancelled");
-            } else {
-                String sb = intent.getStringExtra(BARCODE_RESULT_KEY);
-                if (getCurrentViewIfODKView() != null) {
-                    setWidgetData(sb);
-                }
-                return;
-            }
-        }
-
         switch (requestCode) {
             case RequestCodes.OSM_CAPTURE:
-                String osmFileName = intent.getStringExtra("OSM_FILE_NAME");
-                if (getCurrentViewIfODKView() != null) {
-                    setWidgetData(osmFileName);
-                }
-                break;
-            case RequestCodes.EX_STRING_CAPTURE:
-            case RequestCodes.EX_INT_CAPTURE:
-            case RequestCodes.EX_DECIMAL_CAPTURE:
-                Object externalValue = externalAppIntentProvider.getValueFromIntent(intent);
-                if (getCurrentViewIfODKView() != null) {
-                    setWidgetData(externalValue);
-                }
+                analytics.logFormEvent(OPEN_MAP_KIT_RESPONSE, Collect.getCurrentFormIdentifierHash());
+                setWidgetData(intent.getStringExtra("OSM_FILE_NAME"));
                 break;
             case RequestCodes.EX_ARBITRARY_FILE_CHOOSER:
             case RequestCodes.EX_VIDEO_CHOOSER:
@@ -857,23 +845,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 loadFile(intent.getData());
                 break;
             case RequestCodes.LOCATION_CAPTURE:
-                String sl = intent.getStringExtra(LOCATION_RESULT);
-                if (getCurrentViewIfODKView() != null) {
-                    setWidgetData(sl);
-                }
-                break;
             case RequestCodes.GEOSHAPE_CAPTURE:
             case RequestCodes.GEOTRACE_CAPTURE:
-                String gshr = intent.getStringExtra(ANSWER_KEY);
-                if (getCurrentViewIfODKView() != null) {
-                    setWidgetData(gshr);
-                }
-                break;
             case RequestCodes.BEARING_CAPTURE:
-                String bearing = intent.getStringExtra(BEARING_RESULT);
-                if (getCurrentViewIfODKView() != null) {
-                    setWidgetData(bearing);
-                }
+            case RequestCodes.BARCODE_CAPTURE:
+            case RequestCodes.EX_STRING_CAPTURE:
+            case RequestCodes.EX_INT_CAPTURE:
+            case RequestCodes.EX_DECIMAL_CAPTURE:
+                setWidgetData(intent.getExtras().get(ANSWER_KEY));
                 break;
         }
     }
@@ -970,7 +949,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
             case R.id.menu_save:
                 // don't exit
-                saveForm(false, InstancesDaoHelper.isInstanceComplete(false, preferencesDataSourceProvider.getGeneralPreferences().getBoolean(KEY_COMPLETED_DEFAULT)), null, true);
+                saveForm(false, InstancesDaoHelper.isInstanceComplete(false, settingsProvider.getGeneralSettings().getBoolean(KEY_COMPLETED_DEFAULT)), null, true);
                 return true;
         }
 
@@ -1252,21 +1231,10 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
 
             if (saveName == null && uriMimeType != null
-                    && uriMimeType.equals(InstanceColumns.CONTENT_ITEM_TYPE)) {
-                Cursor instance = null;
-                try {
-                    instance = getContentResolver().query(instanceUri,
-                            null, null, null, null);
-                    if (instance != null && instance.getCount() == 1) {
-                        instance.moveToFirst();
-                        saveName = instance
-                                .getString(instance
-                                        .getColumnIndex(InstanceColumns.DISPLAY_NAME));
-                    }
-                } finally {
-                    if (instance != null) {
-                        instance.close();
-                    }
+                    && uriMimeType.equals(InstancesContract.CONTENT_ITEM_TYPE)) {
+                Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().get(ContentUriHelper.getIdFromUri(instanceUri));
+                if (instance != null) {
+                    saveName = instance.getDisplayName();
                 }
             }
 
@@ -1275,7 +1243,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
         }
 
-        FormEndView endView = new FormEndView(this, formSaveViewModel.getFormName(), saveName, InstancesDaoHelper.isInstanceComplete(true, preferencesDataSourceProvider.getGeneralPreferences().getBoolean(KEY_COMPLETED_DEFAULT)), new FormEndView.Listener() {
+        FormEndView endView = new FormEndView(this, formSaveViewModel.getFormName(), saveName, InstancesDaoHelper.isInstanceComplete(true, settingsProvider.getGeneralSettings().getBoolean(KEY_COMPLETED_DEFAULT)), new FormEndView.Listener() {
             @Override
             public void onSaveAsChanged(String saveAs) {
                 // Seems like this is needed for rotation?
@@ -1292,7 +1260,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
         });
 
-        if (!preferencesDataSourceProvider.getAdminPreferences().getBoolean(AdminKeys.KEY_MARK_AS_FINALIZED)) {
+        if (!settingsProvider.getAdminSettings().getBoolean(ProtectedProjectKeys.KEY_MARK_AS_FINALIZED)) {
             endView.findViewById(R.id.mark_finished).setVisibility(View.GONE);
         }
 
@@ -1306,7 +1274,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         }
 
         // override the visibility settings based upon admin preferences
-        if (!preferencesDataSourceProvider.getAdminPreferences().getBoolean(AdminKeys.KEY_SAVE_AS)) {
+        if (!settingsProvider.getAdminSettings().getBoolean(ProtectedProjectKeys.KEY_SAVE_AS)) {
             endView.findViewById(R.id.save_form_as).setVisibility(View.GONE);
             endView.findViewById(R.id.save_name).setVisibility(View.GONE);
         }
@@ -1452,10 +1420,10 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private boolean saveBeforeNextView(FormController formController) {
         if (formController.currentPromptIsQuestion()) {
             // get constraint behavior preference value with appropriate default
-            String constraintBehavior = preferencesDataSourceProvider.getGeneralPreferences().getString(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
+            String constraintBehavior = settingsProvider.getGeneralSettings().getString(ProjectKeys.KEY_CONSTRAINT_BEHAVIOR);
 
             // if constraint behavior says we should validate on swipe, do so
-            if (constraintBehavior.equals(GeneralKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
+            if (constraintBehavior.equals(ProjectKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
                 if (!saveAnswersForCurrentScreen(EVALUATE_CONSTRAINTS)) {
                     // A constraint was violated so a dialog should be showing.
                     swipeHandler.setBeenSwiped(false);
@@ -1747,7 +1715,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
                 if (result.getRequest().viewExiting()) {
                     if (result.getRequest().shouldFinalize()) {
-                        formSubmitManager.scheduleSubmit();
+                        instanceSubmitScheduler.scheduleSubmit(currentProjectProvider.getCurrentProject().getUuid());
                     }
 
                     finishAndReturnInstance();
@@ -1789,12 +1757,12 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 onScreenRefresh();
 
                 // get constraint behavior preference value with appropriate default
-                String constraintBehavior = preferencesDataSourceProvider.getGeneralPreferences().getString(GeneralKeys.KEY_CONSTRAINT_BEHAVIOR);
+                String constraintBehavior = settingsProvider.getGeneralSettings().getString(ProjectKeys.KEY_CONSTRAINT_BEHAVIOR);
 
                 // an answer constraint was violated, so we need to display the proper toast(s)
                 // if constraint behavior is on_swipe, this will happen if we do a 'swipe' to the
                 // next question
-                if (constraintBehavior.equals(GeneralKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
+                if (constraintBehavior.equals(ProjectKeys.CONSTRAINT_BEHAVIOR_ON_SWIPE)) {
                     next();
                 } else {
                     // otherwise, we can get the proper toast(s) by saving with constraint check
@@ -1808,7 +1776,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
     @Override
     public void onSaveChangesClicked() {
-        saveForm(true, InstancesDaoHelper.isInstanceComplete(false, preferencesDataSourceProvider.getGeneralPreferences().getBoolean(KEY_COMPLETED_DEFAULT)), null, true);
+        saveForm(true, InstancesDaoHelper.isInstanceComplete(false, settingsProvider.getGeneralSettings().getBoolean(KEY_COMPLETED_DEFAULT)), null, true);
     }
 
     @Nullable
@@ -1873,32 +1841,21 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         }
         alertDialog = new AlertDialog.Builder(this)
                 .setSingleChoiceItems(languages, selected,
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog,
-                                                int whichButton) {
-                                // Update the language in the content provider
-                                // when selecting a new
-                                // language
-                                ContentValues values = new ContentValues();
-                                values.put(FormsColumns.LANGUAGE,
-                                        languages[whichButton]);
-                                String selection = FormsColumns.FORM_FILE_PATH
-                                        + "=?";
-                                String[] selectArgs = {storagePathProvider.getRelativeFormPath(formPath)};
-                                int updated = new FormsDao().updateForm(values, selection, selectArgs);
-                                Timber.i("Updated language to: %s in %d rows",
-                                        languages[whichButton],
-                                        updated);
-
-                                FormController formController = getFormController();
-                                formController.setLanguage(languages[whichButton]);
-                                dialog.dismiss();
-                                if (formController.currentPromptIsQuestion()) {
-                                    saveAnswersForCurrentScreen(DO_NOT_EVALUATE_CONSTRAINTS);
-                                }
-                                onScreenRefresh();
+                        (dialog, whichButton) -> {
+                            Form form = formsRepository.getOneByPath(formPath);
+                            if (form != null) {
+                                formsRepository.save(new Form.Builder(form)
+                                        .language(languages[whichButton])
+                                        .build()
+                                );
                             }
+
+                            getFormController().setLanguage(languages[whichButton]);
+                            dialog.dismiss();
+                            if (getFormController().currentPromptIsQuestion()) {
+                                saveAnswersForCurrentScreen(DO_NOT_EVALUATE_CONSTRAINTS);
+                            }
+                            onScreenRefresh();
                         })
                 .setTitle(getString(R.string.change_language))
                 .setNegativeButton(getString(R.string.do_not_change), null).create();
@@ -1939,18 +1896,12 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             backgroundLocationViewModel.locationPermissionChanged();
             locationPermissionsPreviouslyGranted = !locationPermissionsPreviouslyGranted;
         }
-        activityDisplayed();
-    }
-
-    @Override
-    protected void onStop() {
-        backgroundLocationViewModel.activityHidden();
-
-        super.onStop();
     }
 
     @Override
     protected void onPause() {
+        backgroundLocationViewModel.activityHidden();
+
         FormController formController = getFormController();
 
         // make sure we're not already saving to disk. if we are, currentPrompt
@@ -1969,8 +1920,10 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     protected void onResume() {
         super.onResume();
 
-        String navigation = preferencesDataSourceProvider.getGeneralPreferences().getString(KEY_NAVIGATION);
-        showNavigationButtons = navigation.contains(GeneralKeys.NAVIGATION_BUTTONS);
+        activityDisplayed();
+
+        String navigation = settingsProvider.getGeneralSettings().getString(KEY_NAVIGATION);
+        showNavigationButtons = navigation.contains(ProjectKeys.NAVIGATION_BUTTONS);
 
         findViewById(R.id.buttonholder).setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
         findViewById(R.id.shadow_up).setVisibility(showNavigationButtons ? View.VISIBLE : View.GONE);
@@ -2185,18 +2138,19 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 String[] languageTest = formController.getLanguages();
                 if (languageTest != null) {
                     String defaultLanguage = formController.getLanguage();
-                    String newLanguage = FormsDaoHelper.getFormLanguage(formPath);
+                    Form form = formsRepository.getOneByPath(formPath);
 
-                    long start = System.currentTimeMillis();
-                    Timber.i("calling formController.setLanguage");
-                    try {
-                        formController.setLanguage(newLanguage);
-                    } catch (Exception e) {
-                        // if somehow we end up with a bad language, set it to the default
-                        Timber.i("Ended up with a bad language. %s", newLanguage);
-                        formController.setLanguage(defaultLanguage);
+                    if (form != null) {
+                        String newLanguage = form.getLanguage();
+
+                        try {
+                            formController.setLanguage(newLanguage);
+                        } catch (Exception e) {
+                            // if somehow we end up with a bad language, set it to the default
+                            Timber.i("Ended up with a bad language. %s", newLanguage);
+                            formController.setLanguage(defaultLanguage);
+                        }
                     }
-                    Timber.i("Done in %.3f seconds.", (System.currentTimeMillis() - start) / 1000F);
                 }
 
                 boolean pendingActivityResult = task.hasPendingActivityResult();
@@ -2305,7 +2259,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             registerReceiver(locationProvidersReceiver, new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION));
         }
 
-        // onStart ran before the form was loaded. Let the viewModel know that the activity
+        // onResume ran before the form was loaded. Let the viewModel know that the activity
         // is about to be displayed and configured. Do this before the refresh actually
         // happens because if audit logging is enabled, the refresh logs a question event
         // and we want that to show up after initialization events.
@@ -2361,7 +2315,15 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         String action = getIntent().getAction();
         if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_EDIT.equals(action)) {
             // caller is waiting on a picked form
-            Uri uri = InstancesDaoHelper.getLastInstanceUri(getAbsoluteInstancePath());
+            Uri uri = null;
+            String path = getAbsoluteInstancePath();
+            if (path != null) {
+                Instance instance = new InstancesRepositoryProvider(this).get().getOneByPath(path);
+                if (instance != null) {
+                    uri = InstancesContract.getUri(currentProjectProvider.getCurrentProject().getUuid(), instance.getDbId());
+                }
+            }
+
             if (uri != null) {
                 setResult(RESULT_OK, new Intent().setData(uri));
             }

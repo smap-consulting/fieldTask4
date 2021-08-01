@@ -12,11 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.configure.SettingsImporter;
 import org.odk.collect.android.injection.config.AppDependencyModule;
-import org.odk.collect.android.support.RobolectricHelpers;
-import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.support.CollectHelpers;
+import org.odk.collect.projects.Project;
 import org.robolectric.Robolectric;
 
 import java.io.ByteArrayInputStream;
@@ -29,7 +28,6 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.odk.collect.android.configure.qr.QRCodeMenuDelegate.SELECT_PHOTO;
 import static org.robolectric.Shadows.shadowOf;
@@ -37,15 +35,14 @@ import static org.robolectric.shadows.ShadowToast.getTextOfLatestToast;
 
 @RunWith(AndroidJUnit4.class)
 public class QRCodeActivityResultDelegateTest {
-
     private final FakeQRDecoder fakeQRDecoder = new FakeQRDecoder();
     private final SettingsImporter settingsImporter = mock(SettingsImporter.class);
+    private final Project.Saved project = mock(Project.Saved.class);
     private Activity context;
-    private final Analytics analytics = mock(Analytics.class);
 
     @Before
     public void setup() {
-        RobolectricHelpers.overrideAppDependencyModule(new AppDependencyModule() {
+        CollectHelpers.overrideAppDependencyModule(new AppDependencyModule() {
 
             @Override
             public QRCodeDecoder providesQRCodeDecoder() {
@@ -62,19 +59,12 @@ public class QRCodeActivityResultDelegateTest {
         assertThat(getTextOfLatestToast(), is(context.getString(R.string.successfully_imported_settings)));
     }
 
-    @Test
-    public void forSelectPhoto_importsSettingsFromQRCode_logsSuccessAnalytics() {
-        importSettingsFromQRCode_successfully();
-        String contentsHash = FileUtils.getMd5Hash(new ByteArrayInputStream("data".getBytes()));
-        verify(analytics).logEvent("SettingsImportQrImage", "Success", contentsHash);
-    }
-
     private void importSettingsFromQRCode_successfully() {
-        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, analytics);
+        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, project);
 
         Intent data = intentWithData("file://qr", "qr");
         fakeQRDecoder.register("qr", "data");
-        when(settingsImporter.fromJSON("data")).thenReturn(true);
+        when(settingsImporter.fromJSON("data", project)).thenReturn(true);
 
         delegate.onActivityResult(SELECT_PHOTO, Activity.RESULT_OK, data);
     }
@@ -85,19 +75,12 @@ public class QRCodeActivityResultDelegateTest {
         assertThat(getTextOfLatestToast(), is(context.getString(R.string.invalid_qrcode)));
     }
 
-    @Test
-    public void forSelectPhoto_whenImportingFails_logsInvalidAnalytics() {
-        importSettingsFromQRCode_withFailedImport();
-        String contentsHash = FileUtils.getMd5Hash(new ByteArrayInputStream("data".getBytes()));
-        verify(analytics).logEvent("SettingsImportQrImage", "No valid settings", contentsHash);
-    }
-
     private void importSettingsFromQRCode_withFailedImport() {
-        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, analytics);
+        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, project);
 
         Intent data = intentWithData("file://qr", "qr");
         fakeQRDecoder.register("qr", "data");
-        when(settingsImporter.fromJSON("data")).thenReturn(false);
+        when(settingsImporter.fromJSON("data", project)).thenReturn(false);
 
         delegate.onActivityResult(SELECT_PHOTO, Activity.RESULT_OK, data);
     }
@@ -108,18 +91,12 @@ public class QRCodeActivityResultDelegateTest {
         assertThat(getTextOfLatestToast(), is(context.getString(R.string.invalid_qrcode)));
     }
 
-    @Test
-    public void forSelectPhoto_whenQRCodeDecodeFailsWithInvalid_logsInvalidAnalytics() {
-        importSettingsFromQrCode_withInvalidQrCode();
-        verify(analytics).logEvent("SettingsImportQrImage", "Invalid exception", "none");
-    }
-
     private void importSettingsFromQrCode_withInvalidQrCode() {
-        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, analytics);
+        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, project);
 
         Intent data = intentWithData("file://qr", "qr");
         fakeQRDecoder.failsWith(new QRCodeDecoder.InvalidException());
-        when(settingsImporter.fromJSON("data")).thenReturn(false);
+        when(settingsImporter.fromJSON("data", project)).thenReturn(false);
 
         delegate.onActivityResult(SELECT_PHOTO, Activity.RESULT_OK, data);
     }
@@ -130,31 +107,25 @@ public class QRCodeActivityResultDelegateTest {
         assertThat(getTextOfLatestToast(), is(context.getString(R.string.qr_code_not_found)));
     }
 
-    @Test
-    public void forSelectPhoto_whenQRCodeDecodeFailsWithNotFound_logsNoQrAnalytics() {
-        importSettingsFromImage_withoutQrCode();
-        verify(analytics).logEvent("SettingsImportQrImage", "No QR code", "none");
-    }
-
     private void importSettingsFromImage_withoutQrCode() {
-        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, analytics);
+        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, project);
 
         Intent data = intentWithData("file://qr", "qr");
         fakeQRDecoder.failsWith(new QRCodeDecoder.NotFoundException());
-        when(settingsImporter.fromJSON("data")).thenReturn(false);
+        when(settingsImporter.fromJSON("data", project)).thenReturn(false);
 
         delegate.onActivityResult(SELECT_PHOTO, Activity.RESULT_OK, data);
     }
 
     @Test
     public void forSelectPhoto_whenDataIsNull_doesNothing() {
-        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, analytics);
+        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, project);
         delegate.onActivityResult(SELECT_PHOTO, Activity.RESULT_OK, null);
     }
 
     @Test
     public void forSelectPhoto_whenResultCancelled_doesNothing() {
-        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, analytics);
+        QRCodeActivityResultDelegate delegate = new QRCodeActivityResultDelegate(context, settingsImporter, fakeQRDecoder, project);
         delegate.onActivityResult(SELECT_PHOTO, Activity.RESULT_CANCELED, new Intent());
     }
 

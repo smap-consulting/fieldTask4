@@ -35,7 +35,7 @@ public class MatchExactlyTest {
 
     @Test
     public void whenMatchExactlyEnabled_clickingFillBlankForm_andClickingRefresh_getsLatestFormsFromServer() {
-        FillBlankFormPage page = rule.mainMenu()
+        FillBlankFormPage page = rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enableMatchExactly()
                 .clickFillBlankForm()
@@ -55,7 +55,7 @@ public class MatchExactlyTest {
     public void whenMatchExactlyEnabled_clickingFillBlankForm_andClickingRefresh_whenThereIsAnError_showsNotification_andClickingNotification_returnsToFillBlankForms() throws Exception {
         testDependencies.server.alwaysReturnError();
 
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enableMatchExactly()
                 .clickFillBlankForm()
@@ -67,8 +67,8 @@ public class MatchExactlyTest {
                         "ODK Collect",
                         "Form update failed",
                         "Fill Blank Form",
-                        new FillBlankFormPage(rule)
-                ).pressBack(new MainMenuPage(rule)); // Check we return to Fill Blank Form, not open a new one
+                        new FillBlankFormPage()
+                ).pressBack(new MainMenuPage()); // Check we return to Fill Blank Form, not open a new one
     }
 
     @Test
@@ -76,21 +76,21 @@ public class MatchExactlyTest {
         testDependencies.server.addForm("One Question Updated", "one_question", "2", "one-question-updated.xml");
         testDependencies.server.setCredentials("Klay", "Thompson");
 
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enableMatchExactly()
                 .clickFillBlankForm()
                 .clickRefreshWithAuthError()
                 .fillUsername("Klay")
                 .fillPassword("Thompson")
-                .clickOK(new FillBlankFormPage(rule))
+                .clickOK(new FillBlankFormPage())
                 .clickRefresh()
                 .assertText("One Question Updated");
     }
 
     @Test
     public void whenMatchExactlyEnabled_getsLatestFormsFromServer_automaticallyAndRepeatedly() throws Exception {
-        MainMenuPage page = rule.mainMenu()
+        MainMenuPage page = rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enableMatchExactly();
 
@@ -102,7 +102,7 @@ public class MatchExactlyTest {
                 .assertText("Two Question")
                 .assertText("One Question Updated")
                 .assertTextDoesNotExist("One Question Repeat")
-                .pressBack(new MainMenuPage(rule));
+                .pressBack(new MainMenuPage());
 
         testDependencies.server.removeForm("Two Question");
         testDependencies.scheduler.runDeferredTasks();
@@ -115,7 +115,7 @@ public class MatchExactlyTest {
 
     @Test
     public void whenMatchExactlyEnabled_hidesGetBlankFormsAndDeleteBlankForms() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .enableMatchExactly()
                 .assertTextNotDisplayed(R.string.get_forms)
                 .clickDeleteSavedForm()
@@ -124,7 +124,7 @@ public class MatchExactlyTest {
 
     @Test
     public void whenMatchExactlyDisabled_stopsSyncingAutomatically() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enableMatchExactly()
                 .enableManualUpdates();

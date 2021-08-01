@@ -3,10 +3,9 @@ package org.odk.collect.android.support.pages;
 import android.database.Cursor;
 
 import androidx.test.espresso.matcher.CursorMatchers;
-import androidx.test.rule.ActivityTestRule;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
+import org.odk.collect.android.database.forms.DatabaseFormColumns;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -17,6 +16,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.CursorMatchers.withRowString;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
@@ -24,10 +24,6 @@ import static org.hamcrest.core.AllOf.allOf;
 import static org.odk.collect.android.support.CustomMatchers.withIndex;
 
 public class FillBlankFormPage extends Page<FillBlankFormPage> {
-
-    public FillBlankFormPage(ActivityTestRule rule) {
-        super(rule);
-    }
 
     @Override
     public FillBlankFormPage assertOnPage() {
@@ -37,7 +33,7 @@ public class FillBlankFormPage extends Page<FillBlankFormPage> {
 
     public IdentifyUserPromptPage clickOnFormWithIdentityPrompt(String formName) {
         clickOnFormButton(formName);
-        return new IdentifyUserPromptPage(formName, rule).assertOnPage();
+        return new IdentifyUserPromptPage(formName).assertOnPage();
     }
 
     public FillBlankFormPage clickOnSortByButton() {
@@ -52,7 +48,7 @@ public class FillBlankFormPage extends Page<FillBlankFormPage> {
 
     public BlankFormSearchPage searchInBar(String query) {
         onView(withId(R.id.search_src_text)).perform(replaceText(query));
-        return new BlankFormSearchPage(rule).assertOnPage();
+        return new BlankFormSearchPage().assertOnPage();
     }
 
     public FillBlankFormPage checkIsFormSubtextDisplayed() {
@@ -61,39 +57,39 @@ public class FillBlankFormPage extends Page<FillBlankFormPage> {
     }
 
     public FillBlankFormPage checkMapIconDisplayedForForm(String formName) {
-        onData(allOf(is(instanceOf(Cursor.class)), CursorMatchers.withRowString(FormsColumns.DISPLAY_NAME, is(formName))))
+        onData(allOf(is(instanceOf(Cursor.class)), CursorMatchers.withRowString(DatabaseFormColumns.DISPLAY_NAME, is(formName))))
                 .onChildView(withId(R.id.map_button))
                 .check(matches(isDisplayed()));
         return this;
     }
 
     public FillBlankFormPage checkMapIconNotDisplayedForForm(String formName) {
-        onData(allOf(is(instanceOf(Cursor.class)), CursorMatchers.withRowString(FormsColumns.DISPLAY_NAME, is(formName))))
+        onData(allOf(is(instanceOf(Cursor.class)), CursorMatchers.withRowString(DatabaseFormColumns.DISPLAY_NAME, is(formName))))
                 .onChildView(withId(R.id.map_button))
                 .check(matches(not(isDisplayed())));
         return this;
     }
 
     public FormMapPage clickOnMapIconForForm(String formName) {
-        onData(allOf(is(instanceOf(Cursor.class)), CursorMatchers.withRowString(FormsColumns.DISPLAY_NAME, is(formName))))
+        onData(allOf(is(instanceOf(Cursor.class)), CursorMatchers.withRowString(DatabaseFormColumns.DISPLAY_NAME, is(formName))))
                 .onChildView(withId(R.id.map_button))
                 .perform(click());
-        return new FormMapPage(rule).assertOnPage();
+        return new FormMapPage().assertOnPage();
     }
 
     public FormEntryPage clickOnForm(String formName) {
         clickOnFormButton(formName);
-        return new FormEntryPage(formName, rule);
+        return new FormEntryPage(formName);
     }
 
     private void clickOnFormButton(String formName) {
         assertFormExists(formName);
-        onData(withRowString(FormsColumns.DISPLAY_NAME, formName)).perform(click());
+        onData(withRowString(DatabaseFormColumns.DISPLAY_NAME, formName)).perform(click());
     }
 
     public FormEndPage clickOnEmptyForm(String formName) {
         clickOnFormButton(formName);
-        return new FormEndPage(formName, rule).assertOnPage();
+        return new FormEndPage(formName).assertOnPage();
     }
 
     public FillBlankFormPage clickRefresh() {
@@ -108,20 +104,22 @@ public class FillBlankFormPage extends Page<FillBlankFormPage> {
 
     public ServerAuthDialog clickRefreshWithAuthError() {
         onView(withId(R.id.menu_refresh)).perform(click());
-        return new ServerAuthDialog(rule).assertOnPage();
+        return new ServerAuthDialog().assertOnPage();
     }
 
     public FillBlankFormPage assertFormExists(String formName) {
         // Seen problems with disk syncing not being waited for even though it's an AsyncTask
         return waitFor(() -> {
             assertTextNotDisplayed(R.string.no_items_display_forms);
-            onData(withRowString(FormsColumns.DISPLAY_NAME, formName)).check(matches(isDisplayed()));
+            onData(withRowString(DatabaseFormColumns.DISPLAY_NAME, formName)).check(matches(isDisplayed()));
             return this;
         });
     }
 
     public FillBlankFormPage assertFormDoesNotExist(String formName) {
-        onData(withRowString(FormsColumns.DISPLAY_NAME, formName)).check(doesNotExist());
+        // It seems like `doesNotExist` doesn't work with onData (you get an error that the thing
+        // you're looking for doesn't exists)
+        onView(withText(formName)).check(doesNotExist());
         return this;
     }
 

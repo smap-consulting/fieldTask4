@@ -14,7 +14,7 @@ import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.pages.FormEntryPage;
-import org.odk.collect.android.support.pages.GeneralSettingsPage;
+import org.odk.collect.android.support.pages.ProjectSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
 //Issue NODK-237
@@ -35,7 +35,7 @@ public class FormManagementTest {
     @Test
     public void validationUponSwipe_ShouldDisplay() {
         //TestCase7,8
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("OnePageFormValid")
                 .inputText("Bla")
                 .swipeToNextQuestion()
@@ -45,8 +45,8 @@ public class FormManagementTest {
                 .openFormManagement()
                 .openConstraintProcessing()
                 .clickOnString(R.string.constraint_behavior_on_finalize)
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new FormEntryPage("OnePageFormValid", rule))
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new FormEntryPage("OnePageFormValid"))
                 .swipeToNextQuestion()
                 .swipeToEndScreen()
                 .clickSaveAndExitWithError()
@@ -56,14 +56,14 @@ public class FormManagementTest {
     @Test
     public void guidanceForQuestion_ShouldDisplayAlways() {
         //TestCase10
-        new MainMenuPage(rule)
-                .clickOnMenu()
+        new MainMenuPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .openFormManagement()
                 .openShowGuidanceForQuestions()
                 .clickOnString(R.string.guidance_yes)
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
                 .startBlankForm("hints textq")
                 .assertText("1 very very very very very very very very very very long text")
                 .swipeToEndScreen()
@@ -73,14 +73,14 @@ public class FormManagementTest {
     @Test
     public void guidanceForQuestion_ShouldBeCollapsed() {
         //TestCase11
-        new MainMenuPage(rule)
-                .clickOnMenu()
+        new MainMenuPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .openFormManagement()
                 .openShowGuidanceForQuestions()
                 .clickOnString(R.string.guidance_yes_collapsed)
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
                 .startBlankForm("hints textq")
                 .checkIsIdDisplayed(R.id.help_icon)
                 .clickOnText("Hint 1")

@@ -25,29 +25,46 @@ import androidx.multidex.MultiDex;
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.application.initialization.ApplicationInitializer;
-import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.external.ExternalDataManager;
+import org.odk.collect.android.externaldata.ExternalDataManager;
 import org.odk.collect.android.injection.config.AppDependencyComponent;
 import org.odk.collect.android.injection.config.DaggerAppDependencyComponent;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
-import org.odk.collect.android.storage.StoragePathProvider;
-import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.preferences.source.SettingsProvider;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.LocaleHelper;
+import org.odk.collect.androidshared.data.AppState;
+import org.odk.collect.androidshared.data.StateStore;
+import org.odk.collect.audiorecorder.AudioRecorderDependencyComponent;
+import org.odk.collect.audiorecorder.AudioRecorderDependencyComponentProvider;
+import org.odk.collect.audiorecorder.DaggerAudioRecorderDependencyComponent;
+import org.odk.collect.forms.Form;
+import org.odk.collect.projects.DaggerProjectsDependencyComponent;
+import org.odk.collect.projects.ProjectsDependencyComponent;
+import org.odk.collect.projects.ProjectsDependencyComponentProvider;
+import org.odk.collect.projects.ProjectsDependencyModule;
+import org.odk.collect.projects.ProjectsRepository;
+import org.odk.collect.shared.Settings;
+import org.odk.collect.shared.strings.Md5;
 import org.odk.collect.strings.LocalizedApplication;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 
 import javax.inject.Inject;
 
-import static org.odk.collect.android.preferences.MetaKeys.KEY_GOOGLE_BUG_154855417_FIXED;
+import static org.odk.collect.android.preferences.keys.MetaKeys.KEY_GOOGLE_BUG_154855417_FIXED;
 
-public class Collect extends Application implements LocalizedApplication {
+public class Collect extends Application implements
+        LocalizedApplication,
+        AudioRecorderDependencyComponentProvider,
+        ProjectsDependencyComponentProvider,
+        StateStore {
     public static String defaultSysLanguage;
     private static Collect singleton;
+
+    private final AppState appState = new AppState();
 
     @Nullable
     private FormController formController;
@@ -58,35 +75,24 @@ public class Collect extends Application implements LocalizedApplication {
     ApplicationInitializer applicationInitializer;
 
     @Inject
-    PreferencesDataSourceProvider preferencesDataSourceProvider;
+    SettingsProvider settingsProvider;
 
+    @Inject
+    ProjectsRepository projectsRepository;
+
+    private AudioRecorderDependencyComponent audioRecorderDependencyComponent;
+    private ProjectsDependencyComponent projectsDependencyComponent;
+
+    /**
+     * @deprecated we shouldn't have to reference a static singleton of the application. Code doing this
+     * should either have a {@link Context} instance passed to it (or have any references removed if
+     * possible).
+     */
+    @Deprecated
     public static Collect getInstance() {
         return singleton;
     }
 
-    /**
-     * Predicate that tests whether a directory path might refer to an
-     * ODK Tables instance data directory (e.g., for media attachments).
-     */
-    public static boolean isODKTablesInstanceDataDirectory(File directory) {
-        /*
-         * Special check to prevent deletion of files that
-         * could be in use by ODK Tables.
-         */
-        String dirPath = directory.getAbsolutePath();
-        StoragePathProvider storagePathProvider = new StoragePathProvider();
-        if (dirPath.startsWith(storagePathProvider.getOdkRootDirPath())) {
-            dirPath = dirPath.substring(storagePathProvider.getOdkRootDirPath().length());
-            String[] parts = dirPath.split(File.separatorChar == '\\' ? "\\\\" : File.separator);
-            // [appName, instances, tableId, instanceId ]
-            if (parts.length == 4 && parts[1].equals("instances")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Nullable
     public FormController getFormController() {
         return formController;
     }
@@ -116,14 +122,28 @@ public class Collect extends Application implements LocalizedApplication {
     @Override
     public void onCreate() {
         super.onCreate();
+        testStorage();
+
         singleton = this;
 
         setupDagger();
         applicationInitializer.initialize();
-        
+
         fixGoogleBug154855417();
 
         setupStrictMode();
+    }
+
+    private void testStorage() {
+        // Throw specific error to avoid later ones if the app won't be able to access storage
+        try {
+            File externalFilesDir = getExternalFilesDir(null);
+            File testFile = new File(externalFilesDir + File.separator + ".test");
+            testFile.createNewFile();
+            testFile.delete();
+        } catch (IOException e) {
+            throw new IllegalStateException("App can't write to storage!");
+        }
     }
 
     /**
@@ -149,8 +169,33 @@ public class Collect extends Application implements LocalizedApplication {
         applicationComponent = DaggerAppDependencyComponent.builder()
                 .application(this)
                 .build();
-
         applicationComponent.inject(this);
+
+        audioRecorderDependencyComponent = DaggerAudioRecorderDependencyComponent.builder()
+                .application(this)
+                .build();
+
+        projectsDependencyComponent = DaggerProjectsDependencyComponent.builder()
+                .projectsDependencyModule(new ProjectsDependencyModule() {
+                    @NotNull
+                    @Override
+                    public ProjectsRepository providesProjectsRepository() {
+                        return projectsRepository;
+                    }
+                })
+                .build();
+    }
+
+    @NotNull
+    @Override
+    public AudioRecorderDependencyComponent getAudioRecorderDependencyComponent() {
+        return audioRecorderDependencyComponent;
+    }
+
+    @NotNull
+    @Override
+    public ProjectsDependencyComponent getProjectsDependencyComponent() {
+        return projectsDependencyComponent;
     }
 
     @Override
@@ -186,19 +231,24 @@ public class Collect extends Application implements LocalizedApplication {
 
     /**
      * Gets a unique, privacy-preserving identifier for a form based on its id and version.
-     * @param formId id of a form
+     *
+     * @param formId      id of a form
      * @param formVersion version of a form
      * @return md5 hash of the form title, a space, the form ID
      */
     public static String getFormIdentifierHash(String formId, String formVersion) {
-        String formIdentifier = new FormsDao().getFormTitleForFormIdAndFormVersion(formId, formVersion) + " " + formId;
-        return FileUtils.getMd5Hash(new ByteArrayInputStream(formIdentifier.getBytes()));
+        Form form = new FormsRepositoryProvider(Collect.getInstance()).get().getLatestByFormIdAndVersion(formId, formVersion);
+
+        String formTitle = form != null ? form.getDisplayName() : "";
+
+        String formIdentifier = formTitle + " " + formId;
+        return Md5.getMd5Hash(new ByteArrayInputStream(formIdentifier.getBytes()));
     }
 
     // https://issuetracker.google.com/issues/154855417
     private void fixGoogleBug154855417() {
         try {
-            PreferencesDataSource metaSharedPreferences = preferencesDataSourceProvider.getMetaPreferences();
+            Settings metaSharedPreferences = settingsProvider.getMetaSettings();
 
             boolean hasFixedGoogleBug154855417 = metaSharedPreferences.getBoolean(KEY_GOOGLE_BUG_154855417_FIXED);
 
@@ -216,6 +266,12 @@ public class Collect extends Application implements LocalizedApplication {
     @NotNull
     @Override
     public Locale getLocale() {
-        return new Locale(LocaleHelper.getLocaleCode(preferencesDataSourceProvider.getGeneralPreferences()));
+        return new Locale(LocaleHelper.getLocaleCode(settingsProvider.getGeneralSettings()));
+    }
+
+    @NotNull
+    @Override
+    public AppState getState() {
+        return appState;
     }
 }

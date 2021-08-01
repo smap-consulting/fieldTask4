@@ -31,7 +31,7 @@ import org.odk.collect.android.geo.MapFragment;
 import org.odk.collect.android.geo.MapPoint;
 import org.odk.collect.android.geo.MapProvider;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.preferences.MapsPreferences;
+import org.odk.collect.android.preferences.screens.MapsPreferencesFragment;
 import org.odk.collect.android.utilities.GeoUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 
@@ -177,7 +177,7 @@ public class GeoPointMapActivity extends BaseGeoMapActivity {
         }
 
         if (result != null) {
-            setResult(RESULT_OK, new Intent().putExtra(FormEntryActivity.LOCATION_RESULT, result));
+            setResult(RESULT_OK, new Intent().putExtra(FormEntryActivity.ANSWER_KEY, result));
         }
         finish();
     }
@@ -206,7 +206,7 @@ public class GeoPointMapActivity extends BaseGeoMapActivity {
 
         // Menu Layer Toggle
         findViewById(R.id.layer_menu).setOnClickListener(v -> {
-            MapsPreferences.showReferenceLayerDialog(this);
+            MapsPreferencesFragment.showReferenceLayerDialog(this);
         });
 
         clearButton = findViewById(R.id.clear);

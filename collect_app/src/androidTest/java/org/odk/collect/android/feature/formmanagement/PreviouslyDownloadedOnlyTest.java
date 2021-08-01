@@ -38,7 +38,7 @@ public class PreviouslyDownloadedOnlyTest {
 
     @Test
     public void whenPreviouslyDownloadedOnlyEnabled_notifiesOnFormUpdates_automaticallyAndRepeatedly() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enablePreviouslyDownloadedOnlyUpdates();
 
@@ -55,7 +55,7 @@ public class PreviouslyDownloadedOnlyTest {
 
     @Test
     public void whenPreviouslyDownloadedOnlyEnabled_clickingOnNotification_navigatesToGetBlankForm() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enablePreviouslyDownloadedOnlyUpdates();
 
@@ -63,21 +63,21 @@ public class PreviouslyDownloadedOnlyTest {
         testDependencies.scheduler.runDeferredTasks();
 
         notificationDrawer.open()
-                .clickNotification("Collect", "Form updates available", "Get Blank Form", new GetBlankFormPage(rule))
+                .clickNotification("Collect", "Form updates available", "Get Blank Form", new GetBlankFormPage())
                 .assertText(R.string.newer_version_of_a_form_info)
                 .assertOnPage();
     }
 
     @Test
     public void whenPreviouslyDownloadedOnlyEnabled_getBlankFormsIsAvailable() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .enablePreviouslyDownloadedOnlyUpdates()
                 .assertText(R.string.get_forms);
     }
 
     @Test
     public void whenPreviouslyDownloadedOnlyEnabled_fillBlankFormRefreshButtonIsGone() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .enablePreviouslyDownloadedOnlyUpdates()
                 .clickFillBlankForm();
 
@@ -86,7 +86,7 @@ public class PreviouslyDownloadedOnlyTest {
 
     @Test
     public void whenPreviouslyDownloadedOnlyDisabled_stopsCheckingForUpdates() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .enablePreviouslyDownloadedOnlyUpdates()
                 .enableManualUpdates();

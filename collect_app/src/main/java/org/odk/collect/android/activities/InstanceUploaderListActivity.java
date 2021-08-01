@@ -16,7 +16,6 @@ package org.odk.collect.android.activities;
 
 import android.content.Intent;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,17 +33,18 @@ import androidx.loader.content.Loader;
 import androidx.work.WorkInfo;
 import androidx.work.WorkManager;
 
+import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.InstanceUploaderAdapter;
-import org.odk.collect.analytics.Analytics;
-import org.odk.collect.android.backgroundwork.SchedulerFormUpdateAndSubmitManager;
-import org.odk.collect.android.dao.InstancesDao;
+import org.odk.collect.android.backgroundwork.FormUpdateAndInstanceSubmitScheduler;
+import org.odk.collect.android.backgroundwork.InstanceSubmitScheduler;
+import org.odk.collect.android.dao.CursorLoaderFactory;
 import org.odk.collect.android.gdrive.GoogleSheetsUploaderActivity;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.listeners.DiskSyncListener;
 import org.odk.collect.android.network.NetworkStateProvider;
-import org.odk.collect.android.preferences.PreferencesActivity;
-import org.odk.collect.android.tasks.InstanceSyncTask;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity;
+import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 import org.odk.collect.android.utilities.ToastUtils;
@@ -58,7 +58,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import timber.log.Timber;
 
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_PROTOCOL;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_PROTOCOL;
 
 /**
  * Responsible for displaying all the valid forms in the forms directory. Stores
@@ -69,7 +69,7 @@ import static org.odk.collect.android.preferences.GeneralKeys.KEY_PROTOCOL;
  */
 
 public class InstanceUploaderListActivity extends InstanceListActivity implements
-        OnLongClickListener, DiskSyncListener, AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+        OnLongClickListener, AdapterView.OnItemClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     private static final String SHOW_ALL_MODE = "showAllMode";
     private static final String INSTANCE_UPLOADER_LIST_SORTING_ORDER = "instanceUploaderListSortingOrder";
 
@@ -81,9 +81,8 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
     @BindView(R.id.toggle_button)
     Button toggleSelsButton;
 
-    private InstancesDao instancesDao;
-
-    private InstanceSyncTask instanceSyncTask;
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
 
     private boolean showAllMode;
 
@@ -96,6 +95,9 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
 
     @Inject
     NetworkStateProvider connectivityProvider;
+
+    @Inject
+    InstanceSubmitScheduler instanceSubmitScheduler;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -145,7 +147,6 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
 
     void init() {
         uploadButton.setText(R.string.send_selected_data);
-        instancesDao = new InstancesDao();
 
         toggleSelsButton.setLongClickable(true);
         toggleSelsButton.setOnClickListener(v -> {
@@ -171,11 +172,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
             uploadButton.setEnabled(areCheckedItems());
         });
 
-        instanceSyncTask = new InstanceSyncTask(preferencesDataSourceProvider);
-        instanceSyncTask.setDiskSyncListener(this);
-        instanceSyncTask.execute();
-
-        sortingOptions = new int[] {
+        sortingOptions = new int[]{
                 R.string.sort_by_name_asc, R.string.sort_by_name_desc,
                 R.string.sort_by_date_asc, R.string.sort_by_date_desc
         };
@@ -190,7 +187,10 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
      * Updates whether an auto-send job is ongoing.
      */
     private void updateAutoSendStatus() {
-        LiveData<List<WorkInfo>> statuses = WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(SchedulerFormUpdateAndSubmitManager.AUTO_SEND_TAG);
+        // This shouldn't use WorkManager directly but it's likely this code will be removed when
+        // we eventually move sending forms to a Foreground Service (rather than a blocking AsyncTask)
+        String tag = ((FormUpdateAndInstanceSubmitScheduler) instanceSubmitScheduler).getAutoSendTag(currentProjectProvider.getCurrentProject().getUuid());
+        LiveData<List<WorkInfo>> statuses = WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData(tag);
         statuses.observe(this, workStatuses -> {
             if (workStatuses != null) {
                 for (WorkInfo status : workStatuses) {
@@ -207,37 +207,15 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
     @Override
     protected void onResume() {
         super.onResume();
-        if (instanceSyncTask != null) {
-            instanceSyncTask.setDiskSyncListener(this);
-            if (instanceSyncTask.getStatus() == AsyncTask.Status.FINISHED) {
-                syncComplete(instanceSyncTask.getStatusMessage());
-            }
-
-        }
         uploadButton.setText(R.string.send_selected_data);
-    }
-
-    @Override
-    protected void onPause() {
-        if (instanceSyncTask != null) {
-            instanceSyncTask.setDiskSyncListener(null);
-        }
-        super.onPause();
-    }
-
-    @Override
-    public void syncComplete(@NonNull String result) {
-        Timber.i("Disk scan complete");
-        hideProgressBarAndAllow();
-        showSnackbar(result);
     }
 
     private void uploadSelectedFiles() {
         long[] instanceIds = listView.getCheckedItemIds();
 
-        String server = preferencesDataSourceProvider.getGeneralPreferences().getString(KEY_PROTOCOL);
+        String server = settingsProvider.getGeneralSettings().getString(KEY_PROTOCOL);
 
-        if (server.equalsIgnoreCase(getString(R.string.protocol_google_sheets))) {
+        if (server.equalsIgnoreCase(ProjectKeys.PROTOCOL_GOOGLE_SHEETS)) {
             // if it's Sheets, start the Sheets uploader
             // first make sure we have a google account selected
             if (new PlayServicesChecker().isGooglePlayServicesAvailable(this)) {
@@ -279,7 +257,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
     }
 
     private void createPreferencesMenu() {
-        Intent i = new Intent(this, PreferencesActivity.class);
+        Intent i = new Intent(this, ProjectPreferencesActivity.class);
         startActivity(i);
     }
 
@@ -308,6 +286,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
             selectedInstances.clear();
             return;
         }
+
         switch (requestCode) {
             // returns with a form path, start entry
             case INSTANCE_UPLOADER:
@@ -343,15 +322,15 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         showProgressBar();
         if (showAllMode) {
-            return instancesDao.getCompletedUndeletedInstancesCursorLoader(getFilterText(), getSortingOrder());
+            return new CursorLoaderFactory(currentProjectProvider).createCompletedUndeletedInstancesCursorLoader(getFilterText(), getSortingOrder());
         } else {
-            return instancesDao.getFinalizedInstancesCursorLoader(getFilterText(), getSortingOrder());
+            return new CursorLoaderFactory(currentProjectProvider).createFinalizedInstancesCursorLoader(getFilterText(), getSortingOrder());
         }
     }
 
     @Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
-        hideProgressBarIfAllowed();
+        hideProgressBarAndAllow();
         listAdapter.changeCursor(cursor);
         checkPreviouslyCheckedItems();
         toggleButtonLabel(findViewById(R.id.toggle_button), listView);

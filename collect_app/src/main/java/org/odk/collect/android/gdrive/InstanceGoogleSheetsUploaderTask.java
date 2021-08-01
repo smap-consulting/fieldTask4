@@ -14,17 +14,15 @@
 
 package org.odk.collect.android.gdrive;
 
-import android.database.Cursor;
-
-import org.odk.collect.android.R;
 import org.odk.collect.analytics.Analytics;
+import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.forms.Form;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.preferences.GeneralKeys;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.tasks.InstanceUploaderTask;
 import org.odk.collect.android.upload.UploadException;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.InstanceUploaderUtils;
 import org.odk.collect.android.utilities.TranslationHandler;
 
@@ -33,7 +31,7 @@ import java.util.List;
 import timber.log.Timber;
 
 import static org.odk.collect.android.analytics.AnalyticsEvents.SUBMISSION;
-import static org.odk.collect.android.preferences.GeneralKeys.KEY_GOOGLE_SHEETS_URL;
+import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_GOOGLE_SHEETS_URL;
 import static org.odk.collect.android.utilities.InstanceUploaderUtils.DEFAULT_SUCCESSFUL_TEXT;
 import static org.odk.collect.android.utilities.InstanceUploaderUtils.SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE;
 
@@ -49,9 +47,9 @@ public class InstanceGoogleSheetsUploaderTask extends InstanceUploaderTask {
 
     @Override
     protected Outcome doInBackground(Long... instanceIdsToUpload) {
-        String account = preferencesDataSourceProvider
-                .getGeneralPreferences()
-                .getString(GeneralKeys.KEY_SELECTED_GOOGLE_ACCOUNT);
+        String account = settingsProvider
+                .getGeneralSettings()
+                .getString(ProjectKeys.KEY_SELECTED_GOOGLE_ACCOUNT);
 
         InstanceGoogleSheetsUploader uploader = new InstanceGoogleSheetsUploader(googleApiProvider.getDriveApi(account), googleApiProvider.getSheetsApi(account));
         final Outcome outcome = new Outcome();
@@ -62,7 +60,7 @@ public class InstanceGoogleSheetsUploaderTask extends InstanceUploaderTask {
             Instance instance = instancesToUpload.get(i);
 
             if (isCancelled()) {
-                outcome.messagesByInstanceId.put(instance.getId().toString(),
+                outcome.messagesByInstanceId.put(instance.getDbId().toString(),
                         TranslationHandler.getString(Collect.getInstance(), R.string.instance_upload_cancelled));
                 return outcome;
             }
@@ -70,27 +68,25 @@ public class InstanceGoogleSheetsUploaderTask extends InstanceUploaderTask {
             publishProgress(i + 1, instancesToUpload.size());
 
             // Get corresponding blank form and verify there is exactly 1
-            FormsDao dao = new FormsDao();
-            Cursor formCursor = dao.getFormsCursorSortedByDateDesc(instance.getJrFormId(), instance.getJrVersion());
-            List<Form> forms = dao.getFormsFromCursor(formCursor);
+            List<Form> forms = new FormsRepositoryProvider(Collect.getInstance()).get().getAllByFormIdAndVersion(instance.getFormId(), instance.getFormVersion());
 
             if (forms.size() != 1) {
-                outcome.messagesByInstanceId.put(instance.getId().toString(),
+                outcome.messagesByInstanceId.put(instance.getDbId().toString(),
                         TranslationHandler.getString(Collect.getInstance(), R.string.not_exactly_one_blank_form_for_this_form_id));
             } else {
                 try {
-                    String destinationUrl = uploader.getUrlToSubmitTo(instance, null, null, preferencesDataSourceProvider.getGeneralPreferences().getString(KEY_GOOGLE_SHEETS_URL));
+                    String destinationUrl = uploader.getUrlToSubmitTo(instance, null, null, settingsProvider.getGeneralSettings().getString(KEY_GOOGLE_SHEETS_URL));
                     if (InstanceUploaderUtils.doesUrlRefersToGoogleSheetsFile(destinationUrl)) {
                         uploader.uploadOneSubmission(instance, destinationUrl);
-                        outcome.messagesByInstanceId.put(instance.getId().toString(), DEFAULT_SUCCESSFUL_TEXT);
+                        outcome.messagesByInstanceId.put(instance.getDbId().toString(), DEFAULT_SUCCESSFUL_TEXT);
 
-                        analytics.logEvent(SUBMISSION, "HTTP-Sheets", Collect.getFormIdentifierHash(instance.getJrFormId(), instance.getJrVersion()));
+                        analytics.logEvent(SUBMISSION, "HTTP-Sheets", Collect.getFormIdentifierHash(instance.getFormId(), instance.getFormVersion()));
                     } else {
-                        outcome.messagesByInstanceId.put(instance.getId().toString(), SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE);
+                        outcome.messagesByInstanceId.put(instance.getDbId().toString(), SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE);
                     }
                 } catch (UploadException e) {
                     Timber.d(e);
-                    outcome.messagesByInstanceId.put(instance.getId().toString(),
+                    outcome.messagesByInstanceId.put(instance.getDbId().toString(),
                             e.getDisplayMessage());
                 }
             }

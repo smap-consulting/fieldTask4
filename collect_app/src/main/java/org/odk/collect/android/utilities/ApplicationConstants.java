@@ -16,6 +16,8 @@
 
 package org.odk.collect.android.utilities;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+
 import org.odk.collect.android.R;
 
 import java.util.HashMap;
@@ -25,9 +27,9 @@ public class ApplicationConstants {
     // based on http://www.sqlite.org/limits.html
     public static final int SQLITE_MAX_VARIABLE_NUMBER = 999;
 
-    static final String[] TRANSLATIONS_AVAILABLE = {"af", "am", "ar", "bn", "ca", "cs", "da", "de",
-            "en", "es", "et", "fa", "fi", "fr", "hi", "in", "it", "ja", "ka", "km", "ln", "lo_LA",
-            "lt", "mg", "ml", "mr", "ms", "my", "ne_NP", "nl", "no", "pl", "ps", "pt", "ro", "ru",
+    static final String[] TRANSLATIONS_AVAILABLE = {"af", "am", "ar", "bg", "bn", "ca", "cs", "da",
+            "de", "en", "es", "et", "fa", "fi", "fr", "hi", "in", "it", "ja", "ka", "km", "ln", "lo_LA",
+            "lt", "mg", "ml", "mr", "ms", "my", "ne_NP", "nl", "no", "pl", "ps", "pt", "ro", "ru", "rw",
             "si", "sl", "so", "sq", "sr", "sv_SE", "sw", "sw_KE", "te", "th_TH", "ti", "tl", "tr",
             "uk", "ur", "ur_PK", "vi", "zh", "zu"};
 
@@ -75,7 +77,7 @@ public class ApplicationConstants {
 
     public abstract static class RequestCodes {
         public static final int IMAGE_CAPTURE = 1;
-        // public static final int BARCODE_CAPTURE = 2;
+        public static final int BARCODE_CAPTURE = IntentIntegrator.REQUEST_CODE;
         public static final int AUDIO_CAPTURE = 3;
         public static final int VIDEO_CAPTURE = 4;
         public static final int LOCATION_CAPTURE = 5;

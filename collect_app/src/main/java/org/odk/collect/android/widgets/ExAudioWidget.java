@@ -8,7 +8,7 @@ import android.media.MediaMetadataRetriever;
 import android.util.TypedValue;
 import android.view.View;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import androidx.appcompat.app.AlertDialog;
 
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.data.StringData;
@@ -17,12 +17,12 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.audio.AudioControllerView;
-import org.odk.collect.android.dao.helpers.ContentResolverHelper;
 import org.odk.collect.android.databinding.ExAudioWidgetAnswerBinding;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
+import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.QuestionMediaManager;
 import org.odk.collect.android.utilities.ToastUtils;
@@ -116,7 +116,7 @@ public class ExAudioWidget extends QuestionWidget implements FileWidget, WidgetD
             if (object instanceof File) {
                 ToastUtils.showLongToast(R.string.invalid_file_type);
                 mediaUtils.deleteMediaFile(((File) object).getAbsolutePath());
-                Timber.e("ExAudioWidget's setBinaryData must receive a audio file but received: %s", ContentResolverHelper.getMimeType((File) object));
+                Timber.e("ExAudioWidget's setBinaryData must receive a audio file but received: %s", FileUtils.getMimeType((File) object));
             } else {
                 Timber.e("ExAudioWidget's setBinaryData must receive a audio file but received: %s", object.getClass());
             }
@@ -178,7 +178,7 @@ public class ExAudioWidget extends QuestionWidget implements FileWidget, WidgetD
 
                 @Override
                 public void onRemoveClicked() {
-                    new MaterialAlertDialogBuilder(getContext())
+                    new AlertDialog.Builder(getContext())
                             .setTitle(R.string.delete_answer_file_question)
                             .setMessage(R.string.answer_file_delete_warning)
                             .setPositiveButton(R.string.delete_answer_file, (dialog, which) -> clearAnswer())

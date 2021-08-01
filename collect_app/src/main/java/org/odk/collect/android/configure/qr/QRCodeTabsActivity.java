@@ -16,7 +16,7 @@ import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.configure.SettingsImporter;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.PermissionListener;
-import org.odk.collect.android.preferences.JsonPreferencesGenerator;
+import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.FileProvider;
 import org.odk.collect.android.utilities.MultiClickGuard;
@@ -50,7 +50,10 @@ public class QRCodeTabsActivity extends CollectAbstractActivity {
     Analytics analytics;
 
     @Inject
-    JsonPreferencesGenerator jsonPreferencesGenerator;
+    AppConfigurationGenerator appConfigurationGenerator;
+
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
 
     private QRCodeMenuDelegate menuDelegate;
     private QRCodeActivityResultDelegate activityResultDelegate;
@@ -60,12 +63,12 @@ public class QRCodeTabsActivity extends CollectAbstractActivity {
         super.onCreate(savedInstanceState);
         DaggerUtils.getComponent(this).inject(this);
 
-        menuDelegate = new QRCodeMenuDelegate(this, activityAvailability, qrCodeGenerator, jsonPreferencesGenerator, fileProvider, preferencesDataSourceProvider, scheduler);
-        activityResultDelegate = new QRCodeActivityResultDelegate(this, settingsImporter, qrCodeDecoder, analytics);
+        menuDelegate = new QRCodeMenuDelegate(this, activityAvailability, qrCodeGenerator, appConfigurationGenerator, fileProvider, settingsProvider, scheduler);
+        activityResultDelegate = new QRCodeActivityResultDelegate(this, settingsImporter, qrCodeDecoder, currentProjectProvider.getCurrentProject());
         setContentView(R.layout.tabs_layout);
 
-        initToolbar(getString(R.string.configure_via_qr_code));
-        menuDelegate = new QRCodeMenuDelegate(this, activityAvailability, qrCodeGenerator, jsonPreferencesGenerator, fileProvider, preferencesDataSourceProvider, scheduler);
+        initToolbar(getString(R.string.reconfigure_with_qr_code_settings_title));
+        menuDelegate = new QRCodeMenuDelegate(this, activityAvailability, qrCodeGenerator, appConfigurationGenerator, fileProvider, settingsProvider, scheduler);
 
         permissionsProvider.requestCameraPermission(this, new PermissionListener() {
             @Override

@@ -29,12 +29,12 @@ public class QuittingFormTest {
 
     @Test
     public void partiallyFillingForm_andPressingBack_andClickingSaveChanges_savesCurrentAnswers() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .startBlankForm("Two Question")
                 .answerQuestion("What is your name?", "Reuben")
                 .swipeToNextQuestion()
                 .answerQuestion("What is your age?", "10")
-                .pressBack(new SaveOrIgnoreDialog<>("Two Question", new MainMenuPage(rule), rule))
+                .pressBack(new SaveOrIgnoreDialog<>("Two Question", new MainMenuPage()))
                 .clickSaveChanges()
                 .clickEditSavedForm()
                 .clickOnForm("Two Question")
@@ -44,10 +44,10 @@ public class QuittingFormTest {
 
     @Test
     public void partiallyFillingForm_andPressingBack_andClickingIgnoreChanges_doesNotSaveForm() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .startBlankForm("Two Question")
                 .answerQuestion("What is your name?", "Reuben")
-                .pressBack(new SaveOrIgnoreDialog<>("Two Question", new MainMenuPage(rule), rule))
+                .pressBack(new SaveOrIgnoreDialog<>("Two Question", new MainMenuPage()))
                 .clickIgnoreChanges()
                 .assertNumberOfEditableForms(0);
     }

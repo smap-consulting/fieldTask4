@@ -4,39 +4,45 @@ import android.app.Application;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.configure.SettingsUtils;
+import org.odk.collect.android.formmanagement.InstancesAppState;
 import org.odk.collect.android.preferences.FormUpdateMode;
-import org.odk.collect.android.preferences.AdminKeys;
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
+import org.odk.collect.android.preferences.source.SettingsProvider;
+import org.odk.collect.android.instancemanagement.InstanceDiskSynchronizer;
 import org.odk.collect.android.version.VersionInformation;
-
-import javax.inject.Inject;
+import org.odk.collect.async.Scheduler;
+import org.odk.collect.shared.Settings;
 
 public class MainMenuViewModel extends ViewModel {
 
     private final VersionInformation version;
-    private final PreferencesDataSource generalPreferences;
-    private final PreferencesDataSource adminPreferences;
+    private final Settings generalSettings;
+    private final Settings adminSettings;
+    private final InstancesAppState instancesAppState;
+    private final Scheduler scheduler;
     private final Application application;
+    private final SettingsProvider settingsProvider;
 
-    public MainMenuViewModel(Application application, VersionInformation versionInformation, PreferencesDataSourceProvider preferencesDataSourceProvider) {
+    public MainMenuViewModel(Application application, VersionInformation versionInformation,
+                             SettingsProvider settingsProvider, InstancesAppState instancesAppState,
+                             Scheduler scheduler) {
         this.application = application;
         this.version = versionInformation;
-        this.generalPreferences = preferencesDataSourceProvider.getGeneralPreferences();
-        this.adminPreferences = preferencesDataSourceProvider.getAdminPreferences();
+        this.settingsProvider = settingsProvider;
+        this.generalSettings = settingsProvider.getGeneralSettings();
+        this.adminSettings = settingsProvider.getAdminSettings();
+        this.instancesAppState = instancesAppState;
+        this.scheduler = scheduler;
     }
 
     public String getVersion() {
-        if (version.getBetaNumber() != null) {
-            return version.getSemanticVersion() + " Beta " + version.getBetaNumber();
-        } else {
-            return version.getSemanticVersion();
-        }
+        return version.getVersionToDisplay();
     }
 
     @Nullable
@@ -63,28 +69,40 @@ public class MainMenuViewModel extends ViewModel {
     }
 
     public boolean shouldEditSavedFormButtonBeVisible() {
-        return adminPreferences.getBoolean(AdminKeys.KEY_EDIT_SAVED);
+        return adminSettings.getBoolean(ProtectedProjectKeys.KEY_EDIT_SAVED);
     }
 
     public boolean shouldSendFinalizedFormButtonBeVisible() {
-        return adminPreferences.getBoolean(AdminKeys.KEY_SEND_FINALIZED);
+        return adminSettings.getBoolean(ProtectedProjectKeys.KEY_SEND_FINALIZED);
     }
 
     public boolean shouldViewSentFormButtonBeVisible() {
-        return adminPreferences.getBoolean(AdminKeys.KEY_VIEW_SENT);
+        return adminSettings.getBoolean(ProtectedProjectKeys.KEY_VIEW_SENT);
     }
 
     public boolean shouldGetBlankFormButtonBeVisible() {
-        boolean buttonEnabled = adminPreferences.getBoolean(AdminKeys.KEY_GET_BLANK);
+        boolean buttonEnabled = adminSettings.getBoolean(ProtectedProjectKeys.KEY_GET_BLANK);
         return !isMatchExactlyEnabled() && buttonEnabled;
     }
 
     public boolean shouldDeleteSavedFormButtonBeVisible() {
-        return adminPreferences.getBoolean(AdminKeys.KEY_DELETE_SAVED);
+        return adminSettings.getBoolean(ProtectedProjectKeys.KEY_DELETE_SAVED);
+    }
+
+    public LiveData<Integer> getEditableInstancesCount() {
+        return instancesAppState.getEditableCount();
+    }
+
+    public LiveData<Integer> getSendableInstancesCount() {
+        return instancesAppState.getSendableCount();
+    }
+
+    public LiveData<Integer> getSentInstancesCount() {
+        return instancesAppState.getSentCount();
     }
 
     private boolean isMatchExactlyEnabled() {
-        return SettingsUtils.getFormUpdateMode(application, generalPreferences) == FormUpdateMode.MATCH_EXACTLY;
+        return SettingsUtils.getFormUpdateMode(application, generalSettings) == FormUpdateMode.MATCH_EXACTLY;
     }
 
     @NotNull
@@ -97,23 +115,38 @@ public class MainMenuViewModel extends ViewModel {
         return commitDescription;
     }
 
+    public void refreshInstances() {
+        scheduler.immediate(() -> {
+            new InstanceDiskSynchronizer(settingsProvider).doInBackground();
+            instancesAppState.update();
+            return null;
+        }, ignored -> {
+        });
+
+    }
+
     public static class Factory implements ViewModelProvider.Factory {
 
         private final VersionInformation versionInformation;
         private final Application application;
-        private final PreferencesDataSourceProvider preferencesDataSourceProvider;
+        private final SettingsProvider settingsProvider;
+        private final InstancesAppState instancesAppState;
+        private final Scheduler scheduler;
 
-        @Inject
-        public Factory(VersionInformation versionInformation, Application application, PreferencesDataSourceProvider preferencesDataSourceProvider) {
+        public Factory(VersionInformation versionInformation, Application application,
+                       SettingsProvider settingsProvider, InstancesAppState instancesAppState,
+                       Scheduler scheduler) {
             this.versionInformation = versionInformation;
             this.application = application;
-            this.preferencesDataSourceProvider = preferencesDataSourceProvider;
+            this.settingsProvider = settingsProvider;
+            this.instancesAppState = instancesAppState;
+            this.scheduler = scheduler;
         }
 
         @NonNull
         @Override
         public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) new MainMenuViewModel(application, versionInformation, preferencesDataSourceProvider);
+            return (T) new MainMenuViewModel(application, versionInformation, settingsProvider, instancesAppState, scheduler);
         }
     }
 }

@@ -1,10 +1,8 @@
 package org.odk.collect.android.injection.config;
 
-import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.media.MediaPlayer;
-import android.telephony.TelephonyManager;
 import android.webkit.MimeTypeMap;
 
 import androidx.annotation.NonNull;
@@ -16,36 +14,38 @@ import androidx.work.WorkManager;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.util.ExponentialBackOff;
 import com.google.api.services.drive.DriveScopes;
+import com.google.gson.Gson;
 
 import org.javarosa.core.reference.ReferenceManager;
 import org.odk.collect.analytics.Analytics;
 import org.odk.collect.analytics.BlockableFirebaseAnalytics;
 import org.odk.collect.analytics.NoopAnalytics;
 import org.odk.collect.android.BuildConfig;
-import org.odk.collect.android.R;
+import org.odk.collect.android.activities.viewmodels.CurrentProjectViewModel;
+import org.odk.collect.android.activities.viewmodels.MainMenuViewModel;
+import org.odk.collect.android.activities.viewmodels.SplashScreenViewModel;
 import org.odk.collect.android.application.CollectSettingsChangeHandler;
+import org.odk.collect.android.application.initialization.AnalyticsInitializer;
 import org.odk.collect.android.application.initialization.ApplicationInitializer;
-import org.odk.collect.android.application.initialization.CollectSettingsPreferenceMigrator;
-import org.odk.collect.android.application.initialization.SettingsPreferenceMigrator;
-import org.odk.collect.android.backgroundwork.ChangeLock;
-import org.odk.collect.android.backgroundwork.FormSubmitManager;
-import org.odk.collect.android.backgroundwork.FormUpdateManager;
-import org.odk.collect.android.backgroundwork.ReentrantLockChangeLock;
-import org.odk.collect.android.backgroundwork.SchedulerFormUpdateAndSubmitManager;
-import org.odk.collect.android.configure.ServerRepository;
+import org.odk.collect.android.application.initialization.CollectSettingsMigrator;
+import org.odk.collect.android.application.initialization.ExistingProjectMigrator;
+import org.odk.collect.android.application.initialization.ExistingSettingsMigrator;
+import org.odk.collect.android.application.initialization.FormUpdatesUpgrade;
+import org.odk.collect.android.application.initialization.SettingsMigrator;
+import org.odk.collect.android.application.initialization.upgrade.AppUpgrader;
+import org.odk.collect.android.backgroundwork.FormUpdateAndInstanceSubmitScheduler;
+import org.odk.collect.android.backgroundwork.FormUpdateScheduler;
+import org.odk.collect.android.backgroundwork.InstanceSubmitScheduler;
 import org.odk.collect.android.configure.SettingsChangeHandler;
 import org.odk.collect.android.configure.SettingsImporter;
-import org.odk.collect.android.configure.SharedPreferencesServerRepository;
+import org.odk.collect.android.configure.SettingsValidator;
 import org.odk.collect.android.configure.StructureAndTypeSettingsValidator;
+import org.odk.collect.android.configure.qr.AppConfigurationGenerator;
 import org.odk.collect.android.configure.qr.CachingQRCodeGenerator;
 import org.odk.collect.android.configure.qr.QRCodeDecoder;
 import org.odk.collect.android.configure.qr.QRCodeGenerator;
 import org.odk.collect.android.configure.qr.QRCodeUtils;
-import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.dao.InstancesDao;
-import org.odk.collect.android.database.DatabaseFormsRepository;
-import org.odk.collect.android.database.DatabaseInstancesRepository;
-import org.odk.collect.android.database.DatabaseMediaFileRepository;
+import org.odk.collect.android.database.itemsets.DatabaseFastExternalItemsetsRepository;
 import org.odk.collect.android.events.RxEventBus;
 import org.odk.collect.android.formentry.BackgroundAudioViewModel;
 import org.odk.collect.android.formentry.FormEntryViewModel;
@@ -53,21 +53,21 @@ import org.odk.collect.android.formentry.media.AudioHelperFactory;
 import org.odk.collect.android.formentry.media.ScreenContextAudioHelperFactory;
 import org.odk.collect.android.formentry.saving.DiskFormSaver;
 import org.odk.collect.android.formentry.saving.FormSaveViewModel;
-import org.odk.collect.android.formmanagement.DiskFormsSynchronizer;
 import org.odk.collect.android.formmanagement.FormDownloader;
 import org.odk.collect.android.formmanagement.FormMetadataParser;
+import org.odk.collect.android.formmanagement.FormSourceProvider;
+import org.odk.collect.android.formmanagement.FormsUpdater;
+import org.odk.collect.android.formmanagement.InstancesAppState;
 import org.odk.collect.android.formmanagement.ServerFormDownloader;
 import org.odk.collect.android.formmanagement.ServerFormsDetailsFetcher;
-import org.odk.collect.android.formmanagement.matchexactly.ServerFormsSynchronizer;
-import org.odk.collect.android.formmanagement.matchexactly.SyncStatusRepository;
-import org.odk.collect.android.forms.FormSource;
-import org.odk.collect.android.forms.FormsRepository;
-import org.odk.collect.android.forms.MediaFileRepository;
+import org.odk.collect.android.formmanagement.matchexactly.SyncStatusAppState;
 import org.odk.collect.android.gdrive.GoogleAccountCredentialGoogleAccountPicker;
 import org.odk.collect.android.gdrive.GoogleAccountPicker;
+import org.odk.collect.android.gdrive.GoogleAccountsManager;
 import org.odk.collect.android.gdrive.GoogleApiProvider;
 import org.odk.collect.android.geo.MapProvider;
-import org.odk.collect.android.instances.InstancesRepository;
+import org.odk.collect.android.instancemanagement.InstanceAutoSender;
+import org.odk.collect.android.itemsets.FastExternalItemsetsRepository;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.metadata.InstallIDProvider;
 import org.odk.collect.android.metadata.SharedPreferencesInstallIDProvider;
@@ -76,31 +76,46 @@ import org.odk.collect.android.network.NetworkStateProvider;
 import org.odk.collect.android.notifications.NotificationManagerNotifier;
 import org.odk.collect.android.notifications.Notifier;
 import org.odk.collect.android.openrosa.CollectThenSystemContentTypeMapper;
-import org.odk.collect.android.openrosa.OpenRosaFormSource;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
-import org.odk.collect.android.openrosa.OpenRosaResponseParserImpl;
 import org.odk.collect.android.openrosa.okhttp.OkHttpConnection;
 import org.odk.collect.android.openrosa.okhttp.OkHttpOpenRosaServerClientProvider;
 import org.odk.collect.android.permissions.PermissionsChecker;
 import org.odk.collect.android.permissions.PermissionsProvider;
-import org.odk.collect.android.preferences.AdminKeys;
-import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.JsonPreferencesGenerator;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.preferences.PreferenceVisibilityHandler;
+import org.odk.collect.android.preferences.ProjectPreferencesViewModel;
+import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.android.preferences.keys.MetaKeys;
+import org.odk.collect.android.preferences.source.SettingsProvider;
+import org.odk.collect.android.preferences.source.SettingsStore;
+import org.odk.collect.android.preferences.source.SharedPreferencesSettingsProvider;
+import org.odk.collect.android.projects.CurrentProjectProvider;
+import org.odk.collect.android.projects.ProjectCreator;
+import org.odk.collect.android.projects.ProjectDeleter;
+import org.odk.collect.android.projects.ProjectDetailsCreator;
+import org.odk.collect.android.projects.ProjectImporter;
 import org.odk.collect.android.storage.StorageInitializer;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.AdminPasswordProvider;
 import org.odk.collect.android.utilities.AndroidUserAgent;
+import org.odk.collect.android.utilities.ChangeLockProvider;
+import org.odk.collect.android.utilities.CodeCaptureManagerFactory;
 import org.odk.collect.android.utilities.DeviceDetailsProvider;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
+import org.odk.collect.android.utilities.ExternalWebPageHelper;
 import org.odk.collect.android.utilities.FileProvider;
-import org.odk.collect.android.utilities.FileUtil;
 import org.odk.collect.android.utilities.FormsDirDiskFormsSynchronizer;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
+import org.odk.collect.android.utilities.IconUtils;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
+import org.odk.collect.android.utilities.LaunchState;
 import org.odk.collect.android.utilities.MediaUtils;
+import org.odk.collect.android.utilities.ProjectResetter;
 import org.odk.collect.android.utilities.ScreenUtils;
 import org.odk.collect.android.utilities.SoftKeyboardController;
+import org.odk.collect.android.utilities.StaticCachingDeviceDetailsProvider;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 import org.odk.collect.android.version.VersionInformation;
 import org.odk.collect.android.views.BarcodeViewDecoder;
@@ -108,13 +123,16 @@ import org.odk.collect.async.CoroutineAndWorkManagerScheduler;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.recording.AudioRecorderFactory;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.location.tracker.ForegroundServiceLocationTracker;
+import org.odk.collect.location.tracker.LocationTracker;
+import org.odk.collect.projects.ProjectsRepository;
+import org.odk.collect.projects.SharedPreferencesProjectsRepository;
+import org.odk.collect.shared.strings.UUIDGenerator;
 import org.odk.collect.utilities.Clock;
 import org.odk.collect.utilities.UserAgentProvider;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -124,7 +142,9 @@ import dagger.Provides;
 import okhttp3.OkHttpClient;
 
 import static androidx.core.content.FileProvider.getUriForFile;
-import static org.odk.collect.android.preferences.MetaKeys.KEY_INSTALL_ID;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static org.odk.collect.android.preferences.keys.MetaKeys.KEY_INSTALL_ID;
 
 /**
  * Add dependency providers here (annotated with @Provides)
@@ -137,16 +157,6 @@ public class AppDependencyModule {
     @Provides
     Context context(Application application) {
         return application;
-    }
-
-    @Provides
-    public InstancesDao provideInstancesDao() {
-        return new InstancesDao();
-    }
-
-    @Provides
-    public FormsDao provideFormsDao() {
-        return new FormsDao();
     }
 
     @Provides
@@ -177,13 +187,13 @@ public class AppDependencyModule {
     }
 
     @Provides
-    WebCredentialsUtils provideWebCredentials(PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new WebCredentialsUtils(preferencesDataSourceProvider.getGeneralPreferences());
+    WebCredentialsUtils provideWebCredentials(SettingsProvider settingsProvider) {
+        return new WebCredentialsUtils(settingsProvider.getGeneralSettings());
     }
 
     @Provides
-    public FormDownloader providesFormDownloader(FormSource formSource, FormsRepository formsRepository, StoragePathProvider storagePathProvider, Analytics analytics) {
-        return new ServerFormDownloader(formSource, formsRepository, new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.CACHE)), storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS), new FormMetadataParser(ReferenceManager.instance()), analytics);
+    public FormDownloader providesFormDownloader(FormSourceProvider formSourceProvider, FormsRepositoryProvider formsRepositoryProvider, StoragePathProvider storagePathProvider, Analytics analytics) {
+        return new ServerFormDownloader(formSourceProvider.get(), formsRepositoryProvider.get(), new File(storagePathProvider.getOdkDirPath(StorageSubdirectory.CACHE)), storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS), new FormMetadataParser(), analytics);
     }
 
     @Provides
@@ -219,38 +229,24 @@ public class AppDependencyModule {
 
     @Provides
     @Singleton
-    public StorageInitializer providesStorageInitializer() {
-        return new StorageInitializer();
+    public StorageInitializer providesStorageInitializer(StoragePathProvider storagePathProvider) {
+        return new StorageInitializer(storagePathProvider);
     }
 
     @Provides
     @Singleton
-    public PreferencesDataSourceProvider providesPreferencesRepository(Context context) {
-        return new PreferencesDataSourceProvider(context);
+    public SettingsProvider providesSettingsProvider(Context context) {
+        return new SharedPreferencesSettingsProvider(context);
     }
 
     @Provides
-    InstallIDProvider providesInstallIDProvider(PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new SharedPreferencesInstallIDProvider(preferencesDataSourceProvider.getMetaPreferences(), KEY_INSTALL_ID);
+    InstallIDProvider providesInstallIDProvider(SettingsProvider settingsProvider) {
+        return new SharedPreferencesInstallIDProvider(settingsProvider.getMetaSettings(), KEY_INSTALL_ID);
     }
 
     @Provides
     public DeviceDetailsProvider providesDeviceDetailsProvider(Context context, InstallIDProvider installIDProvider) {
-        return new DeviceDetailsProvider() {
-
-            @Override
-            @SuppressLint({"MissingPermission", "HardwareIds"})
-            public String getDeviceId() {
-                return installIDProvider.getInstallID();
-            }
-
-            @Override
-            @SuppressLint({"MissingPermission", "HardwareIds"})
-            public String getLine1Number() {
-                TelephonyManager telMgr = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-                return telMgr.getLine1Number();
-            }
-        };
+        return new StaticCachingDeviceDetailsProvider(installIDProvider, context);
     }
 
     @Provides
@@ -260,23 +256,23 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public StoragePathProvider providesStoragePathProvider() {
-        return new StoragePathProvider();
+    public StoragePathProvider providesStoragePathProvider(Context context, CurrentProjectProvider currentProjectProvider) {
+        return new StoragePathProvider(currentProjectProvider, context.getExternalFilesDir(null).getAbsolutePath());
     }
 
     @Provides
-    public AdminPasswordProvider providesAdminPasswordProvider(PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new AdminPasswordProvider(preferencesDataSourceProvider.getAdminPreferences());
+    public AdminPasswordProvider providesAdminPasswordProvider(SettingsProvider settingsProvider) {
+        return new AdminPasswordProvider(settingsProvider.getAdminSettings());
     }
 
     @Provides
-    public FormUpdateManager providesFormUpdateManger(Scheduler scheduler, PreferencesDataSourceProvider preferencesDataSourceProvider, Application application) {
-        return new SchedulerFormUpdateAndSubmitManager(scheduler, preferencesDataSourceProvider.getGeneralPreferences(), application);
+    public FormUpdateScheduler providesFormUpdateManger(Scheduler scheduler, SettingsProvider settingsProvider, Application application) {
+        return new FormUpdateAndInstanceSubmitScheduler(scheduler, settingsProvider, application);
     }
 
     @Provides
-    public FormSubmitManager providesFormSubmitManager(Scheduler scheduler, PreferencesDataSourceProvider preferencesDataSourceProvider, Application application) {
-        return new SchedulerFormUpdateAndSubmitManager(scheduler, preferencesDataSourceProvider.getGeneralPreferences(), application);
+    public InstanceSubmitScheduler providesFormSubmitManager(Scheduler scheduler, SettingsProvider settingsProvider, Application application) {
+        return new FormUpdateAndInstanceSubmitScheduler(scheduler, settingsProvider, application);
     }
 
     @Provides
@@ -309,48 +305,39 @@ public class AppDependencyModule {
         return new CoroutineAndWorkManagerScheduler(workManager);
     }
 
-    @Singleton
     @Provides
-    public ApplicationInitializer providesApplicationInitializer(Application application, UserAgentProvider userAgentProvider,
-                                                                 SettingsPreferenceMigrator preferenceMigrator, PropertyManager propertyManager,
-                                                                 Analytics analytics, StorageInitializer storageInitializer, PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new ApplicationInitializer(application, userAgentProvider, preferenceMigrator, propertyManager, analytics, storageInitializer, preferencesDataSourceProvider);
-    }
-
-    @Provides
-    public SettingsPreferenceMigrator providesPreferenceMigrator(PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new CollectSettingsPreferenceMigrator(preferencesDataSourceProvider.getMetaPreferences());
+    public SettingsMigrator providesPreferenceMigrator(SettingsProvider settingsProvider) {
+        return new CollectSettingsMigrator(settingsProvider.getMetaSettings());
     }
 
     @Provides
     @Singleton
-    public PropertyManager providesPropertyManager(RxEventBus eventBus, PermissionsProvider permissionsProvider, DeviceDetailsProvider deviceDetailsProvider, PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new PropertyManager(eventBus, permissionsProvider, deviceDetailsProvider, preferencesDataSourceProvider);
+    public PropertyManager providesPropertyManager(RxEventBus eventBus, PermissionsProvider permissionsProvider, DeviceDetailsProvider deviceDetailsProvider, SettingsProvider settingsProvider) {
+        return new PropertyManager(eventBus, permissionsProvider, deviceDetailsProvider, settingsProvider);
     }
 
     @Provides
-    public ServerRepository providesServerRepository(Context context, PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new SharedPreferencesServerRepository(context.getString(R.string.default_server_url), preferencesDataSourceProvider.getMetaPreferences());
+    public SettingsChangeHandler providesSettingsChangeHandler(PropertyManager propertyManager, FormUpdateScheduler formUpdateScheduler, Analytics analytics, SettingsProvider settingsProvider) {
+        return new CollectSettingsChangeHandler(propertyManager, formUpdateScheduler, analytics, settingsProvider);
     }
 
     @Provides
-    public SettingsChangeHandler providesSettingsChangeHandler(PropertyManager propertyManager, FormUpdateManager formUpdateManager, ServerRepository serverRepository, Analytics analytics, PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new CollectSettingsChangeHandler(propertyManager, formUpdateManager, serverRepository, analytics, preferencesDataSourceProvider);
-    }
-
-    @Provides
-    public SettingsImporter providesCollectSettingsImporter(PreferencesDataSourceProvider preferencesDataSourceProvider, SettingsPreferenceMigrator preferenceMigrator, SettingsChangeHandler settingsChangeHandler) {
-        HashMap<String, Object> generalDefaults = GeneralKeys.DEFAULTS;
-        Map<String, Object> adminDefaults = AdminKeys.getDefaults();
+    public SettingsImporter providesCollectSettingsImporter(SettingsProvider settingsProvider, SettingsMigrator preferenceMigrator, SettingsValidator settingsValidator, SettingsChangeHandler settingsChangeHandler, ProjectsRepository projectsRepository, Context context) {
         return new SettingsImporter(
-                preferencesDataSourceProvider.getGeneralPreferences(),
-                preferencesDataSourceProvider.getAdminPreferences(),
+                settingsProvider,
                 preferenceMigrator,
-                new StructureAndTypeSettingsValidator(generalDefaults, adminDefaults),
-                generalDefaults,
-                adminDefaults,
-                settingsChangeHandler
+                settingsValidator,
+                ProjectKeys.getDefaults(),
+                ProtectedProjectKeys.getDefaults(),
+                settingsChangeHandler,
+                projectsRepository,
+                new ProjectDetailsCreator(context)
         );
+    }
+
+    @Provides
+    public SettingsValidator providesSettingsValidator() {
+        return new StructureAndTypeSettingsValidator(ProjectKeys.getDefaults(), ProtectedProjectKeys.getDefaults());
     }
 
     @Provides
@@ -364,66 +351,26 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public FormsRepository providesFormRepository() {
-        return new DatabaseFormsRepository();
+    @Singleton
+    public SyncStatusAppState providesServerFormSyncRepository(Context context) {
+        return new SyncStatusAppState(context);
     }
 
     @Provides
-    public MediaFileRepository providesMediaFileRepository() {
-        return new DatabaseMediaFileRepository(new FormsDao(), new FileUtil());
+    public ServerFormsDetailsFetcher providesServerFormDetailsFetcher(FormsRepositoryProvider formsRepositoryProvider, FormSourceProvider formSourceProvider, StoragePathProvider storagePathProvider) {
+        FormsRepository formsRepository = formsRepositoryProvider.get();
+        return new ServerFormsDetailsFetcher(formsRepository, formSourceProvider.get(), new FormsDirDiskFormsSynchronizer(formsRepository, storagePathProvider.getOdkDirPath(StorageSubdirectory.FORMS)));
     }
 
     @Provides
-    public FormSource providesFormSource(PreferencesDataSourceProvider preferencesDataSourceProvider, Context context, OpenRosaHttpInterface openRosaHttpInterface, WebCredentialsUtils webCredentialsUtils, Analytics analytics) {
-        String serverURL = preferencesDataSourceProvider.getGeneralPreferences().getString(GeneralKeys.KEY_SERVER_URL);
-        String formListPath = preferencesDataSourceProvider.getGeneralPreferences().getString(GeneralKeys.KEY_FORMLIST_URL);
-
-        return new OpenRosaFormSource(serverURL, formListPath, openRosaHttpInterface, webCredentialsUtils, analytics, new OpenRosaResponseParserImpl());
-    }
-
-    @Provides
-    public DiskFormsSynchronizer providesDiskFormSynchronizer() {
-        return new FormsDirDiskFormsSynchronizer();
+    public Notifier providesNotifier(Application application, SettingsProvider settingsProvider) {
+        return new NotificationManagerNotifier(application, settingsProvider);
     }
 
     @Provides
     @Singleton
-    public SyncStatusRepository providesServerFormSyncRepository() {
-        return new SyncStatusRepository();
-    }
-
-    @Provides
-    public ServerFormsDetailsFetcher providesServerFormDetailsFetcher(FormsRepository formsRepository, MediaFileRepository mediaFileRepository, FormSource formSource, DiskFormsSynchronizer diskFormsSynchronizer) {
-        return new ServerFormsDetailsFetcher(formsRepository, mediaFileRepository, formSource, diskFormsSynchronizer);
-    }
-
-    @Provides
-    public ServerFormsSynchronizer providesServerFormSynchronizer(ServerFormsDetailsFetcher serverFormsDetailsFetcher, FormsRepository formsRepository, FormDownloader formDownloader, InstancesRepository instancesRepository) {
-        return new ServerFormsSynchronizer(serverFormsDetailsFetcher, formsRepository, instancesRepository, formDownloader);
-    }
-
-    @Provides
-    public Notifier providesNotifier(Application application, PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new NotificationManagerNotifier(application, preferencesDataSourceProvider);
-    }
-
-    @Provides
-    @Named("FORMS")
-    @Singleton
-    public ChangeLock providesFormsChangeLock() {
-        return new ReentrantLockChangeLock();
-    }
-
-    @Provides
-    @Named("INSTANCES")
-    @Singleton
-    public ChangeLock providesInstancesChangeLock() {
-        return new ReentrantLockChangeLock();
-    }
-
-    @Provides
-    public InstancesRepository providesInstancesRepository() {
-        return new DatabaseInstancesRepository();
+    public ChangeLockProvider providesChangeLockProvider() {
+        return new ChangeLockProvider();
     }
 
     @Provides
@@ -434,7 +381,7 @@ public class AppDependencyModule {
     @Provides
     public GoogleAccountPicker providesGoogleAccountPicker(Context context) {
         return new GoogleAccountCredentialGoogleAccountPicker(GoogleAccountCredential
-                .usingOAuth2(context, Collections.singletonList(DriveScopes.DRIVE))
+                .usingOAuth2(context, singletonList(DriveScopes.DRIVE))
                 .setBackOff(new ExponentialBackOff()));
     }
 
@@ -449,12 +396,12 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public FormSaveViewModel.FactoryFactory providesFormSaveViewModelFactoryFactory(Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder) {
+    public FormSaveViewModel.FactoryFactory providesFormSaveViewModelFactoryFactory(Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder, CurrentProjectProvider currentProjectProvider) {
         return (owner, defaultArgs) -> new AbstractSavedStateViewModelFactory(owner, defaultArgs) {
             @NonNull
             @Override
             protected <T extends ViewModel> T create(@NonNull String key, @NonNull Class<T> modelClass, @NonNull SavedStateHandle handle) {
-                return (T) new FormSaveViewModel(handle, System::currentTimeMillis, new DiskFormSaver(), new MediaUtils(), analytics, scheduler, audioRecorder);
+                return (T) new FormSaveViewModel(handle, System::currentTimeMillis, new DiskFormSaver(), new MediaUtils(), analytics, scheduler, audioRecorder, currentProjectProvider);
             }
         };
     }
@@ -470,8 +417,8 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public JsonPreferencesGenerator providesJsonPreferencesGenerator(PreferencesDataSourceProvider preferencesDataSourceProvider) {
-        return new JsonPreferencesGenerator(preferencesDataSourceProvider);
+    public AppConfigurationGenerator providesJsonPreferencesGenerator(SettingsProvider settingsProvider, CurrentProjectProvider currentProjectProvider) {
+        return new AppConfigurationGenerator(settingsProvider, currentProjectProvider);
     }
 
     @Provides
@@ -492,7 +439,181 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public BackgroundAudioViewModel.Factory providesBackgroundAudioViewModelFactory(AudioRecorder audioRecorder, PreferencesDataSourceProvider preferencesDataSourceProvider, PermissionsChecker permissionsChecker, Clock clock, Analytics analytics) {
-        return new BackgroundAudioViewModel.Factory(audioRecorder, preferencesDataSourceProvider.getGeneralPreferences(), permissionsChecker, clock, analytics);
+    public BackgroundAudioViewModel.Factory providesBackgroundAudioViewModelFactory(AudioRecorder audioRecorder, SettingsProvider settingsProvider, PermissionsChecker permissionsChecker, Clock clock, Analytics analytics) {
+        return new BackgroundAudioViewModel.Factory(audioRecorder, settingsProvider.getGeneralSettings(), permissionsChecker, clock, analytics);
+    }
+
+    @Provides
+    @Named("GENERAL_SETTINGS_STORE")
+    public SettingsStore providesGeneralSettingsStore(SettingsProvider settingsProvider) {
+        return new SettingsStore(settingsProvider.getGeneralSettings());
+    }
+
+    @Provides
+    @Named("ADMIN_SETTINGS_STORE")
+    public SettingsStore providesAdminSettingsStore(SettingsProvider settingsProvider) {
+        return new SettingsStore(settingsProvider.getAdminSettings());
+    }
+
+    @Provides
+    public ExternalWebPageHelper providesExternalWebPageHelper() {
+        return new ExternalWebPageHelper();
+    }
+
+    @Provides
+    @Singleton
+    public ProjectsRepository providesProjectsRepository(UUIDGenerator uuidGenerator, Gson gson, SettingsProvider settingsProvider) {
+        return new SharedPreferencesProjectsRepository(uuidGenerator, gson, settingsProvider.getMetaSettings(), MetaKeys.KEY_PROJECTS);
+    }
+
+    @Provides
+    public ProjectCreator providesProjectCreator(ProjectImporter projectImporter, ProjectsRepository projectsRepository,
+                                                 CurrentProjectProvider currentProjectProvider, SettingsImporter settingsImporter,
+                                                 Context context, StoragePathProvider storagePathProvider) {
+        return new ProjectCreator(projectImporter, projectsRepository, currentProjectProvider, settingsImporter, storagePathProvider);
+    }
+
+    @Provides
+    public Gson providesGson() {
+        return new Gson();
+    }
+
+    @Provides
+    @Singleton
+    public UUIDGenerator providesUUIDGenerator() {
+        return new UUIDGenerator();
+    }
+
+    @Provides
+    @Singleton
+    public InstancesAppState providesInstancesAppState(Application application, InstancesRepositoryProvider instancesRepositoryProvider, CurrentProjectProvider currentProjectProvider) {
+        return new InstancesAppState(application, instancesRepositoryProvider, currentProjectProvider);
+    }
+
+    @Provides
+    public FastExternalItemsetsRepository providesItemsetsRepository() {
+        return new DatabaseFastExternalItemsetsRepository();
+    }
+
+    @Provides
+    public CurrentProjectProvider providesCurrentProjectProvider(SettingsProvider settingsProvider, ProjectsRepository projectsRepository) {
+        return new CurrentProjectProvider(settingsProvider, projectsRepository);
+    }
+
+    @Provides
+    public FormsRepositoryProvider providesFormsRepositoryProvider(Application application) {
+        return new FormsRepositoryProvider(application);
+    }
+
+    @Provides
+    public InstancesRepositoryProvider providesInstancesRepositoryProvider(Context context, StoragePathProvider storagePathProvider) {
+        return new InstancesRepositoryProvider(context, storagePathProvider);
+    }
+
+    @Provides
+    public SplashScreenViewModel.Factory providesSplashScreenViewModel(SettingsProvider settingsProvider, ProjectsRepository projectsRepository) {
+        return new SplashScreenViewModel.Factory(settingsProvider.getGeneralSettings(), projectsRepository);
+    }
+
+    @Provides
+    public ProjectPreferencesViewModel.Factory providesProjectPreferencesViewModel(AdminPasswordProvider adminPasswordProvider) {
+        return new ProjectPreferencesViewModel.Factory(adminPasswordProvider);
+    }
+
+    @Provides
+    public ProjectImporter providesProjectImporter(ProjectsRepository projectsRepository, StoragePathProvider storagePathProvider) {
+        return new ProjectImporter(storagePathProvider, projectsRepository);
+    }
+
+    @Provides
+    public LaunchState providesAppStateProvider(Context context, SettingsProvider settingsProvider) {
+        return new LaunchState(context, settingsProvider.getMetaSettings(), BuildConfig.VERSION_CODE);
+    }
+
+    @Provides
+    public MainMenuViewModel.Factory providesMainMenuViewModelFactory(VersionInformation versionInformation, Application application,
+                                                                      SettingsProvider settingsProvider, InstancesAppState instancesAppState,
+                                                                      Scheduler scheduler) {
+        return new MainMenuViewModel.Factory(versionInformation, application, settingsProvider, instancesAppState, scheduler);
+    }
+
+    @Provides
+    public AnalyticsInitializer providesAnalyticsInitializer(Analytics analytics, VersionInformation versionInformation, SettingsProvider settingsProvider) {
+        return new AnalyticsInitializer(analytics, versionInformation, settingsProvider);
+    }
+
+    @Provides
+    public CurrentProjectViewModel.Factory providesCurrentProjectViewModel(CurrentProjectProvider currentProjectProvider, AnalyticsInitializer analyticsInitializer) {
+        return new CurrentProjectViewModel.Factory(currentProjectProvider, analyticsInitializer);
+    }
+
+    @Provides
+    public FormSourceProvider providesFormSourceProvider(SettingsProvider settingsProvider, OpenRosaHttpInterface openRosaHttpInterface) {
+        return new FormSourceProvider(settingsProvider, openRosaHttpInterface);
+    }
+
+    @Provides
+    public FormsUpdater providesFormUpdateChecker(Context context, Notifier notifier, Analytics analytics, StoragePathProvider storagePathProvider, SettingsProvider settingsProvider, FormsRepositoryProvider formsRepositoryProvider, FormSourceProvider formSourceProvider, SyncStatusAppState syncStatusAppState, InstancesRepositoryProvider instancesRepositoryProvider, ChangeLockProvider changeLockProvider) {
+        return new FormsUpdater(context, notifier, analytics, storagePathProvider, settingsProvider, formsRepositoryProvider, formSourceProvider, syncStatusAppState, instancesRepositoryProvider, changeLockProvider);
+    }
+
+    @Provides
+    public InstanceAutoSender providesInstanceAutoSender(Context context, ChangeLockProvider changeLockProvider, Notifier notifier, Analytics analytics, FormsRepositoryProvider formsRepositoryProvider, InstancesRepositoryProvider instancesRepositoryProvider, GoogleAccountsManager googleAccountsManager, GoogleApiProvider googleApiProvider, PermissionsProvider permissionsProvider, SettingsProvider settingsProvider, InstancesAppState instancesAppState) {
+        return new InstanceAutoSender(context, changeLockProvider, notifier, analytics, formsRepositoryProvider, instancesRepositoryProvider, googleAccountsManager, googleApiProvider, permissionsProvider, settingsProvider, instancesAppState);
+    }
+
+    @Provides
+    public CodeCaptureManagerFactory providesCodeCaptureManagerFactory() {
+        return CodeCaptureManagerFactory.INSTANCE;
+    }
+
+    @Provides
+    public ExistingProjectMigrator providesExistingProjectMigrator(Context context, StoragePathProvider storagePathProvider, ProjectsRepository projectsRepository, SettingsProvider settingsProvider, CurrentProjectProvider currentProjectProvider) {
+        return new ExistingProjectMigrator(context, storagePathProvider, projectsRepository, settingsProvider, currentProjectProvider, new ProjectDetailsCreator(context));
+    }
+
+    @Provides
+    public FormUpdatesUpgrade providesFormUpdatesUpgrader(Scheduler scheduler, ProjectsRepository projectsRepository, FormUpdateScheduler formUpdateScheduler) {
+        return new FormUpdatesUpgrade(scheduler, projectsRepository, formUpdateScheduler);
+    }
+
+    @Provides
+    public ExistingSettingsMigrator providesExistingSettingsMigrator(ProjectsRepository projectsRepository, SettingsProvider settingsProvider, SettingsMigrator settingsMigrator) {
+        return new ExistingSettingsMigrator(projectsRepository, settingsProvider, settingsMigrator);
+    }
+
+    @Provides
+    public AppUpgrader providesAppUpgrader(SettingsProvider settingsProvider, ExistingProjectMigrator existingProjectMigrator, FormUpdatesUpgrade formUpdatesUpgrade, ExistingSettingsMigrator existingSettingsMigrator) {
+        return new AppUpgrader(settingsProvider.getMetaSettings(), asList(
+                existingProjectMigrator,
+                existingSettingsMigrator,
+                formUpdatesUpgrade
+        ));
+    }
+
+    @Provides
+    public ApplicationInitializer providesApplicationInitializer(Application context, UserAgentProvider userAgentProvider, PropertyManager propertyManager, Analytics analytics, StorageInitializer storageInitializer, LaunchState launchState, AppUpgrader appUpgrader, AnalyticsInitializer analyticsInitializer, ProjectsRepository projectsRepository) {
+        return new ApplicationInitializer(context, userAgentProvider, propertyManager, analytics, storageInitializer, launchState, appUpgrader, analyticsInitializer, projectsRepository);
+    }
+
+    @Provides
+    public ProjectDeleter providesProjectDeleter(ProjectsRepository projectsRepository, CurrentProjectProvider currentProjectProvider, FormUpdateScheduler formUpdateScheduler, InstanceSubmitScheduler instanceSubmitScheduler, InstancesRepositoryProvider instancesRepositoryProvider, StoragePathProvider storagePathProvider, ChangeLockProvider changeLockProvider, SettingsProvider settingsProvider) {
+        return new ProjectDeleter(projectsRepository, currentProjectProvider, formUpdateScheduler, instanceSubmitScheduler, instancesRepositoryProvider.get(), storagePathProvider.getProjectRootDirPath(currentProjectProvider.getCurrentProject().getUuid()), changeLockProvider, settingsProvider);
+    }
+
+    @Provides
+    public ProjectResetter providesProjectResetter(StoragePathProvider storagePathProvider, PropertyManager propertyManager, SettingsProvider settingsProvider, InstancesRepositoryProvider instancesRepositoryProvider, FormsRepositoryProvider formsRepositoryProvider) {
+        return new ProjectResetter(storagePathProvider, propertyManager, settingsProvider, instancesRepositoryProvider, formsRepositoryProvider);
+    }
+
+    @Provides
+    public LocationTracker providesLocationTracker(Application application) {
+        ForegroundServiceLocationTracker.setNotificationIcon(IconUtils.getNotificationAppIcon());
+        return new ForegroundServiceLocationTracker(application);
+    }
+
+    @Provides
+    public PreferenceVisibilityHandler providesDisabledPreferencesRemover(SettingsProvider settingsProvider, VersionInformation versionInformation) {
+        return new PreferenceVisibilityHandler(settingsProvider, versionInformation);
     }
 }

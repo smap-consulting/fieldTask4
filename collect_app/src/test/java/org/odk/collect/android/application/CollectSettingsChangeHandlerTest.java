@@ -2,11 +2,10 @@ package org.odk.collect.android.application;
 
 import org.junit.Test;
 import org.odk.collect.analytics.Analytics;
-import org.odk.collect.android.backgroundwork.FormUpdateManager;
-import org.odk.collect.android.configure.ServerRepository;
+import org.odk.collect.android.backgroundwork.FormUpdateScheduler;
 import org.odk.collect.android.logic.PropertyManager;
-import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.android.preferences.source.SettingsProvider;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -15,45 +14,37 @@ import static org.mockito.Mockito.verifyNoInteractions;
 public class CollectSettingsChangeHandlerTest {
 
     private final PropertyManager propertyManager = mock(PropertyManager.class);
-    private final FormUpdateManager formUpdateManager = mock(FormUpdateManager.class);
-    private final ServerRepository serverRepository = mock(ServerRepository.class);
+    private final FormUpdateScheduler formUpdateScheduler = mock(FormUpdateScheduler.class);
 
-    CollectSettingsChangeHandler handler = new CollectSettingsChangeHandler(propertyManager, formUpdateManager, serverRepository, mock(Analytics.class), mock(PreferencesDataSourceProvider.class));
+    CollectSettingsChangeHandler handler = new CollectSettingsChangeHandler(propertyManager, formUpdateScheduler, mock(Analytics.class), mock(SettingsProvider.class));
 
     @Test
     public void updatesPropertyManager() {
-        handler.onSettingChanged("blah", "anything");
+        handler.onSettingChanged("projectId", "anything", "blah");
         verify(propertyManager).reload();
     }
 
     @Test
     public void doesNotDoAnythingElse() {
-        handler.onSettingChanged("blah", "anything");
-        verifyNoInteractions(formUpdateManager);
-        verifyNoInteractions(serverRepository);
+        handler.onSettingChanged("projectId", "anything", "blah");
+        verifyNoInteractions(formUpdateScheduler);
     }
 
     @Test
     public void whenChangedKeyIsFormUpdateMode_schedulesUpdates() {
-        handler.onSettingChanged(GeneralKeys.KEY_FORM_UPDATE_MODE, "anything");
-        verify(formUpdateManager).scheduleUpdates();
+        handler.onSettingChanged("projectId", "anything", ProjectKeys.KEY_FORM_UPDATE_MODE);
+        verify(formUpdateScheduler).scheduleUpdates("projectId");
     }
 
     @Test
     public void whenChangedKeyIsPeriodicUpdatesCheck_schedulesUpdates() {
-        handler.onSettingChanged(GeneralKeys.KEY_PERIODIC_FORM_UPDATES_CHECK, "anything");
-        verify(formUpdateManager).scheduleUpdates();
+        handler.onSettingChanged("projectId", "anything", ProjectKeys.KEY_PERIODIC_FORM_UPDATES_CHECK);
+        verify(formUpdateScheduler).scheduleUpdates("projectId");
     }
 
     @Test
     public void whenChangedKeyIsProtocol_schedulesUpdates() {
-        handler.onSettingChanged(GeneralKeys.KEY_PROTOCOL, "anything");
-        verify(formUpdateManager).scheduleUpdates();
-    }
-
-    @Test
-    public void whenChangedKeyIsServerURL_savesURLToServerRepository() {
-        handler.onSettingChanged(GeneralKeys.KEY_SERVER_URL, "http://newUrl");
-        verify(serverRepository).save("http://newUrl");
+        handler.onSettingChanged("projectId", "anything", ProjectKeys.KEY_PROTOCOL);
+        verify(formUpdateScheduler).scheduleUpdates("projectId");
     }
 }

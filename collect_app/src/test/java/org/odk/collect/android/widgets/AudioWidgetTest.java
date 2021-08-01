@@ -5,6 +5,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.data.StringData;
@@ -16,7 +17,7 @@ import org.junit.runner.RunWith;
 import org.odk.collect.android.audio.AudioControllerView;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
-import org.odk.collect.android.support.RobolectricHelpers;
+import org.odk.collect.android.support.CollectHelpers;
 import org.odk.collect.android.support.TestScreenContextActivity;
 import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.widgets.support.FakeQuestionMediaManager;
@@ -25,7 +26,7 @@ import org.odk.collect.android.widgets.utilities.AudioPlayer;
 import org.odk.collect.android.widgets.utilities.RecordingRequester;
 import org.odk.collect.android.widgets.utilities.RecordingStatusHandler;
 import org.odk.collect.audioclips.Clip;
-import org.robolectric.RobolectricTestRunner;
+import org.odk.collect.testshared.RobolectricHelpers;
 
 import java.io.File;
 import java.util.HashMap;
@@ -42,14 +43,14 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.odk.collect.android.support.RobolectricHelpers.setupMediaPlayerDataSource;
+import static org.odk.collect.testshared.RobolectricHelpers.setupMediaPlayerDataSource;
 import static org.odk.collect.android.widgets.support.QuestionWidgetHelpers.mockValueChangedListener;
 import static org.odk.collect.android.widgets.support.QuestionWidgetHelpers.promptWithAnswer;
 import static org.odk.collect.android.widgets.support.QuestionWidgetHelpers.promptWithReadOnly;
 import static org.odk.collect.android.widgets.support.QuestionWidgetHelpers.promptWithReadOnlyAndAnswer;
 import static org.robolectric.shadows.ShadowDialog.getLatestDialog;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class AudioWidgetTest {
 
     private final FakeQuestionMediaManager questionMediaManager = new FakeQuestionMediaManager();
@@ -62,7 +63,7 @@ public class AudioWidgetTest {
 
     @Before
     public void setUp() throws Exception {
-        widgetActivity = RobolectricHelpers.buildThemedActivity(TestScreenContextActivity.class).get();
+        widgetActivity = CollectHelpers.buildThemedActivity(TestScreenContextActivity.class).get();
 
         formIndex = mock(FormIndex.class);
         when(formIndex.toString()).thenReturn("questionIndex");
@@ -431,7 +432,7 @@ public class AudioWidgetTest {
 
         AlertDialog dialog = (AlertDialog) getLatestDialog();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
-
+        RobolectricHelpers.runLooper();
         assertThat(widget.getAnswer(), nullValue());
     }
 
@@ -455,7 +456,7 @@ public class AudioWidgetTest {
 
         AlertDialog dialog = (AlertDialog) getLatestDialog();
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
-
+        RobolectricHelpers.runLooper();
         assertThat(widget.binding.audioPlayer.audioController.getVisibility(), is(GONE));
         assertThat(widget.binding.captureButton.getVisibility(), is(VISIBLE));
         assertThat(widget.binding.chooseButton.getVisibility(), is(VISIBLE));

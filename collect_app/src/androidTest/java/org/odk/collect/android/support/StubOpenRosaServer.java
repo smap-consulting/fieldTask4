@@ -14,6 +14,7 @@ import org.odk.collect.android.openrosa.HttpGetResult;
 import org.odk.collect.android.openrosa.HttpHeadResult;
 import org.odk.collect.android.openrosa.HttpPostResult;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
+import org.odk.collect.shared.strings.Md5;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,7 +29,6 @@ import java.util.Map;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
-import static org.odk.collect.android.utilities.FileUtils.getMd5Hash;
 
 public class StubOpenRosaServer implements OpenRosaHttpInterface {
 
@@ -91,7 +91,7 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
 
     @NonNull
     @Override
-    public HttpPostResult uploadSubmissionFile(@NonNull List<File> fileList, @NonNull File submissionFile, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
+    public HttpPostResult uploadSubmissionAndFiles(@NonNull File submissionFile, @NonNull List<File> fileList, @NonNull URI uri, @Nullable HttpCredentialsInterface credentials, @NonNull long contentLength) throws Exception {
         if (alwaysReturnError) {
             return new HttpPostResult("", 500, "");
         }
@@ -140,7 +140,6 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
         noHashInFormList = true;
     }
 
-
     public String getURL() {
         return "https://" + HOST;
     }
@@ -182,7 +181,7 @@ public class StubOpenRosaServer implements OpenRosaHttpInterface {
                     .append("<version>" + form.getVersion() + "</version>\n");
 
             if (!noHashInFormList) {
-                String hash = getMd5Hash(getFormXML(String.valueOf(i)));
+                String hash = Md5.getMd5Hash(getFormXML(String.valueOf(i)));
                 xform.append("<hash>md5:" + hash + "</hash>\n");
             }
 

@@ -2,12 +2,13 @@
 
 import android.widget.SeekBar;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
 import org.odk.collect.android.support.SwipableParentActivity;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -16,11 +17,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.odk.collect.android.support.RobolectricHelpers.buildThemedActivity;
+import static org.odk.collect.android.support.CollectHelpers.buildThemedActivity;
 import static org.robolectric.Shadows.shadowOf;
 import static org.robolectric.shadows.ShadowView.innerText;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class AudioControllerViewTest {
 
     private SwipableParentActivity activity;

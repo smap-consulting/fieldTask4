@@ -10,9 +10,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.odk.collect.android.permissions.PermissionsProvider;
-import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.shared.Settings;
+import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.utilities.ThemeUtils;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -45,10 +45,10 @@ public class GoogleAccountsManagerTest {
     private GoogleAccountCredential mockedCredential;
 
     @Mock
-    private PreferencesDataSourceProvider preferencesDataSourceProvider;
+    private SettingsProvider settingsProvider;
 
     @Mock
-    private PreferencesDataSource generalPreferences;
+    private Settings generalSettings;
 
     @Mock
     private Intent mockIntent;
@@ -62,8 +62,8 @@ public class GoogleAccountsManagerTest {
 
     @Before
     public void setup() {
-        googleAccountsManager = spy(new GoogleAccountsManager(mockedCredential, preferencesDataSourceProvider, mockIntent, mockThemeUtils));
-        when(preferencesDataSourceProvider.getGeneralPreferences()).thenReturn(generalPreferences);
+        googleAccountsManager = spy(new GoogleAccountsManager(mockedCredential, settingsProvider, mockIntent, mockThemeUtils));
+        when(settingsProvider.getGeneralSettings()).thenReturn(generalSettings);
         stubCredential();
         stubPreferences();
         mockPermissionsProvider();
@@ -73,7 +73,7 @@ public class GoogleAccountsManagerTest {
      * Stubbing
      */
     private void stubSavedAccount(String accountName) {
-        when(generalPreferences.getString(GeneralKeys.KEY_SELECTED_GOOGLE_ACCOUNT)).thenReturn(accountName);
+        when(generalSettings.getString(ProjectKeys.KEY_SELECTED_GOOGLE_ACCOUNT)).thenReturn(accountName);
         stubAccount(accountName);
     }
 
@@ -103,11 +103,11 @@ public class GoogleAccountsManagerTest {
 
     private void stubPreferences() {
         doAnswer(invocation -> {
-            if (invocation.getArgument(0).equals(GeneralKeys.KEY_SELECTED_GOOGLE_ACCOUNT)) {
+            if (invocation.getArgument(0).equals(ProjectKeys.KEY_SELECTED_GOOGLE_ACCOUNT)) {
                 savedAccount = invocation.getArgument(1);
             }
             return null;
-        }).when(generalPreferences).save(anyString(), anyString());
+        }).when(generalSettings).save(anyString(), anyString());
     }
 
     @Test

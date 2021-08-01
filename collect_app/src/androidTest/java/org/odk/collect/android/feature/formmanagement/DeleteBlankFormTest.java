@@ -23,21 +23,22 @@ public class DeleteBlankFormTest {
 
     @Test
     public void deletingAForm_removesFormFromBlankFormList() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("one-question.xml")
                 .clickDeleteSavedForm()
                 .clickBlankForms()
                 .clickForm("One Question")
                 .clickDeleteSelected(1)
                 .clickDeleteForms()
-                .pressBack(new MainMenuPage(rule))
+                .assertTextDoesNotExist("One Question")
+                .pressBack(new MainMenuPage())
                 .clickFillBlankForm()
                 .assertNoForms();
     }
 
     @Test
     public void deletingAForm_whenThereFilledForms_removesFormFromBlankFormList_butAllowsEditingFilledForms() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("one-question.xml")
                 .startBlankForm("One Question")
                 .answerQuestion("what is your age", "22")
@@ -49,10 +50,10 @@ public class DeleteBlankFormTest {
                 .clickForm("One Question")
                 .clickDeleteSelected(1)
                 .clickDeleteForms()
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new MainMenuPage())
                 .clickFillBlankForm()
                 .assertNoForms()
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new MainMenuPage())
 
                 .clickEditSavedForm()
                 .clickOnForm("One Question")
@@ -66,12 +67,12 @@ public class DeleteBlankFormTest {
     public void afterFillingAForm_andDeletingIt_allowsFormToBeReDownloaded() {
         testDependencies.server.addForm("One Question", "one_question", "1", "one-question.xml");
 
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .setServer(testDependencies.server.getURL())
                 .clickGetBlankForm()
                 .clickGetSelected()
                 .assertText("One Question (Version:: 1 ID: one_question) - Success")
-                .clickOK(new MainMenuPage(rule))
+                .clickOK(new MainMenuPage())
                 .startBlankForm("One Question")
                 .answerQuestion("what is your age", "22")
                 .swipeToEndScreen()
@@ -82,12 +83,12 @@ public class DeleteBlankFormTest {
                 .clickForm("One Question")
                 .clickDeleteSelected(1)
                 .clickDeleteForms()
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new MainMenuPage())
 
                 .clickGetBlankForm()
                 .clickGetSelected()
                 .assertText("One Question (Version:: 1 ID: one_question) - Success")
-                .clickOK(new MainMenuPage(rule))
+                .clickOK(new MainMenuPage())
                 .clickFillBlankForm()
                 .assertFormExists("One Question");
     }

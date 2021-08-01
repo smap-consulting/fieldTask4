@@ -13,7 +13,6 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormEntryActivity;
-import org.odk.collect.android.instances.Instance;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.support.ActivityHelpers;
@@ -24,7 +23,7 @@ import org.odk.collect.android.support.pages.ExitFormDialog;
 import org.odk.collect.android.support.pages.FillBlankFormPage;
 import org.odk.collect.android.support.pages.FormEndPage;
 import org.odk.collect.android.support.pages.FormEntryPage;
-import org.odk.collect.android.support.pages.GeneralSettingsPage;
+import org.odk.collect.android.support.pages.ProjectSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class FillBlankFormTest {
     @Test
     public void subtext_ShouldDisplayAdditionalInformation() {
         //TestCase2
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("All_widgets.xml")
                 .clickFillBlankForm()
                 .checkIsFormSubtextDisplayed();
@@ -65,10 +64,10 @@ public class FillBlankFormTest {
     @Test
     public void exitDialog_ShouldDisplaySaveAndIgnoreOptions() {
         //TestCase6 , TestCase9
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("All_widgets.xml")
                 .startBlankForm("All widgets")
-                .pressBack(new ExitFormDialog("All widgets", rule))
+                .pressBack(new ExitFormDialog("All widgets"))
                 .assertText(R.string.keep_changes)
                 .assertText(R.string.do_not_save)
                 .clickOnString(R.string.do_not_save)
@@ -79,18 +78,18 @@ public class FillBlankFormTest {
     @Test
     public void searchBar_ShouldSearchForm() {
         //TestCase12
-        new MainMenuPage(rule)
+        rule.startAtMainMenu()
                 .clickFillBlankForm()
                 .clickMenuFilter()
                 .searchInBar("Aaa")
-                .pressBack(new BlankFormSearchPage(rule))
-                .pressBack(new FillBlankFormPage(rule));
+                .pressBack(new BlankFormSearchPage())
+                .pressBack(new FillBlankFormPage());
     }
 
     @Test
     public void navigationButtons_ShouldBeVisibleWhenAreSetInTheMiddleOfForm() {
         //TestCase16
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("All_widgets.xml")
                 .startBlankForm("All widgets")
                 .swipeToNextQuestion("String widget")
@@ -99,15 +98,15 @@ public class FillBlankFormTest {
                 .clickOnUserInterface()
                 .clickNavigation()
                 .clickUseSwipesAndButtons()
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new FormEntryPage("All widgets", rule))
-                .checkAreNavigationButtonsDisplayed();
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new FormEntryPage("All widgets"))
+                .assertNavigationButtonsAreDisplayed();
     }
 
     @Test
     public void formsWithDate_ShouldSaveFormsWithSuccess() {
         //TestCase17
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("1560_DateData.xml")
                 .startBlankForm("1560_DateData")
                 .checkIsTranslationDisplayed("Jan 01, 1900", "01 ene. 1900")
@@ -131,10 +130,10 @@ public class FillBlankFormTest {
     @Test
     public void answers_ShouldBeSuggestedInComplianceWithSelectedLetters() {
         //TestCase41
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("formulaire_adherent.xml", singletonList("espece.csv"))
                 .startBlankFormWithRepeatGroup("formulaire_adherent", "Ajouté une observation")
-                .clickOnAdd(new FormEntryPage("formulaire_adherent", rule))
+                .clickOnAdd(new FormEntryPage("formulaire_adherent"))
                 .clickOnText("Plante")
                 .inputText("Abi")
                 .swipeToNextQuestion("Nom latin de l'espece", true)
@@ -148,8 +147,8 @@ public class FillBlankFormTest {
     @Test
     public void sortByDialog_ShouldBeTranslatedAndDisplayProperIcons() {
         //TestCase37
-        rule.mainMenu()
-                .clickOnMenu()
+        rule.startAtMainMenu()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickOnUserInterface()
                 .clickOnLanguage()
@@ -192,8 +191,8 @@ public class FillBlankFormTest {
         pressBack();
         pressBack();
 
-        new MainMenuPage(rule)
-                .clickOnMenu()
+        new MainMenuPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickOnUserInterface()
                 .clickOnLanguage()
@@ -205,7 +204,7 @@ public class FillBlankFormTest {
         //TestCase26
         // This form doesn't define an instanceID and also doesn't request encryption so this case
         // would catch regressions for https://github.com/getodk/collect/issues/3340
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("CSVerrorForm.xml", singletonList("TrapLists.csv"))
                 .startBlankForm("CSV error Form")
                 .clickOnText("Greg Pommen")
@@ -233,7 +232,7 @@ public class FillBlankFormTest {
     @Test
     public void predicateWarning_ShouldBeAbleToFillTheForm() {
         //TestCase24
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("predicate-warning.xml")
                 .startBlankForm("predicate-warning")
                 .clickOnText("Apple")
@@ -251,7 +250,7 @@ public class FillBlankFormTest {
     @Test
     public void searchAppearance_ShouldDisplayWhenSearchAppearanceIsSpecified() {
         //TestCase25
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("different-search-appearances.xml", singletonList("fruits.csv"))
                 .startBlankForm("different-search-appearances")
                 .clickOnText("Mango")
@@ -326,7 +325,7 @@ public class FillBlankFormTest {
 
     @Test
     public void values_ShouldBeRandom() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("random.xml")
                 .copyForm("randomTest_broken.xml");
 
@@ -335,7 +334,7 @@ public class FillBlankFormTest {
         List<String> secondQuestionAnswers = new ArrayList<>();
 
         for (int i = 1; i <= 3; i++) {
-            FormEntryPage formEntryPage = new MainMenuPage(rule).startBlankForm("random");
+            FormEntryPage formEntryPage = new MainMenuPage().startBlankForm("random");
             firstQuestionAnswers.add(getQuestionText());
             formEntryPage.swipeToNextQuestion();
             secondQuestionAnswers.add(getQuestionText());
@@ -353,7 +352,7 @@ public class FillBlankFormTest {
         firstQuestionAnswers.clear();
 
         for (int i = 1; i <= 3; i++) {
-            FormEntryPage formEntryPage = new MainMenuPage(rule).startBlankForm("random test");
+            FormEntryPage formEntryPage = new MainMenuPage().startBlankForm("random test");
             formEntryPage.inputText("3");
             formEntryPage.swipeToNextQuestion();
             firstQuestionAnswers.add(getQuestionText());
@@ -368,33 +367,33 @@ public class FillBlankFormTest {
     @Test
     public void app_ShouldNotCrash() {
         //TestCase32
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("g6Error.xml")
                 .startBlankFormWithError("g6Error")
-                .clickOK(new FormEntryPage("g6Error", rule))
+                .clickOK(new FormEntryPage("g6Error"))
                 .swipeToEndScreen()
                 .clickSaveAndExit()
                 .checkIsToastWithMessageDisplayed(R.string.data_saved_ok);
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .copyForm("g6Error2.xml")
                 .startBlankForm("g6Error2")
                 .inputText("bla")
                 .swipeToNextQuestionWithError()
-                .clickOK(new FormEntryPage("g6Error2", rule))
+                .clickOK(new FormEntryPage("g6Error2"))
                 .swipeToEndScreen()
                 .inputText("ble")
                 .clickSaveAndExit()
                 .checkIsToastWithMessageDisplayed(R.string.data_saved_ok);
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .copyForm("emptyGroupFieldList.xml")
                 .clickFillBlankForm()
                 .clickOnEmptyForm("emptyGroupFieldList")
                 .clickSaveAndExit()
                 .checkIsToastWithMessageDisplayed(R.string.data_saved_ok);
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .copyForm("emptyGroupFieldList2.xml")
                 .startBlankForm("emptyGroupFieldList2")
                 .inputText("nana")
@@ -406,7 +405,7 @@ public class FillBlankFormTest {
     @Test
     public void user_ShouldBeAbleToFillTheForm() {
         //TestCase27
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("metadata2.xml")
                 .clickFillBlankForm()
                 .clickOnEmptyForm("metadata2")
@@ -417,7 +416,7 @@ public class FillBlankFormTest {
     @Test
     public void question_ShouldBeVisibleOnTheTopOfHierarchy() {
         //TestCase23
-        new MainMenuPage(rule)
+        rule.startAtMainMenu()
                 .copyForm("manyQ.xml")
                 .startBlankForm("manyQ")
                 .swipeToNextQuestion("t2")
@@ -431,21 +430,18 @@ public class FillBlankFormTest {
     @Test
     public void bigForm_ShouldBeFilledSuccessfully() {
         //TestCase18
-        new MainMenuPage(rule)
+        rule.startAtMainMenu()
                 .copyForm("nigeria-wards.xml")
                 .startBlankForm("Nigeria Wards")
                 .assertQuestion("State")
                 .openSelectMinimalDialog()
                 .clickOnText("Adamawa")
-                .closeSelectMinimalDialog()
                 .swipeToNextQuestion("LGA", true)
                 .openSelectMinimalDialog()
                 .clickOnText("Ganye")
-                .closeSelectMinimalDialog()
                 .swipeToNextQuestion("Ward", true)
                 .openSelectMinimalDialog()
                 .clickOnText("Jaggu")
-                .closeSelectMinimalDialog()
                 .swipeToNextQuestion("Comments")
                 .swipeToEndScreen()
                 .clickSaveAndExit();
@@ -454,7 +450,7 @@ public class FillBlankFormTest {
     @Test
     public void questionValidation_ShouldShowToastOnlyWhenConditionsAreNotMet() {
         //TestCase43
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("t21257.xml")
                 .startBlankForm("t21257")
                 .clickOnText("mytext1")
@@ -486,7 +482,7 @@ public class FillBlankFormTest {
     @Test
     public void noDataLost_ShouldRememberAnswersForMultiSelectWidget() {
         //TestCase44
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("test_multiselect_cleared.xml")
                 .startBlankForm("test_multiselect_cleared")
                 .clickOnText("a")
@@ -507,23 +503,9 @@ public class FillBlankFormTest {
     }
 
     @Test
-    public void encryptedFormWithNoInstanceId_shouldNotBeFinalized() {
-        //TestCase47
-        rule.mainMenu()
-                .copyForm("Birds-encrypted.xml")
-                .startBlankForm("Birds")
-                .clickGoToArrow()
-                .clickJumpEndButton()
-                .clickSaveAndExit()
-                .checkIsToastWithMessageDisplayed("This form does not specify an instanceID. You must specify one to enable encryption. Form has not been saved as finalized.")
-                .clickEditSavedForm()
-                .checkInstanceState("Birds", Instance.STATUS_INCOMPLETE);
-    }
-
-    @Test
     public void typeMismatchErrorMessage_shouldBeDisplayed() {
         //TestCase48
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("validate.xml")
                 .startBlankForm("validate")
                 .clearTheText("2019")
@@ -534,32 +516,32 @@ public class FillBlankFormTest {
     @Test
     public void answers_shouldBeAutoFilled() {
         //TestCase50
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("event-odk-new-repeat.xml")
                 .startBlankForm("Event: odk-new-repeat")
                 .inputText("3")
                 .swipeToNextQuestionWithRepeatGroup("null")
-                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat", rule))
+                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat"))
                 .assertText("1")
                 .swipeToNextQuestion("B value")
                 .assertText("5")
                 .swipeToNextQuestionWithRepeatGroup("null")
-                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat", rule))
+                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat"))
                 .assertText("2")
                 .swipeToNextQuestion("B value")
                 .assertText("5")
                 .swipeToNextQuestionWithRepeatGroup("null")
-                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat", rule))
+                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat"))
                 .assertText("3")
                 .swipeToNextQuestion("B value")
                 .assertText("5")
                 .swipeToNextQuestionWithRepeatGroup("null")
-                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat", rule))
+                .clickOnAdd(new FormEntryPage("Event: odk-new-repeat"))
                 .assertText("4")
                 .swipeToNextQuestion("B value")
                 .assertText("5")
                 .swipeToNextQuestionWithRepeatGroup("null")
-                .clickOnDoNotAdd(new FormEntryPage("Event: odk-new-repeat", rule))
+                .clickOnDoNotAdd(new FormEntryPage("Event: odk-new-repeat"))
                 .inputText("2")
                 .swipeToNextQuestion("A value")
                 .assertText("1")
@@ -568,14 +550,14 @@ public class FillBlankFormTest {
                 .swipeToNextQuestion("C value")
                 .swipeToNextQuestion("C value")
                 .swipeToNextQuestionWithRepeatGroup("null")
-                .clickOnDoNotAdd(new FormEndPage("Event: odk-new-repeat", rule))
+                .clickOnDoNotAdd(new FormEndPage("Event: odk-new-repeat"))
                 .clickSaveAndExit();
     }
 
     @Test
     public void questions_shouldHavePrefilledValue() {
         //TestCase51
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("multiple-events.xml")
                 .startBlankForm("Space-separated event list")
                 .assertText("cheese")
@@ -590,10 +572,10 @@ public class FillBlankFormTest {
     @Test
     public void when_chooseAnswer_should_beVisibleInNextQuestion() {
         //TestCase52
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("CalcTest.xml")
                 .startBlankFormWithRepeatGroup("CalcTest", "Fishing gear type")
-                .clickOnAdd(new FormEntryPage("CalcTest", rule))
+                .clickOnAdd(new FormEntryPage("CalcTest"))
                 .clickOnText("Gillnet")
                 .swipeToNextQuestion("7.2 What is the size of the mesh for the Gillnet ?", true)
                 .swipeToPreviousQuestion("7.1 Select the type of fishing equipment used today to catch the fish present", true)
@@ -604,7 +586,7 @@ public class FillBlankFormTest {
     @Test
     public void when_scrollQuestionsList_should_questionsNotDisappear() {
         //TestCase54
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("3403.xml", asList("staff_list.csv", "staff_rights.csv"))
                 .startBlankForm("3403_ODK Version 1.23.3 Tester")
                 .clickOnText("New Farmer Registration")
@@ -617,7 +599,7 @@ public class FillBlankFormTest {
         String formsDirPath = new StoragePathProvider().getOdkDirPath(StorageSubdirectory.FORMS);
 
         //TestCase55
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("search_and_select.xml")
                 .startBlankForm("search_and_select")
                 .assertText("File: " + formsDirPath + "/search_and_select-media/nombre.csv is missing.")
@@ -650,7 +632,7 @@ public class FillBlankFormTest {
     @Test
     public void changedName_shouldNotDisappearAfterScreenRotation() {
         //TestCase13
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("All_widgets.xml")
                 .startBlankForm("All widgets")
                 .clickGoToArrow()
@@ -658,16 +640,16 @@ public class FillBlankFormTest {
                 .clickOnId(R.id.save_name)
                 .inputText("submission")
                 .closeSoftKeyboard()
-                .rotateToLandscape(new FormEntryPage("All widgets", rule))
+                .rotateToLandscape(new FormEntryPage("All widgets"))
                 .assertText("submission")
-                .rotateToPortrait(new FormEntryPage("All widgets", rule))
+                .rotateToPortrait(new FormEntryPage("All widgets"))
                 .assertText("submission");
     }
 
     @Test
     public void groups_shouldBeVisibleInHierarchyView() {
         //TestCase28
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("nested-repeats-complex.xml")
                 .startBlankForm("nested-repeats-complex")
                 .swipeToNextQuestion()
@@ -704,26 +686,26 @@ public class FillBlankFormTest {
     @Test
     public void hierachyView_shouldNotChangeAfterScreenRotation() {
         //TestCase29
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("repeat_group_form.xml")
                 .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
-                .clickOnDoNotAdd(new FormEntryPage("Repeat Group", rule))
+                .clickOnDoNotAdd(new FormEntryPage("Repeat Group"))
                 .clickGoToArrow()
                 .clickGoUpIcon()
                 .checkIfElementInHierarchyMatchesToText("Group Name", 0)
-                .rotateToLandscape(new FormEntryPage("Repeat Group", rule))
+                .rotateToLandscape(new FormEntryPage("Repeat Group"))
                 .checkIfElementInHierarchyMatchesToText("Group Name", 0)
-                .rotateToPortrait(new FormEntryPage("Repeat Group", rule))
+                .rotateToPortrait(new FormEntryPage("Repeat Group"))
                 .checkIfElementInHierarchyMatchesToText("Group Name", 0);
     }
 
     @Test
     public void when_openHierarchyViewFromLastPage_should_mainGroupViewBeVisible() {
         //TestCase30
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("repeat_group_form.xml")
                 .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
-                .clickOnDoNotAdd(new FormEntryPage("Repeat Group", rule))
+                .clickOnDoNotAdd(new FormEntryPage("Repeat Group"))
                 .clickGoToArrow()
                 .clickJumpEndButton()
                 .clickGoToArrow()

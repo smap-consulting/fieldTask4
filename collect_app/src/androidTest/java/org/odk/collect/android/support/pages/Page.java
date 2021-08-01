@@ -4,24 +4,26 @@ import android.app.Activity;
 import android.content.pm.ActivityInfo;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.core.internal.deps.guava.collect.Iterables;
 import androidx.test.espresso.matcher.ViewMatchers;
-import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import junit.framework.AssertionFailedError;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.FormLoadingUtils;
+import org.odk.collect.android.storage.StoragePathProvider;
+import org.odk.collect.android.support.AdbFormLoadingUtils;
 import org.odk.collect.android.support.actions.RotateAction;
 import org.odk.collect.android.support.matchers.RecyclerViewMatcher;
 import org.odk.collect.android.support.matchers.ToastMatcher;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -37,9 +39,9 @@ import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
@@ -54,6 +56,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.core.StringContains.containsString;
 import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.odk.collect.android.support.CustomMatchers.withIndex;
 import static org.odk.collect.android.support.actions.NestedScrollToAction.nestedScrollTo;
 import static org.odk.collect.android.support.matchers.RecyclerViewMatcher.withRecyclerView;
@@ -75,13 +79,7 @@ import static org.odk.collect.android.support.matchers.RecyclerViewMatcher.withR
  * @see <a href="https://en.wikipedia.org/wiki/Fluent_interface">Fluent Interfaces</a>
  */
 
-abstract class Page<T extends Page<T>> {
-
-    final ActivityTestRule rule;
-
-    Page(ActivityTestRule rule) {
-        this.rule = rule;
-    }
+public abstract class Page<T extends Page<T>> {
 
     public abstract T assertOnPage();
 
@@ -103,7 +101,7 @@ abstract class Page<T extends Page<T>> {
         return (T) this;
     }
 
-    public T assertText(String...  text) {
+    public T assertText(String... text) {
         closeSoftKeyboard();
         for (String t : text) {
             onView(allOf(withText(t), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).check(matches(isDisplayed()));
@@ -113,6 +111,11 @@ abstract class Page<T extends Page<T>> {
 
     public T assertText(int stringID) {
         assertText(getTranslatedString(stringID));
+        return (T) this;
+    }
+
+    public T assertText(int stringID, Object... formatArgs) {
+        assertText(getTranslatedString(stringID, formatArgs));
         return (T) this;
     }
 
@@ -141,7 +144,7 @@ abstract class Page<T extends Page<T>> {
         return assertTextDoesNotExist(getTranslatedString(string));
     }
 
-    public T assertTextDoesNotExist(String...  text) {
+    public T assertTextDoesNotExist(String... text) {
         for (String t : text) {
             onView(allOf(withText(t), withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))).check(doesNotExist());
         }
@@ -195,7 +198,13 @@ abstract class Page<T extends Page<T>> {
     }
 
     String getTranslatedString(Integer id) {
-        return getCurrentActivity().getString(id);
+        Activity currentActivity = getCurrentActivity();
+
+        if (currentActivity != null) {
+            return currentActivity.getString(id);
+        } else {
+            return ApplicationProvider.getApplicationContext().getString(id);
+        }
     }
 
     String getTranslatedString(Integer id, Object... formatArgs) {
@@ -214,11 +223,13 @@ abstract class Page<T extends Page<T>> {
 
     public T inputText(String text) {
         onView(withClassName(endsWith("EditText"))).perform(replaceText(text));
+        closeSoftKeyboard();
         return (T) this;
     }
 
     public T inputText(int hint, String text) {
         onView(withHint(getTranslatedString(hint))).perform(replaceText(text));
+        closeSoftKeyboard();
         return (T) this;
     }
 
@@ -279,13 +290,17 @@ abstract class Page<T extends Page<T>> {
         return (T) this;
     }
 
-    private static Activity getCurrentActivity() {
+    public static Activity getCurrentActivity() {
         getInstrumentation().waitForIdleSync();
 
         final Activity[] activity = new Activity[1];
         getInstrumentation().runOnMainSync(() -> {
             java.util.Collection<Activity> activities = ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
-            activity[0] = Iterables.getOnlyElement(activities);
+            if (!activities.isEmpty()) {
+                activity[0] = Iterables.getOnlyElement(activities);
+            } else {
+                activity[0] = null;
+            }
         });
 
         return activity[0];
@@ -293,6 +308,11 @@ abstract class Page<T extends Page<T>> {
 
     public T checkIsSnackbarErrorVisible() {
         onView(allOf(withId(R.id.snackbar_text))).check(matches(isDisplayed()));
+        return (T) this;
+    }
+
+    public T scrollToAndClickText(int text) {
+        onView(withText(getTranslatedString(text))).perform(nestedScrollTo(), click());
         return (T) this;
     }
 
@@ -413,7 +433,7 @@ abstract class Page<T extends Page<T>> {
 
     public T copyForm(String formFilename) {
         try {
-            FormLoadingUtils.copyFormToStorage(formFilename);
+            AdbFormLoadingUtils.copyFormToStorage(formFilename);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -423,7 +443,17 @@ abstract class Page<T extends Page<T>> {
 
     public T copyForm(String formFilename, List<String> mediaFileNames) {
         try {
-            FormLoadingUtils.copyFormToStorage(formFilename, mediaFileNames, false);
+            AdbFormLoadingUtils.copyFormToStorage(formFilename, mediaFileNames, false, formFilename);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return (T) this;
+    }
+
+    public T copyInstance(String instanceFileName) {
+        try {
+            AdbFormLoadingUtils.copyInstanceToStorage(instanceFileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -443,6 +473,13 @@ abstract class Page<T extends Page<T>> {
 
     public T clickOnContentDescription(int string) {
         onView(withContentDescription(string)).perform(click());
+        return (T) this;
+    }
+
+    public T assertFileWithProjectNameUpdated(String oldProjectName, String newProjectName) {
+        StoragePathProvider storagePathProvider = new StoragePathProvider();
+        assertFalse(new File(storagePathProvider.getProjectRootDirPath() + File.separator + oldProjectName).exists());
+        assertTrue(new File(storagePathProvider.getProjectRootDirPath() + File.separator + newProjectName).exists());
         return (T) this;
     }
 }

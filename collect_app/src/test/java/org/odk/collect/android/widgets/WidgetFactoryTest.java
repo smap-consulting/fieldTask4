@@ -2,13 +2,15 @@ package org.odk.collect.android.widgets;
 
 import android.app.Activity;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import org.javarosa.core.model.Constants;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.odk.collect.android.support.CollectHelpers;
 import org.odk.collect.android.support.MockFormEntryPromptBuilder;
-import org.odk.collect.android.support.RobolectricHelpers;
 import org.odk.collect.android.support.TestScreenContextActivity;
 import org.odk.collect.android.widgets.items.LabelWidget;
 import org.odk.collect.android.widgets.items.LikertWidget;
@@ -20,19 +22,18 @@ import org.odk.collect.android.widgets.items.SelectMultiWidget;
 import org.odk.collect.android.widgets.items.SelectOneImageMapWidget;
 import org.odk.collect.android.widgets.items.SelectOneMinimalWidget;
 import org.odk.collect.android.widgets.items.SelectOneWidget;
-import org.robolectric.RobolectricTestRunner;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class WidgetFactoryTest {
     private WidgetFactory widgetFactory;
 
     @Before
     public void setup() {
-        Activity activity = RobolectricHelpers.buildThemedActivity(TestScreenContextActivity.class).get();
+        Activity activity = CollectHelpers.buildThemedActivity(TestScreenContextActivity.class).get();
 
         widgetFactory = new WidgetFactory(activity, false, false, null, null, null, null, null, null, null, null);
     }

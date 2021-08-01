@@ -1,18 +1,19 @@
 package org.odk.collect.android.formmanagement;
 
 import org.jetbrains.annotations.NotNull;
-import org.odk.collect.android.R;
 import org.odk.collect.analytics.Analytics;
+import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.forms.Form;
-import org.odk.collect.android.forms.FormSource;
-import org.odk.collect.android.forms.FormSourceException;
-import org.odk.collect.android.forms.FormsRepository;
-import org.odk.collect.android.forms.MediaFile;
 import org.odk.collect.android.listeners.FormDownloaderListener;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.FormNameUtils;
-import org.odk.collect.android.utilities.Validator;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.FormSource;
+import org.odk.collect.forms.FormSourceException;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.forms.MediaFile;
+import org.odk.collect.shared.strings.Md5;
+import org.odk.collect.shared.strings.Validator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -31,7 +32,6 @@ import timber.log.Timber;
 
 import static org.apache.commons.io.FileUtils.deleteDirectory;
 import static org.odk.collect.android.analytics.AnalyticsEvents.DOWNLOAD_SAME_FORMID_VERSION_DIFFERENT_HASH;
-import static org.odk.collect.android.storage.StoragePathProvider.getAbsoluteFilePath;
 
 public class ServerFormDownloader implements FormDownloader {
 
@@ -56,25 +56,21 @@ public class ServerFormDownloader implements FormDownloader {
     @Override
     public void downloadForm(ServerFormDetails form, @Nullable ProgressReporter progressReporter, @Nullable Supplier<Boolean> isCancelled) throws FormDownloadException, InterruptedException {
         Form formOnDevice;
-        if (form.getHash() != null) {
+        try {
             formOnDevice = formsRepository.getOneByMd5Hash(getMd5HashWithoutPrefix(form.getHash()));
-        } else {
-            /*
-             This allows us to support non open rosa servers and open rosa servers that don't
-             return hashes. Can be removed when we drop support for these.
-             */
-            formOnDevice = formsRepository.getLatestByFormIdAndVersion(form.getFormId(), form.getFormVersion());
+        } catch (IllegalArgumentException e) {
+            throw new FormDownloadException(e.getMessage());
         }
 
         if (formOnDevice != null) {
             if (formOnDevice.isDeleted()) {
-                formsRepository.restore(formOnDevice.getId());
+                formsRepository.restore(formOnDevice.getDbId());
             }
         } else {
             List<Form> allSameFormIdVersion = formsRepository.getAllByFormIdAndVersion(form.getFormId(), form.getFormVersion());
             if (!allSameFormIdVersion.isEmpty() && !form.getDownloadUrl().contains("/draft.xml")) {
                 String formIdentifier = form.getFormName() + " " + form.getFormId();
-                String formIdHash = FileUtils.getMd5Hash(new ByteArrayInputStream(formIdentifier.getBytes()));
+                String formIdHash = Md5.getMd5Hash(new ByteArrayInputStream(formIdentifier.getBytes()));
                 analytics.logFormEvent(DOWNLOAD_SAME_FORMID_VERSION_DIFFERENT_HASH, formIdHash);
             }
         }
@@ -187,7 +183,7 @@ public class ServerFormDownloader implements FormDownloader {
 
         // move the media files in the media folder
         if (tempMediaPath != null) {
-            File formMediaDir = new File(getAbsoluteFilePath(formsDirPath, formResult.form.getFormMediaPath()));
+            File formMediaDir = new File(formResult.form.getFormMediaPath());
 
             try {
                 moveMediaFiles(tempMediaPath, formMediaDir);
@@ -196,7 +192,7 @@ public class ServerFormDownloader implements FormDownloader {
 
                 if (formResult.isNew() && fileResult.isNew()) {
                     // this means we should delete the entire form together with the metadata
-                    formsRepository.delete(formResult.form.getId());
+                    formsRepository.delete(formResult.form.getDbId());
                 }
 
                 return false;
@@ -210,7 +206,7 @@ public class ServerFormDownloader implements FormDownloader {
         if (fileResult == null) {
             Timber.d("The user cancelled (or an exception happened) the download of a form at the very beginning.");
         } else {
-            String md5Hash = FileUtils.getMd5Hash(fileResult.file);
+            String md5Hash = Md5.getMd5Hash(fileResult.file);
             if (md5Hash != null) {
                 formsRepository.deleteByMd5Hash(md5Hash);
             }
@@ -241,8 +237,8 @@ public class ServerFormDownloader implements FormDownloader {
                 .formFilePath(formFile.getAbsolutePath())
                 .formMediaPath(mediaPath)
                 .displayName(formInfo.get(FileUtils.TITLE))
-                .jrVersion(formInfo.get(FileUtils.VERSION))
-                .jrFormId(formInfo.get(FileUtils.FORMID))
+                .version(formInfo.get(FileUtils.VERSION))
+                .formId(formInfo.get(FileUtils.FORMID))
                 .submissionUri(formInfo.get(FileUtils.SUBMISSIONURI))
                 .base64RSAPublicKey(formInfo.get(FileUtils.BASE64_RSA_PUBLIC_KEY))
                 .autoDelete(formInfo.get(FileUtils.AUTO_DELETE))
@@ -266,14 +262,13 @@ public class ServerFormDownloader implements FormDownloader {
 
         // we've downloaded the file, and we may have renamed it
         // make sure it's not the same as a file we already have
-        Form form = formsRepository.getOneByMd5Hash(FileUtils.getMd5Hash(tempFormFile));
+        Form form = formsRepository.getOneByMd5Hash(Md5.getMd5Hash(tempFormFile));
         if (form != null) {
             // delete the file we just downloaded, because it's a duplicate
             FileUtils.deleteAndReport(tempFormFile);
 
             // set the file returned to the file we already had
-            String existingPath = getAbsoluteFilePath(formsDirPath, form.getFormFilePath());
-            return new FileResult(new File(existingPath), false);
+            return new FileResult(new File(form.getFormFilePath()), false);
         } else {
             return new FileResult(tempFormFile, true);
         }
@@ -395,13 +390,11 @@ public class ServerFormDownloader implements FormDownloader {
                 InputStream mediaFile = formSource.fetchMediaFile(toDownload.getDownloadUrl());
                 writeFile(mediaFile, tempMediaFile, tempDir, stateListener);
             } else {
-                String currentFileHash = FileUtils.getMd5Hash(finalMediaFile);
+                String currentFileHash = Md5.getMd5Hash(finalMediaFile);
                 String downloadFileHash = getMd5HashWithoutPrefix(toDownload.getHash());
 
                 if (currentFileHash != null && downloadFileHash != null && !currentFileHash.contentEquals(downloadFileHash)) {
-                    // if the hashes match, it's the same file
-                    // otherwise delete our current one and replace it with the new one
-                    FileUtils.deleteAndReport(finalMediaFile);
+                    // if the hashes match, it's the same file otherwise replace it with the new one
                     InputStream mediaFile = formSource.fetchMediaFile(toDownload.getDownloadUrl());
                     writeFile(mediaFile, tempMediaFile, tempDir, stateListener);
                 } else {
@@ -435,7 +428,13 @@ public class ServerFormDownloader implements FormDownloader {
 
         if (mediaFiles != null && mediaFiles.length != 0) {
             for (File mediaFile : mediaFiles) {
-                org.apache.commons.io.FileUtils.moveFileToDirectory(mediaFile, formMediaPath, true);
+                try {
+                    org.apache.commons.io.FileUtils.copyFileToDirectory(mediaFile, formMediaPath);
+                } catch (IllegalArgumentException e) {
+                    // This can happen if copyFileToDirectory is pointed at a file instead of a dir
+                    throw new IOException(e);
+                }
+
             }
         }
     }

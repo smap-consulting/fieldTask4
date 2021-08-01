@@ -16,15 +16,17 @@
 
 package org.odk.collect.android.formmanagement;
 
-import org.odk.collect.android.forms.FormListItem;
-import org.odk.collect.android.forms.FormSource;
-import org.odk.collect.android.forms.FormSourceException;
-import org.odk.collect.android.forms.FormsRepository;
-import org.odk.collect.android.forms.ManifestFile;
-import org.odk.collect.android.forms.MediaFile;
-import org.odk.collect.android.forms.MediaFileRepository;
-import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.openrosa.OpenRosaFormSource;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.FormListItem;
+import org.odk.collect.forms.FormSource;
+import org.odk.collect.forms.FormSourceException;
+import org.odk.collect.android.utilities.FormUtils;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.forms.ManifestFile;
+import org.odk.collect.forms.MediaFile;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
+import org.odk.collect.shared.strings.Md5;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -35,26 +37,23 @@ import timber.log.Timber;
 public class ServerFormsDetailsFetcher {
 
     private final FormsRepository formsRepository;
-    private final MediaFileRepository mediaFileRepository;
     private final FormSource formSource;
     private final DiskFormsSynchronizer diskFormsSynchronizer;
 
     public ServerFormsDetailsFetcher(FormsRepository formsRepository,
-                                     MediaFileRepository mediaFileRepository,
                                      FormSource formSource,
                                      DiskFormsSynchronizer diskFormsSynchronizer) {
         this.formsRepository = formsRepository;
-        this.mediaFileRepository = mediaFileRepository;
         this.formSource = formSource;
         this.diskFormsSynchronizer = diskFormsSynchronizer;
     }
 
     public void updateUrl(String url) {
-        formSource.updateUrl(url);
+        ((OpenRosaFormSource) formSource).updateUrl(url);
     }
 
     public void updateCredentials(WebCredentialsUtils webCredentialsUtils) {
-        formSource.updateWebCredentialsUtils(webCredentialsUtils);
+        ((OpenRosaFormSource) formSource).updateWebCredentialsUtils(webCredentialsUtils);
     }
 
     public List<ServerFormDetails> fetchFormDetails() throws FormSourceException {
@@ -70,7 +69,8 @@ public class ServerFormsDetailsFetcher {
                 manifestFile = getManifestFile(formSource, listItem.getManifestURL());
             }
 
-            boolean thisFormAlreadyDownloaded = !formsRepository.getAllNotDeletedByFormId(listItem.getFormID()).isEmpty();
+            List<Form> forms = formsRepository.getAllNotDeletedByFormId(listItem.getFormID());
+            boolean thisFormAlreadyDownloaded = !forms.isEmpty();
 
             boolean isNewerFormVersionAvailable = false;
             if (thisFormAlreadyDownloaded) {
@@ -80,7 +80,7 @@ public class ServerFormsDetailsFetcher {
                     List<MediaFile> newMediaFiles = manifestFile.getMediaFiles();
 
                     if (newMediaFiles != null && !newMediaFiles.isEmpty()) {
-                        isNewerFormVersionAvailable = areNewerMediaFilesAvailable(listItem.getFormID(), listItem.getVersion(), newMediaFiles);
+                        isNewerFormVersionAvailable = areNewerMediaFilesAvailable(forms.get(0), newMediaFiles);
                     }
                 }
             }
@@ -123,8 +123,8 @@ public class ServerFormsDetailsFetcher {
         return formsRepository.getOneByMd5Hash(hash) == null;
     }
 
-    private boolean areNewerMediaFilesAvailable(String formId, String formVersion, List<MediaFile> newMediaFiles) {
-        List<File> localMediaFiles = mediaFileRepository.getAll(formId, formVersion);
+    private boolean areNewerMediaFilesAvailable(Form existingForm, List<MediaFile> newMediaFiles) {
+        List<File> localMediaFiles = FormUtils.getMediaFiles(existingForm);
 
         if (localMediaFiles != null) {
             for (MediaFile newMediaFile : newMediaFiles) {
@@ -148,7 +148,7 @@ public class ServerFormsDetailsFetcher {
         String mediaFileHash = newMediaFile.getHash();
         mediaFileHash = mediaFileHash.substring(4, mediaFileHash.length());
         for (File localMediaFile : localMediaFiles) {
-            if (mediaFileHash.equals(FileUtils.getMd5Hash(localMediaFile))) {
+            if (mediaFileHash.equals(Md5.getMd5Hash(localMediaFile))) {
                 return true;
             }
         }

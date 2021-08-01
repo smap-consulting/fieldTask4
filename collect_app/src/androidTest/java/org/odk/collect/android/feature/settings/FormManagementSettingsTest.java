@@ -2,7 +2,6 @@ package org.odk.collect.android.feature.settings;
 
 import android.Manifest;
 
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -11,14 +10,15 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.android.activities.MainMenuActivity;
-import org.odk.collect.android.support.FormLoadingUtils;
+import org.odk.collect.android.RecordedIntentsRule;
+import org.odk.collect.android.support.CollectTestRule;
+import org.odk.collect.android.support.AdbFormLoadingUtils;
 import org.odk.collect.android.support.NotificationDrawerRule;
 import org.odk.collect.android.support.TestDependencies;
 import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.TestScheduler;
 import org.odk.collect.android.support.pages.FormManagementPage;
-import org.odk.collect.android.support.pages.GeneralSettingsPage;
+import org.odk.collect.android.support.pages.ProjectSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
 import java.util.List;
@@ -33,11 +33,12 @@ public class FormManagementSettingsTest {
     private final TestDependencies testDependencies = new TestDependencies();
     private final NotificationDrawerRule notificationDrawer = new NotificationDrawerRule();
 
-    public IntentsTestRule<MainMenuActivity> rule = new IntentsTestRule<>(MainMenuActivity.class);
+    public final CollectTestRule rule = new CollectTestRule();
 
     @Rule
     public RuleChain copyFormChain = TestRuleChain.chain(testDependencies)
             .around(GrantPermissionRule.grant(Manifest.permission.GET_ACCOUNTS))
+            .around(new RecordedIntentsRule())
             .around(notificationDrawer)
             .around(rule);
 
@@ -46,8 +47,8 @@ public class FormManagementSettingsTest {
         List<TestScheduler.DeferredTask> deferredTasks = testDependencies.scheduler.getDeferredTasks();
         assertThat(deferredTasks, is(empty()));
 
-        FormManagementPage page = new MainMenuPage(rule).assertOnPage()
-                .clickOnMenu()
+        FormManagementPage page = new MainMenuPage().assertOnPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickFormManagement()
                 .clickUpdateForms()
@@ -71,8 +72,8 @@ public class FormManagementSettingsTest {
         List<TestScheduler.DeferredTask> deferredTasks = testDependencies.scheduler.getDeferredTasks();
         assertThat(deferredTasks, is(empty()));
 
-        FormManagementPage page = new MainMenuPage(rule).assertOnPage()
-                .clickOnMenu()
+        FormManagementPage page = new MainMenuPage().assertOnPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickFormManagement()
                 .clickUpdateForms()
@@ -93,21 +94,21 @@ public class FormManagementSettingsTest {
 
     @Test
     public void whenPreviouslyDownloadedOnlyEnabled_checkingAutoDownload_downloadsUpdatedForms() throws Exception {
-        FormManagementPage page = new MainMenuPage(rule).assertOnPage()
+        FormManagementPage page = new MainMenuPage().assertOnPage()
                 .setServer(testDependencies.server.getURL())
-                .clickOnMenu()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickFormManagement()
                 .clickUpdateForms()
                 .clickOption(R.string.previously_downloaded_only)
                 .clickOnString(R.string.automatic_download);
 
-        FormLoadingUtils.copyFormToStorage("one-question.xml");
+        AdbFormLoadingUtils.copyFormToStorage("one-question.xml");
         testDependencies.server.addForm("One Question Updated", "one_question", "2", "one-question-updated.xml");
         testDependencies.scheduler.runDeferredTasks();
 
-        page.pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
+        page.pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
                 .clickFillBlankForm()
                 .assertText("One Question Updated");
 
@@ -119,10 +120,10 @@ public class FormManagementSettingsTest {
     public void whenGoogleDriveUsingAsServer_disablesPrefsAndOnlyAllowsManualUpdates() {
         testDependencies.googleAccountPicker.setDeviceAccount("steph@curry.basket");
 
-        new MainMenuPage(rule).assertOnPage()
+        new MainMenuPage().assertOnPage()
                 .enablePreviouslyDownloadedOnlyUpdates() // Enabled a different mode before setting up Google
                 .setGoogleAccount("steph@curry.basket")
-                .clickOnMenu()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickFormManagement()
                 .assertDisabled(R.string.form_update_mode_title)

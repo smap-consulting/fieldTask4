@@ -27,17 +27,19 @@ import androidx.loader.content.CursorLoader;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.FormListAdapter;
-import org.odk.collect.android.dao.FormsDao;
-import org.odk.collect.android.forms.FormsRepository;
+import org.odk.collect.android.dao.CursorLoaderFactory;
+import org.odk.collect.android.database.forms.DatabaseFormColumns;
 import org.odk.collect.android.fragments.dialogs.ProgressDialogFragment;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.instances.InstancesRepository;
+import org.odk.collect.android.itemsets.FastExternalItemsetsRepository;
 import org.odk.collect.android.listeners.DeleteFormsListener;
 import org.odk.collect.android.listeners.DiskSyncListener;
-import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
+import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.tasks.DeleteFormsTask;
-import org.odk.collect.android.tasks.DiskSyncTask;
+import org.odk.collect.android.tasks.FormSyncTask;
 import org.odk.collect.android.utilities.DialogUtils;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.android.utilities.ToastUtils;
 
 import javax.inject.Inject;
@@ -58,10 +60,16 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
     private AlertDialog alertDialog;
 
     @Inject
-    FormsRepository formsRepository;
+    FormsRepositoryProvider formsRepositoryProvider;
 
     @Inject
-    InstancesRepository instancesRepository;
+    InstancesRepositoryProvider instancesRepositoryProvider;
+
+    @Inject
+    FastExternalItemsetsRepository fastExternalItemsetsRepository;
+
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -79,9 +87,9 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
 
         if (backgroundTasks == null) {
             backgroundTasks = new BackgroundTasks();
-            backgroundTasks.diskSyncTask = new DiskSyncTask();
-            backgroundTasks.diskSyncTask.setDiskSyncListener(this);
-            backgroundTasks.diskSyncTask.execute((Void[]) null);
+            backgroundTasks.formSyncTask = new FormSyncTask();
+            backgroundTasks.formSyncTask.setDiskSyncListener(this);
+            backgroundTasks.formSyncTask.execute((Void[]) null);
         }
         super.onViewCreated(rootView, savedInstanceState);
     }
@@ -89,14 +97,14 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
     @Override
     public void onResume() {
         // hook up to receive completion events
-        backgroundTasks.diskSyncTask.setDiskSyncListener(this);
+        backgroundTasks.formSyncTask.setDiskSyncListener(this);
         if (backgroundTasks.deleteFormsTask != null) {
             backgroundTasks.deleteFormsTask.setDeleteListener(this);
         }
         super.onResume();
         // async task may have completed while we were reorienting...
-        if (backgroundTasks.diskSyncTask.getStatus() == AsyncTask.Status.FINISHED) {
-            syncComplete(backgroundTasks.diskSyncTask.getStatusMessage());
+        if (backgroundTasks.formSyncTask.getStatus() == AsyncTask.Status.FINISHED) {
+            syncComplete(backgroundTasks.formSyncTask.getStatusMessage());
         }
         if (backgroundTasks.deleteFormsTask != null
                 && backgroundTasks.deleteFormsTask.getStatus() == AsyncTask.Status.FINISHED) {
@@ -109,8 +117,8 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
 
     @Override
     public void onPause() {
-        if (backgroundTasks.diskSyncTask != null) {
-            backgroundTasks.diskSyncTask.setDiskSyncListener(null);
+        if (backgroundTasks.formSyncTask != null) {
+            backgroundTasks.formSyncTask.setDiskSyncListener(null);
         }
         if (backgroundTasks.deleteFormsTask != null) {
             backgroundTasks.deleteFormsTask.setDeleteListener(null);
@@ -124,12 +132,12 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
 
     private void setupAdapter() {
         String[] data = {
-            FormsColumns.DISPLAY_NAME, FormsColumns.JR_VERSION,
-            FormsColumns.DATE, FormsColumns.JR_FORM_ID};
+                DatabaseFormColumns.DISPLAY_NAME, DatabaseFormColumns.JR_VERSION,
+                DatabaseFormColumns.DATE, DatabaseFormColumns.JR_FORM_ID};
         int[] view = {R.id.form_title, R.id.form_subtitle, R.id.form_subtitle2};
 
         listAdapter = new FormListAdapter(
-                getListView(), FormsColumns.JR_VERSION, getActivity(),
+                getListView(), DatabaseFormColumns.JR_VERSION, getActivity(),
                 R.layout.form_chooser_list_item_multiple_choice, null, data, view);
         setListAdapter(listAdapter);
         checkPreviouslyCheckedItems();
@@ -142,7 +150,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
 
     @Override
     protected CursorLoader getCursorLoader() {
-        return new FormsDao().getFormsCursorLoader(getFilterText(), getSortingOrder());
+        return new CursorLoaderFactory(currentProjectProvider).getFormsCursorLoader(getFilterText(), getSortingOrder(), false);
     }
 
     /**
@@ -198,7 +206,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
             args.putBoolean(ProgressDialogFragment.CANCELABLE, false);
             DialogUtils.showIfNotShowing(ProgressDialogFragment.class, args, getActivity().getSupportFragmentManager());
 
-            backgroundTasks.deleteFormsTask = new DeleteFormsTask(formsRepository, instancesRepository);
+            backgroundTasks.deleteFormsTask = new DeleteFormsTask(formsRepositoryProvider.get(), instancesRepositoryProvider.get());
             backgroundTasks.deleteFormsTask.setDeleteListener(this);
             backgroundTasks.deleteFormsTask.execute(getCheckedIdObjects());
         } else {
@@ -239,6 +247,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
         }
         deleteButton.setEnabled(false);
 
+        updateAdapter();
         DialogUtils.dismissDialog(ProgressDialogFragment.class, getActivity().getSupportFragmentManager());
     }
 
@@ -270,7 +279,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
     }
 
     private static class BackgroundTasks {
-        DiskSyncTask diskSyncTask;
+        FormSyncTask formSyncTask;
         DeleteFormsTask deleteFormsTask;
 
         BackgroundTasks() {

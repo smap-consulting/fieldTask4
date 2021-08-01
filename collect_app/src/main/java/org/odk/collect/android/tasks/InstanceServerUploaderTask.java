@@ -14,12 +14,12 @@
 
 package org.odk.collect.android.tasks;
 
-import org.odk.collect.android.R;
 import org.odk.collect.analytics.Analytics;
+import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
+import org.odk.collect.forms.instances.Instance;
 import org.odk.collect.android.logic.PropertyManager;
+import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
 import org.odk.collect.android.upload.InstanceServerUploader;
 import org.odk.collect.android.upload.UploadAuthRequestedException;
 import org.odk.collect.android.upload.UploadException;
@@ -62,7 +62,7 @@ public class InstanceServerUploaderTask extends InstanceUploaderTask {
     public Outcome doInBackground(Long... instanceIdsToUpload) {
         Outcome outcome = new Outcome();
 
-        InstanceServerUploader uploader = new InstanceServerUploader(httpInterface, webCredentialsUtils, new HashMap<>(), preferencesDataSourceProvider);
+        InstanceServerUploader uploader = new InstanceServerUploader(httpInterface, webCredentialsUtils, new HashMap<>(), settingsProvider.getGeneralSettings());
         List<Instance> instancesToUpload = uploader.getInstancesFromIds(instanceIdsToUpload);
 
         String deviceId = new PropertyManager().getSingularProperty(PropertyManager.PROPMGR_DEVICE_ID);
@@ -78,17 +78,17 @@ public class InstanceServerUploaderTask extends InstanceUploaderTask {
             try {
                 String destinationUrl = uploader.getUrlToSubmitTo(instance, deviceId, completeDestinationUrl, null);
                 String customMessage = uploader.uploadOneSubmission(instance, destinationUrl);
-                outcome.messagesByInstanceId.put(instance.getId().toString(),
+                outcome.messagesByInstanceId.put(instance.getDbId().toString(),
                         customMessage != null ? customMessage : TranslationHandler.getString(Collect.getInstance(), R.string.success));
 
-                analytics.logEvent(SUBMISSION, "HTTP", Collect.getFormIdentifierHash(instance.getJrFormId(), instance.getJrVersion()));
+                analytics.logEvent(SUBMISSION, "HTTP", Collect.getFormIdentifierHash(instance.getFormId(), instance.getFormVersion()));
             } catch (UploadAuthRequestedException e) {
                 outcome.authRequestingServer = e.getAuthRequestingServer();
                 // Don't add the instance that caused an auth request to the map because we want to
                 // retry. Items present in the map are considered already attempted and won't be
                 // retried.
             } catch (UploadException e) {
-                outcome.messagesByInstanceId.put(instance.getId().toString(),
+                outcome.messagesByInstanceId.put(instance.getDbId().toString(),
                         e.getDisplayMessage());
             }
         }

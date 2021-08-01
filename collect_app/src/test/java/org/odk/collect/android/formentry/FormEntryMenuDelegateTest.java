@@ -8,16 +8,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
+import org.odk.collect.android.TestSettingsProvider;
 import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.formentry.backgroundlocation.BackgroundLocationViewModel;
 import org.odk.collect.android.formentry.questions.AnswersProvider;
 import org.odk.collect.android.formentry.saving.FormSaveViewModel;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.preferences.PreferencesActivity;
+import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity;
 import org.odk.collect.android.utilities.ApplicationConstants;
+import org.odk.collect.androidshared.livedata.MutableNonNullLiveData;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
-import org.odk.collect.shared.livedata.MutableNonNullLiveData;
-import org.odk.collect.utilities.TestPreferencesProvider;
+import org.odk.collect.testshared.RobolectricHelpers;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.fakes.RoboMenu;
@@ -36,8 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.odk.collect.android.support.RobolectricHelpers.createThemedActivity;
-import static org.odk.collect.android.support.RobolectricHelpers.getFragmentByClass;
+import static org.odk.collect.testshared.RobolectricHelpers.getFragmentByClass;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -54,7 +54,7 @@ public class FormEntryMenuDelegateTest {
 
     @Before
     public void setup() {
-        activity = createThemedActivity(AppCompatActivity.class, R.style.Theme_MaterialComponents);
+        activity = RobolectricHelpers.createThemedActivity(AppCompatActivity.class, R.style.Theme_MaterialComponents);
         FormController formController = mock(FormController.class);
         answersProvider = mock(AnswersProvider.class);
         formSaveViewModel = mock(FormSaveViewModel.class);
@@ -78,7 +78,7 @@ public class FormEntryMenuDelegateTest {
                 audioRecorder,
                 backgroundLocationViewModel,
                 backgroundAudioViewModel,
-                TestPreferencesProvider.getPreferencesRepository()
+                TestSettingsProvider.getSettingsProvider()
         );
         formEntryMenuDelegate.formLoaded(formController);
     }
@@ -223,7 +223,7 @@ public class FormEntryMenuDelegateTest {
         formEntryMenuDelegate.onOptionsItemSelected(new RoboMenuItem(R.id.menu_preferences));
         ShadowActivity.IntentForResult nextStartedActivity = shadowOf(activity).getNextStartedActivityForResult();
         assertThat(nextStartedActivity, not(nullValue()));
-        assertThat(nextStartedActivity.intent.getComponent().getClassName(), is(PreferencesActivity.class.getName()));
+        assertThat(nextStartedActivity.intent.getComponent().getClassName(), is(ProjectPreferencesActivity.class.getName()));
         assertThat(nextStartedActivity.requestCode, is(ApplicationConstants.RequestCodes.CHANGE_SETTINGS));
     }
 

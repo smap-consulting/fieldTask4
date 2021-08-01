@@ -14,7 +14,6 @@
 
 package org.odk.collect.android.activities;
 
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -32,17 +31,19 @@ import androidx.loader.content.Loader;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.FormListAdapter;
-import org.odk.collect.android.dao.FormsDao;
+import org.odk.collect.android.dao.CursorLoaderFactory;
+import org.odk.collect.android.database.forms.DatabaseFormColumns;
+import org.odk.collect.android.external.FormsContract;
 import org.odk.collect.android.formmanagement.BlankFormListMenuDelegate;
 import org.odk.collect.android.formmanagement.BlankFormsListViewModel;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.DiskSyncListener;
 import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.network.NetworkStateProvider;
-import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.ServerAuthDialogFragment;
-import org.odk.collect.android.provider.FormsProviderAPI.FormsColumns;
-import org.odk.collect.android.tasks.DiskSyncTask;
+import org.odk.collect.android.preferences.dialogs.ServerAuthDialogFragment;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.android.projects.CurrentProjectProvider;
+import org.odk.collect.android.tasks.FormSyncTask;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.MultiClickGuard;
@@ -64,13 +65,16 @@ public class FillBlankFormActivity extends FormListActivity implements
 
     private static final String FORM_CHOOSER_LIST_SORTING_ORDER = "formChooserListSortingOrder";
 
-    private DiskSyncTask diskSyncTask;
+    private FormSyncTask formSyncTask;
 
     @Inject
     NetworkStateProvider networkStateProvider;
 
     @Inject
     BlankFormsListViewModel.Factory blankFormsListViewModelFactory;
+
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
 
     BlankFormListMenuDelegate menuDelegate;
 
@@ -137,12 +141,12 @@ public class FillBlankFormActivity extends FormListActivity implements
 
         // DiskSyncTask checks the disk for any forms not already in the content provider
         // that is, put here by dragging and dropping onto the SDCard
-        diskSyncTask = (DiskSyncTask) getLastCustomNonConfigurationInstance();
-        if (diskSyncTask == null) {
+        formSyncTask = (FormSyncTask) getLastCustomNonConfigurationInstance();
+        if (formSyncTask == null) {
             Timber.i("Starting new disk sync task");
-            diskSyncTask = new DiskSyncTask();
-            diskSyncTask.setDiskSyncListener(this);
-            diskSyncTask.execute((Void[]) null);
+            formSyncTask = new FormSyncTask();
+            formSyncTask.setDiskSyncListener(this);
+            formSyncTask.execute((Void[]) null);
         }
         sortingOptions = new int[]{
                 R.string.sort_by_name_asc, R.string.sort_by_name_desc,
@@ -156,7 +160,7 @@ public class FillBlankFormActivity extends FormListActivity implements
     @Override
     public Object onRetainCustomNonConfigurationInstance() {
         // pass the thread on restart
-        return diskSyncTask;
+        return formSyncTask;
     }
 
     /**
@@ -167,7 +171,7 @@ public class FillBlankFormActivity extends FormListActivity implements
         if (MultiClickGuard.allowClick(getClass().getName())) {
             // get uri to form
             long idFormsTable = listView.getAdapter().getItemId(position);
-            Uri formUri = ContentUris.withAppendedId(FormsColumns.CONTENT_URI, idFormsTable);
+            Uri formUri = FormsContract.getUri(currentProjectProvider.getCurrentProject().getUuid(), idFormsTable);
 
             String action = getIntent().getAction();
             if (Intent.ACTION_PICK.equals(action)) {
@@ -175,7 +179,9 @@ public class FillBlankFormActivity extends FormListActivity implements
                 setResult(RESULT_OK, new Intent().setData(formUri));
             } else {
                 // caller wants to view/edit a form, so launch formentryactivity
-                Intent intent = new Intent(Intent.ACTION_EDIT, formUri);
+                Intent intent = new Intent(this, FormEntryActivity.class);
+                intent.setAction(Intent.ACTION_EDIT);
+                intent.setData(formUri);
                 intent.putExtra(ApplicationConstants.BundleKeys.FORM_MODE, ApplicationConstants.FormModes.EDIT_SAVED);
                 startActivity(intent);
             }
@@ -185,8 +191,9 @@ public class FillBlankFormActivity extends FormListActivity implements
     }
 
     public void onMapButtonClick(AdapterView<?> parent, View view, int position, long id) {
-        final Uri formUri = ContentUris.withAppendedId(FormsColumns.CONTENT_URI, id);
-        final Intent intent = new Intent(Intent.ACTION_EDIT, formUri, this, FormMapActivity.class);
+        final Intent intent = new Intent(this, FormMapActivity.class);
+        intent.putExtra(FormMapActivity.EXTRA_FORM_ID, id);
+
         permissionsProvider.requestLocationPermissions(this, new PermissionListener() {
             @Override
             public void granted() {
@@ -203,18 +210,18 @@ public class FillBlankFormActivity extends FormListActivity implements
     protected void onResume() {
         super.onResume();
 
-        if (diskSyncTask != null) {
-            diskSyncTask.setDiskSyncListener(this);
-            if (diskSyncTask.getStatus() == AsyncTask.Status.FINISHED) {
-                syncComplete(diskSyncTask.getStatusMessage());
+        if (formSyncTask != null) {
+            formSyncTask.setDiskSyncListener(this);
+            if (formSyncTask.getStatus() == AsyncTask.Status.FINISHED) {
+                syncComplete(formSyncTask.getStatusMessage());
             }
         }
     }
 
     @Override
     protected void onPause() {
-        if (diskSyncTask != null) {
-            diskSyncTask.setDiskSyncListener(null);
+        if (formSyncTask != null) {
+            formSyncTask.setDiskSyncListener(null);
         }
         super.onPause();
     }
@@ -231,10 +238,10 @@ public class FillBlankFormActivity extends FormListActivity implements
 
     private void setupAdapter() {
         String[] columnNames = {
-                FormsColumns.DISPLAY_NAME,
-                FormsColumns.JR_VERSION,
-                hideOldFormVersions() ? FormsColumns.MAX_DATE : FormsColumns.DATE,
-                FormsColumns.GEOMETRY_XPATH
+                DatabaseFormColumns.DISPLAY_NAME,
+                DatabaseFormColumns.JR_VERSION,
+                DatabaseFormColumns.DATE,
+                DatabaseFormColumns.GEOMETRY_XPATH
         };
         int[] viewIds = {
                 R.id.form_title,
@@ -244,7 +251,7 @@ public class FillBlankFormActivity extends FormListActivity implements
         };
 
         listAdapter = new FormListAdapter(
-                listView, FormsColumns.JR_VERSION, this, R.layout.form_chooser_list_item,
+                listView, DatabaseFormColumns.JR_VERSION, this, R.layout.form_chooser_list_item,
                 this::onMapButtonClick, columnNames, viewIds);
         listView.setAdapter(listAdapter);
     }
@@ -264,7 +271,7 @@ public class FillBlankFormActivity extends FormListActivity implements
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         showProgressBar();
 
-        return new FormsDao().getFormsCursorLoader(getFilterText(), getSortingOrder(), hideOldFormVersions());
+        return new CursorLoaderFactory(currentProjectProvider).getFormsCursorLoader(getFilterText(), getSortingOrder(), hideOldFormVersions());
     }
 
     @Override
@@ -279,6 +286,6 @@ public class FillBlankFormActivity extends FormListActivity implements
     }
 
     private boolean hideOldFormVersions() {
-        return preferencesDataSourceProvider.getGeneralPreferences().getBoolean(GeneralKeys.KEY_HIDE_OLD_FORM_VERSIONS);
+        return settingsProvider.getGeneralSettings().getBoolean(ProjectKeys.KEY_HIDE_OLD_FORM_VERSIONS);
     }
 }

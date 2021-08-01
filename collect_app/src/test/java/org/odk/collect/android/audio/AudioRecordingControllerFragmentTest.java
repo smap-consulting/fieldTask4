@@ -18,12 +18,13 @@ import org.odk.collect.android.formentry.BackgroundAudioViewModel;
 import org.odk.collect.android.formentry.FormEntryViewModel;
 import org.odk.collect.android.injection.config.AppDependencyModule;
 import org.odk.collect.android.permissions.PermissionsChecker;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
-import org.odk.collect.android.support.RobolectricHelpers;
+import org.odk.collect.android.preferences.source.SettingsProvider;
+import org.odk.collect.android.support.CollectHelpers;
+import org.odk.collect.android.utilities.ExternalWebPageHelper;
 import org.odk.collect.audiorecorder.recorder.Output;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.testsupport.StubAudioRecorder;
-import org.odk.collect.shared.livedata.MutableNonNullLiveData;
+import org.odk.collect.androidshared.livedata.MutableNonNullLiveData;
 import org.odk.collect.utilities.Clock;
 import org.robolectric.annotation.Config;
 
@@ -36,7 +37,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.odk.collect.android.support.RobolectricHelpers.getFragmentByClass;
+import static org.odk.collect.testshared.RobolectricHelpers.getFragmentByClass;
 import static org.robolectric.Shadows.shadowOf;
 
 @RunWith(AndroidJUnit4.class)
@@ -47,6 +48,7 @@ public class AudioRecordingControllerFragmentTest {
     private FormEntryViewModel formEntryViewModel;
     private MutableNonNullLiveData<Boolean> hasBackgroundRecording;
     private MutableNonNullLiveData<Boolean> isBackgroundRecordingEnabled;
+    private ExternalWebPageHelper externalWebPageHelper;
 
     @Before
     public void setup() throws IOException {
@@ -62,11 +64,13 @@ public class AudioRecordingControllerFragmentTest {
         isBackgroundRecordingEnabled = new MutableNonNullLiveData<>(false);
         when(backgroundAudioViewModel.isBackgroundRecordingEnabled()).thenReturn(isBackgroundRecordingEnabled);
 
-        RobolectricHelpers.overrideAppDependencyModule(new AppDependencyModule() {
+        externalWebPageHelper = mock(ExternalWebPageHelper.class);
+
+        CollectHelpers.overrideAppDependencyModule(new AppDependencyModule() {
 
             @Override
-            public BackgroundAudioViewModel.Factory providesBackgroundAudioViewModelFactory(AudioRecorder audioRecorder, PreferencesDataSourceProvider preferencesDataSourceProvider, PermissionsChecker permissionsChecker, Clock clock, Analytics analytics) {
-                return new BackgroundAudioViewModel.Factory(audioRecorder, preferencesDataSourceProvider.getGeneralPreferences(), permissionsChecker, clock, analytics) {
+            public BackgroundAudioViewModel.Factory providesBackgroundAudioViewModelFactory(AudioRecorder audioRecorder, SettingsProvider settingsProvider, PermissionsChecker permissionsChecker, Clock clock, Analytics analytics) {
+                return new BackgroundAudioViewModel.Factory(audioRecorder, settingsProvider.getGeneralSettings(), permissionsChecker, clock, analytics) {
                     @NonNull
                     @Override
                     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
@@ -89,6 +93,11 @@ public class AudioRecordingControllerFragmentTest {
             @Override
             public AudioRecorder providesAudioRecorder(Application application) {
                 return audioRecorder;
+            }
+
+            @Override
+            public ExternalWebPageHelper providesExternalWebPageHelper() {
+                return externalWebPageHelper;
             }
         });
 
@@ -115,10 +124,10 @@ public class AudioRecordingControllerFragmentTest {
 
         FragmentScenario<AudioRecordingControllerFragment> scenario = FragmentScenario.launch(AudioRecordingControllerFragment.class);
         scenario.onFragment(fragment -> {
-            assertThat(fragment.binding.waveform.getLatestAmplitude(), equalTo(0));
+            assertThat(fragment.binding.volumeBar.getLatestAmplitude(), equalTo(0));
 
             audioRecorder.setAmplitude(156);
-            assertThat(fragment.binding.waveform.getLatestAmplitude(), equalTo(156));
+            assertThat(fragment.binding.volumeBar.getLatestAmplitude(), equalTo(156));
         });
     }
 
@@ -216,6 +225,43 @@ public class AudioRecordingControllerFragmentTest {
     }
 
     @Test
+    public void whenFormHasBackgroundRecording_hidesControls() {
+        hasBackgroundRecording.setValue(true);
+        audioRecorder.start("session", Output.AAC);
+
+        FragmentScenario<AudioRecordingControllerFragment> scenario = FragmentScenario.launch(AudioRecordingControllerFragment.class);
+        scenario.onFragment(fragment -> {
+            assertThat(fragment.binding.controls.getVisibility(), is(View.GONE));
+        });
+    }
+
+    @Test
+    public void whenFormHasBackgroundRecording_clickingHelpButton_opensHelpDialog() {
+        hasBackgroundRecording.setValue(true);
+        audioRecorder.start("session", Output.AAC);
+
+        FragmentScenario<AudioRecordingControllerFragment> scenario = FragmentScenario.launch(AudioRecordingControllerFragment.class);
+        scenario.onFragment(fragment -> {
+            assertThat(fragment.binding.help.getVisibility(), is(View.VISIBLE));
+
+            fragment.binding.help.performClick();
+            BackgroundAudioHelpDialogFragment dialog = getFragmentByClass(fragment.getParentFragmentManager(), BackgroundAudioHelpDialogFragment.class);
+            assertThat(dialog, notNullValue());
+        });
+    }
+
+    @Test
+    public void whenFormDoesNotHaveBackgroundRecording_hidesHelpButton() {
+        hasBackgroundRecording.setValue(false);
+        audioRecorder.start("session", Output.AAC);
+
+        FragmentScenario<AudioRecordingControllerFragment> scenario = FragmentScenario.launch(AudioRecordingControllerFragment.class);
+        scenario.onFragment(fragment -> {
+            assertThat(fragment.binding.help.getVisibility(), is(View.GONE));
+        });
+    }
+
+    @Test
     public void whenThereIsAnErrorStartingRecording_showsErrorDialog() {
         FragmentScenario<AudioRecordingControllerFragment> scenario = FragmentScenario.launch(AudioRecordingControllerFragment.class);
 
@@ -236,9 +282,9 @@ public class AudioRecordingControllerFragmentTest {
         scenario.onFragment(fragment -> {
             assertThat(fragment.binding.getRoot().getVisibility(), is(View.VISIBLE));
             assertThat(fragment.binding.timeCode.getText(), is(fragment.getString(R.string.recording_disabled, "⋮")));
-            assertThat(fragment.binding.pauseRecording.getVisibility(), is(View.GONE));
-            assertThat(fragment.binding.stopRecording.getVisibility(), is(View.GONE));
-            assertThat(fragment.binding.waveform.getVisibility(), is(View.GONE));
+            assertThat(fragment.binding.volumeBar.getVisibility(), is(View.GONE));
+            assertThat(fragment.binding.controls.getVisibility(), is(View.GONE));
+            assertThat(fragment.binding.help.getVisibility(), is(View.GONE));
         });
     }
 
@@ -267,9 +313,9 @@ public class AudioRecordingControllerFragmentTest {
         scenario.onFragment(fragment -> {
             assertThat(fragment.binding.getRoot().getVisibility(), is(View.VISIBLE));
             assertThat(fragment.binding.timeCode.getText(), is(fragment.getString(R.string.start_recording_failed)));
-            assertThat(fragment.binding.pauseRecording.getVisibility(), is(View.GONE));
-            assertThat(fragment.binding.stopRecording.getVisibility(), is(View.GONE));
-            assertThat(fragment.binding.waveform.getVisibility(), is(View.GONE));
+            assertThat(fragment.binding.volumeBar.getVisibility(), is(View.GONE));
+            assertThat(fragment.binding.controls.getVisibility(), is(View.GONE));
+            assertThat(fragment.binding.help.getVisibility(), is(View.GONE));
         });
     }
 

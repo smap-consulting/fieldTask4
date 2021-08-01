@@ -21,16 +21,18 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.forms.FormsRepository;
 import org.odk.collect.android.fragments.dialogs.SimpleDialog;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.instances.InstancesRepository;
 import org.odk.collect.android.listeners.InstanceUploaderListener;
 import org.odk.collect.android.tasks.InstanceServerUploaderTask;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.ArrayUtils;
 import org.odk.collect.android.utilities.AuthDialogUtility;
+import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.InstanceUploaderUtils;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.forms.instances.InstancesRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,6 +42,8 @@ import java.util.Set;
 import javax.inject.Inject;
 
 import timber.log.Timber;
+
+import static java.util.Arrays.stream;
 
 /**
  * Activity to upload completed forms.
@@ -73,15 +77,20 @@ public class InstanceUploaderActivity extends CollectAbstractActivity implements
     private Boolean deleteInstanceAfterUpload;
 
     @Inject
-    InstancesRepository instancesRepository;
+    InstancesRepositoryProvider instancesRepositoryProvider;
+    private InstancesRepository instancesRepository;
 
     @Inject
-    FormsRepository formsRepository;
+    FormsRepositoryProvider formsRepositoryProvider;
+    private FormsRepository formsRepository;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         DaggerUtils.getComponent(this).inject(this);
+        instancesRepository = instancesRepositoryProvider.get();
+        formsRepository = formsRepositoryProvider.get();
+
         init(savedInstanceState);
     }
 
@@ -110,6 +119,11 @@ public class InstanceUploaderActivity extends CollectAbstractActivity implements
         } else {
             selectedInstanceIDs = getIntent().getLongArrayExtra(FormEntryActivity.KEY_INSTANCES);
             dataBundle = getIntent().getExtras();
+
+            boolean missingInstances = stream(selectedInstanceIDs).anyMatch(id -> instancesRepository.get(id) == null);
+            if (missingInstances) {
+                selectedInstanceIDs = new long[]{};
+            }
         }
 
         // An external application can temporarily override destination URL, username, password
@@ -172,7 +186,7 @@ public class InstanceUploaderActivity extends CollectAbstractActivity implements
 
             // register this activity with the new uploader task
             instanceServerUploaderTask.setUploaderListener(this);
-            instanceServerUploaderTask.setRepositories(instancesRepository, formsRepository, preferencesDataSourceProvider);
+            instanceServerUploaderTask.setRepositories(instancesRepository, formsRepository, settingsProvider);
             instanceServerUploaderTask.execute(instancesToSend);
         }
     }
@@ -348,7 +362,7 @@ public class InstanceUploaderActivity extends CollectAbstractActivity implements
         if (url != null) {
             instanceServerUploaderTask.setCompleteDestinationUrl(url + getString(R.string.default_odk_submission), false);
         }
-        instanceServerUploaderTask.setRepositories(instancesRepository, formsRepository, preferencesDataSourceProvider);
+        instanceServerUploaderTask.setRepositories(instancesRepository, formsRepository, settingsProvider);
         instanceServerUploaderTask.execute(instancesToSend);
     }
 

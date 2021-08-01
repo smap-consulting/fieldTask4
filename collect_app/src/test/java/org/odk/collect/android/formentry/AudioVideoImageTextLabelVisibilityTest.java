@@ -4,6 +4,8 @@ import android.media.MediaPlayer;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import junit.framework.Assert;
 
 import org.javarosa.core.reference.InvalidReferenceException;
@@ -15,11 +17,10 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.audio.AudioHelper;
 import org.odk.collect.android.formentry.questions.AudioVideoImageTextLabel;
 import org.odk.collect.android.logic.FileReference;
-import org.odk.collect.android.support.RobolectricHelpers;
+import org.odk.collect.android.support.CollectHelpers;
 import org.odk.collect.android.support.TestScreenContextActivity;
 import org.odk.collect.async.Scheduler;
 import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 
 import java.io.File;
 import java.util.Arrays;
@@ -77,9 +78,9 @@ public class AudioVideoImageTextLabelVisibilityTest {
     public void setUp() throws InvalidReferenceException {
         reference = mock(FileReference.class);
         referenceManager = mock(ReferenceManager.class);
-        textView = new TextView(RuntimeEnvironment.application);
+        textView = new TextView(ApplicationProvider.getApplicationContext());
 
-        TestScreenContextActivity activity = RobolectricHelpers.createThemedActivity(TestScreenContextActivity.class);
+        TestScreenContextActivity activity = CollectHelpers.createThemedActivity(TestScreenContextActivity.class);
         audioHelper = new AudioHelper(activity, activity.getViewLifecycle(), mock(Scheduler.class), () -> mock(MediaPlayer.class));
 
         audioVideoImageTextLabel = new AudioVideoImageTextLabel(activity);

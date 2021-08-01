@@ -3,6 +3,8 @@ package org.odk.collect.android.location.activities;
 import android.content.Intent;
 import android.location.Location;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,11 +12,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.activities.GeoPointActivity;
-import org.odk.collect.android.location.client.LocationClient;
-import org.odk.collect.android.location.client.LocationClientProvider;
+import org.odk.collect.location.LocationClient;
+import org.odk.collect.location.LocationClientProvider;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.android.controller.ActivityController;
 
 import static android.app.Activity.RESULT_OK;
@@ -27,11 +29,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.odk.collect.android.activities.FormEntryActivity.LOCATION_RESULT;
 import static org.odk.collect.android.widgets.utilities.GeoWidgetUtils.DEFAULT_LOCATION_ACCURACY;
 import static org.robolectric.Shadows.shadowOf;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class GeoPointActivityTest extends BaseGeoActivityTest {
 
     @Rule
@@ -59,9 +60,10 @@ public class GeoPointActivityTest extends BaseGeoActivityTest {
     public void testLocationClientLifecycle() {
 
         activityController.create();
-
-        // Activity.onStart() should call LocationClient.start().
         activityController.start();
+
+        // Activity.onResume() should call LocationClient.start().
+        activityController.resume();
         verify(locationClient).start();
 
         when(locationClient.isLocationAvailable()).thenReturn(true);
@@ -107,7 +109,7 @@ public class GeoPointActivityTest extends BaseGeoActivityTest {
         assertEquals(shadowOf(activity).getResultCode(), RESULT_OK);
 
         Intent resultIntent = shadowOf(activity).getResultIntent();
-        String resultString = resultIntent.getStringExtra(LOCATION_RESULT);
+        String resultString = resultIntent.getStringExtra(FormEntryActivity.ANSWER_KEY);
 
         assertEquals(resultString, activity.getResultStringForLocation(thirdLocation));
     }
@@ -139,14 +141,14 @@ public class GeoPointActivityTest extends BaseGeoActivityTest {
     }
 
     @Test
-    public void activityShouldShutOffLocationClientWhenItStops() {
+    public void activityShouldShutOffLocationClientWhenItPauses() {
         activityController.create();
         activityController.start();
+        activityController.resume();
 
         verify(locationClient).start();
 
-        activityController.stop();
-
+        activityController.pause();
         verify(locationClient).stop();
     }
 

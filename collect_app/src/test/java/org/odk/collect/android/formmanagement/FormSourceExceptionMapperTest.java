@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.android.forms.FormSourceException;
+import org.odk.collect.forms.FormSourceException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -54,5 +54,11 @@ public class FormSourceExceptionMapperTest {
     public void parseError_returnsParserErrorMessage() {
         String expectedString = context.getString(R.string.invalid_response, "http://unknown.com") + " " + context.getString(R.string.report_to_project_lead);
         assertThat(mapper.getMessage(new FormSourceException.ParseError("http://unknown.com")), is(expectedString));
+    }
+
+    @Test
+    public void serverNotOpenRosaError_returnsNotOpenRosaMessage() {
+        String expectedString = "This server does not correctly implement the OpenRosa formList API. " + context.getString(R.string.report_to_project_lead);
+        assertThat(mapper.getMessage(new FormSourceException.ServerNotOpenRosaError()), is(expectedString));
     }
 }

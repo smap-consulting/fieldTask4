@@ -28,7 +28,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
-import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -37,15 +36,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.activities.FormEntryActivity;
-import org.odk.collect.android.preferences.GeneralKeys;
+import org.odk.collect.android.RecordedIntentsRule;
+import org.odk.collect.android.TestSettingsProvider;
 import org.odk.collect.android.preferences.GuidanceHint;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.support.CopyFormRule;
+import org.odk.collect.android.support.FormActivityTestRule;
+import org.odk.collect.android.support.AdbFormLoadingUtils;
 import org.odk.collect.android.support.ResetStateRule;
-import org.odk.collect.android.support.FormLoadingUtils;
 import org.odk.collect.android.support.pages.FormEntryPage;
-import org.odk.collect.utilities.TestPreferencesProvider;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -77,18 +77,19 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.core.IsNot.not;
 import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.odk.collect.android.support.actions.NestedScrollToAction.nestedScrollTo;
 import static org.odk.collect.android.support.CustomMatchers.withIndex;
+import static org.odk.collect.android.support.actions.NestedScrollToAction.nestedScrollTo;
 
 public class FieldListUpdateTest {
     private static final String FIELD_LIST_TEST_FORM = "fieldlist-updates.xml";
 
     @Rule
-    public IntentsTestRule<FormEntryActivity> activityTestRule = FormLoadingUtils.getFormActivityTestRuleFor(FIELD_LIST_TEST_FORM);
+    public FormActivityTestRule activityTestRule = AdbFormLoadingUtils.getFormActivityTestRuleFor(FIELD_LIST_TEST_FORM);
 
     @Rule
     public RuleChain copyFormChain = RuleChain
             .outerRule(GrantPermissionRule.grant(Manifest.permission.CAMERA))
+            .around(new RecordedIntentsRule())
             .around(new ResetStateRule())
             .around(new CopyFormRule(FIELD_LIST_TEST_FORM, Collections.singletonList("fruits.csv"), true));
 
@@ -262,7 +263,7 @@ public class FieldListUpdateTest {
 
     @Test
     public void selectionChangeAtOneCascadeLevelWithMinimalAppearance_ShouldUpdateNextLevels() {
-        new FormEntryPage("fieldlist-updates", activityTestRule)
+        new FormEntryPage("fieldlist-updates")
                 .clickGoToArrow()
                 .clickGoUpIcon()
                 .clickOnGroup("Cascading select minimal")
@@ -270,20 +271,16 @@ public class FieldListUpdateTest {
                 .assertTextDoesNotExist("A1", "B1", "C1", "A1A") // No choices should be shown for levels 2 and 3 when no selection is made for level 1
                 .openSelectMinimalDialog(0)
                 .clickOnText("C") // Selecting C for level 1 should only reveal options for C at level 2
-                .closeSelectMinimalDialog()
                 .assertTextDoesNotExist("A1", "B1")
                 .openSelectMinimalDialog(1)
                 .clickOnText("C1")
-                .closeSelectMinimalDialog()
                 .assertTextDoesNotExist("A1A")
                 .clickOnText("C")
                 .clickOnText("A") // Selecting A for level 1 should reveal options for A at level 2
-                .closeSelectMinimalDialog()
                 .openSelectMinimalDialog(1)
                 .assertText("A1")
                 .assertTextDoesNotExist("A1A", "B1", "C1")
                 .clickOnText("A1") // Selecting A1 for level 2 should reveal options for A1 at level 3
-                .closeSelectMinimalDialog()
                 .openSelectMinimalDialog(2)
                 .assertText("A1A")
                 .assertTextDoesNotExist("B1A", "B1", "C1");
@@ -327,7 +324,7 @@ public class FieldListUpdateTest {
 
     @Test
     public void changeInValueUsedInGuidanceHint_ShouldChangeGuidanceHintText() {
-        TestPreferencesProvider.getGeneralPreferences().save(GeneralKeys.KEY_GUIDANCE_HINT, GuidanceHint.Yes.toString());
+        TestSettingsProvider.getGeneralSettings().save(ProjectKeys.KEY_GUIDANCE_HINT, GuidanceHint.Yes.toString());
         jumpToGroupWithText("Guidance hint");
         onView(withText(startsWith("Source11"))).perform(click());
 
@@ -378,7 +375,7 @@ public class FieldListUpdateTest {
 
     @Test
     public void searchMinimalInFieldList() {
-        new FormEntryPage("fieldlist-updates", activityTestRule)
+        new FormEntryPage("fieldlist-updates")
                 .clickGoToArrow()
                 .clickGoUpIcon()
                 .clickOnGroup("Search in field-list")
@@ -386,7 +383,6 @@ public class FieldListUpdateTest {
                 .openSelectMinimalDialog()
                 .assertText("Mango", "Oranges", "Strawberries")
                 .clickOnText("Strawberries")
-                .closeSelectMinimalDialog()
                 .assertText("Target15")
                 .assertSelectMinimalDialogAnswer("Strawberries");
     }

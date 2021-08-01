@@ -13,7 +13,7 @@ import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.pages.FormEntryPage;
-import org.odk.collect.android.support.pages.GeneralSettingsPage;
+import org.odk.collect.android.support.pages.ProjectSettingsPage;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
 //Issue NODK-247
@@ -47,15 +47,15 @@ public class FillBlankFormWithRepeatGroupTest {
     public void whenNoRepeatGroupAdded_ShouldNotDoubleLastQuestion() {
 
         //TestCase1
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("TestRepeat")
                 .clickOptionsIcon()
                 .clickGeneralSettings()
                 .clickOnUserInterface()
                 .clickNavigation()
                 .clickUseSwipesAndButtons()
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new FormEntryPage("TestRepeat", rule))
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new FormEntryPage("TestRepeat"))
                 .clickForwardButton()
                 .clickOnDoNotAddGroup()
                 .clickOnDoNotAddGroup()
@@ -67,7 +67,7 @@ public class FillBlankFormWithRepeatGroupTest {
     public void dynamicGroupLabel_should_beCalculatedProperly() {
 
         //TestCase3
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("Repeat titles 1648")
                 .inputText("test")
                 .closeSoftKeyboard()
@@ -101,25 +101,25 @@ public class FillBlankFormWithRepeatGroupTest {
     public void nestedGroupsWithFieldListAppearance_ShouldBeAbleToFillTheForm() {
 
         //TestCase5
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form1")
                 .swipeToNextQuestion()
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form2")
                 .closeSoftKeyboard()
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form3")
                 .closeSoftKeyboard()
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form4")
                 .inputText("T1")
                 .closeSoftKeyboard()
@@ -132,7 +132,7 @@ public class FillBlankFormWithRepeatGroupTest {
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form5")
                 .inputText("T1")
                 .closeSoftKeyboard()
@@ -145,7 +145,7 @@ public class FillBlankFormWithRepeatGroupTest {
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form6")
                 .inputText("T1")
                 .closeSoftKeyboard()
@@ -158,18 +158,18 @@ public class FillBlankFormWithRepeatGroupTest {
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form7")
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form8")
                 .closeSoftKeyboard()
                 .swipeToEndScreen()
                 .clickSaveAndExit();
 
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("form9")
                 .closeSoftKeyboard()
                 .swipeToEndScreen()
@@ -180,16 +180,16 @@ public class FillBlankFormWithRepeatGroupTest {
     public void whenNoRepeatGroupAdded_ShouldBackwardButtonBeClickable() {
 
         //TestCase6
-        new MainMenuPage(rule)
-                .clickOnMenu()
+        new MainMenuPage()
+                .openProjectSettings()
                 .clickGeneralSettings()
                 .clickOnUserInterface()
                 .clickNavigation()
                 .clickUseSwipesAndButtons()
-                .pressBack(new GeneralSettingsPage(rule))
-                .pressBack(new MainMenuPage(rule))
+                .pressBack(new ProjectSettingsPage())
+                .pressBack(new MainMenuPage())
                 .startBlankFormWithRepeatGroup("RepeatGroupAndGroup", "G1")
-                .clickOnDoNotAdd(new FormEntryPage("RepeatGroupAndGroup", rule))
+                .clickOnDoNotAdd(new FormEntryPage("RepeatGroupAndGroup"))
                 .closeSoftKeyboard()
                 .clickBackwardButton()
                 .clickOnDoNotAddGroup()
@@ -202,9 +202,9 @@ public class FillBlankFormWithRepeatGroupTest {
     public void when_pageBehindRepeatGroupWithRegularGroupInsideIsVisible_should_swipeBackWork() {
 
         //TestCase7
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankFormWithRepeatGroup("RepeatGroupNew", "People")
-                .clickOnAdd(new FormEntryPage("RepeatGroupNew", rule))
+                .clickOnAdd(new FormEntryPage("RepeatGroupNew"))
                 .inputText("A")
                 .closeSoftKeyboard()
                 .swipeToNextQuestion()
@@ -237,9 +237,9 @@ public class FillBlankFormWithRepeatGroupTest {
     public void when_navigateOnHierarchyView_should_breadcrumbPathBeVisible() {
 
         //TestCase8
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankFormWithRepeatGroup("RepeatGroupNew", "People")
-                .clickOnAdd(new FormEntryPage("RepeatGroupNew", rule))
+                .clickOnAdd(new FormEntryPage("RepeatGroupNew"))
                 .inputText("A")
                 .closeSoftKeyboard()
                 .swipeToNextQuestion()
@@ -270,7 +270,7 @@ public class FillBlankFormWithRepeatGroupTest {
     public void firstQuestionWithLongLabel_ShouldDisplayBothAnswersInHierarchyPage() {
 
         //TestCase11
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankForm("basic")
                 .inputText("1")
                 .closeSoftKeyboard()
@@ -287,9 +287,9 @@ public class FillBlankFormWithRepeatGroupTest {
     public void openHierarchyPageFromLastView_ShouldNotDisplayError() {
 
         //TestCase12
-        new MainMenuPage(rule)
+        new MainMenuPage()
                 .startBlankFormWithRepeatGroup("Repeat Group", "Grp1")
-                .clickOnAdd(new FormEntryPage("Repeat Group", rule))
+                .clickOnAdd(new FormEntryPage("Repeat Group"))
                 .swipeToNextQuestion()
                 .clickOnDoNotAddGroup()
                 .swipeToNextQuestion()

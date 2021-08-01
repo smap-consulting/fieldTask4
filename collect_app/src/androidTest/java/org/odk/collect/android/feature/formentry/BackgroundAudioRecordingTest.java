@@ -94,7 +94,7 @@ public class BackgroundAudioRecordingTest {
 
     @Test
     public void fillingOutForm_recordsAudio() throws Exception {
-        FormEntryPage formEntryPage = rule.mainMenu()
+        FormEntryPage formEntryPage = rule.startAtMainMenu()
                 .copyForm("one-question-background-audio.xml")
                 .startBlankForm("One Question");
         assertThat(stubAudioRecorderViewModel.isRecording(), is(true));
@@ -116,7 +116,7 @@ public class BackgroundAudioRecordingTest {
 
     @Test
     public void fillingOutForm_withMultipleRecordActions_recordsAudioOnceForAllOfThem() throws Exception {
-        FormEntryPage formEntryPage = rule.mainMenu()
+        FormEntryPage formEntryPage = rule.startAtMainMenu()
                 .copyForm("one-question-background-audio-multiple.xml")
                 .startBlankForm("One Question");
         assertThat(stubAudioRecorderViewModel.isRecording(), is(true));
@@ -137,32 +137,19 @@ public class BackgroundAudioRecordingTest {
         assertThat(instanceXml, containsString("<recording2>" + recording.getName() + "</recording2>"));
     }
 
-    /**
-     * This could probably be tested at a lower level when the background recording implementation
-     * stabilizes.
-     */
-    @Test
-    public void fillingOutForm_doesntShowStopOrPauseButtons() {
-        rule.mainMenu()
-                .copyForm("one-question-background-audio.xml")
-                .startBlankForm("One Question")
-                .assertContentDescriptionNotDisplayed(R.string.stop_recording)
-                .assertContentDescriptionNotDisplayed(R.string.pause_recording);
-    }
-
     @Test
     public void pressingBackWhileRecording_andClickingSave_exitsForm() {
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("one-question-background-audio.xml")
                 .startBlankForm("One Question")
                 .closeSoftKeyboard()
-                .pressBack(new SaveOrIgnoreDialog<>("One Question", new MainMenuPage(rule), rule))
+                .pressBack(new SaveOrIgnoreDialog<>("One Question", new MainMenuPage()))
                 .clickSaveChanges();
     }
 
     @Test
     public void uncheckingRecordAudio_andConfirming_endsAndDeletesRecording() {
-        FormEntryPage formEntryPage = rule.mainMenu()
+        FormEntryPage formEntryPage = rule.startAtMainMenu()
                 .copyForm("one-question-background-audio.xml")
                 .startBlankForm("One Question")
                 .clickOptionsIcon()
@@ -173,7 +160,7 @@ public class BackgroundAudioRecordingTest {
         assertThat(stubAudioRecorderViewModel.getLastRecording(), is(nullValue()));
 
         formEntryPage.closeSoftKeyboard()
-                .pressBack(new SaveOrIgnoreDialog<>("One Question", new MainMenuPage(rule), rule))
+                .pressBack(new SaveOrIgnoreDialog<>("One Question", new MainMenuPage()))
                 .clickIgnoreChanges()
                 .startBlankForm("One Question");
 
@@ -185,14 +172,14 @@ public class BackgroundAudioRecordingTest {
         permissionsChecker.revoke();
         permissionsProvider.makeControllable();
 
-        rule.mainMenu()
+        rule.startAtMainMenu()
                 .copyForm("one-question-background-audio.xml")
                 .startBlankFormWithDialog("One Question")
                 .assertText(R.string.background_audio_permission_explanation)
-                .clickOK(new FormEntryPage("One Question", rule));
+                .clickOK(new FormEntryPage("One Question"));
 
         permissionsProvider.deny();
-        new MainMenuPage(rule).assertOnPage();
+        new MainMenuPage().assertOnPage();
     }
 
     private static class RevokeableRecordAudioPermissionsChecker extends PermissionsChecker {

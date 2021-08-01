@@ -148,6 +148,7 @@
   <!--Text displayed when user tries to start recording while the mic is already in use-->
   <!--Error message displayed when copying media from a temporary directory fails-->
   <!--Text displayed in the audio bar when background audio recording is explicitly disabled from the options menu. Should be as short as possible. The inserted string is ⋮ which indicates the options menu.-->
+  <!--Error displayed when opened filled form has been deleted on disk-->
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -378,6 +379,8 @@
   <string name="geoshape_view_change_location">Visa eller redigera GeoShape</string>
   <string name="geotrace_view_change_location">Visa eller redigera GeoTrace</string>
   <!--Name of an action button-->
+  <!--Name for the location tracking notifications. Will be seen in Android settings.-->
+  <!--Title for notification that lets user know their location is currently being tracked-->
   <!--##############################################
     # SEND FINALIZED FORM
     ##############################################-->
@@ -429,18 +432,30 @@
   <!--##############################################
     # GENERAL SETTINGS
     ##############################################-->
-  <string name="general_preferences">Allmäna inställningar</string>
   <!--Title of a settings section-->
   <string name="server_settings_title">Server</string>
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="client">Användargränssnitt</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="maps">Kartor</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="form_management_preferences">Formulärhantering</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="user_and_device_identity_title">Användar- och enhetsidentitet</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section only available in beta or development builds.-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <string name="server_preferences">Serverinställningar</string>
   <!--Label for server type setting-->
   <string name="type">Typ</string>
@@ -547,7 +562,6 @@
   <string name="instance_sync_summary">Påverkar formulär som lagts till direkt i mappen \'instances\'.</string>
   <string name="analytics_preferences">Användningsdata</string>
   <string name="analytics">Samla in anonym användningsdata</string>
-  <string name="analytics_summary">Anonym användningsdata hjälper ODKs utvecklare med prioritering av korrigeringar och funktioner </string>
   <string name="form_metadata_title">Formulärmetadata</string>
   <string name="form_metadata">Formulärmetadata</string>
   <string name="form_metadata_summary">Dessa värden kommer att läggas till i formulär som har förifyllda fält för användarnamn, e-post och/eller telefonnummer för att identifiera användaren.</string>
@@ -558,11 +572,11 @@
   <string name="device_defined">Enhetsdefinierad</string>
   <string name="device_id">ID enhet</string>
   <!--Displayed when a device property such as the phone number is not available-->
+  <!--Label for an item displayed in the project settings menu to unlock settings-->
+  <!--Label for an item displayed in the project settings menu to indicate that settings are unlocked-->
   <!--##############################################
      # ADMIN SETTINGS
      ##############################################-->
-  <string name="admin_preferences">Administratörsinställningar</string>
-  <string name="admin_access_settings">Knacka för administratörstillgång till inställningarna</string>
   <string name="enter_new_password">Ange nytt lösenord</string>
   <string name="admin_password">Administratörslösenord</string>
   <string name="admin_password_changed">Administratörslösenordet har ändrats</string>
@@ -574,7 +588,7 @@
   <string name="found_in_main">Avmarkera för att dölja i huvudmenyn</string>
   <string name="found_in_settings">Avmarkera för att dölja under allmänna inställningar</string>
   <string name="form_entry">Avmarkera för att dölja i formulärinmatning</string>
-  <string name="reset_settings_dialog">Återställ programmet…</string>
+  <string name="reset_project_settings_title">Återställ</string>
   <string name="select_all">Välj alla</string>
   <string name="clear_all">Rensa alla</string>
   <string name="reset_settings">Alla inställningar (interna inställningar, sparade inställningar)</string>
@@ -582,7 +596,6 @@
   <string name="reset_blank_forms">Tomma formulär (formulärmapp, formulärdatabasen, \'itemsets\'-databasen)</string>
   <string name="reset_layers">Kartlager (lagermapp)</string>
   <string name="reset_cache">Formulär cache (.cache mapp)</string>
-  <string name="reset_osm_tiles">OSM tile cache (osmdroid mapp)</string>
   <string name="reset_settings_dialog_title">Välj vad som skall återställas</string>
   <string name="reset_settings_button_reset">Återställ</string>
   <string name="reset_in_progress">Återställer…</string>
@@ -593,14 +606,9 @@
   <string name="reset_blank_forms_result">Tomma formulär :: %s</string>
   <string name="reset_layers_result">Kartlager :: %s</string>
   <string name="reset_cache_result">Formulär cache :: %s</string>
-  <string name="reset_osm_tiles_result">OSM tile cache :: %s</string>
-  <string name="user_access_control">Åtkomstkontroll för användare</string>
   <string name="main_menu_settings">Inställningar för huvudmenyn</string>
-  <string name="main_menu_settings_summary">Klicka för att hantera val i huvudmenyn</string>
   <string name="user_settings">Användarinställningar</string>
-  <string name="user_setting_summary">Klicka för att hantera allmänna inställningar</string>
   <string name="form_entry_setting">Formulärs inmatningsinställningar</string>
-  <string name="form_entry_settings_summary">Klicka för att hantera formulärs inmatningsposter</string>
   <!--Name of a setting that determines whether users can navigate backwards in a form-->
   <string name="moving_backwards_title">Navigera bakåt</string>
   <string name="moving_backwards_disabled_title">Bakåtnavigering inaktiverad</string>
@@ -684,6 +692,27 @@ Dela ODK Collect med dem.</string>
   <string name="fs_create_media_folder_error">Kan inte skapa mediamappen \'%s\'.</string>
   <string name="fs_file_copy_error">Kan inte kopiera \'%1$s\' över \'%2$s\'. Orsak: %3$s</string>
   <string name="survey_multiple_forms_error">Du har laddat ner två olika formulär med samma ID och version. Kanske har dem laddats upp vid olika tidpunkter eller till olika servrar. I vilket fall som helst bör du radera ett av dem.</string>
-  <string name="cannot_create_directory">Kan inte skapa mappen: %s</string>
   <string name="select_odk_shortcut">Välj ODK genväg</string>
+  <!--##############################################
+     # Projects
+     ##############################################-->
+  <string name="add">Lägg till</string>
+  <!--Title of the dialog shown when attempting to create a project with connection settings that match an existing project-->
+  <!--Detail text of the dialog shown when attempting to create a project with connection settings that match an existing project-->
+  <!--Button text for adding a duplicate project-->
+  <!--Buton text for switching to an existing project-->
+  <string name="delete_project_yes">Ja</string>
+  <string name="delete_project_no">Nej</string>
+  <!--##############################################
+     # First launch and initial configuration
+     ##############################################-->
+  <!--Tag line displayed on the first launch screen. The text should be split into two lines with \n. Please
+    select the wording and where to put the \n for maximum impact in your language.-->
+  <!--Text for the button that allows for configuring a project by scanning a QR code. Should be short-->
+  <!--Text for the button that allows for manually entering project details. Should be short-->
+  <!--Immediately followed by "Configure" which is a link to configure a Google Drive project-->
+  <!--Preceded by "My project uses Google Drive." Tapping opens a dialog to configure a Google Drive Project-->
+  <!--Immediately followed by "Try Collect" which is a link to create a demo project-->
+  <!--Preceded by "Don't have a project yet?" question-->
+  <!--Error shown when a user tries to open a form that's in a different project-->
 </resources>

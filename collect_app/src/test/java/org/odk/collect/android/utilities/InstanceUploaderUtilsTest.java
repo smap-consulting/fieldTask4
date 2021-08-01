@@ -1,21 +1,24 @@
 package org.odk.collect.android.utilities;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.support.FormUtils;
-import org.odk.collect.android.support.InMemFormsRepository;
-import org.odk.collect.android.support.InMemInstancesRepository;
-import org.odk.collect.android.forms.Form;
-import org.robolectric.RobolectricTestRunner;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.formstest.FormUtils;
+import org.odk.collect.formstest.InMemFormsRepository;
+import org.odk.collect.formstest.InMemInstancesRepository;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.odk.collect.android.utilities.InstanceUploaderUtils.shouldFormBeSent;
+import static org.odk.collect.formstest.FormUtils.createXFormFile;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class InstanceUploaderUtilsTest {
     /**
      * 1000 instances is a big number that would product a very long sql query that would cause
@@ -28,10 +31,10 @@ public class InstanceUploaderUtilsTest {
         InMemFormsRepository formsRepository = new InMemFormsRepository();
 
         formsRepository.save(new Form.Builder()
-                .id(1L)
-                .jrFormId("1")
-                .jrVersion("1")
-                .formFilePath(FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .dbId(1L)
+                .formId("1")
+                .version("1")
+                .formFilePath(createXFormFile("1", "1").getAbsolutePath())
                 .build());
 
         assertThat(InstanceUploaderUtils.shouldFormBeDeleted(formsRepository, "1", "1", false), is(false));
@@ -42,10 +45,10 @@ public class InstanceUploaderUtilsTest {
         InMemFormsRepository formsRepository = new InMemFormsRepository();
 
         formsRepository.save(new Form.Builder()
-                .id(1L)
-                .jrFormId("1")
-                .jrVersion("1")
-                .formFilePath(FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .dbId(1L)
+                .formId("1")
+                .version("1")
+                .formFilePath(createXFormFile("1", "1").getAbsolutePath())
                 .build());
 
         assertThat(InstanceUploaderUtils.shouldFormBeDeleted(formsRepository, "1", "1", true), is(true));
@@ -56,11 +59,11 @@ public class InstanceUploaderUtilsTest {
         InMemFormsRepository formsRepository = new InMemFormsRepository();
 
         formsRepository.save(new Form.Builder()
-                .id(1L)
-                .jrFormId("1")
-                .jrVersion("1")
+                .dbId(1L)
+                .formId("1")
+                .version("1")
                 .autoDelete("false")
-                .formFilePath(FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .formFilePath(createXFormFile("1", "1").getAbsolutePath())
                 .build());
 
         assertThat(InstanceUploaderUtils.shouldFormBeDeleted(formsRepository, "1", "1", true), is(false));
@@ -71,11 +74,11 @@ public class InstanceUploaderUtilsTest {
         InMemFormsRepository formsRepository = new InMemFormsRepository();
 
         formsRepository.save(new Form.Builder()
-                .id(1L)
-                .jrFormId("1")
-                .jrVersion("1")
+                .dbId(1L)
+                .formId("1")
+                .version("1")
                 .autoDelete("true")
-                .formFilePath(FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .formFilePath(createXFormFile("1", "1").getAbsolutePath())
                 .build());
 
         assertThat(InstanceUploaderUtils.shouldFormBeDeleted(formsRepository, "1", "1", false), is(true));
@@ -93,15 +96,73 @@ public class InstanceUploaderUtilsTest {
         assertThat(InstanceUploaderUtils.doesUrlRefersToGoogleSheetsFile("https://drive.google.com/file/d/169qibpJCWgUy-SRtoyvKd1EKwV1nDfM0/edit#gid=773120038"), is(false));
     }
 
+    @Test
+    public void shouldFormBeSentFunction_shouldReturnFalseIfAutoSendNotSpecifiedOnFormLevelAndDisabledInSettings() {
+        InMemFormsRepository formsRepository = new InMemFormsRepository();
+
+        formsRepository.save(new Form.Builder()
+                .dbId(1L)
+                .formId("1")
+                .version("1")
+                .formFilePath(org.odk.collect.formstest.FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .build());
+
+        assertThat(shouldFormBeSent(formsRepository, "1", "1", false), is(false));
+    }
+
+    @Test
+    public void shouldFormBeSentFunction_shouldReturnTrueIfAutoSendNotSpecifiedOnFormLevelButEnabledInSettings() {
+        InMemFormsRepository formsRepository = new InMemFormsRepository();
+
+        formsRepository.save(new Form.Builder()
+                .dbId(1L)
+                .formId("1")
+                .version("1")
+                .formFilePath(org.odk.collect.formstest.FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .build());
+
+        assertThat(shouldFormBeSent(formsRepository, "1", "1", true), is(true));
+    }
+
+    @Test
+    public void shouldFormBeSentFunction_shouldReturnFalseIfAutoSendSpecifiedAsFalseOnFormLevelButEnabledInSettings() {
+        InMemFormsRepository formsRepository = new InMemFormsRepository();
+
+        formsRepository.save(new Form.Builder()
+                .dbId(1L)
+                .formId("1")
+                .version("1")
+                .autoSend("false")
+                .formFilePath(org.odk.collect.formstest.FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .build());
+
+        assertThat(shouldFormBeSent(formsRepository, "1", "1", true), is(false));
+    }
+
+    @Test
+    public void shouldFormBeSentFunction_shouldReturnTrueIfAutoSendSpecifiedAsTrueOnFormLevelButDisabledInSettings() {
+        InMemFormsRepository formsRepository = new InMemFormsRepository();
+
+        formsRepository.save(new Form.Builder()
+                .dbId(1L)
+                .formId("1")
+                .version("1")
+                .autoSend("true")
+                .formFilePath(FormUtils.createXFormFile("1", "1").getAbsolutePath())
+                .build());
+
+        assertThat(shouldFormBeSent(formsRepository, "1", "1", false), is(true));
+    }
+
     private InMemInstancesRepository getTestInstancesRepository() {
         InMemInstancesRepository instancesRepository = new InMemInstancesRepository();
 
         for (int i = 1; i <= NUMBER_OF_INSTANCES_TO_SEND; i++) {
             long time = System.currentTimeMillis();
             Instance instance = new Instance.Builder()
-                    .id((long) i)
+                    .dbId((long) i)
                     .displayName("InstanceTest")
-                    .jrFormId("instanceTest")
+                    .formId("instanceTest")
                     .status(Instance.STATUS_COMPLETE)
                     .lastStatusChangeDate(time)
                     .build();

@@ -6,12 +6,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+import org.odk.collect.android.TestSettingsProvider;
 import org.odk.collect.android.preferences.FormUpdateMode;
-import org.odk.collect.android.preferences.GeneralKeys;
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.android.preferences.Protocol;
-import org.odk.collect.utilities.TestPreferencesProvider;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.shared.Settings;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,13 +20,13 @@ public class SettingsUtilsTest {
 
     @Test
     public void getFormUpdateMode_whenProtocolIsGoogleDrive_andModeNotManual_returnsManual() {
-        PreferencesDataSource generalPrefs = TestPreferencesProvider.getGeneralPreferences();
+        Settings generalSettings = TestSettingsProvider.getGeneralSettings();
         Context context = getApplicationContext();
 
-        generalPrefs.save(GeneralKeys.KEY_PROTOCOL, Protocol.GOOGLE.getValue(context));
-        generalPrefs.save(GeneralKeys.KEY_FORM_UPDATE_MODE, FormUpdateMode.PREVIOUSLY_DOWNLOADED_ONLY.getValue(context));
+        generalSettings.save(ProjectKeys.KEY_PROTOCOL, ProjectKeys.PROTOCOL_GOOGLE_SHEETS);
+        generalSettings.save(ProjectKeys.KEY_FORM_UPDATE_MODE, FormUpdateMode.PREVIOUSLY_DOWNLOADED_ONLY.getValue(context));
 
-        FormUpdateMode formUpdateMode = SettingsUtils.getFormUpdateMode(context, generalPrefs);
+        FormUpdateMode formUpdateMode = SettingsUtils.getFormUpdateMode(context, generalSettings);
         assertThat(formUpdateMode, is(FormUpdateMode.MANUAL));
     }
 }

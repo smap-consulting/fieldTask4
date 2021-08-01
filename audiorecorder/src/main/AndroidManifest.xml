@@ -5,8 +5,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application>
-        <service android:name=".recording.internal.AudioRecorderService" />
-        <activity android:name=".recording.internal.ReturnToAppActivity" />
+        <service android:name=".recording.AudioRecorderService" />
     </application>
 
 </manifest>

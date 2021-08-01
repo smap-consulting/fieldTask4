@@ -1,14 +1,15 @@
 package org.odk.collect.android.application;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.work.Configuration;
 import androidx.work.WorkManager;
 
-import org.odk.collect.android.provider.FormsProvider;
-import org.odk.collect.android.provider.InstanceProvider;
+import org.odk.collect.android.database.DatabaseConnection;
 import org.odk.collect.android.utilities.MultiClickGuard;
-import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowEnvironment;
 
+import static android.os.Environment.MEDIA_MOUNTED;
 import static org.robolectric.Shadows.shadowOf;
 
 /**
@@ -19,14 +20,15 @@ public class RobolectricApplication extends Collect {
 
     @Override
     public void onCreate() {
-        super.onCreate();
+        // Make sure storage is accessible
+        ShadowEnvironment.setExternalStorageState(MEDIA_MOUNTED);
 
         // Prevents OKHttp from exploding on initialization https://github.com/robolectric/robolectric/issues/5115
         System.setProperty("javax.net.ssl.trustStore", "NONE");
 
         // We need this so WorkManager.getInstance doesn't explode
         try {
-            WorkManager.initialize(RuntimeEnvironment.application, new Configuration.Builder().build());
+            WorkManager.initialize(ApplicationProvider.getApplicationContext(), new Configuration.Builder().build());
         } catch (IllegalStateException e) {
             // initialize() explodes if it's already been called
         }
@@ -42,10 +44,11 @@ public class RobolectricApplication extends Collect {
         shadowApplication.grantPermissions("android.permission.GET_ACCOUNTS");
 
         // These clear static state that can't persist from test to test
-        FormsProvider.releaseDatabaseHelper();
-        InstanceProvider.releaseDatabaseHelper();
+        DatabaseConnection.closeAll();
 
         // We don't want any clicks to be blocked
         MultiClickGuard.test = true;
+
+        super.onCreate();
     }
 }

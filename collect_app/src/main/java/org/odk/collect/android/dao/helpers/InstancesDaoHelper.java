@@ -14,21 +14,18 @@
 
 package org.odk.collect.android.dao.helpers;
 
-import android.database.Cursor;
-import android.net.Uri;
-
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.dao.InstancesDao;
-import org.odk.collect.android.instances.Instance;
 import org.odk.collect.android.javarosawrapper.FormController;
-import org.odk.collect.android.provider.InstanceProviderAPI.InstanceColumns;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.forms.instances.InstancesRepository;
 
 import timber.log.Timber;
 
 /**
  * Provides abstractions over database calls for instances.
  *
- * @deprecated to favor {@link org.odk.collect.android.instances.InstancesRepository}
+ * @deprecated to favor {@link InstancesRepository}
  */
 @Deprecated
 public final class InstancesDaoHelper {
@@ -43,8 +40,8 @@ public final class InstancesDaoHelper {
      * then resaved.
      *
      * @return true if form has been marked completed, false otherwise.
-     *
-     * TODO: replace with method in {@link org.odk.collect.android.instances.InstancesRepository}
+     * <p>
+     * TODO: replace with method in {@link InstancesRepository}
      * that returns an {@link Instance} object from a path.
      */
     public static boolean isInstanceComplete(boolean end, boolean completedByDefault) {
@@ -58,49 +55,25 @@ public final class InstancesDaoHelper {
 
             // Then see if we've already marked this form as complete before
             String path = formController.getInstanceFile().getAbsolutePath();
-            try (Cursor c = new InstancesDao().getInstancesCursorForFilePath(path)) {
-                if (c != null && c.getCount() > 0) {
-                    c.moveToFirst();
-                    int columnIndex = c.getColumnIndex(InstanceColumns.STATUS);
-                    String status = c.getString(columnIndex);
-                    if (Instance.STATUS_COMPLETE.equals(status)) {
-                        complete = true;
-                    }
-                }
+            Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().getOneByPath(path);
+            if (instance != null && instance.getStatus().equals(Instance.STATUS_COMPLETE)) {
+                complete = true;
             }
         } else {
             Timber.w("FormController or its instanceFile field has a null value");
         }
+
         return complete;
     }
 
     // TODO: replace with method in {@link org.odk.collect.android.instances.InstancesRepository}
     // that returns an {@link Instance} object from a path.
-    public static Uri getLastInstanceUri(String path) {
-        if (path != null) {
-            try (Cursor c = new InstancesDao().getInstancesCursorForFilePath(path)) {
-                if (c != null && c.getCount() > 0) {
-                    // should only be one...
-                    c.moveToFirst();
-                    String id = c.getString(c.getColumnIndex(InstanceColumns._ID));
-                    return Uri.withAppendedPath(InstanceColumns.CONTENT_URI, id);
-                }
-            }
-        }
-        return null;
-    }
-
-    // TODO: replace with method in {@link org.odk.collect.android.instances.InstancesRepository}
-    // that returns an {@link Instance} object from a path.
     public static boolean isInstanceAvailable(String path) {
-        boolean isAvailable = false;
         if (path != null) {
-            try (Cursor c = new InstancesDao().getInstancesCursorForFilePath(path)) {
-                if (c != null) {
-                    isAvailable = c.getCount() > 0;
-                }
-            }
+            Instance instance = new InstancesRepositoryProvider(Collect.getInstance()).get().getOneByPath(path);
+            return instance != null;
+        } else {
+            return false;
         }
-        return isAvailable;
     }
 }

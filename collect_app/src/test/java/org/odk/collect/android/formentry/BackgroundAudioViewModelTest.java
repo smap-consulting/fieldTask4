@@ -9,15 +9,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.odk.collect.analytics.Analytics;
+import org.odk.collect.android.TestSettingsProvider;
 import org.odk.collect.android.formentry.audit.AuditEvent;
 import org.odk.collect.android.formentry.audit.AuditEventLogger;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.permissions.PermissionsChecker;
-import org.odk.collect.android.preferences.PreferencesDataSource;
+import org.odk.collect.shared.Settings;
 import org.odk.collect.audiorecorder.recorder.Output;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
+import org.odk.collect.testshared.RobolectricHelpers;
 import org.odk.collect.utilities.Clock;
-import org.odk.collect.utilities.TestPreferencesProvider;
 
 import java.util.HashSet;
 import java.util.function.BiConsumer;
@@ -44,10 +45,10 @@ public class BackgroundAudioViewModelTest {
     public void setup() {
         clock = mock(Clock.class);
 
-        PreferencesDataSource generalPreferences = TestPreferencesProvider.getGeneralPreferences();
-        generalPreferences.clear();
+        Settings generalSettings = TestSettingsProvider.getGeneralSettings();
+        generalSettings.clear();
 
-        viewModel = new BackgroundAudioViewModel(audioRecorder, generalPreferences, recordAudioActionRegistry, permissionsChecker, clock, mock(Analytics.class));
+        viewModel = new BackgroundAudioViewModel(audioRecorder, generalSettings, recordAudioActionRegistry, permissionsChecker, clock, mock(Analytics.class));
     }
 
     @Test
@@ -56,6 +57,7 @@ public class BackgroundAudioViewModelTest {
 
         TreeReference treeReference = new TreeReference();
         recordAudioActionRegistry.listener.accept(treeReference, "voice-only");
+        RobolectricHelpers.runLooper();
 
         verify(audioRecorder).start(new HashSet<TreeReference>() {
             {
@@ -70,6 +72,7 @@ public class BackgroundAudioViewModelTest {
 
         TreeReference treeReference = new TreeReference();
         recordAudioActionRegistry.listener.accept(treeReference, "low");
+        RobolectricHelpers.runLooper();
 
         verify(audioRecorder).start(new HashSet<TreeReference>() {
             {
@@ -84,6 +87,7 @@ public class BackgroundAudioViewModelTest {
 
         TreeReference treeReference = new TreeReference();
         recordAudioActionRegistry.listener.accept(treeReference, null);
+        RobolectricHelpers.runLooper();
 
         verify(audioRecorder).start(new HashSet<TreeReference>() {
             {
@@ -106,6 +110,7 @@ public class BackgroundAudioViewModelTest {
         TreeReference treeReference2 = new TreeReference();
         recordAudioActionRegistry.listener.accept(treeReference1, "low");
         recordAudioActionRegistry.listener.accept(treeReference2, "low");
+        RobolectricHelpers.runLooper();
 
         viewModel.grantAudioPermission();
         verify(audioRecorder).start(new HashSet<TreeReference>() {
@@ -124,6 +129,7 @@ public class BackgroundAudioViewModelTest {
         TreeReference treeReference2 = new TreeReference();
         recordAudioActionRegistry.listener.accept(treeReference1, "voice-only");
         recordAudioActionRegistry.listener.accept(treeReference2, "low");
+        RobolectricHelpers.runLooper();
 
         viewModel.grantAudioPermission();
         verify(audioRecorder).start(new HashSet<TreeReference>() {
@@ -140,6 +146,7 @@ public class BackgroundAudioViewModelTest {
 
         TreeReference treeReference1 = new TreeReference();
         recordAudioActionRegistry.listener.accept(treeReference1, "low");
+        RobolectricHelpers.runLooper();
 
         viewModel.grantAudioPermission();
         assertThat(viewModel.isPermissionRequired().getValue(), is(false));

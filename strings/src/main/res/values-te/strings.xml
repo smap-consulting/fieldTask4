@@ -157,6 +157,7 @@
   <!--Text displayed when user tries to start recording while the mic is already in use-->
   <!--Error message displayed when copying media from a temporary directory fails-->
   <!--Text displayed in the audio bar when background audio recording is explicitly disabled from the options menu. Should be as short as possible. The inserted string is ⋮ which indicates the options menu.-->
+  <!--Error displayed when opened filled form has been deleted on disk-->
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -442,6 +443,8 @@
   <string name="geotrace_view_change_location">జియోట్రేస్‌ను చూడండి లేదా మార్చండి</string>
   <!--Name of an action button-->
   <string name="view_data">సేవ్ చెయ్యబడిన ఫారంలు చూడండి</string>
+  <!--Name for the location tracking notifications. Will be seen in Android settings.-->
+  <!--Title for notification that lets user know their location is currently being tracked-->
   <!--##############################################
     # SEND FINALIZED FORM
     ##############################################-->
@@ -499,19 +502,31 @@
   <!--##############################################
     # GENERAL SETTINGS
     ##############################################-->
-  <string name="general_preferences">సాధారణ సెట్టింగులు</string>
   <!--Title of a settings section-->
   <string name="server_settings_title">సర్వర్</string>
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="client">యూజర్ ఇంటర్ఫేస్</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="maps">మ్యాప్స్</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="form_management_preferences">ఫారం నిర్వహణ</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section-->
   <string name="user_and_device_identity_title">వినియోగదారు, పరికరం గుర్తింపు</string>
+  <!--Subtext of a settings section-->
   <!--Title of a settings section only available in beta or development builds.-->
   <string name="experimental">ప్రయోగాత్మక</string>
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
+  <!--Title of a settings section-->
+  <!--Subtext of a settings section-->
   <string name="server_preferences">సర్వర్ సెట్టింగులు</string>
   <!--Label for server type setting-->
   <string name="type">టైపు</string>
@@ -623,7 +638,6 @@
   <string name="instance_sync_summary">ఇన్‌స్టాన్స్ ఫోల్డర్‌కు నేరుగా జోడించిన ఫారమ్‌లను ప్రభావితం చేస్తుంది.</string>
   <string name="analytics_preferences">వినియోగించబడిన డేటా</string>
   <string name="analytics">అనామక వినియోగ డేటాను సేకరించండి</string>
-  <string name="analytics_summary">అనామక వినియోగ డేటా వల్ల పరిష్కారాలు, లక్షణాలకు ప్రాధాన్యత ఇవ్వడానికి ODK బృందానికి వీలు కలుగుతుంది. </string>
   <string name="form_metadata_title">ఫారం మెటాడేటా</string>
   <string name="form_metadata">ఫారం మెటాడేటా</string>
   <string name="form_metadata_summary">డేటాను సమర్పించే వ్యక్తిని గుర్తించడానికి వినియోగదారు పేరు, ఇమెయిల్ మరియు / లేదా టెలిఫోన్ ప్రీలోడ్ చేసిన ఫీల్డ్‌లను కలిగి ఉన్న ఫారమ్‌లకు ఈ విలువలు జోడించబడతాయి.</string>
@@ -635,11 +649,11 @@
   <string name="device_id">పరికరం యొక్క ID</string>
   <!--Displayed when a device property such as the phone number is not available-->
   <string name="preference_not_available">అందుబాటులో లేదు</string>
+  <!--Label for an item displayed in the project settings menu to unlock settings-->
+  <!--Label for an item displayed in the project settings menu to indicate that settings are unlocked-->
   <!--##############################################
      # ADMIN SETTINGS
      ##############################################-->
-  <string name="admin_preferences">అడ్మిన్ సెట్టింగ్‌లు</string>
-  <string name="admin_access_settings">సెట్టింగ్‌లకు అడ్మిన్ యాక్సెస్ కోసం నొక్కండి</string>
   <string name="enter_new_password">క్రొత్త పాస్‌వర్డ్‌ను నమోదు చేయండి</string>
   <string name="admin_password">అడ్మిన్ పాస్‌వర్డ్‌</string>
   <string name="admin_password_changed">అడ్మిన్ పాస్‌వర్డ్ విజయవంతంగా మార్చబడింది</string>
@@ -651,7 +665,7 @@
   <string name="found_in_main">ప్రధాన మెనూ నుండి దాచడానికి ఎంపిక చేయకండి</string>
   <string name="found_in_settings">సాధారణ సెట్టింగ్‌ల నుండి దాచడానికి సెలెక్ట్  చేయవద్దు</string>
   <string name="form_entry">ఫారం ఎంట్రీ నుండి దాచడానికి ఎంపిక చేయవద్దు</string>
-  <string name="reset_settings_dialog">దరఖాస్తును రీసెట్ చేయండి…</string>
+  <string name="reset_project_settings_title">రీసెట్</string>
   <string name="select_all">అన్నీ ఎంపిక చేసుకొండి</string>
   <string name="clear_all">అన్నీ క్లియర్ చేయండి</string>
   <string name="reset_settings">అన్ని సెట్టింగ్‌లు (అంతర్గత సెట్టింగ్‌లు, సేవ్ చేసిన సెట్టింగ్‌లు)</string>
@@ -659,7 +673,6 @@
   <string name="reset_blank_forms">ఖాళీ ఫారం లు (ఫారం ఫోల్డర్, ఫారమ్ డేటాబేస్, ఐటమ్‌సెట్స్ డేటాబేస్)</string>
   <string name="reset_layers">మ్యాప్ లేయర్స్ (లేయర్స్ ఫోల్డర్)</string>
   <string name="reset_cache">ఫారం లోడ్ కాష్ (.కాష్ ఫోల్డర్)</string>
-  <string name="reset_osm_tiles">OSM టైల్ cache (ఓస్మ్‌డ్రాయిడ్ ఫోల్డర్)</string>
   <string name="reset_settings_dialog_title">ఏమి రీసెట్ చేయాలో ఎంచుకోండి</string>
   <string name="reset_settings_button_reset">రీసెట్</string>
   <string name="reset_in_progress">రీసెట్ చేస్తోంది …</string>
@@ -670,14 +683,9 @@
   <string name="reset_blank_forms_result">ఖాళీ ఫారంలు ::%s</string>
   <string name="reset_layers_result">మ్యాప్ లేయర్స్ ::%s</string>
   <string name="reset_cache_result">ఫారం లోడ్ cache ::%s</string>
-  <string name="reset_osm_tiles_result">OSM టైల్ cache ::%s</string>
-  <string name="user_access_control">వినియోగదారు ప్రాప్యత నియంత్రణ.</string>
   <string name="main_menu_settings">ప్రధాన మెనూ సెట్టింగులు</string>
-  <string name="main_menu_settings_summary">ప్రధాన మెను అంశాలను నిర్వహించడానికి నొక్కండి</string>
   <string name="user_settings">వినియోగదారుడి సెట్టింగులు</string>
-  <string name="user_setting_summary">సాధారణ సెట్టింగ్‌ల అంశాలను నిర్వహించడానికి నొక్కండి</string>
   <string name="form_entry_setting">ఫారం ఎంట్రీ సెట్టింగులు</string>
-  <string name="form_entry_settings_summary">ఫారమ్ ఎంట్రీ అంశాలను నిర్వహించడానికి నొక్కండి</string>
   <!--Name of a setting that determines whether users can navigate backwards in a form-->
   <string name="moving_backwards_title">వెనుకకు వెలుతోంది</string>
   <string name="moving_backwards_disabled_title">వెనుకకు వెళ్లడం నిలిపివేయబడింది</string>
@@ -767,7 +775,27 @@
   <string name="fs_create_media_folder_error">మీడియా ఫోల్డర్‌%sను తయారు చేయడం సాధ్యం కాలేదు.</string>
   <string name="fs_file_copy_error">%2$sమీద %1$sను కాపీ చేయలేకపోయింది . కారణం :%3$s</string>
   <string name="survey_multiple_forms_error">మీరు ఒకే ఫారమ్ ఐడి, వెర్షన్‌తో రెండు వేర్వేరు ఫారమ్‌లను డౌన్‌లోడ్ చేసారు. అది వేర్వేరు సమయాల్లో లేదా వేర్వేరు సర్వర్‌లకు అప్‌లోడ్ చేసిన ఒకే ఫారం కావచ్చు. మీరు ఒకదాన్ని తొలగించవలసిందే. </string>
-  <string name="cannot_create_directory">%s డైరెక్టరి సృష్టించడానికి వీలు లేదు</string>
-  <string name="not_a_directory">%sఉంది, కాని ఇది డైరెక్టరి కాదు</string>
   <string name="select_odk_shortcut">ODK సత్వరమార్గాన్ని ఎంచుకోండి</string>
+  <!--##############################################
+     # Projects
+     ##############################################-->
+  <string name="add">జోడించు</string>
+  <!--Title of the dialog shown when attempting to create a project with connection settings that match an existing project-->
+  <!--Detail text of the dialog shown when attempting to create a project with connection settings that match an existing project-->
+  <!--Button text for adding a duplicate project-->
+  <!--Buton text for switching to an existing project-->
+  <string name="delete_project_yes">అవును</string>
+  <string name="delete_project_no">లేదు</string>
+  <!--##############################################
+     # First launch and initial configuration
+     ##############################################-->
+  <!--Tag line displayed on the first launch screen. The text should be split into two lines with \n. Please
+    select the wording and where to put the \n for maximum impact in your language.-->
+  <!--Text for the button that allows for configuring a project by scanning a QR code. Should be short-->
+  <!--Text for the button that allows for manually entering project details. Should be short-->
+  <!--Immediately followed by "Configure" which is a link to configure a Google Drive project-->
+  <!--Preceded by "My project uses Google Drive." Tapping opens a dialog to configure a Google Drive Project-->
+  <!--Immediately followed by "Try Collect" which is a link to create a demo project-->
+  <!--Preceded by "Don't have a project yet?" question-->
+  <!--Error shown when a user tries to open a form that's in a different project-->
 </resources>

@@ -14,25 +14,36 @@
 
 package org.odk.collect.android.database;
 
+import androidx.test.core.app.ApplicationProvider;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.instances.InstancesRepository;
-import org.odk.collect.android.instances.InstancesRepositoryTest;
-import org.odk.collect.android.storage.StorageInitializer;
-import org.odk.collect.android.support.RobolectricHelpers;
+import org.odk.collect.android.database.instances.DatabaseInstancesRepository;
+import org.odk.collect.forms.instances.InstancesRepository;
+import org.odk.collect.formstest.InstancesRepositoryTest;
+import org.odk.collect.shared.TempFiles;
+
+import java.io.File;
+import java.util.function.Supplier;
 
 @RunWith(AndroidJUnit4.class)
 public class DatabaseInstancesRepositoryTest extends InstancesRepositoryTest {
-    @Before
-    public void setup() {
-        RobolectricHelpers.mountExternalStorage();
-        new StorageInitializer().createOdkDirsOnStorage();
-    }
+
+    private final File dbDir = TempFiles.createTempDir();
+    private final File instancesDir = TempFiles.createTempDir();
 
     @Override
     public InstancesRepository buildSubject() {
-        return new DatabaseInstancesRepository();
+        return new DatabaseInstancesRepository(ApplicationProvider.getApplicationContext(), dbDir.getAbsolutePath(), instancesDir.getAbsolutePath(), System::currentTimeMillis);
+    }
+
+    @Override
+    public InstancesRepository buildSubject(Supplier<Long> clock) {
+        return new DatabaseInstancesRepository(ApplicationProvider.getApplicationContext(), dbDir.getAbsolutePath(), instancesDir.getAbsolutePath(), clock);
+    }
+
+    @Override
+    public String getInstancesDir() {
+        return instancesDir.getAbsolutePath();
     }
 }

@@ -15,17 +15,20 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.google.common.collect.ImmutableList;
 
+import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.R;
 import org.odk.collect.android.adapters.IconMenuListAdapter;
 import org.odk.collect.android.adapters.model.IconMenuItem;
-import org.odk.collect.analytics.Analytics;
-import org.odk.collect.android.dao.helpers.InstancesDaoHelper;
 import org.odk.collect.android.formentry.saving.FormSaveViewModel;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.preferences.AdminKeys;
-import org.odk.collect.android.preferences.PreferencesDataSourceProvider;
+import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
+import org.odk.collect.android.preferences.source.SettingsProvider;
+import org.odk.collect.android.projects.CurrentProjectProvider;
+import org.odk.collect.android.external.InstancesContract;
 import org.odk.collect.android.utilities.DialogUtils;
+import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.async.Scheduler;
+import org.odk.collect.forms.instances.Instance;
 
 import java.util.List;
 
@@ -45,7 +48,10 @@ public class QuitFormDialogFragment extends DialogFragment {
     FormSaveViewModel.FactoryFactory formSaveViewModelFactoryFactory;
 
     @Inject
-    PreferencesDataSourceProvider preferencesDataSourceProvider;
+    SettingsProvider settingsProvider;
+
+    @Inject
+    CurrentProjectProvider currentProjectProvider;
 
     private FormSaveViewModel formSaveViewModel;
     private Listener listener;
@@ -68,10 +74,10 @@ public class QuitFormDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
-        String title =  formSaveViewModel.getFormName() == null ? getActivity().getString(R.string.no_form_loaded) : formSaveViewModel.getFormName();
+        String title = formSaveViewModel.getFormName() == null ? getActivity().getString(R.string.no_form_loaded) : formSaveViewModel.getFormName();
 
         List<IconMenuItem> items;
-        if (preferencesDataSourceProvider.getAdminPreferences().getBoolean(AdminKeys.KEY_SAVE_MID)) {
+        if (settingsProvider.getAdminSettings().getBoolean(ProtectedProjectKeys.KEY_SAVE_MID)) {
             items = ImmutableList.of(new IconMenuItem(R.drawable.ic_save, R.string.keep_changes),
                     new IconMenuItem(R.drawable.ic_delete, R.string.do_not_save));
         } else {
@@ -95,7 +101,15 @@ public class QuitFormDialogFragment extends DialogFragment {
                 String action = getActivity().getIntent().getAction();
                 if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_EDIT.equals(action)) {
                     // caller is waiting on a picked form
-                    Uri uri = InstancesDaoHelper.getLastInstanceUri(formSaveViewModel.getAbsoluteInstancePath());
+                    Uri uri = null;
+                    String path = formSaveViewModel.getAbsoluteInstancePath();
+                    if (path != null) {
+                        Instance instance = new InstancesRepositoryProvider(requireContext()).get().getOneByPath(path);
+                        if (instance != null) {
+                            uri = InstancesContract.getUri(currentProjectProvider.getCurrentProject().getUuid(), instance.getDbId());
+                        }
+                    }
+
                     if (uri != null) {
                         getActivity().setResult(RESULT_OK, new Intent().setData(uri));
                     }

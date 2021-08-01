@@ -22,12 +22,13 @@ import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.dao.helpers.InstancesDaoHelper;
 import org.odk.collect.android.exception.JavaRosaException;
-import org.odk.collect.android.external.ExternalDataManager;
+import org.odk.collect.android.externaldata.ExternalDataManager;
 import org.odk.collect.android.formentry.RequiresFormController;
 import org.odk.collect.android.formentry.audit.AuditEvent;
 import org.odk.collect.android.formentry.audit.AuditUtils;
 import org.odk.collect.android.fragments.dialogs.ProgressDialogFragment;
 import org.odk.collect.android.javarosawrapper.FormController;
+import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.tasks.SaveFormToDisk;
 import org.odk.collect.android.tasks.SaveToDiskResult;
 import org.odk.collect.android.utilities.FileUtils;
@@ -35,6 +36,7 @@ import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.QuestionMediaManager;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
+import org.odk.collect.shared.strings.Md5;
 import org.odk.collect.utilities.Clock;
 import org.odk.collect.utilities.Result;
 
@@ -83,8 +85,9 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
     private final Analytics analytics;
     private final Scheduler scheduler;
     private final AudioRecorder audioRecorder;
+    private final CurrentProjectProvider currentProjectProvider;
 
-    public FormSaveViewModel(SavedStateHandle stateHandle, Clock clock, FormSaver formSaver, MediaUtils mediaUtils, Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder) {
+    public FormSaveViewModel(SavedStateHandle stateHandle, Clock clock, FormSaver formSaver, MediaUtils mediaUtils, Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder, CurrentProjectProvider currentProjectProvider) {
         this.stateHandle = stateHandle;
         this.clock = clock;
         this.formSaver = formSaver;
@@ -92,6 +95,7 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
         this.analytics = analytics;
         this.scheduler = scheduler;
         this.audioRecorder = audioRecorder;
+        this.currentProjectProvider = currentProjectProvider;
 
         if (stateHandle.get(ORIGINAL_FILES) != null) {
             originalFiles = stateHandle.get(ORIGINAL_FILES);
@@ -245,7 +249,7 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
                 handleTaskResult(saveToDiskResult, saveRequest);
                 clearMediaFiles();
             }
-        }, analytics, new ArrayList<>(originalFiles.values())).execute();
+        }, analytics, new ArrayList<>(originalFiles.values()), currentProjectProvider.getCurrentProject().getUuid()).execute();
     }
 
     private void handleTaskResult(SaveToDiskResult taskResult, SaveRequest saveRequest) {
@@ -349,12 +353,12 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
 
         isSavingAnswerFile.setValue(true);
         scheduler.immediate(() -> {
-            String newFileHash = FileUtils.getMd5Hash(file);
+            String newFileHash = Md5.getMd5Hash(file);
             String instanceDir = formController.getInstanceFile().getParent();
 
             File[] answerFiles = new File(instanceDir).listFiles();
             for (File answerFile : answerFiles) {
-                if (FileUtils.getMd5Hash(answerFile).equals(newFileHash)) {
+                if (Md5.getMd5Hash(answerFile).equals(newFileHash)) {
                     return answerFile;
                 }
             }
@@ -484,9 +488,10 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
         private final MediaUtils mediaUtils;
         private final Analytics analytics;
         private final ArrayList<String> tempFiles;
+        private final String currentProjectId;
 
         SaveTask(SaveRequest saveRequest, FormSaver formSaver, FormController formController, MediaUtils mediaUtils,
-                 Listener listener, Analytics analytics, ArrayList<String> tempFiles) {
+                 Listener listener, Analytics analytics, ArrayList<String> tempFiles, String currentProjectId) {
             this.saveRequest = saveRequest;
             this.formSaver = formSaver;
             this.listener = listener;
@@ -494,6 +499,7 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
             this.mediaUtils = mediaUtils;
             this.analytics = analytics;
             this.tempFiles = tempFiles;
+            this.currentProjectId = currentProjectId;
         }
 
         @Override
@@ -501,8 +507,8 @@ public class FormSaveViewModel extends ViewModel implements ProgressDialogFragme
             return formSaver.save(saveRequest.uri, formController,
                     mediaUtils, saveRequest.shouldFinalize,
                     saveRequest.viewExiting, saveRequest.updatedSaveName,
-                    this::publishProgress, analytics, tempFiles
-            );
+                    this::publishProgress, analytics, tempFiles,
+                    currentProjectId);
         }
 
         @Override

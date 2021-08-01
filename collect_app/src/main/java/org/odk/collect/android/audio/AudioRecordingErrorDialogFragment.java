@@ -7,15 +7,14 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.recording.MicInUseException;
-import org.odk.collect.shared.data.Consumable;
+import org.odk.collect.androidshared.data.Consumable;
 
 import javax.inject.Inject;
 
@@ -37,7 +36,7 @@ public class AudioRecordingErrorDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(requireContext())
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(requireContext())
                 .setPositiveButton(R.string.ok, null);
 
         if (exception != null && exception.getValue() instanceof MicInUseException) {

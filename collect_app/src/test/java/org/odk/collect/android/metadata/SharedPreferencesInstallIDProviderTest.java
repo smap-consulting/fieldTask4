@@ -1,12 +1,13 @@
 package org.odk.collect.android.metadata;
 
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.odk.collect.android.preferences.PreferencesDataSource;
-import org.odk.collect.utilities.TestPreferencesProvider;
-import org.robolectric.RobolectricTestRunner;
+import org.odk.collect.android.TestSettingsProvider;
+import org.odk.collect.shared.Settings;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -14,10 +15,10 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.startsWith;
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class SharedPreferencesInstallIDProviderTest {
 
-    private final PreferencesDataSource metaPreferences = TestPreferencesProvider.getMetaPreferences();
+    private final Settings metaPreferences = TestSettingsProvider.getMetaSettings();
     private SharedPreferencesInstallIDProvider provider;
 
     @Before

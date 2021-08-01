@@ -1,6 +1,7 @@
 package org.odk.collect.async
 
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -16,27 +17,34 @@ class CoroutineAndWorkManagerScheduler(foregroundContext: CoroutineContext, back
 
     constructor(workManager: WorkManager) : this(Dispatchers.Main, Dispatchers.IO, workManager) // Needed for Java construction
 
-    override fun networkDeferred(tag: String, spec: TaskSpec) {
+    override fun networkDeferred(tag: String, spec: TaskSpec, inputData: Map<String, String>) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        val workRequest = OneTimeWorkRequest.Builder(spec.getWorkManagerAdapter())
+        val workManagerInputData = Data.Builder().putAll(inputData).build()
+
+        val worker = spec.getWorkManagerAdapter()
+        val workRequest = OneTimeWorkRequest.Builder(worker)
             .addTag(tag)
             .setConstraints(constraints)
+            .setInputData(workManagerInputData)
             .build()
 
         workManager.beginUniqueWork(tag, ExistingWorkPolicy.KEEP, workRequest).enqueue()
     }
 
-    override fun networkDeferred(tag: String, spec: TaskSpec, repeatPeriod: Long) {
+    override fun networkDeferred(tag: String, spec: TaskSpec, repeatPeriod: Long, inputData: Map<String, String>) {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
+        val workManagerInputData = Data.Builder().putAll(inputData).build()
+
         val worker = spec.getWorkManagerAdapter()
         val workRequest = PeriodicWorkRequest.Builder(worker, repeatPeriod, TimeUnit.MILLISECONDS)
             .addTag(tag)
+            .setInputData(workManagerInputData)
             .setConstraints(constraints)
             .build()
 
@@ -47,8 +55,12 @@ class CoroutineAndWorkManagerScheduler(foregroundContext: CoroutineContext, back
         workManager.cancelUniqueWork(tag)
     }
 
-    override fun isRunning(tag: String): Boolean {
+    override fun isDeferredRunning(tag: String): Boolean {
         return isWorkManagerWorkRunning(tag)
+    }
+
+    override fun cancelAllDeferred() {
+        workManager.cancelAllWork()
     }
 
     private fun isWorkManagerWorkRunning(tag: String): Boolean {

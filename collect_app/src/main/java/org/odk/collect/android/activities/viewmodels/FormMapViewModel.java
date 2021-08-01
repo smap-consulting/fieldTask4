@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.odk.collect.android.forms.Form;
-import org.odk.collect.android.instances.Instance;
-import org.odk.collect.android.instances.InstancesRepository;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.forms.instances.InstancesRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -43,8 +43,8 @@ public class FormMapViewModel extends ViewModel {
         return form.getDisplayName();
     }
 
-    public String getFormId() {
-        return form.getJrFormId();
+    public long getFormId() {
+        return form.getDbId();
     }
 
     /**
@@ -56,7 +56,7 @@ public class FormMapViewModel extends ViewModel {
     }
 
     private void initializeFormInstances() {
-        List<Instance> instances = instancesRepository.getAllByFormId(form.getJrFormId());
+        List<Instance> instances = instancesRepository.getAllByFormId(form.getFormId());
 
         // Ideally we could observe database changes instead of re-computing this every time.
         totalInstanceCount = instances.size();
@@ -93,7 +93,7 @@ public class FormMapViewModel extends ViewModel {
                             Double lat = coordinates.getDouble(1);
 
                             mappableFormInstances.add(new MappableFormInstance(
-                                    instance.getId(),
+                                    instance.getDbId(),
                                     lat, lon,
                                     instance.getDisplayName(),
                                     instance.getLastStatusChangeDate(),
@@ -121,8 +121,9 @@ public class FormMapViewModel extends ViewModel {
                     || instance.getStatus().equals(Instance.STATUS_SUBMISSION_FAILED))
                     && !instance.canEditWhenComplete()) {
                 return ClickAction.NOT_VIEWABLE_TOAST;
-            } else if (instance.getId() != null) {
-                if (instance.getStatus().equals(Instance.STATUS_SUBMITTED)) {
+            } else if (instance.getDbId() != null) {
+                if (instance.getStatus().equals(Instance.STATUS_SUBMITTED)
+                        || instance.getStatus().equals(Instance.STATUS_SUBMISSION_FAILED)) {
                     return ClickAction.OPEN_READ_ONLY;
                 }
                 return ClickAction.OPEN_EDIT;
