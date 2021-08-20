@@ -18,6 +18,8 @@ collect_app/src/pop/
 collect_app/src/informEd/
 collect_app/src/tdh/
 collect_app/src/assignfield/
+collect_app/src/stl/
+collect_app/src/ljs/
 
 collect_app/plan/
 collect_app/seracis/
@@ -28,9 +30,14 @@ collect_app/pop/
 collect_app/informEd/
 collect_app/assignfield/
 collect_app/tdh/
+collect_app/kontrolid/
+collect_app/stl/
+collect_app/ljs/
 
 collect_app/kontrolid/release/trace.db
 collect_app/libs/
+collect_app/src/release
+collect_app/standard/release
 
 # emacs backup files
 *.*~
