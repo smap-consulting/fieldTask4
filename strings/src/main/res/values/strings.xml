@@ -203,6 +203,9 @@
     <!-- Error displayed when opened filled form has been deleted on disk -->
     <string name="instance_deleted_message">Filled form has been deleted!</string>
 
+    <!-- Error displayed when something bad happens during updating widgets in a field-list group -->
+    <string name="update_widgets_error">Failure trying to update values. This is generally because of incorrect usage of calculations in the form design.\n\nIf you keep having this problem, report it to the person who asked you to collect data.</string>
+
     <!--
     ##############################################
     # FORM FEATURES
@@ -241,6 +244,7 @@
 
     <string name="capture_image">Take Picture</string>
     <string name="choose_image">Choose Image</string>
+    <string name="choose_account">Choose account</string>
     <string name="selected_invalid_image">Selected file is not a valid image</string>
     <string name="view_image">View Image</string>
     <string name="take_picture_instruction">Tap the screen to take a picture</string>
@@ -714,12 +718,6 @@
     <string name="change_password">ODK Password</string>
     <string name="password_error_whitespace">Leading or trailing whitespace not allowed in passwords</string>
     <string name="username_error_whitespace">Leading or trailing whitespace not allowed in usernames</string>
-    <string name="custom_server_paths">Custom server paths</string>
-    <string name="legacy_custom_server_paths_summary">Will be removed in a future version. Please use /formList and /submission on your server.</string>
-    <string name="change_formlist_url">Form list path (appended to URL)</string>
-    <string name="change_submission_url">Submission path (appended to URL)</string>
-    <string name="formlist_url">Form list path</string>
-    <string name="submission_url">Submission path</string>
 
     <string name="server_platform_google_sheets">Google Drive, Google Sheets</string>
     <string name="selected_google_account_text">Google account</string>

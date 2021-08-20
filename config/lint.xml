@@ -59,4 +59,7 @@
     <issue id="AlwaysShowAction" severity="ignore" />
 
     <issue id="InvalidFragmentVersionForActivityResult" severity="ignore" />
+
+    <!-- This flags IDs used via View Binding: https://issuetracker.google.com/issues/170658134 -->
+    <issue id="UnusedIds" severity="ignore" />
 </lint>

@@ -31,12 +31,11 @@ import org.odk.collect.android.activities.viewmodels.CurrentProjectViewModel;
 import org.odk.collect.android.activities.viewmodels.MainMenuViewModel;
 import org.odk.collect.android.gdrive.GoogleDriveActivity;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.preferences.keys.MetaKeys;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.projects.ProjectIconView;
 import org.odk.collect.android.projects.ProjectSettingsDialog;
-import org.odk.collect.android.storage.StorageInitializer;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PlayServicesChecker;
@@ -68,9 +67,6 @@ public class MainMenuActivity extends CollectAbstractActivity {
 
     @Inject
     SettingsProvider settingsProvider;
-
-    @Inject
-    StorageInitializer storageInitializer;
 
     private MainMenuViewModel mainMenuViewModel;
 
@@ -219,10 +215,9 @@ public class MainMenuActivity extends CollectAbstractActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mainMenuViewModel.refreshInstances();
-
-        setButtonsVisibility();
         currentProjectViewModel.refresh();
+        mainMenuViewModel.refreshInstances();
+        setButtonsVisibility();
     }
 
     private void setButtonsVisibility() {

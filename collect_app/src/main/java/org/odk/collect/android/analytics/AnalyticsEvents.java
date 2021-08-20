@@ -37,12 +37,6 @@ public class AnalyticsEvents {
     public static final String ENCRYPT_SUBMISSION = "EncryptSubmission";
 
     /**
-     * Track changes to preferences related to automatic form updates. The action should be the
-     * preference name and the label should be the new preference value.
-     */
-    public static final String AUTO_FORM_UPDATE_PREF_CHANGE = "PreferenceChange";
-
-    /**
      * Track submissions. The action should describe how it's being sent and the label should be a
      * hash of the form definition.
      */
@@ -53,12 +47,6 @@ public class AnalyticsEvents {
      * and the label should be a hash of the form definition.
      */
     public static final String SAVE_INCOMPLETE = "WidgetAttribute";
-
-    /**
-     * Track displays of widget/question types. The action should be the type of widget and
-     * the label should be a hash of the form definition.
-     */
-    public static final String PROMPT = "Prompt";
 
     /**
      * Track attempts to download a form with the same formid/version but different contents as one
@@ -83,12 +71,6 @@ public class AnalyticsEvents {
      * - "FETCH_ERROR"
      */
     public static final String MATCH_EXACTLY_SYNC_COMPLETED = "MatchExactlySyncCompleted";
-
-    /**
-     * Track submissions to a URL with a custom submission endpoint configured in settings. The action
-     * should be a hash of the endpoint setting.
-     */
-    public static final String CUSTOM_ENDPOINT_SUB = "CustomEndpointSub";
 
     /**
      * Tracks how often the audio player seek bar is used.
@@ -117,11 +99,6 @@ public class AnalyticsEvents {
      * Tracks how many users have opted in to internal recording as their default
      */
     public static final String INTERNAL_RECORDING_OPT_IN = "InternalRecordingOptIn";
-
-    /**
-     * Tracks how often people see the URL question
-     */
-    public static final String URL_QUESTION = "UrlQuestion";
 
     /**
      * Track how many forms record background audio
@@ -225,6 +202,16 @@ public class AnalyticsEvents {
      */
     public static final String RECONFIGURE_PROJECT = "ProjectReconfigure";
 
+    public static final String FORMS_PROVIDER_QUERY = "FormsProviderQuery";
+    public static final String FORMS_PROVIDER_INSERT = "FormsProviderInsert";
+    public static final String FORMS_PROVIDER_UPDATE = "FormsProviderUpdate";
+    public static final String FORMS_PROVIDER_DELETE = "FormsProviderDelete";
+
+    public static final String INSTANCE_PROVIDER_QUERY = "InstanceProviderQuery";
+    public static final String INSTANCE_PROVIDER_INSERT = "InstanceProviderInsert";
+    public static final String INSTANCE_PROVIDER_UPDATE = "InstanceProviderUpdate";
+    public static final String INSTANCE_PROVIDER_DELETE = "InstanceProviderDelete";
+
     /**
      * These track how often the external edit or view actions are used for forms or instances.
      * One event tracks when a project ID is included with the action URI and the other tracks when
@@ -237,4 +224,10 @@ public class AnalyticsEvents {
      * Tracks how often an external edit or view action includes an extra we'd like to deprecate.
      */
     public static final String FORM_ACTION_WITH_FORM_MODE_EXTRA = "FormActionWithFormModeExtra";
+
+    /**
+     * Tracks how often the app needs to recreate the directory for the current project
+     * when returning to or launching the app.
+     */
+    public static final String RECREATE_PROJECT_DIR = "RecreateProjectDir";
 }

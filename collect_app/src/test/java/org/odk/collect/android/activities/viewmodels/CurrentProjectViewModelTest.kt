@@ -22,11 +22,17 @@ class CurrentProjectViewModelTest {
     }
 
     private val analyticsInitializer = mock<AnalyticsInitializer>()
-    private val currentProjectViewModel = CurrentProjectViewModel(currentProjectProvider, analyticsInitializer)
+    private val currentProjectViewModel = CurrentProjectViewModel(
+        currentProjectProvider,
+        analyticsInitializer
+    )
 
     @Test
     fun `Initial current project should be set`() {
-        assertThat(currentProjectViewModel.currentProject.value, `is`(Project.Saved("123", "Project X", "X", "#cccccc")))
+        assertThat(
+            currentProjectViewModel.currentProject.value,
+            `is`(Project.Saved("123", "Project X", "X", "#cccccc"))
+        )
     }
 
     @Test
