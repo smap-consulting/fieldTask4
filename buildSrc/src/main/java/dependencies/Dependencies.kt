@@ -13,10 +13,10 @@ object Dependencies {
     const val androidx_browser = "androidx.browser:browser:1.3.0"
     const val androidx_recyclerview = "androidx.recyclerview:recyclerview:1.2.1"
     const val androidx_fragment = "androidx.fragment:fragment:${Versions.androidx_fragment}"
-    const val androidx_appcompat = "androidx.appcompat:appcompat:1.2.0"
+    const val androidx_appcompat = "androidx.appcompat:appcompat:1.3.1"
     const val androidx_work_runtime = "androidx.work:work-runtime:2.5.0"
     const val androidx_cardview = "androidx.cardview:cardview:1.0.0"
-    const val androidx_exinterface = "androidx.exifinterface:exifinterface:1.3.3"
+    const val androidx_exinterface = "androidx.exifinterface:exifinterface:1.3.2" // Check if https://github.com/getodk/collect/issues/4819 no longer takes place before upgrading
     const val androidx_multidex = "androidx.multidex:multidex:2.0.1"
     const val androidx_preference_ktx = "androidx.preference:preference-ktx:1.1.1"
     const val androidx_fragment_ktx = "androidx.fragment:fragment-ktx:${Versions.androidx_fragment}"
@@ -72,6 +72,7 @@ object Dependencies {
     const val timber = "com.jakewharton.timber:timber:5.0.1"
     const val slf4j_api = "org.slf4j:slf4j-api:2.0.0-alpha0"
     const val slf4j_timber = "com.arcao:slf4j-timber:3.1@aar"
+    const val emoji_java = "com.vdurmont:emoji-java:5.1.1"
 
     // Test dependencies
     const val junit = "junit:junit:4.13.2"

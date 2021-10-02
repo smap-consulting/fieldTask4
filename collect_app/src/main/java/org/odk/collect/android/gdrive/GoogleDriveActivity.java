@@ -43,6 +43,7 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormListActivity;
 import org.odk.collect.android.adapters.FileArrayAdapter;
 import org.odk.collect.android.exception.MultipleFoldersFoundException;
+import org.odk.collect.android.views.DayNightProgressDialog;
 import org.odk.collect.forms.Form;
 import org.odk.collect.forms.FormsRepository;
 import org.odk.collect.android.gdrive.sheets.DriveHelper;
@@ -283,7 +284,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
         ArrayList<DriveListItem> dl = new ArrayList<>();
         dl.addAll(filteredList);
         outState.putParcelableArrayList(DRIVE_ITEMS_KEY, dl);
-        outState.putStringArray(PATH_KEY, currentPath.toArray(new String[currentPath.size()]));
+        outState.putStringArray(PATH_KEY, currentPath.toArray(new String[0]));
         outState.putString(PARENT_KEY, parentId);
         outState.putBoolean(ALERT_SHOWING_KEY, alertShowing);
         outState.putString(ALERT_MSG_KEY, alertMsg);
@@ -365,7 +366,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
     protected Dialog onCreateDialog(int id) {
         switch (id) {
             case PROGRESS_DIALOG:
-                ProgressDialog progressDialog = new ProgressDialog(this);
+                ProgressDialog progressDialog = new DayNightProgressDialog(this);
                 DialogInterface.OnClickListener loadingButtonListener =
                         new DialogInterface.OnClickListener() {
                             @Override
@@ -630,7 +631,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(GoogleDriveActivity.this);
+            progressDialog = new DayNightProgressDialog(GoogleDriveActivity.this);
             progressDialog.setMessage(getString(R.string.reading_files));
             progressDialog.setIndeterminate(true);
             progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
