@@ -143,6 +143,7 @@
   <!--Error message displayed when copying media from a temporary directory fails-->
   <!--Text displayed in the audio bar when background audio recording is explicitly disabled from the options menu. Should be as short as possible. The inserted string is ⋮ which indicates the options menu.-->
   <!--Error displayed when opened filled form has been deleted on disk-->
+  <!--Error displayed when something bad happens during updating widgets in a field-list group-->
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -371,6 +372,7 @@
   <!--Name of an action button-->
   <!--Name for the location tracking notifications. Will be seen in Android settings.-->
   <!--Title for notification that lets user know their location is currently being tracked-->
+  <!--Text of button user can press to get help when setting up Reference Layers-->
   <!--##############################################
     # SEND FINALIZED FORM
     ##############################################-->
@@ -402,6 +404,18 @@
   <string name="version">ជំនាន់ ៖</string>
   <string name="form_updates_available">មានទម្រង់សម្រាប់ធ្វើបច្ចុប្បន្នភាព</string>
   <string name="newer_version_of_a_form_info">នេះជាការធ្វើ​បច្ចុប្បន្នភាព​លើទម្រង់​ដែល​អ្នក​មាន</string>
+  <!--Part of form download dialog. Clicking it displays additional information about a form that failed-->
+  <!--##############################################
+    # GET BLANK FORM - ERROR MESSAGES
+    ##############################################-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
   <!--##############################################
     # DELETE SAVED FORM
     ##############################################-->
@@ -419,7 +433,7 @@
   <string name="file_deleted_ok">%s សំណុំបែបបទបានលុបដោយជោគជ័យ ! </string>
   <string name="file_delete_in_progress">សុំទោស, សកម្មភាពនៃការលុបសំណុំបែបបទគឺបានដំណើរការ!</string>
   <!--##############################################
-    # GENERAL SETTINGS
+    # UNPROTECTED SETTINGS
     ##############################################-->
   <!--Title of a settings section-->
   <string name="server_settings_title">ម៉ាស៊ីនមេ</string>
@@ -559,7 +573,7 @@
   <!--Label for an item displayed in the project settings menu to unlock settings-->
   <!--Label for an item displayed in the project settings menu to indicate that settings are unlocked-->
   <!--##############################################
-     # ADMIN SETTINGS
+     # PROTECTED SETTINGS
      ##############################################-->
   <string name="enter_new_password">សូមបំពេញពាក្យសម្ងាត់ថ្មី</string>
   <string name="admin_password">ពាក្យសម្ងាត់ Admin</string>
@@ -601,7 +615,7 @@
   <string name="no">ទេ</string>
   <string name="moving_backwards_enabled_title">អាច​ដំណើរការ​ត្រឡប់​ថយ​ក្រោយ​បាន</string>
   <string name="moving_backwards_enabled_message">អ្នកប្រហែលជាចង់មើលម្តងទៀតអំពីការកំណត់៖ \n\n\u2022 កែប្រែទម្រង់ដែលបានរក្សាទុក\n\u2022 រក្សាទុកទម្រង់\n\u2022 ទៅកាន់កន្លែងបញ្ចូល\n\u2022 កំពុងដំណើរការកំហិត</string>
-  <!--Admin setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
+  <!--Protected setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
   <string name="save_mid">រក្សាទុកសំណុំ​បែប​បទ</string>
   <!--##############################################
      # GOOGLE DRIVE, GOOGLE SHEETS
@@ -682,6 +696,9 @@
   <!--Detail text of the dialog shown when attempting to create a project with connection settings that match an existing project-->
   <!--Button text for adding a duplicate project-->
   <!--Buton text for switching to an existing project-->
+  <!--Toast text shown when the current project is changed-->
+  <!--Description for screen readers of which project is in use. This is part of the project selection dialog-->
+  <!--Description for screen readers of the action to switch to a different existing project. This is part of the project selection dialog-->
   <string name="delete_project_yes">បាទ/ចាស</string>
   <string name="delete_project_no">ទេ</string>
   <!--##############################################
@@ -696,4 +713,7 @@
   <!--Immediately followed by "Try Collect" which is a link to create a demo project-->
   <!--Preceded by "Don't have a project yet?" question-->
   <!--Error shown when a user tries to open a form that's in a different project-->
+  <!--##############################################
+    # Errors
+    ##############################################-->
 </resources>

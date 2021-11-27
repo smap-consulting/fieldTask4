@@ -28,12 +28,11 @@ import org.odk.collect.android.activities.MainMenuActivity
 import org.odk.collect.android.configure.SettingsImporter
 import org.odk.collect.android.fakes.FakePermissionsProvider
 import org.odk.collect.android.injection.config.AppDependencyModule
-import org.odk.collect.android.permissions.PermissionsChecker
 import org.odk.collect.android.permissions.PermissionsProvider
-import org.odk.collect.android.storage.StoragePathProvider
 import org.odk.collect.android.support.CollectHelpers
 import org.odk.collect.android.utilities.CodeCaptureManagerFactory
 import org.odk.collect.android.views.BarcodeViewDecoder
+import org.odk.collect.androidshared.system.PermissionsChecker
 import org.odk.collect.projects.ProjectsRepository
 import org.odk.collect.testshared.RobolectricHelpers
 import org.robolectric.shadows.ShadowToast
@@ -114,8 +113,7 @@ class QrCodeProjectCreatorDialogTest {
                 projectsRepository: ProjectsRepository?,
                 currentProjectProvider: CurrentProjectProvider?,
                 settingsImporter: SettingsImporter?,
-                context: Context,
-                storagePathProvider: StoragePathProvider
+                context: Context
             ): ProjectCreator {
                 return mock {
                     `when`(it.createNewProject("foo")).thenReturn(true)
@@ -151,8 +149,7 @@ class QrCodeProjectCreatorDialogTest {
                 projectsRepository: ProjectsRepository?,
                 currentProjectProvider: CurrentProjectProvider?,
                 settingsImporter: SettingsImporter?,
-                context: Context,
-                storagePathProvider: StoragePathProvider
+                context: Context
             ): ProjectCreator {
                 return projectCreator
             }

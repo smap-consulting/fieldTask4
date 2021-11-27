@@ -1,22 +1,5 @@
 package org.odk.collect.android.feature.smoke;
 
-import android.content.Context;
-
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.RuleChain;
-import org.odk.collect.android.injection.config.AppDependencyModule;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.FormActivityTestRule;
-import org.odk.collect.android.support.ResetStateRule;
-import org.odk.collect.android.utilities.ActivityAvailability;
-
-import tools.fastlane.screengrab.Screengrab;
-import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy;
-import tools.fastlane.screengrab.locale.LocaleTestRule;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.swipeLeft;
@@ -25,7 +8,18 @@ import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibilit
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.Mockito.mock;
+
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.odk.collect.android.support.CopyFormRule;
+import org.odk.collect.android.support.FormActivityTestRule;
+
+import tools.fastlane.screengrab.Screengrab;
+import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy;
+import tools.fastlane.screengrab.locale.LocaleTestRule;
 
 /**
  * Integration test that runs through a form with all question types.
@@ -36,22 +30,14 @@ import static org.mockito.Mockito.mock;
  */
 public class AllWidgetsFormTest {
 
-    private final ActivityAvailability activityAvailability = mock(ActivityAvailability.class);
-
     @ClassRule
     public static final LocaleTestRule LOCALE_TEST_RULE = new LocaleTestRule();
 
-    public FormActivityTestRule activityTestRule = new FormActivityTestRule("all-widgets.xml");
+    public FormActivityTestRule activityTestRule = new FormActivityTestRule("all-widgets.xml", "All widgets");
 
     @Rule
     public RuleChain copyFormChain = RuleChain
-            .outerRule(new ResetStateRule(new AppDependencyModule() {
-                @Override
-                public ActivityAvailability providesActivityAvailability(Context context) {
-                    return activityAvailability;
-                }
-            }))
-            .around(new CopyFormRule("all-widgets.xml", true))
+            .outerRule(new CopyFormRule("all-widgets.xml", true))
             .around(activityTestRule);
 
     @BeforeClass

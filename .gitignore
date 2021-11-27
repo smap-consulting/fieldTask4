@@ -8,6 +8,7 @@ local.properties
 *.iml
 
 collect_app/src/kontrolid/
+collect_app/src/kontrolid_corporate/
 collect_app/src/supply/
 collect_app/src/plan/
 collect_app/src/seracis/
@@ -31,6 +32,7 @@ collect_app/informEd/
 collect_app/assignfield/
 collect_app/tdh/
 collect_app/kontrolid/
+collect_app/kontrolid_corporate/
 collect_app/stl/
 collect_app/ljs/
 

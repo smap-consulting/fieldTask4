@@ -16,6 +16,10 @@
 
 package org.odk.collect.android.utilities;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import android.app.DatePickerDialog;
 import android.widget.DatePicker;
 
@@ -33,16 +37,12 @@ import org.junit.runner.RunWith;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.support.CollectHelpers;
 import org.odk.collect.android.support.MockFormEntryPromptBuilder;
-import org.odk.collect.android.support.TestScreenContextActivity;
+import org.odk.collect.android.support.WidgetTestActivity;
 import org.odk.collect.android.widgets.DateTimeWidget;
 import org.odk.collect.android.widgets.DateWidget;
 import org.odk.collect.android.widgets.utilities.DateTimeWidgetUtils;
 
 import java.util.TimeZone;
-
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @RunWith(AndroidJUnit4.class)
 /** https://github.com/getodk/collect/issues/356
@@ -56,13 +56,13 @@ public class DaylightSavingTest {
     private static final String EAT_IME_ZONE = "Africa/Nairobi";
     private static final String CET_TIME_ZONE = "Europe/Warsaw";
 
-    private TestScreenContextActivity widgetActivity;
+    private WidgetTestActivity widgetActivity;
     private DateTimeWidgetUtils widgetUtils;
     private TimeZone currentTimeZone;
 
     @Before
     public void setUp() {
-        widgetActivity = CollectHelpers.buildThemedActivity(TestScreenContextActivity.class).get();
+        widgetActivity = CollectHelpers.buildThemedActivity(WidgetTestActivity.class).get();
         widgetUtils = mock(DateTimeWidgetUtils.class);
         currentTimeZone = TimeZone.getDefault();
     }
@@ -118,7 +118,7 @@ public class DaylightSavingTest {
         when(datePickerDialog.getDatePicker().getMonth()).thenReturn(month);
         when(datePickerDialog.getDatePicker().getDayOfMonth()).thenReturn(day);
 
-        return new DateWidget(widgetActivity, new QuestionDetails(formEntryPromptStub, "formAnalyticsID"), widgetUtils);
+        return new DateWidget(widgetActivity, new QuestionDetails(formEntryPromptStub), widgetUtils);
     }
 
     private DateTimeWidget prepareDateTimeWidget(int year, int month, int day, int hour, int minute) {
@@ -134,7 +134,7 @@ public class DaylightSavingTest {
         when(formEntryPromptStub.getFormElement()).thenReturn(iformElementStub);
         when(formEntryPromptStub.getQuestion().getAppearanceAttr()).thenReturn("no-calendar");
 
-        DateTimeWidget dateTimeWidget = new DateTimeWidget(widgetActivity, new QuestionDetails(formEntryPromptStub, "formAnalyticsID"), widgetUtils);
+        DateTimeWidget dateTimeWidget = new DateTimeWidget(widgetActivity, new QuestionDetails(formEntryPromptStub), widgetUtils);
         dateTimeWidget.setData(new LocalDateTime().withDate(year, month, day));
         dateTimeWidget.setData(new DateTime().withTime(hour, minute, 0, 0));
 

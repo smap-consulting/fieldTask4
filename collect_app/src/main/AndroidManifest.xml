@@ -78,7 +78,8 @@ the specific language governing permissions and limitations under the License.
         android:largeHeap="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        android:theme="@style/Theme.Collect">
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -99,6 +100,7 @@ the specific language governing permissions and limitations under the License.
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".activities.FormEntryActivity"
+            android:theme="@style/Theme.Collect.FormEntry"
             android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".activities.NotificationActivity"
@@ -130,12 +132,23 @@ the specific language governing permissions and limitations under the License.
         <activity android:name=".activities.InstanceUploaderActivity" />
         <activity android:name=".activities.AboutActivity" />
         <activity android:name=".configure.qr.QRCodeTabsActivity" />
-        <activity android:name=".preferences.screens.ProjectPreferencesActivity" />
+        <activity
+            android:name=".preferences.screens.ProjectPreferencesActivity"
+            android:theme="@style/Theme.Collect.Settings" />
         <activity android:name=".activities.FormHierarchyActivity" />
         <activity android:name=".activities.ViewOnlyFormHierarchyActivity" />
-        <activity android:name=".activities.GeoPointActivity" />
-        <activity android:name=".activities.GeoPointMapActivity" />
-        <activity android:name=".activities.GeoPolyActivity" />
+        <activity
+            android:name="org.odk.collect.geo.GeoPointActivity"
+            android:theme="@style/Theme.Collect"
+            tools:replace="android:theme" />
+        <activity
+            android:name="org.odk.collect.geo.GeoPointMapActivity"
+            android:theme="@style/Theme.Collect"
+            tools:replace="android:theme" />
+        <activity
+            android:name="org.odk.collect.geo.GeoPolyActivity"
+            android:theme="@style/Theme.Collect"
+            tools:replace="android:theme" />
         <activity android:name=".activities.FormMapActivity" />
         <activity android:name=".activities.BearingActivity" />
         <activity

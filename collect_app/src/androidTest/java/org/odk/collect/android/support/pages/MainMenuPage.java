@@ -5,7 +5,9 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
 
+import org.hamcrest.core.StringContains;
 import org.odk.collect.android.R;
+import org.odk.collect.android.support.WaitFor;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -18,24 +20,24 @@ import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.AllOf.allOf;
 
 public class MainMenuPage extends Page<MainMenuPage> {
 
     @Override
     public MainMenuPage assertOnPage() {
-        return waitFor(() -> {
-            onView(withText(containsString(getTranslatedString(R.string.collect_app_name)))).perform(scrollTo()).check(matches(isDisplayed()));
+        return WaitFor.waitFor(() -> {
+            onView(withText(StringContains.containsString(getTranslatedString(R.string.collect_app_name)))).perform(scrollTo()).check(matches(isDisplayed()));
             return this;
         });
     }
 
-    public ProjectSettingsDialogPage openProjectSettings() {
+    public ProjectSettingsDialogPage openProjectSettingsDialog() {
         assertOnPage(); // Make sure we've waited for the application load correctly
 
         onView(withId(R.id.projects)).perform(click());
-        return waitFor(() -> {
+        // It seems there is some lag here sometimes
+        return WaitFor.waitFor(() -> {
             // It seems there is some lag here sometimes
             return new ProjectSettingsDialogPage().assertOnPage();
         });
@@ -110,8 +112,8 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public MainMenuPage setServer(String url) {
-        return openProjectSettings()
-                .clickGeneralSettings()
+        return openProjectSettingsDialog()
+                .clickSettings()
                 .clickServerSettings()
                 .clickOnURL()
                 .inputText(url)
@@ -121,8 +123,8 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public MainMenuPage enableManualUpdates() {
-        return openProjectSettings()
-                .clickGeneralSettings()
+        return openProjectSettingsDialog()
+                .clickSettings()
                 .clickFormManagement()
                 .clickUpdateForms()
                 .clickOption(R.string.manual)
@@ -131,8 +133,8 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public MainMenuPage enablePreviouslyDownloadedOnlyUpdates() {
-        return openProjectSettings()
-                .clickGeneralSettings()
+        return openProjectSettingsDialog()
+                .clickSettings()
                 .clickFormManagement()
                 .clickUpdateForms()
                 .clickOption(R.string.previously_downloaded_only)
@@ -141,8 +143,8 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public MainMenuPage enableMatchExactly() {
-        return openProjectSettings()
-                .clickGeneralSettings()
+        return openProjectSettingsDialog()
+                .clickSettings()
                 .clickFormManagement()
                 .clickUpdateForms()
                 .clickOption(R.string.match_exactly)
@@ -151,8 +153,8 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public MainMenuPage enableAutoSend() {
-        return openProjectSettings()
-                .clickGeneralSettings()
+        return openProjectSettingsDialog()
+                .clickSettings()
                 .clickFormManagement()
                 .clickOnString(R.string.autosend)
                 .clickOnString(R.string.wifi_cellular_autosend)
@@ -166,8 +168,8 @@ public class MainMenuPage extends Page<MainMenuPage> {
         Instrumentation.ActivityResult activityResult = new Instrumentation.ActivityResult(Activity.RESULT_OK, data);
         intending(hasAction("com.google.android.gms.common.account.CHOOSE_ACCOUNT")).respondWith(activityResult);
 
-        return openProjectSettings()
-                .clickGeneralSettings()
+        return openProjectSettingsDialog()
+                .clickSettings()
                 .clickServerSettings()
                 .clickOnServerType()
                 .clickOnString(R.string.server_platform_google_sheets)
@@ -177,7 +179,7 @@ public class MainMenuPage extends Page<MainMenuPage> {
     }
 
     public MainMenuPage addAndSwitchToProject(String serverUrl) {
-        return openProjectSettings()
+        return openProjectSettingsDialog()
                 .clickAddProject()
                 .switchToManualMode()
                 .inputUrl(serverUrl)

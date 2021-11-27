@@ -42,14 +42,14 @@ import com.google.android.gms.location.LocationListener;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.injection.DaggerUtils;
+import org.odk.collect.android.utilities.IconUtils;
+import org.odk.collect.android.utilities.MapFragmentReferenceLayerUtils;
+import org.odk.collect.android.utilities.ThemeUtils;
+import org.odk.collect.geo.maps.MapFragment;
+import org.odk.collect.geo.maps.MapPoint;
 import org.odk.collect.location.GoogleFusedLocationClient;
 import org.odk.collect.location.LocationClient;
 import org.odk.collect.location.LocationClientProvider;
-import org.odk.collect.android.storage.StoragePathProvider;
-import org.odk.collect.android.storage.StorageSubdirectory;
-import org.odk.collect.android.utilities.GeoUtils;
-import org.odk.collect.android.utilities.IconUtils;
-import org.odk.collect.android.utilities.ThemeUtils;
 import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.events.MapEventsReceiver;
 import org.osmdroid.events.MapListener;
@@ -90,7 +90,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     MapProvider mapProvider;
 
     @Inject
-    StoragePathProvider storagePathProvider;
+    ReferenceLayerRepository referenceLayerRepository;
 
     private MapView map;
     private ReadyListener readyListener;
@@ -168,7 +168,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override public void applyConfig(Bundle config) {
         webMapService = (WebMapService) config.getSerializable(KEY_WEB_MAP_SERVICE);
-        referenceLayerFile = GeoUtils.getReferenceLayerFile(config, storagePathProvider.getOdkDirPath(StorageSubdirectory.LAYERS));
+        referenceLayerFile = MapFragmentReferenceLayerUtils.getReferenceLayerFile(config, referenceLayerRepository);
         if (map != null) {
             map.setTileSource(webMapService.asOnlineTileSource());
             loadReferenceOverlay();
@@ -233,7 +233,8 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         return false;
     }
 
-    @Override public @NonNull MapPoint getCenter() {
+    @Override public @NonNull
+    MapPoint getCenter() {
         return fromGeoPoint(map.getMapCenter());
     }
 
@@ -372,6 +373,11 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     @Override public void setGpsLocationListener(@Nullable PointListener listener) {
         gpsLocationListener = listener;
+    }
+
+    @Override
+    public void setRetainMockAccuracy(boolean retainMockAccuracy) {
+        locationClient.setRetainMockAccuracy(retainMockAccuracy);
     }
 
     @Override public void runOnGpsLocationReady(@NonNull ReadyListener listener) {

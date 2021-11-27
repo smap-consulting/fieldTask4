@@ -17,7 +17,7 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.activities.BearingActivity;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
-import org.odk.collect.android.support.TestScreenContextActivity;
+import org.odk.collect.android.support.WidgetTestActivity;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.widgets.support.FakeWaitingForDataRegistry;
 import org.robolectric.shadows.ShadowActivity;
@@ -42,7 +42,7 @@ import static org.robolectric.Shadows.shadowOf;
 public class BearingWidgetTest {
     private final FakeWaitingForDataRegistry fakeWaitingForDataRegistry = new FakeWaitingForDataRegistry();
 
-    private TestScreenContextActivity widgetActivity;
+    private WidgetTestActivity widgetActivity;
     private ShadowActivity shadowActivity;
     private SensorManager sensorManager;
     private View.OnLongClickListener listener;
@@ -216,7 +216,7 @@ public class BearingWidgetTest {
     }
 
     private BearingWidget createWidget(FormEntryPrompt prompt) {
-        return new BearingWidget(widgetActivity, new QuestionDetails(prompt, "formAnalyticsID"), fakeWaitingForDataRegistry, sensorManager);
+        return new BearingWidget(widgetActivity, new QuestionDetails(prompt), fakeWaitingForDataRegistry, sensorManager);
     }
 
     private void assertNoIntentLaunchedWhenSensorIsUnavailable(int sensorType) {

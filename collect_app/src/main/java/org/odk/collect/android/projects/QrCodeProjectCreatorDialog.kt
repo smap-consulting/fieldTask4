@@ -26,13 +26,13 @@ import org.odk.collect.android.injection.DaggerUtils
 import org.odk.collect.android.listeners.PermissionListener
 import org.odk.collect.android.permissions.PermissionsProvider
 import org.odk.collect.android.preferences.source.SettingsProvider
-import org.odk.collect.android.utilities.ActivityAvailability
 import org.odk.collect.android.utilities.CodeCaptureManagerFactory
 import org.odk.collect.android.utilities.CompressionUtils
-import org.odk.collect.android.utilities.DialogUtils
 import org.odk.collect.android.views.BarcodeViewDecoder
-import org.odk.collect.androidshared.utils.ToastUtils
-import org.odk.collect.androidshared.utils.ToastUtils.showShortToast
+import org.odk.collect.androidshared.system.IntentLauncher
+import org.odk.collect.androidshared.ui.DialogFragmentUtils
+import org.odk.collect.androidshared.ui.ToastUtils
+import org.odk.collect.androidshared.ui.ToastUtils.showShortToast
 import org.odk.collect.material.MaterialFullScreenDialogFragment
 import org.odk.collect.projects.ProjectsRepository
 import timber.log.Timber
@@ -71,13 +71,13 @@ class QrCodeProjectCreatorDialog :
     lateinit var binding: QrCodeProjectCreatorDialogLayoutBinding
 
     @Inject
-    lateinit var activityAvailability: ActivityAvailability
-
-    @Inject
     lateinit var qrCodeDecoder: QRCodeDecoder
 
     @Inject
     lateinit var settingsImporter: SettingsImporter
+
+    @Inject
+    lateinit var intentLauncher: IntentLauncher
 
     private val imageQrCodeImportResultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
@@ -133,7 +133,7 @@ class QrCodeProjectCreatorDialog :
         configureMenu()
 
         binding.configureManuallyButton.setOnClickListener {
-            DialogUtils.showIfNotShowing(
+            DialogFragmentUtils.showIfNotShowing(
                 ManualProjectCreatorDialog::class.java,
                 requireActivity().supportFragmentManager
             )
@@ -167,9 +167,7 @@ class QrCodeProjectCreatorDialog :
                 R.id.menu_item_scan_sd_card -> {
                     val photoPickerIntent = Intent(Intent.ACTION_GET_CONTENT)
                     photoPickerIntent.type = "image/*"
-                    if (activityAvailability.isActivityAvailable(photoPickerIntent)) {
-                        imageQrCodeImportResultLauncher.launch(photoPickerIntent)
-                    } else {
+                    intentLauncher.launchForResult(imageQrCodeImportResultLauncher, photoPickerIntent) {
                         showShortToast(
                             requireContext(),
                             getString(
@@ -259,7 +257,7 @@ class QrCodeProjectCreatorDialog :
                     settingsJson
                 )
                 confirmationArgs.putString(DuplicateProjectConfirmationKeys.MATCHING_PROJECT, uuid)
-                DialogUtils.showIfNotShowing(
+                DialogFragmentUtils.showIfNotShowing(
                     DuplicateProjectConfirmationDialog::class.java,
                     confirmationArgs,
                     childFragmentManager

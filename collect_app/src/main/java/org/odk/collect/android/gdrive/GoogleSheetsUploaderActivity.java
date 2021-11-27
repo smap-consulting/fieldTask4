@@ -48,7 +48,7 @@ import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.InstanceUploaderUtils;
 import org.odk.collect.android.utilities.InstancesRepositoryProvider;
-import org.odk.collect.androidshared.utils.ToastUtils;
+import org.odk.collect.androidshared.ui.ToastUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -137,7 +137,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
         instanceGoogleSheetsUploaderTask.setRepositories(instancesRepositoryProvider.get(), formsRepositoryProvider.get(), settingsProvider);
 
         // ensure we have a google account selected
-        String googleUsername = settingsProvider.getGeneralSettings().getString(ProjectKeys.KEY_SELECTED_GOOGLE_ACCOUNT);
+        String googleUsername = settingsProvider.getUnprotectedSettings().getString(ProjectKeys.KEY_SELECTED_GOOGLE_ACCOUNT);
         if (googleUsername == null || googleUsername.equals("")) {
             showDialog(GOOGLE_USER_DIALOG);
         } else {

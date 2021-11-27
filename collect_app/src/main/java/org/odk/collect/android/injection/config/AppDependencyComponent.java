@@ -4,6 +4,7 @@ import android.app.Application;
 
 import org.javarosa.core.reference.ReferenceManager;
 import org.odk.collect.analytics.Analytics;
+import org.odk.collect.android.activities.AboutActivity;
 import org.odk.collect.android.activities.CollectAbstractActivity;
 import org.odk.collect.android.activities.DeleteSavedFormActivity;
 import org.odk.collect.android.activities.FillBlankFormActivity;
@@ -12,8 +13,6 @@ import org.odk.collect.android.activities.FormDownloadListActivity;
 import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.activities.FormHierarchyActivity;
 import org.odk.collect.android.activities.FormMapActivity;
-import org.odk.collect.android.activities.GeoPointMapActivity;
-import org.odk.collect.android.activities.GeoPolyActivity;
 import org.odk.collect.android.activities.InstanceChooserList;
 import org.odk.collect.android.activities.InstanceUploaderActivity;
 import org.odk.collect.android.activities.InstanceUploaderListActivity;
@@ -53,6 +52,7 @@ import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
 import org.odk.collect.android.gdrive.GoogleDriveActivity;
 import org.odk.collect.android.gdrive.GoogleSheetsUploaderActivity;
 import org.odk.collect.android.geo.GoogleMapFragment;
+import org.odk.collect.android.geo.MapProvider;
 import org.odk.collect.android.geo.MapboxMapFragment;
 import org.odk.collect.android.geo.OsmDroidMapFragment;
 import org.odk.collect.android.logic.PropertyManager;
@@ -69,6 +69,7 @@ import org.odk.collect.android.preferences.screens.ExperimentalPreferencesFragme
 import org.odk.collect.android.preferences.screens.FormManagementPreferencesFragment;
 import org.odk.collect.android.preferences.screens.FormMetadataPreferencesFragment;
 import org.odk.collect.android.preferences.screens.IdentityPreferencesFragment;
+import org.odk.collect.android.preferences.screens.MapsPreferencesFragment;
 import org.odk.collect.android.preferences.screens.ProjectDisplayPreferencesFragment;
 import org.odk.collect.android.preferences.screens.ProjectManagementPreferencesFragment;
 import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity;
@@ -137,6 +138,8 @@ public interface AppDependencyComponent {
 
     void inject(Collect collect);
 
+    void inject(AboutActivity aboutActivity);
+
     void inject(InstanceUploaderAdapter instanceUploaderAdapter);
 
     void inject(SavedFormListFragment savedFormListFragment);
@@ -170,10 +173,6 @@ public interface AppDependencyComponent {
     void inject(ODKView odkView);
 
     void inject(FormMetadataPreferencesFragment formMetadataPreferencesFragment);
-
-    void inject(GeoPointMapActivity geoMapActivity);
-
-    void inject(GeoPolyActivity geoPolyActivity);
 
     void inject(FormMapActivity formMapActivity);
 
@@ -283,6 +282,8 @@ public interface AppDependencyComponent {
 
     void inject(FormUriActivity formUriActivity);
 
+    void inject(MapsPreferencesFragment mapsPreferencesFragment);
+
     OpenRosaHttpInterface openRosaHttpInterface();
 
     ReferenceManager referenceManager();
@@ -316,4 +317,6 @@ public interface AppDependencyComponent {
     ExistingProjectMigrator existingProjectMigrator();
 
     ProjectResetter projectResetter();
+
+    MapProvider mapProvider();
 }

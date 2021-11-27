@@ -197,9 +197,6 @@ android {
         unitTests {
             includeAndroidResources = true
             returnDefaultValues = true
-            all {
-                maxHeapSize = robolectricHeapSize
-            }
         }
     }
 
@@ -227,13 +224,16 @@ configurations.all {
         cacheDynamicVersionsFor(0, 'seconds')
         cacheChangingModulesFor(0, 'seconds')
 
-        force('com.google.code.findbugs:jsr305:1.3.9')
         force 'org.objenesis:objenesis:2.6'
     }
     transitive = true
 }
 
 dependencies {
+    repositories {
+        mavenLocal() // Only used for javarosa_local dependency
+    }
+
     coreLibraryDesugaring Dependencies.desugar
 
     implementation project(':shared')
@@ -248,7 +248,10 @@ dependencies {
     implementation project(':audiorecorder')
     implementation project(':projects')
     implementation project(':location')
+    implementation project(':geo')
+    implementation project(':errors')
 
+    implementation Dependencies.androidx_startup
     implementation Dependencies.androidx_legacy_support
     implementation Dependencies.androidx_core_ktx
     implementation Dependencies.androidx_browser
@@ -272,6 +275,7 @@ dependencies {
     implementation Dependencies.firebase_crashlytics
 
     implementation Dependencies.mapbox_android_sdk
+    implementation Dependencies.mapbox_android_telemetry
     implementation Dependencies.mapbox_android_plugin_annotation
 
     implementation Dependencies.guava
@@ -347,14 +351,6 @@ dependencies {
         exclude group: 'org.hamcrest'
     }
 
-    // Makes binding to Views easy:
-    implementation Dependencies.butterknife
-    annotationProcessor Dependencies.butterknife_compiler
-
-    // Annotations understood by FindBugs
-    compileOnly Dependencies.findbugs_annotations
-    compileOnly Dependencies.findbugs_jsr305
-
     testImplementation project(':formstest')
 
     // Testing-only dependencies
@@ -375,10 +371,6 @@ dependencies {
     testImplementation Dependencies.okhttp3_mockwebserver
     testImplementation Dependencies.squareup_okhttp_tls
 
-    // power mock (for mocking final methods which is not handled by mockito)
-    testImplementation Dependencies.powermock_module_junit4
-    testImplementation Dependencies.powermock_api_mockito2
-
     testImplementation Dependencies.hamcrest
 
     testImplementation Dependencies.json
@@ -396,7 +388,6 @@ dependencies {
     androidTestImplementation Dependencies.androidx_test_espresso_contrib
     androidTestImplementation(Dependencies.androidx_test_espresso_intents) {
         exclude group: 'com.android.support', module: 'support-annotations'
-        exclude group: 'com.google.code.findbugs', module: 'jsr305'
     }
 
     androidTestImplementation Dependencies.okhttp3_mockwebserver

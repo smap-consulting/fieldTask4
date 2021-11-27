@@ -226,8 +226,22 @@ public final class AnalyticsEvents {
     public static final String FORM_ACTION_WITH_FORM_MODE_EXTRA = "FormActionWithFormModeExtra";
 
     /**
-     * Tracks how often the app needs to recreate the directory for the current project
-     * when returning to or launching the app.
+     * Tracks how many forms include the `allow-mock-accuracy` parameter in `geo` questions
      */
-    public static final String RECREATE_PROJECT_DIR = "RecreateProjectDir";
+    public static final String ALLOW_MOCK_ACCURACY = "AllowMockAccuracy";
+
+    /**
+     * Tracks how many forms include an accuracy threshold for the default `geopoint` question
+     */
+    public static final String ACCURACY_THRESHOLD = "AccuracyThreshold";
+
+    /**
+     * Tracks how many forms use default accuracy thresholds for the default `geopoint` question
+     */
+    public static final String ACCURACY_THRESHOLD_DEFAULT = "AccuracyThresholdDefault";
+
+    /**
+     * Tracks how often form details with null or empty hashes are provided by a server
+     */
+    public static final String NULL_OR_EMPTY_FORM_HASH = "NullOrEmptyFormHash";
 }

@@ -90,6 +90,7 @@
   <!--Error message displayed when copying media from a temporary directory fails-->
   <!--Text displayed in the audio bar when background audio recording is explicitly disabled from the options menu. Should be as short as possible. The inserted string is ⋮ which indicates the options menu.-->
   <!--Error displayed when opened filled form has been deleted on disk-->
+  <!--Error displayed when something bad happens during updating widgets in a field-list group-->
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -183,6 +184,7 @@
   <!--Name of an action button-->
   <!--Name for the location tracking notifications. Will be seen in Android settings.-->
   <!--Title for notification that lets user know their location is currently being tracked-->
+  <!--Text of button user can press to get help when setting up Reference Layers-->
   <!--##############################################
     # SEND FINALIZED FORM
     ##############################################-->
@@ -205,6 +207,18 @@
   <string name="downloading_data">ডাটা সার্ভারের থেকে ডাউনলোড হচ্ছে</string>
   <string name="fetching_file">নামানো হচ্ছে %1$s.\n\n ফরম %2$s এর %3$s ফরম/(ফরমগুলি)</string>
   <string name="version">ভার্সন</string>
+  <!--Part of form download dialog. Clicking it displays additional information about a form that failed-->
+  <!--##############################################
+    # GET BLANK FORM - ERROR MESSAGES
+    ##############################################-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
   <!--##############################################
     # DELETE SAVED FORM
     ##############################################-->
@@ -220,7 +234,7 @@
   <string name="file_deleted_ok">%s ফরম/(ফরমগুলি) সফলভাবে মুছে গেছে!</string>
   <string name="file_delete_in_progress">দুঃখিত, একটি ফরম মুছে ফেলার প্রক্রিয়া ইতিমধ্যে চলমান!</string>
   <!--##############################################
-    # GENERAL SETTINGS
+    # UNPROTECTED SETTINGS
     ##############################################-->
   <!--Title of a settings section-->
   <!--Subtext of a settings section-->
@@ -294,7 +308,7 @@
   <!--Label for an item displayed in the project settings menu to unlock settings-->
   <!--Label for an item displayed in the project settings menu to indicate that settings are unlocked-->
   <!--##############################################
-     # ADMIN SETTINGS
+     # PROTECTED SETTINGS
      ##############################################-->
   <string name="enter_new_password">পাসওয়ার্ড দিন।</string>
   <string name="admin_password_changed">অ্যাডমিনের পাসওয়ার্ড পরিবর্তন</string>
@@ -304,7 +318,7 @@
   <string name="found_in_main">প্রধান মেনু্তে পাবেন</string>
   <string name="reset_project_settings_title">রিসেট</string>
   <!--Name of a setting that determines whether users can navigate backwards in a form-->
-  <!--Admin setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
+  <!--Protected setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
   <string name="save_mid">সংরক্ষণ করুন ফরম </string>
   <!--##############################################
      # GOOGLE DRIVE, GOOGLE SHEETS
@@ -340,6 +354,9 @@
   <!--Detail text of the dialog shown when attempting to create a project with connection settings that match an existing project-->
   <!--Button text for adding a duplicate project-->
   <!--Buton text for switching to an existing project-->
+  <!--Toast text shown when the current project is changed-->
+  <!--Description for screen readers of which project is in use. This is part of the project selection dialog-->
+  <!--Description for screen readers of the action to switch to a different existing project. This is part of the project selection dialog-->
   <!--##############################################
      # First launch and initial configuration
      ##############################################-->
@@ -352,4 +369,7 @@
   <!--Immediately followed by "Try Collect" which is a link to create a demo project-->
   <!--Preceded by "Don't have a project yet?" question-->
   <!--Error shown when a user tries to open a form that's in a different project-->
+  <!--##############################################
+    # Errors
+    ##############################################-->
 </resources>

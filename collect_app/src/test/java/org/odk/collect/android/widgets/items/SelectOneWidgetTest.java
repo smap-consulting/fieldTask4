@@ -65,7 +65,7 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
     @NonNull
     @Override
     public SelectOneWidget createWidget() {
-        SelectOneWidget selectOneWidget = new SelectOneWidget(activity, new QuestionDetails(formEntryPrompt, "formAnalyticsID"), isQuick());
+        SelectOneWidget selectOneWidget = new SelectOneWidget(activity, new QuestionDetails(formEntryPrompt), isQuick());
         if (isQuick()) {
             selectOneWidget.setListener(listener);
         }
@@ -115,7 +115,7 @@ public class SelectOneWidgetTest extends GeneralSelectOneWidgetTest<SelectOneWid
     @Test
     public void whenAutocompleteAppearanceExist_shouldTextSizeBeSetProperly() {
         when(formEntryPrompt.getAppearanceHint()).thenReturn("autocomplete");
-        assertThat(getSpyWidget().binding.choicesSearchBox.getTextSize(), is(new QuestionTextSizeHelper(settingsProvider.getGeneralSettings()).getHeadline6()));
+        assertThat(getSpyWidget().binding.choicesSearchBox.getTextSize(), is(new QuestionTextSizeHelper(settingsProvider.getUnprotectedSettings()).getHeadline6()));
     }
 
     @Test

@@ -42,7 +42,7 @@ import org.odk.collect.android.preferences.filters.ControlCharacterFilter;
 import org.odk.collect.android.preferences.filters.WhitespaceFilter;
 import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.utilities.PlayServicesChecker;
-import org.odk.collect.androidshared.utils.ToastUtils;
+import org.odk.collect.androidshared.ui.ToastUtils;
 import org.odk.collect.shared.strings.Md5;
 import org.odk.collect.shared.strings.Validator;
 
@@ -271,8 +271,8 @@ public class ServerPreferencesFragment extends BaseProjectPreferencesFragment im
     }
 
     private void runGoogleAccountValidation() {
-        String account = settingsProvider.getGeneralSettings().getString(KEY_SELECTED_GOOGLE_ACCOUNT);
-        String protocol = settingsProvider.getGeneralSettings().getString(KEY_PROTOCOL);
+        String account = settingsProvider.getUnprotectedSettings().getString(KEY_SELECTED_GOOGLE_ACCOUNT);
+        String protocol = settingsProvider.getUnprotectedSettings().getString(KEY_PROTOCOL);
 
         if (TextUtils.isEmpty(account) && protocol.equals(ProjectKeys.PROTOCOL_GOOGLE_SHEETS)) {
 

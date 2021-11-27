@@ -10,9 +10,8 @@ import org.odk.collect.android.projects.CurrentProjectProvider
 import org.odk.collect.android.projects.ManualProjectCreatorDialog
 import org.odk.collect.android.projects.ProjectImporter
 import org.odk.collect.android.projects.QrCodeProjectCreatorDialog
-import org.odk.collect.android.utilities.DialogUtils
-import org.odk.collect.android.utilities.ThemeUtils
 import org.odk.collect.android.version.VersionInformation
+import org.odk.collect.androidshared.ui.DialogFragmentUtils
 import org.odk.collect.projects.Project
 import javax.inject.Inject
 
@@ -31,18 +30,22 @@ class FirstLaunchActivity : CollectAbstractActivity() {
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(ThemeUtils(this).appTheme)
-
         binding = FirstLaunchLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
         DaggerUtils.getComponent(this).inject(this)
 
         binding.configureViaQrButton.setOnClickListener {
-            DialogUtils.showIfNotShowing(QrCodeProjectCreatorDialog::class.java, supportFragmentManager)
+            DialogFragmentUtils.showIfNotShowing(
+                QrCodeProjectCreatorDialog::class.java,
+                supportFragmentManager
+            )
         }
 
         binding.configureManuallyButton.setOnClickListener {
-            DialogUtils.showIfNotShowing(ManualProjectCreatorDialog::class.java, supportFragmentManager)
+            DialogFragmentUtils.showIfNotShowing(
+                ManualProjectCreatorDialog::class.java,
+                supportFragmentManager
+            )
         }
 
         binding.appName.text = String.format(

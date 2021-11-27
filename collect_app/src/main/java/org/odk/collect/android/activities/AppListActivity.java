@@ -117,9 +117,18 @@ abstract class AppListActivity extends CollectAbstractActivity {
     }
 
     @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+        init();
+    }
+
+    @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
+        init();
+    }
 
+    private void init() {
         listView = findViewById(android.R.id.list);
         listView.setOnItemClickListener((AdapterView.OnItemClickListener) this);
         listView.setEmptyView(findViewById(android.R.id.empty));
@@ -260,11 +269,11 @@ abstract class AppListActivity extends CollectAbstractActivity {
 
     private void saveSelectedSortingOrder(int selectedStringOrder) {
         selectedSortingOrder = selectedStringOrder;
-        settingsProvider.getGeneralSettings().save(getSortingOrderKey(), selectedStringOrder);
+        settingsProvider.getUnprotectedSettings().save(getSortingOrderKey(), selectedStringOrder);
     }
 
     protected void restoreSelectedSortingOrder() {
-        selectedSortingOrder = settingsProvider.getGeneralSettings().getInt(getSortingOrderKey());
+        selectedSortingOrder = settingsProvider.getUnprotectedSettings().getInt(getSortingOrderKey());
     }
 
     protected int getSelectedSortingOrder() {

@@ -4,8 +4,8 @@ import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.backgroundColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineOpacity;
 import static com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth;
-import static org.odk.collect.android.storage.StorageSubdirectory.LAYERS;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -63,8 +63,9 @@ import org.odk.collect.android.geo.MbtilesFile.LayerType;
 import org.odk.collect.android.geo.MbtilesFile.MbtilesException;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.location.client.MapboxLocationCallback;
-import org.odk.collect.android.storage.StoragePathProvider;
-import org.odk.collect.android.utilities.GeoUtils;
+import org.odk.collect.android.utilities.MapFragmentReferenceLayerUtils;
+import org.odk.collect.geo.maps.MapFragment;
+import org.odk.collect.geo.maps.MapPoint;
 
 import java.io.File;
 import java.io.IOException;
@@ -75,7 +76,6 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import timber.log.Timber;
 
 public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.MapFragment
@@ -97,7 +97,7 @@ public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.Map
     MapProvider mapProvider;
 
     @Inject
-    StoragePathProvider storagePathProvider;
+    ReferenceLayerRepository referenceLayerRepository;
 
     private MapboxMap map;
     private ReadyListener mapReadyListener;
@@ -129,7 +129,6 @@ public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.Map
 
     // During Robolectric tests, Google Play Services is unavailable; sadly, the
     // "map" field will be null and many operations will need to be stubbed out.
-    @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL", justification = "This flag is exposed for Robolectric tests to set")
     @VisibleForTesting public static boolean testMode;
 
     @Override public void addTo(
@@ -264,8 +263,10 @@ public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.Map
 
     @Override public void applyConfig(Bundle config) {
         styleUrl = config.getString(KEY_STYLE_URL);
-        referenceLayerFile = GeoUtils.getReferenceLayerFile(config, storagePathProvider.getOdkDirPath(LAYERS));
+        referenceLayerFile = MapFragmentReferenceLayerUtils.getReferenceLayerFile(config, referenceLayerRepository);
         if (map != null) {
+            resetLocationComponent();
+
             map.setStyle(getStyleBuilder(), style -> {
                 // See addTo() above for why we add this placeholder layer.
                 style.addLayer(new BackgroundLayer(PLACEHOLDER_LAYER_ID)
@@ -281,6 +282,16 @@ public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.Map
                 }
             });
         }
+    }
+
+    /**
+     * Reset the location component so that it is not tied to the placeholder layer.
+     * We need to do this before re-setting map style to avoid exceptions.
+     */
+    @SuppressLint("MissingPermission")
+    private void resetLocationComponent() {
+        map.getLocationComponent().setLocationComponentEnabled(false);
+        map.getLocationComponent().activateLocationComponent(LocationComponentActivationOptions.builder(getContext(), map.getStyle()).build());
     }
 
     @Override public @NonNull MapPoint getCenter() {
@@ -457,6 +468,11 @@ public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.Map
 
     @Override public void setGpsLocationListener(@Nullable PointListener listener) {
         gpsLocationListener = listener;
+    }
+
+    @Override
+    public void setRetainMockAccuracy(boolean retainMockAccuracy) {
+        locationCallback.setRetainMockAccuracy(retainMockAccuracy);
     }
 
     @Override public void setGpsLocationEnabled(boolean enable) {
@@ -706,6 +722,7 @@ public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.Map
                 .locationEngine(engine)
                 .locationComponentOptions(
                     LocationComponentOptions.builder(getContext())
+                        .layerAbove(PLACEHOLDER_LAYER_ID)
                         .foregroundDrawable(R.drawable.ic_crosshairs)
                         .backgroundDrawable(R.drawable.empty)
                         .enableStaleState(false)  // don't switch to other drawables

@@ -1,5 +1,10 @@
 package org.odk.collect.android.injection.config;
 
+import static androidx.core.content.FileProvider.getUriForFile;
+import static org.odk.collect.android.preferences.keys.MetaKeys.KEY_INSTALL_ID;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 import android.app.Application;
 import android.content.Context;
 import android.media.MediaPlayer;
@@ -65,7 +70,9 @@ import org.odk.collect.android.gdrive.GoogleAccountCredentialGoogleAccountPicker
 import org.odk.collect.android.gdrive.GoogleAccountPicker;
 import org.odk.collect.android.gdrive.GoogleAccountsManager;
 import org.odk.collect.android.gdrive.GoogleApiProvider;
+import org.odk.collect.android.geo.DirectoryReferenceLayerRepository;
 import org.odk.collect.android.geo.MapProvider;
+import org.odk.collect.android.geo.ReferenceLayerRepository;
 import org.odk.collect.android.instancemanagement.InstanceAutoSender;
 import org.odk.collect.android.itemsets.FastExternalItemsetsRepository;
 import org.odk.collect.android.logic.PropertyManager;
@@ -79,13 +86,18 @@ import org.odk.collect.android.openrosa.CollectThenSystemContentTypeMapper;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
 import org.odk.collect.android.openrosa.okhttp.OkHttpConnection;
 import org.odk.collect.android.openrosa.okhttp.OkHttpOpenRosaServerClientProvider;
-import org.odk.collect.android.permissions.PermissionsChecker;
+import org.odk.collect.android.utilities.MediaUtils;
+import org.odk.collect.android.widgets.utilities.FileRequester;
+import org.odk.collect.android.widgets.utilities.FileRequesterImpl;
+import org.odk.collect.android.widgets.utilities.StringRequester;
+import org.odk.collect.android.widgets.utilities.StringRequesterImpl;
+import org.odk.collect.androidshared.system.PermissionsChecker;
 import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.preferences.PreferenceVisibilityHandler;
 import org.odk.collect.android.preferences.ProjectPreferencesViewModel;
-import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
-import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.preferences.keys.MetaKeys;
+import org.odk.collect.android.preferences.keys.ProjectKeys;
+import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
 import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.preferences.source.SettingsStore;
 import org.odk.collect.android.preferences.source.SharedPreferencesSettingsProvider;
@@ -96,7 +108,6 @@ import org.odk.collect.android.projects.ProjectDetailsCreator;
 import org.odk.collect.android.projects.ProjectImporter;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
-import org.odk.collect.android.utilities.ActivityAvailability;
 import org.odk.collect.android.utilities.AdminPasswordProvider;
 import org.odk.collect.android.utilities.AndroidUserAgent;
 import org.odk.collect.android.utilities.ChangeLockProvider;
@@ -107,10 +118,8 @@ import org.odk.collect.android.utilities.ExternalWebPageHelper;
 import org.odk.collect.android.utilities.FileProvider;
 import org.odk.collect.android.utilities.FormsDirDiskFormsSynchronizer;
 import org.odk.collect.android.utilities.FormsRepositoryProvider;
-import org.odk.collect.android.utilities.IconUtils;
 import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.android.utilities.LaunchState;
-import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.ProjectResetter;
 import org.odk.collect.android.utilities.ScreenUtils;
 import org.odk.collect.android.utilities.SoftKeyboardController;
@@ -118,13 +127,13 @@ import org.odk.collect.android.utilities.StaticCachingDeviceDetailsProvider;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 import org.odk.collect.android.version.VersionInformation;
 import org.odk.collect.android.views.BarcodeViewDecoder;
+import org.odk.collect.androidshared.system.IntentLauncher;
+import org.odk.collect.androidshared.system.IntentLauncherImpl;
 import org.odk.collect.async.CoroutineAndWorkManagerScheduler;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.recording.AudioRecorderFactory;
 import org.odk.collect.forms.FormsRepository;
-import org.odk.collect.location.tracker.ForegroundServiceLocationTracker;
-import org.odk.collect.location.tracker.LocationTracker;
 import org.odk.collect.projects.ProjectsRepository;
 import org.odk.collect.projects.SharedPreferencesProjectsRepository;
 import org.odk.collect.shared.strings.UUIDGenerator;
@@ -139,11 +148,6 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;
-
-import static androidx.core.content.FileProvider.getUriForFile;
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static org.odk.collect.android.preferences.keys.MetaKeys.KEY_INSTALL_ID;
 
 /**
  * Add dependency providers here (annotated with @Provides)
@@ -187,7 +191,7 @@ public class AppDependencyModule {
 
     @Provides
     WebCredentialsUtils provideWebCredentials(SettingsProvider settingsProvider) {
-        return new WebCredentialsUtils(settingsProvider.getGeneralSettings());
+        return new WebCredentialsUtils(settingsProvider.getUnprotectedSettings());
     }
 
     @Provides
@@ -222,15 +226,11 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public ActivityAvailability providesActivityAvailability(Context context) {
-        return new ActivityAvailability(context);
-    }
-
-    @Provides
     @Singleton
     public SettingsProvider providesSettingsProvider(Context context) {
         return new SharedPreferencesSettingsProvider(context);
     }
+
 
     @Provides
     InstallIDProvider providesInstallIDProvider(SettingsProvider settingsProvider) {
@@ -249,13 +249,19 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public StoragePathProvider providesStoragePathProvider(Context context, CurrentProjectProvider currentProjectProvider) {
-        return new StoragePathProvider(currentProjectProvider, context.getExternalFilesDir(null).getAbsolutePath());
+    public StoragePathProvider providesStoragePathProvider(Context context, CurrentProjectProvider currentProjectProvider, ProjectsRepository projectsRepository) {
+        File externalFilesDir = context.getExternalFilesDir(null);
+
+        if (externalFilesDir != null) {
+            return new StoragePathProvider(currentProjectProvider, projectsRepository, externalFilesDir.getAbsolutePath());
+        } else {
+            throw new IllegalStateException("Storage is not available!");
+        }
     }
 
     @Provides
     public AdminPasswordProvider providesAdminPasswordProvider(SettingsProvider settingsProvider) {
-        return new AdminPasswordProvider(settingsProvider.getAdminSettings());
+        return new AdminPasswordProvider(settingsProvider.getProtectedSettings());
     }
 
     @Provides
@@ -433,19 +439,19 @@ public class AppDependencyModule {
 
     @Provides
     public BackgroundAudioViewModel.Factory providesBackgroundAudioViewModelFactory(AudioRecorder audioRecorder, SettingsProvider settingsProvider, PermissionsChecker permissionsChecker, Clock clock, Analytics analytics) {
-        return new BackgroundAudioViewModel.Factory(audioRecorder, settingsProvider.getGeneralSettings(), permissionsChecker, clock);
+        return new BackgroundAudioViewModel.Factory(audioRecorder, settingsProvider.getUnprotectedSettings(), permissionsChecker, clock);
     }
 
     @Provides
     @Named("GENERAL_SETTINGS_STORE")
     public SettingsStore providesGeneralSettingsStore(SettingsProvider settingsProvider) {
-        return new SettingsStore(settingsProvider.getGeneralSettings());
+        return new SettingsStore(settingsProvider.getUnprotectedSettings());
     }
 
     @Provides
     @Named("ADMIN_SETTINGS_STORE")
     public SettingsStore providesAdminSettingsStore(SettingsProvider settingsProvider) {
-        return new SettingsStore(settingsProvider.getAdminSettings());
+        return new SettingsStore(settingsProvider.getProtectedSettings());
     }
 
     @Provides
@@ -462,8 +468,8 @@ public class AppDependencyModule {
     @Provides
     public ProjectCreator providesProjectCreator(ProjectImporter projectImporter, ProjectsRepository projectsRepository,
                                                  CurrentProjectProvider currentProjectProvider, SettingsImporter settingsImporter,
-                                                 Context context, StoragePathProvider storagePathProvider) {
-        return new ProjectCreator(projectImporter, projectsRepository, currentProjectProvider, settingsImporter, storagePathProvider);
+                                                 Context context) {
+        return new ProjectCreator(projectImporter, projectsRepository, currentProjectProvider, settingsImporter);
     }
 
     @Provides
@@ -505,7 +511,7 @@ public class AppDependencyModule {
 
     @Provides
     public SplashScreenViewModel.Factory providesSplashScreenViewModel(SettingsProvider settingsProvider, ProjectsRepository projectsRepository) {
-        return new SplashScreenViewModel.Factory(settingsProvider.getGeneralSettings(), projectsRepository);
+        return new SplashScreenViewModel.Factory(settingsProvider.getUnprotectedSettings(), projectsRepository);
     }
 
     @Provides
@@ -585,8 +591,8 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public ApplicationInitializer providesApplicationInitializer(Application context, UserAgentProvider userAgentProvider, PropertyManager propertyManager, Analytics analytics, LaunchState launchState, AppUpgrader appUpgrader, AnalyticsInitializer analyticsInitializer, ProjectsRepository projectsRepository) {
-        return new ApplicationInitializer(context, userAgentProvider, propertyManager, analytics, launchState, appUpgrader, analyticsInitializer, projectsRepository);
+    public ApplicationInitializer providesApplicationInitializer(Application context, UserAgentProvider userAgentProvider, PropertyManager propertyManager, Analytics analytics, LaunchState launchState, AppUpgrader appUpgrader, AnalyticsInitializer analyticsInitializer, ProjectsRepository projectsRepository, SettingsProvider settingsProvider) {
+        return new ApplicationInitializer(context, userAgentProvider, propertyManager, analytics, launchState, appUpgrader, analyticsInitializer, projectsRepository, settingsProvider);
     }
 
     @Provides
@@ -600,13 +606,30 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public LocationTracker providesLocationTracker(Application application) {
-        ForegroundServiceLocationTracker.setNotificationIcon(IconUtils.getNotificationAppIcon());
-        return new ForegroundServiceLocationTracker(application);
+    public PreferenceVisibilityHandler providesDisabledPreferencesRemover(SettingsProvider settingsProvider, VersionInformation versionInformation) {
+        return new PreferenceVisibilityHandler(settingsProvider, versionInformation);
     }
 
     @Provides
-    public PreferenceVisibilityHandler providesDisabledPreferencesRemover(SettingsProvider settingsProvider, VersionInformation versionInformation) {
-        return new PreferenceVisibilityHandler(settingsProvider, versionInformation);
+    public ReferenceLayerRepository providesReferenceLayerRepository(StoragePathProvider storagePathProvider) {
+        return new DirectoryReferenceLayerRepository(
+                storagePathProvider.getOdkDirPath(StorageSubdirectory.LAYERS),
+                storagePathProvider.getOdkDirPath(StorageSubdirectory.SHARED_LAYERS)
+        );
+    }
+
+    @Provides
+    public IntentLauncher providesIntentLauncher() {
+        return IntentLauncherImpl.INSTANCE;
+    }
+
+    @Provides
+    public FileRequester providesFileRequester(IntentLauncher intentLauncher, ExternalAppIntentProvider externalAppIntentProvider) {
+        return new FileRequesterImpl(intentLauncher, externalAppIntentProvider);
+    }
+
+    @Provides
+    public StringRequester providesStringRequester(IntentLauncher intentLauncher, ExternalAppIntentProvider externalAppIntentProvider) {
+        return new StringRequesterImpl(intentLauncher, externalAppIntentProvider);
     }
 }

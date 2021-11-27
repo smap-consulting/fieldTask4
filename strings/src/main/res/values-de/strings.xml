@@ -163,6 +163,8 @@
   <string name="recording_disabled">Aufnahme deaktiviert. Aktivieren über %s</string>
   <!--Error displayed when opened filled form has been deleted on disk-->
   <string name="instance_deleted_message">Ausgefülltes Formular wurde gelöscht!</string>
+  <!--Error displayed when something bad happens during updating widgets in a field-list group-->
+  <string name="update_widgets_error">Fehler beim Versuch Werte zu aktualisieren. Dies passiert normalerweise wegen fehlerhafter Verwendung von Berechnungen im Formulardesign.\n\nWenn das Problem weiterhin besteht, wenden Sie sich an die Person, für die Sie die Daten erfassen.</string>
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -190,6 +192,7 @@
   <string name="svg_file_does_not_exist">SVG-Datei existiert nicht!</string>
   <string name="capture_image">Foto machen</string>
   <string name="choose_image">Bild auswählen</string>
+  <string name="choose_account">Konto auswählen</string>
   <string name="selected_invalid_image">Ausgewählte Datei ist kein gültiges Bild.</string>
   <string name="view_image">Bild anzeigen</string>
   <string name="take_picture_instruction">Bildschirm berühren um ein Foto aufzunehmen</string>
@@ -385,8 +388,6 @@
   <string name="carto_map_style_positron">Positron</string>
   <string name="carto_map_style_dark_matter">Dunkle Materie</string>
   <string name="reference_layer">Referenzebene</string>
-  <string name="layer_data_caption_none">Es gibt keine Ebenen-Dateien in %1$s die von der %2$s Basiskarte unterstützt werden. </string>
-  <string name="layer_data_caption">Oben sind alle Ebenen-Dateien in %1$s die von der %2$s Basiskarte unterstützt werden.</string>
   <string name="layer_data_file">Ebenendaten-Datei</string>
   <string name="view_change_location">Standort anzeigen oder ändern</string>
   <string name="change_location">Standort ändern</string>
@@ -476,6 +477,7 @@
   <string name="location_tracking_notification_channel_name">Standortverlauf</string>
   <!--Title for notification that lets user know their location is currently being tracked-->
   <string name="location_tracking_notification_title">Standort wird aufgezeichnet… </string>
+  <!--Text of button user can press to get help when setting up Reference Layers-->
   <!--##############################################
     # SEND FINALIZED FORM
     ##############################################-->
@@ -512,13 +514,33 @@
   <string name="newer_version_of_a_form_info">Dies ist eine aktualisierte Version eines bereits vorhandenen Formulars!</string>
   <string name="form_update_error">Formular-Update fehlgeschlagen</string>
   <string name="form_update_succeeded">Formular-Update erfolgreich</string>
-  <string name="report_to_project_lead">Wenn Sie weiterhin dieses Problem haben, berichten Sie es an die Person, die Sie zum Daten sammeln beauftragt hat.</string>
-  <string name="unreachable_error">Collect kann den Server unter %s nicht erreichen. Haben Sie die URL korrekt eingegeben? </string>
-  <string name="security_error">Collect kann sich nicht sicher mit dem Server unter %s verbinden. Haben Sie die URL korrekt eingegeben? </string>
-  <string name="server_error">Der Server %1$s antwortete mit Statuscode %2$s. </string>
-  <string name="invalid_response">Der Server %s gab eine ungültige Antwort.</string>
-  <string name="failure">Fehler</string>
   <string name="load_remote_form_error">Formularlisten-Download fehlgeschlagen</string>
+  <string name="all_downloads_succeeded">Alle Downloads erfolgreich!</string>
+  <string name="some_downloads_failed">%1$s von %2$s Downloads fehlgeschlagen!</string>
+  <!--Part of form download dialog. Clicking it displays additional information about a form that failed-->
+  <string name="show_details">Details anzeigen</string>
+  <string name="form_details">ID: %1$s Version: %2$s</string>
+  <string name="failure">Fehler</string>
+  <!--##############################################
+    # GET BLANK FORM - ERROR MESSAGES
+    ##############################################-->
+  <string name="report_to_project_lead">Wenn Sie weiterhin dieses Problem haben, berichten Sie es an die Person, die Sie zum Daten sammeln beauftragt hat.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="unreachable_error">Collect kann den Server unter %s nicht erreichen. Haben Sie die URL korrekt eingegeben? </string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="security_error">Collect kann sich nicht sicher mit dem Server unter %s verbinden. Haben Sie die URL korrekt eingegeben? </string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="server_error">Der Server %1$s antwortete mit Statuscode %2$s. </string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="invalid_response">Der Server %s gab eine ungültige Antwort.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_with_no_hash_error">Der Server hat keinen Hash für dieses Formular zur Verfügung gestellt.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_parsing_error">Das Formular kann nicht verarbeitet werden.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_save_disk_error">Während des Speicherns des Formulars ist ein Laufwerksfehler aufgetreten.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_with_invalid_submission_error">Das Formular hat eine ungültige Übermittlung-URL.</string>
   <!--##############################################
     # DELETE SAVED FORM
     ##############################################-->
@@ -536,7 +558,7 @@
   <string name="file_deleted_ok">%s Formular(e) erfolgreich gelöscht!</string>
   <string name="file_delete_in_progress">Ein Formularlöschvorgang ist bereits aktiv!</string>
   <!--##############################################
-    # GENERAL SETTINGS
+    # UNPROTECTED SETTINGS
     ##############################################-->
   <string name="project_settings">Projekt-Einstellungen</string>
   <!--Title of a settings section-->
@@ -601,7 +623,8 @@
   <string name="app_theme">Theme</string>
   <string name="theme_light">Helles Theme</string>
   <string name="theme_dark">Dunkles Theme</string>
-    <string name="language">Sprache</string>
+  <string name="theme_system">Gerätedesign verwenden</string>
+  <string name="language">Sprache</string>
   <string name="use_device_language">Gerätesprache benutzen</string>
   <string name="font_size">Schriftgröße</string>
   <string name="change_font_size">Schriftgröße</string>
@@ -705,7 +728,7 @@
   <!--Label for an item displayed in the project settings menu to indicate that settings are unlocked-->
   <string name="settings_unlocked">Einstellungen freigegeben</string>
   <!--##############################################
-     # ADMIN SETTINGS
+     # PROTECTED SETTINGS
      ##############################################-->
   <string name="enter_new_password">Neues Passwort eingeben</string>
   <string name="admin_password">Admin-Passwort</string>
@@ -752,7 +775,7 @@
   <string name="no">Nein</string>
   <string name="moving_backwards_enabled_title">Rückwärts bewegen aktiviert</string>
   <string name="moving_backwards_enabled_message">Bitte überprüfen Sie die folgenden Einstellungen:\n\n\u2022 Gespeichertes Formular bearbeiten\n\u2022 Formular speichern\n\u2022 Gehe zum Prompt\n\u2022 Validierung</string>
-  <!--Admin setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
+  <!--Protected setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
   <string name="save_mid">Formular speichern</string>
   <!--##############################################
      # GOOGLE DRIVE, GOOGLE SHEETS
@@ -818,7 +841,6 @@
   <string name="generate">Generieren</string>
   <string name="invalid_qrcode">QR-Code enthält keine gültigen Einstellungen</string>
   <string name="qr_code_not_found">Kein QR-Code im ausgewählten Bild gefunden</string>
-  <string name="corrupt_imported_preferences_error">Die aktuellen Einstellungen sind beschädigt. Setze die Einstellungen in den Admin-Einstellungen zurück oder importiere funktionierende.</string>
   <!--##############################################
      # MISC
      ##############################################-->
@@ -860,8 +882,11 @@
   <string name="project_name">Projekt-Name</string>
   <string name="project_icon">Projekt-Icon</string>
   <string name="project_color">Projekt-Farbe</string>
+  <!--Toast text shown when the current project is changed-->
   <string name="switched_project">Gewechselt zu %s</string>
+  <!--Description for screen readers of which project is in use. This is part of the project selection dialog-->
   <string name="using_project">Verwende %s</string>
+  <!--Description for screen readers of the action to switch to a different existing project. This is part of the project selection dialog-->
   <string name="switch_to_project">Wechseln zu %s</string>
   <string name="delete_project_confirm_message">Alle Blanko-Formulare, Übermittlung und Einstellungen werden dauerhaft gelöscht. </string>
   <string name="delete_project_yes">Ja</string>
@@ -882,7 +907,7 @@
   <string name="configure_with_qr_code">Mit QR-Code konfigurieren</string>
   <!--Text for the button that allows for manually entering project details. Should be short-->
   <string name="configure_manually">Projektdetails manuell eingeben</string>
-  <string name="project_config_tip">Nachdem Sie Ihr Projekt hinzugefügt haben, können Sie es in den Allgemeinen und Admin-Einstellungen konfigurieren. </string>
+  <string name="project_config_tip">Nachdem Sie Ihr Projekt hinzugefügt haben, können Sie es in den konfigurieren.</string>
   <!--Immediately followed by "Configure" which is a link to configure a Google Drive project-->
   <string name="gdrive_project">Mein Projekt benutzt Google Drive. </string>
   <!--Preceded by "My project uses Google Drive." Tapping opens a dialog to configure a Google Drive Project-->
@@ -894,4 +919,8 @@
   <string name="scan_configuration_qr_code">Konfigurations-QR-Code scannen</string>
   <!--Error shown when a user tries to open a form that's in a different project-->
   <string name="wrong_project_selected_for_form">Um dieses Formular zu öffnen, müssen Sie zuerst ODK Collect öffnen und in das Projekt wechseln, in dem es enthalten ist.</string>
+  <!--##############################################
+    # Errors
+    ##############################################-->
+  <string name="errors">Fehler</string>
 </resources>

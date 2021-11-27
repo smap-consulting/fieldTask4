@@ -24,7 +24,7 @@ import org.odk.collect.android.TestSettingsProvider;
 import org.odk.collect.android.activities.viewmodels.FormMapViewModel;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.external.InstanceProvider;
-import org.odk.collect.android.geo.MapPoint;
+import org.odk.collect.geo.maps.MapPoint;
 import org.odk.collect.android.geo.MapProvider;
 import org.odk.collect.android.geo.TestMapFragment;
 import org.odk.collect.android.injection.config.AppDependencyModule;
@@ -239,7 +239,7 @@ public class FormMapActivityTest {
 
     @Test
     public void openingEditableInstance_whenEditingSettingisOff_launchesViewActivity() {
-        TestSettingsProvider.getAdminSettings().save(ProtectedProjectKeys.KEY_EDIT_SAVED, false);
+        TestSettingsProvider.getProtectedSettings().save(ProtectedProjectKeys.KEY_EDIT_SAVED, false);
 
         MapPoint editableAndFinalized = new MapPoint(10.1, 125.6);
         MapPoint unfinalized = new MapPoint(10.1, 126.6);

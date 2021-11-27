@@ -14,8 +14,6 @@
 
 package org.odk.collect.android.geo;
 
-import static org.odk.collect.android.storage.StorageSubdirectory.LAYERS;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -52,11 +50,12 @@ import com.google.android.gms.maps.model.TileOverlayOptions;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.storage.StoragePathProvider;
-import org.odk.collect.android.utilities.GeoUtils;
 import org.odk.collect.android.utilities.IconUtils;
+import org.odk.collect.android.utilities.MapFragmentReferenceLayerUtils;
 import org.odk.collect.android.utilities.ThemeUtils;
-import org.odk.collect.androidshared.utils.ToastUtils;
+import org.odk.collect.androidshared.ui.ToastUtils;
+import org.odk.collect.geo.maps.MapFragment;
+import org.odk.collect.geo.maps.MapPoint;
 import org.odk.collect.location.GoogleFusedLocationClient;
 import org.odk.collect.location.LocationClient;
 import org.odk.collect.location.LocationClientProvider;
@@ -69,11 +68,10 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import timber.log.Timber;
 
 public class GoogleMapFragment extends SupportMapFragment implements
-    MapFragment, LocationListener, LocationClient.LocationClientListener,
+        MapFragment, LocationListener, LocationClient.LocationClientListener,
     GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener,
     GoogleMap.OnMarkerClickListener, GoogleMap.OnMarkerDragListener,
     GoogleMap.OnPolylineClickListener {
@@ -85,7 +83,7 @@ public class GoogleMapFragment extends SupportMapFragment implements
     MapProvider mapProvider;
 
     @Inject
-    StoragePathProvider storagePathProvider;
+    ReferenceLayerRepository referenceLayerRepository;
 
     private GoogleMap map;
     private Marker locationCrosshairs;
@@ -110,7 +108,6 @@ public class GoogleMapFragment extends SupportMapFragment implements
 
     // During Robolectric tests, Google Play Services is unavailable; sadly, the
     // "map" field will be null and many operations will need to be stubbed out.
-    @SuppressFBWarnings(value = "MS_SHOULD_BE_FINAL", justification = "This flag is exposed for Robolectric tests to set")
     @VisibleForTesting public static boolean testMode;
 
     @SuppressLint("MissingPermission") // Permission checks for location services handled in widgets
@@ -188,7 +185,7 @@ public class GoogleMapFragment extends SupportMapFragment implements
 
     @Override public void applyConfig(Bundle config) {
         mapType = config.getInt(KEY_MAP_TYPE, GoogleMap.MAP_TYPE_NORMAL);
-        referenceLayerFile = GeoUtils.getReferenceLayerFile(config, storagePathProvider.getOdkDirPath(LAYERS));
+        referenceLayerFile = MapFragmentReferenceLayerUtils.getReferenceLayerFile(config, referenceLayerRepository);
         if (map != null) {
             map.setMapType(mapType);
             loadReferenceOverlay();
@@ -338,6 +335,11 @@ public class GoogleMapFragment extends SupportMapFragment implements
 
     @Override public void setGpsLocationListener(@Nullable PointListener listener) {
         gpsLocationListener = listener;
+    }
+
+    @Override
+    public void setRetainMockAccuracy(boolean retainMockAccuracy) {
+        locationClient.setRetainMockAccuracy(retainMockAccuracy);
     }
 
     @Override public void setGpsLocationEnabled(boolean enable) {

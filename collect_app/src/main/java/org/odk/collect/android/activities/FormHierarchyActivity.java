@@ -14,6 +14,8 @@
 
 package org.odk.collect.android.activities;
 
+import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
+
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
@@ -47,9 +49,9 @@ import org.odk.collect.android.formentry.ODKView;
 import org.odk.collect.android.formentry.repeats.DeleteRepeatDialogFragment;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.logic.HierarchyElement;
-import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.FormEntryPromptUtils;
 import org.odk.collect.android.utilities.MultiClickGuard;
+import org.odk.collect.androidshared.ui.DialogFragmentUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +59,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.javarosawrapper.FormIndexUtils.getPreviousLevel;
 
 public class FormHierarchyActivity extends CollectAbstractActivity implements DeleteRepeatDialogFragment.DeleteRepeatDialogCallback {
 
@@ -243,17 +243,23 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
         return element instanceof GroupDef && ((GroupDef) element).noAddRemove;
     }
 
-    /** Override to disable this button. */
+    /**
+     * Override to disable this button.
+     */
     protected void showDeleteButton(boolean shouldShow) {
         optionsMenu.findItem(R.id.menu_delete_child).setVisible(shouldShow);
     }
 
-    /** Override to disable this button. */
+    /**
+     * Override to disable this button.
+     */
     protected void showAddButton(boolean shouldShow) {
         optionsMenu.findItem(R.id.menu_add_repeat).setVisible(shouldShow);
     }
 
-    /** Override to disable this button. */
+    /**
+     * Override to disable this button.
+     */
     protected void showGoUpButton(boolean shouldShow) {
         optionsMenu.findItem(R.id.menu_go_up).setVisible(shouldShow);
     }
@@ -266,7 +272,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
 
         switch (item.getItemId()) {
             case R.id.menu_delete_child:
-                DialogUtils.showIfNotShowing(DeleteRepeatDialogFragment.class, getSupportFragmentManager());
+                DialogFragmentUtils.showIfNotShowing(DeleteRepeatDialogFragment.class, getSupportFragmentManager());
                 return true;
 
             case R.id.menu_add_repeat:
@@ -596,20 +602,22 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
                         break;
                     }
                     case FormEntryController.EVENT_REPEAT: {
-                        if (!formController.isGroupRelevant()) {
+                        boolean forPicker = shouldShowRepeatGroupPicker();
+                        // Only break to exclude non-relevant repeat from picker
+                        if (!formController.isGroupRelevant() && forPicker) {
                             break;
                         }
 
                         visibleGroupRef = currentRef;
-
-                        FormEntryCaption fc = formController.getCaptionPrompt();
 
                         // Don't render other groups' children.
                         if (contextGroupRef != null && !contextGroupRef.isParentOf(currentRef, false)) {
                             break;
                         }
 
-                        if (shouldShowRepeatGroupPicker()) {
+                        FormEntryCaption fc = formController.getCaptionPrompt();
+
+                        if (forPicker) {
                             // Don't render other groups' instances.
                             String repeatGroupPickerRef = repeatGroupPickerIndex.getReference().toString(false);
                             if (!currentRef.toString(false).equals(repeatGroupPickerRef)) {

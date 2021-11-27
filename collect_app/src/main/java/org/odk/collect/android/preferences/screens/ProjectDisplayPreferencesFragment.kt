@@ -16,14 +16,15 @@ import org.odk.collect.android.analytics.AnalyticsEvents
 import org.odk.collect.android.injection.DaggerUtils
 import org.odk.collect.android.projects.CurrentProjectProvider
 import org.odk.collect.android.storage.StoragePathProvider
-import org.odk.collect.android.utilities.DialogUtils
 import org.odk.collect.android.utilities.FileUtils
 import org.odk.collect.android.utilities.MultiClickGuard
 import org.odk.collect.androidshared.ColorPickerDialog
 import org.odk.collect.androidshared.ColorPickerViewModel
+import org.odk.collect.androidshared.ui.DialogFragmentUtils
 import org.odk.collect.androidshared.ui.OneSignTextWatcher
 import org.odk.collect.projects.Project
 import org.odk.collect.projects.ProjectsRepository
+import org.odk.collect.shared.PathUtils
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -121,7 +122,7 @@ class ProjectDisplayPreferencesFragment :
                     val bundle = Bundle()
                     bundle.putString(ColorPickerDialog.CURRENT_COLOR, color)
                     bundle.putString(ColorPickerDialog.CURRENT_ICON, icon)
-                    DialogUtils.showIfNotShowing(
+                    DialogFragmentUtils.showIfNotShowing(
                         ColorPickerDialog::class.java,
                         bundle,
                         requireActivity().supportFragmentManager
@@ -139,8 +140,9 @@ class ProjectDisplayPreferencesFragment :
             PROJECT_NAME_KEY -> {
                 Analytics.log(AnalyticsEvents.CHANGE_PROJECT_NAME)
 
+                val sanitizedOldProjectName = PathUtils.getPathSafeFileName(name)
                 try {
-                    File(storagePathProvider.getProjectRootDirPath() + File.separator + name).delete()
+                    File(storagePathProvider.getProjectRootDirPath() + File.separator + sanitizedOldProjectName).delete()
                 } catch (e: Exception) {
                     Timber.e(
                         FileUtils.getFilenameError(
@@ -149,8 +151,9 @@ class ProjectDisplayPreferencesFragment :
                     )
                 }
 
+                val sanitizedNewProjectName = PathUtils.getPathSafeFileName(newValue.toString())
                 try {
-                    File(storagePathProvider.getProjectRootDirPath() + File.separator + newValue).createNewFile()
+                    File(storagePathProvider.getProjectRootDirPath() + File.separator + sanitizedNewProjectName).createNewFile()
                 } catch (e: Exception) {
                     Timber.e(
                         FileUtils.getFilenameError(

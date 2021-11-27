@@ -19,8 +19,8 @@ import org.odk.collect.android.databinding.ProjectSettingsDialogLayoutBinding
 import org.odk.collect.android.injection.DaggerUtils
 import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity
 import org.odk.collect.android.preferences.source.SettingsProvider
-import org.odk.collect.android.utilities.DialogUtils
-import org.odk.collect.androidshared.utils.ToastUtils
+import org.odk.collect.androidshared.ui.DialogFragmentUtils
+import org.odk.collect.androidshared.ui.ToastUtils
 import org.odk.collect.projects.Project
 import org.odk.collect.projects.ProjectsRepository
 import javax.inject.Inject
@@ -54,7 +54,7 @@ class ProjectSettingsDialog : DialogFragment() {
         binding = ProjectSettingsDialogLayoutBinding.inflate(LayoutInflater.from(context))
 
         currentProjectViewModel.currentProject.observe(this) { project ->
-            binding.currentProject.setupView(project, settingsProvider.getGeneralSettings())
+            binding.currentProject.setupView(project, settingsProvider.getUnprotectedSettings())
             binding.currentProject.contentDescription =
                 getString(R.string.using_project, project.name)
             inflateListOfInActiveProjects(requireContext(), project)
@@ -70,7 +70,7 @@ class ProjectSettingsDialog : DialogFragment() {
         }
 
         binding.addProjectButton.setOnClickListener {
-            DialogUtils.showIfNotShowing(
+            DialogFragmentUtils.showIfNotShowing(
                 QrCodeProjectCreatorDialog::class.java,
                 requireActivity().supportFragmentManager
             )
@@ -103,7 +103,7 @@ class ProjectSettingsDialog : DialogFragment() {
                 switchProject(project)
             }
 
-            projectView.setupView(project, settingsProvider.getGeneralSettings(project.uuid))
+            projectView.setupView(project, settingsProvider.getUnprotectedSettings(project.uuid))
             projectView.contentDescription = getString(R.string.switch_to_project, project.name)
             binding.projectList.addView(projectView)
         }

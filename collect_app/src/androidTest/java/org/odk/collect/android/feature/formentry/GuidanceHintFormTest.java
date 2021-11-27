@@ -1,5 +1,14 @@
 package org.odk.collect.android.feature.formentry;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+import static junit.framework.Assert.assertFalse;
+import static org.hamcrest.CoreMatchers.not;
+
 import android.text.TextUtils;
 
 import androidx.test.espresso.matcher.ViewMatchers;
@@ -16,20 +25,10 @@ import org.odk.collect.android.preferences.GuidanceHint;
 import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.FormActivityTestRule;
-import org.odk.collect.android.support.AdbFormLoadingUtils;
 import org.odk.collect.android.support.ResetStateRule;
 
 import tools.fastlane.screengrab.Screengrab;
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy;
-
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static junit.framework.Assert.assertFalse;
-import static org.hamcrest.CoreMatchers.not;
 
 public class GuidanceHintFormTest {
     private static final String GUIDANCE_SAMPLE_FORM = "guidance_hint_form.xml";
@@ -40,7 +39,7 @@ public class GuidanceHintFormTest {
     }
 
     @Rule
-    public FormActivityTestRule activityTestRule = AdbFormLoadingUtils.getFormActivityTestRuleFor(GUIDANCE_SAMPLE_FORM);
+    public FormActivityTestRule activityTestRule = new FormActivityTestRule(GUIDANCE_SAMPLE_FORM, "Guidance Form Sample");
 
     @Rule
     public RuleChain copyFormChain = RuleChain
@@ -54,7 +53,7 @@ public class GuidanceHintFormTest {
 
     @Test
     public void guidanceHint_ShouldBeDisplayedWhenSettingSetToYes() {
-        TestSettingsProvider.getGeneralSettings().save(ProjectKeys.KEY_GUIDANCE_HINT, GuidanceHint.YES.toString());
+        TestSettingsProvider.getUnprotectedSettings().save(ProjectKeys.KEY_GUIDANCE_HINT, GuidanceHint.YES.toString());
         // jump to force recreation of the view after the settings change
         onView(withId(R.id.menu_goto)).perform(click());
         onView(withId(R.id.jumpBeginningButton)).perform(click());
@@ -70,7 +69,7 @@ public class GuidanceHintFormTest {
 
     @Test
     public void guidanceHint_ShouldBeDisplayedAfterClickWhenSettingSetToYesCollapsed() {
-        TestSettingsProvider.getGeneralSettings().save(ProjectKeys.KEY_GUIDANCE_HINT, GuidanceHint.YES_COLLAPSED.toString());
+        TestSettingsProvider.getUnprotectedSettings().save(ProjectKeys.KEY_GUIDANCE_HINT, GuidanceHint.YES_COLLAPSED.toString());
         // jump to force recreation of the view after the settings change
         onView(withId(R.id.menu_goto)).perform(click());
         onView(withId(R.id.jumpBeginningButton)).perform(click());

@@ -163,6 +163,8 @@
   <string name="recording_disabled">Nahrávání zakázáno. Povolit v %s</string>
   <!--Error displayed when opened filled form has been deleted on disk-->
   <string name="instance_deleted_message">Vyplněný formulář byl smazán!</string>
+  <!--Error displayed when something bad happens during updating widgets in a field-list group-->
+  <string name="update_widgets_error">Selhání při pokusu o aktualizaci hodnot. Důvodem je obvykle nesprávné použití výpočtů v návrhu formuláře.\n\nPokud se tento problém opakuje, nahlaste jej osobě, která vás požádala o sběr dat.</string>
   <!--##############################################
     # FORM FEATURES
     ##############################################-->
@@ -190,6 +192,7 @@
   <string name="svg_file_does_not_exist">Soubor SVG neexistuje!</string>
   <string name="capture_image">Udělat fotku</string>
   <string name="choose_image">Vyberte obrázek</string>
+  <string name="choose_account">Zvolte účet</string>
   <string name="selected_invalid_image">Vybraný soubor není platný obrázek</string>
   <string name="view_image">Zobrazit obrázek</string>
   <string name="take_picture_instruction">Klepnutím na obrazovku udělejte snímek</string>
@@ -385,8 +388,6 @@
   <string name="carto_map_style_positron">Positron</string>
   <string name="carto_map_style_dark_matter">Temná hmota</string>
   <string name="reference_layer">Referenční vrstva</string>
-  <string name="layer_data_caption_none">V podkladové mapě %2$s nejsou podporované žádné soubory vrstev %1$s.</string>
-  <string name="layer_data_caption">Výše jsou všechny soubory vrstev v %1$s, které jsou podporovány podkladovou mapou %2$s.</string>
   <string name="layer_data_file">Soubor datové vrstvy</string>
   <string name="view_change_location">Prohlédnout nebo změnit polohu</string>
   <string name="change_location">Změnit lokaci</string>
@@ -482,6 +483,8 @@
   <string name="location_tracking_notification_channel_name">Sledování polohy</string>
   <!--Title for notification that lets user know their location is currently being tracked-->
   <string name="location_tracking_notification_title">Sledování polohy…</string>
+  <!--Text of button user can press to get help when setting up Reference Layers-->
+  <string name="get_help_with_reference_layers">Získejte nápovědu k referenčním vrstvám</string>
   <!--##############################################
     # SEND FINALIZED FORM
     ##############################################-->
@@ -518,13 +521,33 @@
   <string name="newer_version_of_a_form_info">Toto je aktualizace formuláře, který máte</string>
   <string name="form_update_error">Aktualizace formuláře se nezdařila</string>
   <string name="form_update_succeeded">Aktualizace formuláře byla úspěšná</string>
-  <string name="report_to_project_lead">Pokud problém přetrvává, nahlaste jej osobě, která vás požádala o sběr dat.</string>
-  <string name="unreachable_error">Collect nemůže kontaktovat server na %s. Zadali jste adresu URL správně?</string>
-  <string name="security_error">Collect se nemůže bezpečně připojit k serveru na %s. Zadali jste URL správně?</string>
-  <string name="server_error">Server %1$s vrátil stavový kód %2$s.</string>
-  <string name="invalid_response">Server %s poskytl neplatnou odpověď.</string>
-  <string name="failure">Selhání</string>
   <string name="load_remote_form_error">Stažení seznamu formulářů se nezdařilo</string>
+  <string name="all_downloads_succeeded">Všechna stažení se podařila!</string>
+  <string name="some_downloads_failed">%1$sz %2$s stažení se nepodařilo!</string>
+  <!--Part of form download dialog. Clicking it displays additional information about a form that failed-->
+  <string name="show_details">Zobrazit detaily</string>
+  <string name="form_details">ID: %1$s Verze: %2$s</string>
+  <string name="failure">Selhání</string>
+  <!--##############################################
+    # GET BLANK FORM - ERROR MESSAGES
+    ##############################################-->
+  <string name="report_to_project_lead">Pokud problém přetrvává, nahlaste jej osobě, která vás požádala o sběr dat.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="unreachable_error">Collect nemůže kontaktovat server na %s. Zadali jste adresu URL správně?</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="security_error">Collect se nemůže bezpečně připojit k serveru na %s. Zadali jste URL správně?</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="server_error">Server %1$s vrátil stavový kód %2$s.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="invalid_response">Server %s poskytl neplatnou odpověď.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_with_no_hash_error">Server neposkytl hash pro tento formulář.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_parsing_error">Tento formulář nelze zpracovat.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_save_disk_error">Při stahování tohoto formuláře došlo na zařízení k chybě disku.</string>
+  <!--Displayed in error dialog for form downloads. Followed by instructions to talk to person who asked to collect data-->
+  <string name="form_with_invalid_submission_error">Tento formulář má neplatnou adresu URL pro odeslání.</string>
   <!--##############################################
     # DELETE SAVED FORM
     ##############################################-->
@@ -542,7 +565,7 @@
   <string name="file_deleted_ok">%s dotazníků úspěšně smazáno!</string>
   <string name="file_delete_in_progress">Mazání dotazníku už probíhá!</string>
   <!--##############################################
-    # GENERAL SETTINGS
+    # UNPROTECTED SETTINGS
     ##############################################-->
   <string name="project_settings">Nastavení projektu</string>
   <!--Title of a settings section-->
@@ -607,7 +630,8 @@
   <string name="app_theme">Vizuální styl</string>
   <string name="theme_light">Světlý styl</string>
   <string name="theme_dark">Tmavý styl</string>
-    <string name="language">Jazyk</string>
+  <string name="theme_system">Použít motiv zařízení</string>
+  <string name="language">Jazyk</string>
   <string name="use_device_language">Použít jazyk zařízení</string>
   <string name="font_size">Velikost písma</string>
   <string name="change_font_size">Velikost písma</string>
@@ -711,7 +735,7 @@
   <!--Label for an item displayed in the project settings menu to indicate that settings are unlocked-->
   <string name="settings_unlocked">Odemčené nastavení</string>
   <!--##############################################
-     # ADMIN SETTINGS
+     # PROTECTED SETTINGS
      ##############################################-->
   <string name="enter_new_password">Zadejte nové heslo</string>
   <string name="admin_password">Heslo správce</string>
@@ -758,7 +782,7 @@
   <string name="no">Ne</string>
   <string name="moving_backwards_enabled_title">Posun zpět povolen</string>
   <string name="moving_backwards_enabled_message">Můžete si přečíst následující nastavení: \n\n\u2022 Upravit uložený formulář \n\u2022 Uložit formulář\n\u2022 Jít na výzvu \n\u2022 Omezení zpracování</string>
-  <!--Admin setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
+  <!--Protected setting. When enabled, users are allowed to save forms while filling them. When disabled, users are only allowed to save forms when they reach their end-->
   <string name="save_mid">Uložit dotazník</string>
   <!--##############################################
      # GOOGLE DRIVE, GOOGLE SHEETS
@@ -824,7 +848,6 @@
   <string name="generate">Vytvořit</string>
   <string name="invalid_qrcode">Kód QR neobsahuje platná nastavení</string>
   <string name="qr_code_not_found">QR kód nebyl nalezen ve vybraném snímku</string>
-  <string name="corrupt_imported_preferences_error">Aktuální nastavení je poškozeno. Z nastavení administrátora obnovte nastavení nebo importujte pracovní nastavení.</string>
   <!--##############################################
      # MISC
      ##############################################-->
@@ -866,8 +889,11 @@
   <string name="project_name">Název projektu</string>
   <string name="project_icon">Ikona projektu</string>
   <string name="project_color">Barva projektu</string>
+  <!--Toast text shown when the current project is changed-->
   <string name="switched_project">Přepnuto na %s</string>
+  <!--Description for screen readers of which project is in use. This is part of the project selection dialog-->
   <string name="using_project">S pomocí %s</string>
+  <!--Description for screen readers of the action to switch to a different existing project. This is part of the project selection dialog-->
   <string name="switch_to_project">Přepnout na %s</string>
   <string name="delete_project_confirm_message">Všechny prázdné formuláře, podání a nastavení budou trvale odstraněny.</string>
   <string name="delete_project_yes">Ano</string>
@@ -888,7 +914,7 @@
   <string name="configure_with_qr_code">Nakonfigurujte pomocí QR kódu</string>
   <!--Text for the button that allows for manually entering project details. Should be short-->
   <string name="configure_manually">Ručně zadejte podrobnosti projektu</string>
-  <string name="project_config_tip">Po přidání projektu jej můžete nakonfigurovat v části Obecná nastavení a Nastavení správce.</string>
+  <string name="project_config_tip">Po přidání projektu jej můžete nakonfigurovat v části Nastavení</string>
   <!--Immediately followed by "Configure" which is a link to configure a Google Drive project-->
   <string name="gdrive_project">Můj projekt používá Google Drive.</string>
   <!--Preceded by "My project uses Google Drive." Tapping opens a dialog to configure a Google Drive Project-->
@@ -899,4 +925,9 @@
   <string name="try_demo">Vyzkoušejte si demo</string>
   <string name="scan_configuration_qr_code">Naskenování konfiguračního kódu QR</string>
   <!--Error shown when a user tries to open a form that's in a different project-->
+  <string name="wrong_project_selected_for_form">Chcete-li otevřít tento formulář, musíte nejprve otevřít ODK Collect a přepnout na projekt, který jej obsahuje.</string>
+  <!--##############################################
+    # Errors
+    ##############################################-->
+  <string name="errors">Chyby</string>
 </resources>

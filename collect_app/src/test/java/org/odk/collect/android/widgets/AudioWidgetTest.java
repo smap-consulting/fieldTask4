@@ -18,7 +18,7 @@ import org.odk.collect.android.audio.AudioControllerView;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.support.CollectHelpers;
-import org.odk.collect.android.support.TestScreenContextActivity;
+import org.odk.collect.android.support.WidgetTestActivity;
 import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.widgets.support.FakeQuestionMediaManager;
 import org.odk.collect.android.widgets.utilities.AudioFileRequester;
@@ -57,13 +57,13 @@ public class AudioWidgetTest {
     private final FakeRecordingRequester recordingRequester = new FakeRecordingRequester();
     private final AudioFileRequester audioFileRequester = mock(AudioFileRequester.class);
 
-    private TestScreenContextActivity widgetActivity;
+    private WidgetTestActivity widgetActivity;
     private FormIndex formIndex;
     private FakeAudioPlayer audioPlayer;
 
     @Before
     public void setUp() throws Exception {
-        widgetActivity = CollectHelpers.buildThemedActivity(TestScreenContextActivity.class).get();
+        widgetActivity = CollectHelpers.buildThemedActivity(WidgetTestActivity.class).get();
 
         formIndex = mock(FormIndex.class);
         when(formIndex.toString()).thenReturn("questionIndex");
@@ -485,7 +485,7 @@ public class AudioWidgetTest {
     public AudioWidget createWidget(FormEntryPrompt prompt) {
         return new AudioWidget(
                 widgetActivity,
-                new QuestionDetails(prompt, "formAnalyticsID"),
+                new QuestionDetails(prompt),
                 questionMediaManager,
                 audioPlayer,
                 recordingRequester,
@@ -497,7 +497,7 @@ public class AudioWidgetTest {
     public AudioWidget createWidget(FormEntryPrompt prompt, boolean readOnlyOverride) {
         return new AudioWidget(
                 widgetActivity,
-                new QuestionDetails(prompt, "formAnalyticsID", readOnlyOverride),
+                new QuestionDetails(prompt, readOnlyOverride),
                 questionMediaManager,
                 audioPlayer,
                 recordingRequester,
