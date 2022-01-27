@@ -165,7 +165,6 @@
   <string name="capture_image">Bëj foto</string>
   <string name="choose_image">Zgjidh imazh</string>
   <string name="selected_invalid_image">File i përzgjedhur nuk është imazh i vlefshëm</string>
-  <string name="view_image">Shih Imazhin</string>
   <string name="take_picture_instruction">Prek ekranin për të bërë fotografi</string>
   <string name="error_front_camera_unavailable">Ky aparat nuk ka maera të përparme</string>
   <string name="camera_error">Ky aparat nuk suporton Camera2 API.</string>
@@ -179,7 +178,6 @@
   <string name="set_color">Cakto ngjyrën</string>
   <string name="capture_video">Regjistro video</string>
   <string name="choose_video">Zgjidh video</string>
-  <string name="view_video">Shih videon</string>
   <string name="start_video_capture_instruction">Prekni ekranin për të nisur regjistrimin</string>
   <string name="stop_video_capture_instruction">Regjistrimi nisi. Prekni sërish ekranin për ta ndaluar</string>
   <string name="play_video">Shih videon</string>
@@ -262,15 +260,13 @@
   <string name="google_play_services_error_occured">E pamundur të aksesohen Google Maps. A është i instaluar Google Play Services?</string>
   <string name="view_change_location">Shih ose ndrysho vendndodhjen</string>
   <string name="change_location">Ndrysho vendndodhjen</string>
-  <string name="getting_location">Duke ngarkuar vendnodhjen</string>
-  <string name="get_location">Regjistro vendndodhjen.</string>
+    <string name="get_location">Regjistro vendndodhjen.</string>
   <string name="provider_disabled_error">Ofruesit e vendndodhjes janë të ç\'aktivizuar!</string>
   <string name="gps_result">Gjerësi: %1$s\nGjatësi: %2$s\nLartësi: %3$sm\nSaktësi: %4$sm</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <string name="go_to_settings">Shko tek parametrat</string>
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->
   <string name="track_location">Gjurmo vendndodhjen</string>
-  <string name="save_point">Ruaj vendndodhjen gjeografike</string>
   <string name="get_point">Regjistro vendndodhjen gjeografike</string>
   <string name="geopoint_view_read_only">Shih vendndodhjen gjeografike</string>
   <string name="get_shape">Nis GeoShape</string>
@@ -319,7 +315,6 @@
   <string name="show_sent_and_unsent_forms">Trego formularët e dërguar dhe të padërguar</string>
   <string name="show_unsent_forms">Trego formularët e padërguar</string>
   <string name="send_in_progress">Një dërgim po ekzekutohet në background, lutemi provoni sërish pas pak.</string>
-  <string name="notification_error">Gabim në shfaqjen e tekstit të njoftimit</string>
   <!--##############################################
     # GET BLANK FORM
     ##############################################-->

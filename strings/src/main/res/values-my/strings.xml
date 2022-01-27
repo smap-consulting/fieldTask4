@@ -108,7 +108,6 @@
   <string name="replace_barcode">ဘားကုတ္(ဒ္) အစားထိုးရန္</string>
   <string name="capture_image">ပုံရိုက်ပါ</string>
   <string name="choose_image">ပံုေရြးခ်ယ္ရန္</string>
-  <string name="view_image">ပုံကြည့်ရန်</string>
   <string name="annotate_image">ပုံတွင်မှတ်ချက်ရေးပါ</string>
   <!--Dialog heading for saving annotated image-->
   <string name="save_and_close">သိမ္းဆည္း ၿပီးပိတ္ရန္</string>
@@ -120,7 +119,6 @@
   <string name="set_color">အေရာင္ေရြးရန္</string>
   <string name="capture_video">ဗီဒီယိုရိုက်ပါ</string>
   <string name="choose_video">ဗြီဒီယို ေရြးခ်ယ္ရန္</string>
-  <string name="view_video">ဗီဒီယိုကြည့်ပါ</string>
   <string name="play_video">ဗြီဒီယိုဖြင့္ရန္</string>
   <!--Text for button that deletes a file that is the answer to a question-->
   <!--Text for button that starts recording sound-->
@@ -166,8 +164,7 @@
   <!--TODO(ping): Delete these openmap_* strings when we're ready to move on from OSMDroid.
    These strings are only being used to preserve compatibility with pre-existing
     tile caches, and are not shown in the UI.-->
-  <string name="getting_location">တည္ေနရာကို ရယူေနပါသည္</string>
-  <string name="get_location">တည္ေနရာအားမွတ္သားရန္</string>
+    <string name="get_location">တည္ေနရာအားမွတ္သားရန္</string>
   <string name="provider_disabled_error">တည္ေနရာဖမ္းယူမွု ခ်ိဳ႔ယြင္းေနပါသည္</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->

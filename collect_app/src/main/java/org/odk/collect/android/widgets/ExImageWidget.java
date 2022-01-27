@@ -5,8 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.TypedValue;
 import android.view.View;
-
-import com.bumptech.glide.Glide;
+import android.widget.ImageView;
 
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.data.StringData;
@@ -16,13 +15,13 @@ import org.odk.collect.android.databinding.ExImageWidgetAnswerBinding;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.FileUtils;
-import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.QuestionMediaManager;
 import org.odk.collect.android.widgets.interfaces.FileWidget;
 import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver;
 import org.odk.collect.android.widgets.utilities.FileRequester;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 import org.odk.collect.androidshared.ui.ToastUtils;
+import org.odk.collect.glide.ImageLoader;
 
 import java.io.File;
 
@@ -34,19 +33,16 @@ public class ExImageWidget extends QuestionWidget implements FileWidget, WidgetD
 
     private final WaitingForDataRegistry waitingForDataRegistry;
     private final QuestionMediaManager questionMediaManager;
-    private final MediaUtils mediaUtils;
     private final FileRequester fileRequester;
 
     File answerFile;
 
     public ExImageWidget(Context context, QuestionDetails questionDetails, QuestionMediaManager questionMediaManager,
-                         WaitingForDataRegistry waitingForDataRegistry, MediaUtils mediaUtils,
-                         FileRequester fileRequester) {
+                         WaitingForDataRegistry waitingForDataRegistry, FileRequester fileRequester) {
         super(context, questionDetails);
 
         this.waitingForDataRegistry = waitingForDataRegistry;
         this.questionMediaManager = questionMediaManager;
-        this.mediaUtils = mediaUtils;
         this.fileRequester = fileRequester;
     }
 
@@ -138,10 +134,7 @@ public class ExImageWidget extends QuestionWidget implements FileWidget, WidgetD
     }
 
     private void displayImage() {
-        Glide.with(this)
-                .load(answerFile)
-                .fitCenter()
-                .into(binding.imageView);
+        ImageLoader.loadImage(binding.imageView, answerFile, ImageView.ScaleType.FIT_CENTER);
         binding.imageView.setVisibility(VISIBLE);
     }
 }

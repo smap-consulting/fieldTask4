@@ -126,7 +126,6 @@
   <string name="svg_file_does_not_exist">فایل SVG موجود نیست!</string>
   <string name="capture_image">گرفتن عکس</string>
   <string name="choose_image">انتخاب تصویر</string>
-  <string name="view_image">نمایش تصویر</string>
   <string name="annotate_image">نوشتن بر روی تصویر</string>
   <!--Dialog heading for saving annotated image-->
   <string name="save_and_close">ذخیره کردن و خروج</string>
@@ -136,7 +135,6 @@
   <string name="reset_image">تنظیم مجدد</string>
   <string name="capture_video">ثبت ویدیو</string>
   <string name="choose_video">انتخاب ویدیو</string>
-  <string name="view_video">نشان دادن ویدیو</string>
   <string name="start_video_capture_instruction">برای آغاز کردن ثبت روی صفحه را فشار دهید</string>
   <string name="stop_video_capture_instruction">ثبت آغاز شد. برای توقف آن دوباره روی صفحه را فشار دهید</string>
   <string name="play_video">پخش ویدیو</string>
@@ -205,13 +203,11 @@
   <string name="topographic">توپوگرافی</string>
   <string name="carto_map_style_positron">پوزیترون</string>
   <string name="change_location">تغییر موقعیت</string>
-  <string name="getting_location">در حال بارگزاری موقعیت جغرافیایی</string>
-  <string name="get_location">ثبت مکان</string>
+    <string name="get_location">ثبت مکان</string>
   <string name="provider_disabled_error">با معذرت، نشان دهنده های مکان غیرفعال هستند!</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <string name="go_to_settings">رفتن به تنظیمات </string>
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->
-  <string name="save_point">ذخیره GeoPoint</string>
   <string name="get_point">آغاز GeoPoint</string>
   <string name="geopoint_view_read_only">نمایش GeoPoint</string>
   <string name="get_shape">آغاز GeoShape</string>
@@ -254,8 +250,6 @@
   <!--Name of option in Send Finalized Form menu to show only unsent forms (default) or show sent and unsent forms-->
   <string name="change_view">تغییر چشم انداز</string>
   <string name="show_sent_and_unsent_forms">نمایش فورم های ارسال شده و ارسال ناشده</string>
-  <string name="odk_auto_note">نتایج ارسال خودکار ODK</string>
-  <string name="odk_auto_download_notification_title">نتیاج دانلود خودکار ODK</string>
   <!--##############################################
     # GET BLANK FORM
     ##############################################-->
@@ -453,7 +447,6 @@
   <string name="do_not_exit">انصراف</string>
   <string name="canceling">لغو کردن</string>
   <string name="success">موفقیت </string>
-  <string name="failures">ناکامی</string>
   <string name="error_occured">خطا اتفاق افتاده است</string>
   <string name="please_wait">لطفاً برای چند لحظه منتظر باشید</string>
   <string name="please_wait_long">لطفاً منتظر باشید: این میتواند چند دقیقه را در بر بگیرد.</string>

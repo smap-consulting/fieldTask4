@@ -28,11 +28,11 @@ import org.odk.collect.android.activities.MainMenuActivity
 import org.odk.collect.android.configure.SettingsImporter
 import org.odk.collect.android.fakes.FakePermissionsProvider
 import org.odk.collect.android.injection.config.AppDependencyModule
-import org.odk.collect.android.permissions.PermissionsProvider
 import org.odk.collect.android.support.CollectHelpers
 import org.odk.collect.android.utilities.CodeCaptureManagerFactory
 import org.odk.collect.android.views.BarcodeViewDecoder
-import org.odk.collect.androidshared.system.PermissionsChecker
+import org.odk.collect.permissions.PermissionsChecker
+import org.odk.collect.permissions.PermissionsProvider
 import org.odk.collect.projects.ProjectsRepository
 import org.odk.collect.testshared.RobolectricHelpers
 import org.robolectric.shadows.ShadowToast
@@ -109,12 +109,11 @@ class QrCodeProjectCreatorDialogTest {
                 }
             }
             override fun providesProjectCreator(
-                projectImporter: ProjectImporter?,
-                projectsRepository: ProjectsRepository?,
-                currentProjectProvider: CurrentProjectProvider?,
-                settingsImporter: SettingsImporter?,
+                projectsRepository: ProjectsRepository,
+                currentProjectProvider: CurrentProjectProvider,
+                settingsImporter: SettingsImporter,
                 context: Context
-            ): ProjectCreator {
+            ): ProjectCreator? {
                 return mock {
                     `when`(it.createNewProject("foo")).thenReturn(true)
                 }
@@ -145,12 +144,11 @@ class QrCodeProjectCreatorDialogTest {
                 }
             }
             override fun providesProjectCreator(
-                projectImporter: ProjectImporter?,
-                projectsRepository: ProjectsRepository?,
-                currentProjectProvider: CurrentProjectProvider?,
-                settingsImporter: SettingsImporter?,
+                projectsRepository: ProjectsRepository,
+                currentProjectProvider: CurrentProjectProvider,
+                settingsImporter: SettingsImporter,
                 context: Context
-            ): ProjectCreator {
+            ): ProjectCreator? {
                 return projectCreator
             }
         })

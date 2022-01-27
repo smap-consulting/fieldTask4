@@ -36,6 +36,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 import com.google.api.services.drive.Drive;
 
@@ -48,7 +49,6 @@ import org.odk.collect.forms.Form;
 import org.odk.collect.forms.FormsRepository;
 import org.odk.collect.android.gdrive.sheets.DriveHelper;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.listeners.TaskListener;
 import org.odk.collect.android.logic.DriveListItem;
 import org.odk.collect.android.network.NetworkStateProvider;
@@ -59,6 +59,7 @@ import org.odk.collect.android.utilities.DialogUtils;
 import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.shared.strings.Md5;
+import org.odk.collect.permissions.PermissionListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -384,7 +385,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
                 progressDialog.setButton(getString(R.string.cancel), loadingButtonListener);
                 return progressDialog;
             case GOOGLE_USER_DIALOG:
-                AlertDialog.Builder gudBuilder = new AlertDialog.Builder(this);
+                MaterialAlertDialogBuilder gudBuilder = new MaterialAlertDialogBuilder(this);
 
                 gudBuilder.setTitle(getString(R.string.no_google_account));
                 gudBuilder.setMessage(getString(R.string.google_set_account));
@@ -396,7 +397,7 @@ public class GoogleDriveActivity extends FormListActivity implements View.OnClic
     }
 
     private void createAlertDialog(String message) {
-        AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+        AlertDialog alertDialog = new MaterialAlertDialogBuilder(this).create();
         alertDialog.setTitle(getString(R.string.download_forms_result));
         alertDialog.setMessage(message);
         DialogInterface.OnClickListener quitListener = new DialogInterface.OnClickListener() {

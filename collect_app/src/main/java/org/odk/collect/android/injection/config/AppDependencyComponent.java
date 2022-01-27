@@ -48,6 +48,7 @@ import org.odk.collect.android.fragments.BarCodeScannerFragment;
 import org.odk.collect.android.fragments.BlankFormListFragment;
 import org.odk.collect.android.fragments.MapBoxInitializationFragment;
 import org.odk.collect.android.fragments.SavedFormListFragment;
+import org.odk.collect.android.fragments.dialogs.FormsDownloadResultDialog;
 import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
 import org.odk.collect.android.gdrive.GoogleDriveActivity;
 import org.odk.collect.android.gdrive.GoogleSheetsUploaderActivity;
@@ -79,7 +80,6 @@ import org.odk.collect.android.preferences.screens.UserInterfacePreferencesFragm
 import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.projects.ManualProjectCreatorDialog;
-import org.odk.collect.android.projects.ProjectImporter;
 import org.odk.collect.android.projects.ProjectSettingsDialog;
 import org.odk.collect.android.projects.QrCodeProjectCreatorDialog;
 import org.odk.collect.android.storage.StoragePathProvider;
@@ -93,6 +93,8 @@ import org.odk.collect.android.utilities.ProjectResetter;
 import org.odk.collect.android.utilities.ThemeUtils;
 import org.odk.collect.android.widgets.ExStringWidget;
 import org.odk.collect.android.widgets.QuestionWidget;
+import org.odk.collect.async.Scheduler;
+import org.odk.collect.location.LocationClient;
 import org.odk.collect.projects.ProjectsRepository;
 
 import javax.inject.Singleton;
@@ -284,6 +286,8 @@ public interface AppDependencyComponent {
 
     void inject(MapsPreferencesFragment mapsPreferencesFragment);
 
+    void inject(FormsDownloadResultDialog formsDownloadResultDialog);
+
     OpenRosaHttpInterface openRosaHttpInterface();
 
     ReferenceManager referenceManager();
@@ -302,8 +306,6 @@ public interface AppDependencyComponent {
 
     InstancesAppState instancesAppState();
 
-    ProjectImporter projectImporter();
-
     StoragePathProvider storagePathProvider();
 
     FormsRepositoryProvider formsRepositoryProvider();
@@ -319,4 +321,8 @@ public interface AppDependencyComponent {
     ProjectResetter projectResetter();
 
     MapProvider mapProvider();
+
+    Scheduler scheduler();
+
+    LocationClient locationClient();
 }

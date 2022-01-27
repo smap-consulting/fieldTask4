@@ -35,16 +35,16 @@ import org.odk.collect.android.backgroundwork.FormUpdateScheduler;
 import org.odk.collect.android.gdrive.GoogleAccountsManager;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.OnBackPressedListener;
-import org.odk.collect.android.listeners.PermissionListener;
-import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.preferences.ServerPreferencesAdder;
 import org.odk.collect.android.preferences.filters.ControlCharacterFilter;
 import org.odk.collect.android.preferences.filters.WhitespaceFilter;
 import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 import org.odk.collect.androidshared.ui.ToastUtils;
+import org.odk.collect.permissions.PermissionsProvider;
 import org.odk.collect.shared.strings.Md5;
 import org.odk.collect.shared.strings.Validator;
+import org.odk.collect.permissions.PermissionListener;
 
 import java.io.ByteArrayInputStream;
 
@@ -55,6 +55,8 @@ import static org.odk.collect.android.analytics.AnalyticsEvents.SET_FALLBACK_SHE
 import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_PROTOCOL;
 import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_SELECTED_GOOGLE_ACCOUNT;
 import static org.odk.collect.android.utilities.DialogUtils.showDialog;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class ServerPreferencesFragment extends BaseProjectPreferencesFragment implements OnBackPressedListener {
 
@@ -276,7 +278,7 @@ public class ServerPreferencesFragment extends BaseProjectPreferencesFragment im
 
         if (TextUtils.isEmpty(account) && protocol.equals(ProjectKeys.PROTOCOL_GOOGLE_SHEETS)) {
 
-            AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
+            AlertDialog alertDialog = new MaterialAlertDialogBuilder(getActivity())
                     .setIcon(android.R.drawable.ic_dialog_info)
                     .setTitle(R.string.missing_google_account_dialog_title)
                     .setMessage(R.string.missing_google_account_dialog_desc)

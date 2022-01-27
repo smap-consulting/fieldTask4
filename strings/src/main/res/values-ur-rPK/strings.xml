@@ -109,7 +109,6 @@
   <string name="replace_barcode">مقام کو بدل دیں</string>
   <string name="capture_image">تصویر لیں</string>
   <string name="choose_image">عکس کا انتخاب کریں</string>
-  <string name="view_image">تصویر دیکھیں</string>
   <!--Dialog heading for saving annotated image-->
   <string name="save_and_close">محفوظ کرکے بند کردیں</string>
   <string name="signature_capture">دستخط حاصل کریں</string>
@@ -119,7 +118,6 @@
   <string name="reset_image">دوبارہ ترتیب دیں</string>
   <string name="set_color">رنگ ترتیب دیں</string>
   <string name="capture_video">وڈیو ریکارڈ کریں</string>
-  <string name="view_video">وڈیو دیکھیں</string>
   <string name="play_video">وڈیو لگا دیں</string>
   <!--Text for button that deletes a file that is the answer to a question-->
   <!--Text for button that starts recording sound-->
@@ -167,8 +165,7 @@
    These strings are only being used to preserve compatibility with pre-existing
     tile caches, and are not shown in the UI.-->
   <string name="view_change_location">مقام کو ملاحظہ کریں یا تبدیلکریں۔</string>
-  <string name="getting_location">مقام درج کیا جارہا ہے</string>
-  <string name="get_location">مقام درج کریں</string>
+    <string name="get_location">مقام درج کریں</string>
   <string name="provider_disabled_error">معافی، مقام فراہم کرنے والے نااہل کئے گئے ہیں</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->

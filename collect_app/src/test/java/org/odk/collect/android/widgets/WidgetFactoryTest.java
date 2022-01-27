@@ -1,5 +1,9 @@
 package org.odk.collect.android.widgets;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import android.app.Activity;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -23,10 +27,6 @@ import org.odk.collect.android.widgets.items.SelectOneImageMapWidget;
 import org.odk.collect.android.widgets.items.SelectOneMinimalWidget;
 import org.odk.collect.android.widgets.items.SelectOneWidget;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-
 @RunWith(AndroidJUnit4.class)
 public class WidgetFactoryTest {
     private WidgetFactory widgetFactory;
@@ -34,7 +34,6 @@ public class WidgetFactoryTest {
     @Before
     public void setup() {
         Activity activity = CollectHelpers.buildThemedActivity(WidgetTestActivity.class).get();
-
         widgetFactory = new WidgetFactory(activity, false, false, null, null, null, null, null, null, null, null, null);
     }
 

@@ -19,11 +19,11 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.android.RecordedIntentsRule;
 import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.RunnableRule;
 import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.pages.MainMenuPage;
+import org.odk.collect.testshared.RecordedIntentsRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -54,22 +54,12 @@ public class ExternalAudioRecordingTest {
                 }
             }))
             .around(rule);
+
     @Test
     public void onAudioQuestion_whenAudioQualityIsExternal_usesExternalRecorder() throws Exception {
         new MainMenuPage()
                 .copyForm("external-audio-question.xml")
                 .startBlankForm("External Audio Question")
-                .clickOnString(R.string.capture_audio)
-                .assertContentDescriptionNotDisplayed(R.string.stop_recording)
-                .assertTextNotDisplayed(R.string.capture_audio)
-                .assertContentDescriptionDisplayed(R.string.play_audio);
-    }
-
-    @Test
-    public void onAudioQuestion_withoutAudioQuality_usesExternalRecorder() {
-        new MainMenuPage()
-                .copyForm("audio-question.xml")
-                .startBlankForm("Audio Question")
                 .clickOnString(R.string.capture_audio)
                 .assertContentDescriptionNotDisplayed(R.string.stop_recording)
                 .assertTextNotDisplayed(R.string.capture_audio)

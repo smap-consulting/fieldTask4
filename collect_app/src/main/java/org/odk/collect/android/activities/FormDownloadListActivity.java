@@ -32,12 +32,15 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.viewmodels.FormDownloadListViewModel;
 import org.odk.collect.android.adapters.FormDownloadListAdapter;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.formentry.RefreshFormListDialogFragment;
+import org.odk.collect.android.formmanagement.FormDownloadException;
 import org.odk.collect.android.formmanagement.FormDownloader;
 import org.odk.collect.android.formmanagement.FormSourceExceptionMapper;
 import org.odk.collect.android.formmanagement.ServerFormDetails;
@@ -58,9 +61,9 @@ import org.odk.collect.android.utilities.WebCredentialsUtils;
 import org.odk.collect.android.views.DayNightProgressDialog;
 import org.odk.collect.androidshared.ui.DialogFragmentUtils;
 import org.odk.collect.androidshared.ui.ToastUtils;
-import org.odk.collect.errors.ErrorItem;
 import org.odk.collect.forms.FormSourceException;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -587,7 +590,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
      * activity will exit when the user clicks "ok".
      */
     private void createAlertDialog(String title, String message, final boolean shouldExit) {
-        alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog = new MaterialAlertDialogBuilder(this).create();
         alertDialog.setTitle(title);
         alertDialog.setMessage(message);
         DialogInterface.OnClickListener quitListener = new DialogInterface.OnClickListener() {
@@ -649,7 +652,7 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
     }
 
     @Override
-    public void formsDownloadingComplete(Map<ServerFormDetails, String> result) {
+    public void formsDownloadingComplete(Map<ServerFormDetails, FormDownloadException> result) {
         if (downloadFormsTask != null) {
             downloadFormsTask.setDownloaderListener(null);
         }
@@ -658,23 +661,14 @@ public class FormDownloadListActivity extends FormListActivity implements FormLi
 
         DialogFragmentUtils.dismissDialog(RefreshFormListDialogFragment.class, getSupportFragmentManager());
 
-        ArrayList<ErrorItem> failures = new ArrayList<>();
-        for (Map.Entry<ServerFormDetails, String> entry : result.entrySet()) {
-            if (!entry.getValue().equals(getString(R.string.success))) {
-                failures.add(new ErrorItem(entry.getKey().getFormName(), getString(R.string.form_details, entry.getKey().getFormId(), entry.getKey().getFormVersion()), entry.getValue()));
-            }
-        }
-
         Bundle args = new Bundle();
-        args.putSerializable(FormsDownloadResultDialog.ARG_FAILURES, failures);
-        args.putSerializable(FormsDownloadResultDialog.ARG_NUMBER_OF_ALL_FORMS, result.size());
+        args.putSerializable(FormsDownloadResultDialog.ARG_RESULT, (Serializable) result);
         DialogFragmentUtils.showIfNotShowing(FormsDownloadResultDialog.class, args, getSupportFragmentManager());
 
         // Set result to true for forms which were downloaded
         if (viewModel.isDownloadOnlyMode()) {
             for (ServerFormDetails serverFormDetails : result.keySet()) {
-                String successKey = result.get(serverFormDetails);
-                if (getString(R.string.success).equals(successKey)) {
+                if (result.get(serverFormDetails) == null) {
                     if (viewModel.getFormResults().containsKey(serverFormDetails.getFormId())) {
                         viewModel.putFormResult(serverFormDetails.getFormId(), true);
                     }

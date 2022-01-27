@@ -246,7 +246,6 @@
     <string name="choose_image">Choose Image</string>
     <string name="choose_account">Choose account</string>
     <string name="selected_invalid_image">Selected file is not a valid image</string>
-    <string name="view_image">View Image</string>
     <string name="take_picture_instruction">Tap the screen to take a picture</string>
     <string name="error_front_camera_unavailable">Front camera not available on this device</string>
     <string name="camera_error">This device doesn\'t support the Camera2 API.</string>
@@ -263,7 +262,6 @@
 
     <string name="capture_video">Record Video</string>
     <string name="choose_video">Choose Video</string>
-    <string name="view_video">View Video</string>
     <string name="start_video_capture_instruction">Tap the screen to start recording</string>
     <string name="stop_video_capture_instruction">Recording started. Tap again to stop</string>
     <string name="play_video">Play Video</string>
@@ -482,11 +480,9 @@
     <string name="record_geopoint">Record a point</string>
     <string name="location_accuracy">Accuracy: %1$s m</string>
     <string name="location_provider">Location provider: %s</string>
-    <string name="getting_location">Loading Location</string>
     <string name="get_location">Record Location</string>
     <string name="provider_disabled_error">Sorry, Location providers are disabled!</string>
     <string name="gps_result">Latitude: %1$s\nLongitude: %2$s\nAltitude: %3$sm\nAccuracy: %4$sm</string>
-    <string name="location_metadata">Satellites available: %1$d/24\n\nTime elapsed: %2$s</string>
     <string name="google_play_services_not_available">This form wants to track your location but Google Play Services are not available.</string>
     <string name="location_providers_disabled_dialog_message">This form wants to track your location but location providers are disabled. Please enable in Android settings.</string>
     <!-- Action to go to Android settings. Displayed when location providers are disabled. -->
@@ -496,13 +492,30 @@
     <string name="background_location_disabled">This form wants to track your location but tracking is disabled. Please enable in the %1$s menu above.</string>
     <string name="background_location_enabled">This form tracks your location. You can disable tracking in the %1$s menu above.</string>
 
-    <string name="save_point">Save GeoPoint</string>
     <string name="get_point">Start GeoPoint</string>
     <string name="geopoint_view_read_only">View GeoPoint</string>
     <string name="geoshape_view_read_only">View GeoShape</string>
     <string name="geotrace_view_read_only">View GeoTrace</string>
     <string name="get_shape">Start GeoShape</string>
     <string name="get_trace">Start GeoTrace</string>
+
+    <!-- %1$s is the time taken so far in hh:mm:ss -->
+    <string name="time_elapsed">Time elapsed: %1$s</string>
+
+    <!-- %1$s is the accuracy required for a point to be automatically saved-->
+    <string name="point_will_be_saved">Point will be saved at %1$s</string>
+
+    <!-- %1$s is the number of satellites being used to get location -->
+    <string name="satellites">Satellites: %1$s</string>
+
+    <string name="waiting_for_location">Trying to get location. Please wait.</string>
+    <string name="poor_accuracy">Poor accuracy. Please wait.</string>
+    <string name="unacceptable_accuracy">Unacceptable accuracy. Please wait.</string>
+    <string name="improving_accuracy">Improving accuracy. Please wait.</string>
+    <string name="accuracy_status_title">Getting Location</string>
+
+    <!-- The accuracy of a location fix in meters -->
+    <string name="accuracy_m">%1$sm</string>
 
     <!-- %1$s represents degrees, %2$s represents minutes and %3$s represents seconds as in W 18°48'8" -->
     <string name="west">W %1$s%2$s%3$s</string>
@@ -604,9 +617,10 @@
     <string name="send_in_progress">Background send running, please try again shortly</string>
 
     <string name="odk_permissions_fail">ODK auto send permission failure, please make sure your have granted all required permissions</string>
-    <string name="odk_auto_note">ODK auto-send results</string>
-    <string name="odk_auto_download_notification_title">ODK auto-download results</string>
-    <string name="notification_error">Error displaying notification text</string>
+
+    <string name="forms_upload_succeeded">Forms upload succeeded</string>
+    <string name="forms_upload_failed">Forms upload failed</string>
+    <string name="all_uploads_succeeded">All uploads succeeded!</string>
 
     <!--
     ##############################################
@@ -631,6 +645,8 @@
 
     <string name="load_remote_form_error">Form list download failed</string>
 
+    <string name="forms_download_succeeded">Forms download succeeded</string>
+    <string name="forms_download_failed">Forms download failed</string>
     <string name="all_downloads_succeeded">All downloads succeeded!</string>
     <string name="some_downloads_failed">%1$s of %2$s downloads failed!</string>
     <!-- Part of form download dialog. Clicking it displays additional information about a form that failed -->
@@ -1035,7 +1051,6 @@
     <string name="notification_channel_name">General notifications</string>
 
     <string name="success">Success</string>
-    <string name="failures">Failures</string>
     <string name="error_occured">Error Occurred</string>
 
     <string name="please_wait">Please wait a few moments.</string>
@@ -1111,6 +1126,8 @@
 
     <!-- Error shown when a user tries to open a form that's in a different project -->
     <string name="wrong_project_selected_for_form">To open this form, you must first open ODK Collect and switch to the project that contains it.</string>
+    <!-- Error shown when a user tries to open a form when there are no projects -->
+    <string name="app_not_configured">ODK Collect has not been configured. Try to open ODK Collect and configure it.\n\nIf you tapped on a shortcut, you might need to recreate it after configuring ODK Collect.</string>
 
     <!--
     ##############################################
@@ -1118,4 +1135,12 @@
     ##############################################
     -->
     <string name="errors">Errors</string>
+
+    <!--
+    ##############################################
+    # Permissions
+    ##############################################
+    -->
+    <string name="open_settings">Open Settings</string>
+
 </resources>

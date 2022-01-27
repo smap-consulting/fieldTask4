@@ -2,7 +2,6 @@ package org.odk.collect.android.injection.config;
 
 import static androidx.core.content.FileProvider.getUriForFile;
 import static org.odk.collect.android.preferences.keys.MetaKeys.KEY_INSTALL_ID;
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 import android.app.Application;
@@ -37,7 +36,7 @@ import org.odk.collect.android.application.initialization.ExistingProjectMigrato
 import org.odk.collect.android.application.initialization.ExistingSettingsMigrator;
 import org.odk.collect.android.application.initialization.FormUpdatesUpgrade;
 import org.odk.collect.android.application.initialization.SettingsMigrator;
-import org.odk.collect.android.application.initialization.upgrade.AppUpgrader;
+import org.odk.collect.android.application.initialization.upgrade.UpgradeInitializer;
 import org.odk.collect.android.backgroundwork.FormUpdateAndInstanceSubmitScheduler;
 import org.odk.collect.android.backgroundwork.FormUpdateScheduler;
 import org.odk.collect.android.backgroundwork.InstanceSubmitScheduler;
@@ -86,13 +85,6 @@ import org.odk.collect.android.openrosa.CollectThenSystemContentTypeMapper;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
 import org.odk.collect.android.openrosa.okhttp.OkHttpConnection;
 import org.odk.collect.android.openrosa.okhttp.OkHttpOpenRosaServerClientProvider;
-import org.odk.collect.android.utilities.MediaUtils;
-import org.odk.collect.android.widgets.utilities.FileRequester;
-import org.odk.collect.android.widgets.utilities.FileRequesterImpl;
-import org.odk.collect.android.widgets.utilities.StringRequester;
-import org.odk.collect.android.widgets.utilities.StringRequesterImpl;
-import org.odk.collect.androidshared.system.PermissionsChecker;
-import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.preferences.PreferenceVisibilityHandler;
 import org.odk.collect.android.preferences.ProjectPreferencesViewModel;
 import org.odk.collect.android.preferences.keys.MetaKeys;
@@ -105,13 +97,13 @@ import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.projects.ProjectCreator;
 import org.odk.collect.android.projects.ProjectDeleter;
 import org.odk.collect.android.projects.ProjectDetailsCreator;
-import org.odk.collect.android.projects.ProjectImporter;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.AdminPasswordProvider;
 import org.odk.collect.android.utilities.AndroidUserAgent;
 import org.odk.collect.android.utilities.ChangeLockProvider;
 import org.odk.collect.android.utilities.CodeCaptureManagerFactory;
+import org.odk.collect.android.utilities.ContentUriProvider;
 import org.odk.collect.android.utilities.DeviceDetailsProvider;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
 import org.odk.collect.android.utilities.ExternalWebPageHelper;
@@ -119,7 +111,7 @@ import org.odk.collect.android.utilities.FileProvider;
 import org.odk.collect.android.utilities.FormsDirDiskFormsSynchronizer;
 import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.InstancesRepositoryProvider;
-import org.odk.collect.android.utilities.LaunchState;
+import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.ProjectResetter;
 import org.odk.collect.android.utilities.ScreenUtils;
 import org.odk.collect.android.utilities.SoftKeyboardController;
@@ -127,6 +119,10 @@ import org.odk.collect.android.utilities.StaticCachingDeviceDetailsProvider;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 import org.odk.collect.android.version.VersionInformation;
 import org.odk.collect.android.views.BarcodeViewDecoder;
+import org.odk.collect.android.widgets.utilities.FileRequester;
+import org.odk.collect.android.widgets.utilities.FileRequesterImpl;
+import org.odk.collect.android.widgets.utilities.StringRequester;
+import org.odk.collect.android.widgets.utilities.StringRequesterImpl;
 import org.odk.collect.androidshared.system.IntentLauncher;
 import org.odk.collect.androidshared.system.IntentLauncherImpl;
 import org.odk.collect.async.CoroutineAndWorkManagerScheduler;
@@ -134,6 +130,10 @@ import org.odk.collect.async.Scheduler;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.recording.AudioRecorderFactory;
 import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.location.LocationClient;
+import org.odk.collect.location.LocationClientProvider;
+import org.odk.collect.permissions.PermissionsChecker;
+import org.odk.collect.permissions.PermissionsProvider;
 import org.odk.collect.projects.ProjectsRepository;
 import org.odk.collect.projects.SharedPreferencesProjectsRepository;
 import org.odk.collect.shared.strings.UUIDGenerator;
@@ -362,8 +362,8 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public Notifier providesNotifier(Application application, SettingsProvider settingsProvider) {
-        return new NotificationManagerNotifier(application, settingsProvider);
+    public Notifier providesNotifier(Application application, SettingsProvider settingsProvider, ProjectsRepository projectsRepository) {
+        return new NotificationManagerNotifier(application, settingsProvider, projectsRepository);
     }
 
     @Provides
@@ -395,12 +395,12 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public FormSaveViewModel.FactoryFactory providesFormSaveViewModelFactoryFactory(Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder, CurrentProjectProvider currentProjectProvider) {
+    public FormSaveViewModel.FactoryFactory providesFormSaveViewModelFactoryFactory(Analytics analytics, Scheduler scheduler, AudioRecorder audioRecorder, CurrentProjectProvider currentProjectProvider, MediaUtils mediaUtils) {
         return (owner, defaultArgs) -> new AbstractSavedStateViewModelFactory(owner, defaultArgs) {
             @NonNull
             @Override
             protected <T extends ViewModel> T create(@NonNull String key, @NonNull Class<T> modelClass, @NonNull SavedStateHandle handle) {
-                return (T) new FormSaveViewModel(handle, System::currentTimeMillis, new DiskFormSaver(), new MediaUtils(), analytics, scheduler, audioRecorder, currentProjectProvider);
+                return (T) new FormSaveViewModel(handle, System::currentTimeMillis, new DiskFormSaver(), mediaUtils, analytics, scheduler, audioRecorder, currentProjectProvider);
             }
         };
     }
@@ -466,10 +466,10 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public ProjectCreator providesProjectCreator(ProjectImporter projectImporter, ProjectsRepository projectsRepository,
+    public ProjectCreator providesProjectCreator(ProjectsRepository projectsRepository,
                                                  CurrentProjectProvider currentProjectProvider, SettingsImporter settingsImporter,
                                                  Context context) {
-        return new ProjectCreator(projectImporter, projectsRepository, currentProjectProvider, settingsImporter);
+        return new ProjectCreator(projectsRepository, currentProjectProvider, settingsImporter);
     }
 
     @Provides
@@ -517,16 +517,6 @@ public class AppDependencyModule {
     @Provides
     public ProjectPreferencesViewModel.Factory providesProjectPreferencesViewModel(AdminPasswordProvider adminPasswordProvider) {
         return new ProjectPreferencesViewModel.Factory(adminPasswordProvider);
-    }
-
-    @Provides
-    public ProjectImporter providesProjectImporter(ProjectsRepository projectsRepository, StoragePathProvider storagePathProvider) {
-        return new ProjectImporter(projectsRepository);
-    }
-
-    @Provides
-    public LaunchState providesAppStateProvider(Context context, SettingsProvider settingsProvider) {
-        return new LaunchState(context, settingsProvider.getMetaSettings(), BuildConfig.VERSION_CODE);
     }
 
     @Provides
@@ -582,17 +572,19 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public AppUpgrader providesAppUpgrader(SettingsProvider settingsProvider, ExistingProjectMigrator existingProjectMigrator, FormUpdatesUpgrade formUpdatesUpgrade, ExistingSettingsMigrator existingSettingsMigrator) {
-        return new AppUpgrader(settingsProvider.getMetaSettings(), asList(
+    public UpgradeInitializer providesUpgradeInitializer(Context context, SettingsProvider settingsProvider, ExistingProjectMigrator existingProjectMigrator, ExistingSettingsMigrator existingSettingsMigrator, FormUpdatesUpgrade formUpdatesUpgrade) {
+        return new UpgradeInitializer(
+                context,
+                settingsProvider,
                 existingProjectMigrator,
                 existingSettingsMigrator,
                 formUpdatesUpgrade
-        ));
+        );
     }
 
     @Provides
-    public ApplicationInitializer providesApplicationInitializer(Application context, UserAgentProvider userAgentProvider, PropertyManager propertyManager, Analytics analytics, LaunchState launchState, AppUpgrader appUpgrader, AnalyticsInitializer analyticsInitializer, ProjectsRepository projectsRepository, SettingsProvider settingsProvider) {
-        return new ApplicationInitializer(context, userAgentProvider, propertyManager, analytics, launchState, appUpgrader, analyticsInitializer, projectsRepository, settingsProvider);
+    public ApplicationInitializer providesApplicationInitializer(Application context, UserAgentProvider userAgentProvider, PropertyManager propertyManager, Analytics analytics, UpgradeInitializer upgradeInitializer, AnalyticsInitializer analyticsInitializer, ProjectsRepository projectsRepository, SettingsProvider settingsProvider) {
+        return new ApplicationInitializer(context, userAgentProvider, propertyManager, analytics, upgradeInitializer, analyticsInitializer, projectsRepository, settingsProvider);
     }
 
     @Provides
@@ -631,5 +623,15 @@ public class AppDependencyModule {
     @Provides
     public StringRequester providesStringRequester(IntentLauncher intentLauncher, ExternalAppIntentProvider externalAppIntentProvider) {
         return new StringRequesterImpl(intentLauncher, externalAppIntentProvider);
+    }
+
+    @Provides
+    public LocationClient providesLocationClient(Application application) {
+        return LocationClientProvider.getClient(application);
+    }
+
+    @Provides
+    public MediaUtils providesMediaUtils(IntentLauncher intentLauncher) {
+        return new MediaUtils(intentLauncher, new ContentUriProvider());
     }
 }

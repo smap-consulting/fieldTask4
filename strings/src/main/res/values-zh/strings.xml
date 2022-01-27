@@ -112,7 +112,6 @@
   <string name="replace_barcode">替换条形码</string>
   <string name="capture_image">照相</string>
   <string name="choose_image">选择图片</string>
-  <string name="view_image">查看图片</string>
   <string name="annotate_image">注释该图片</string>
   <!--Dialog heading for saving annotated image-->
   <string name="save_and_close">保存并关闭</string>
@@ -123,7 +122,6 @@
   <string name="set_color">选择颜色</string>
   <string name="capture_video">拍摄视频</string>
   <string name="choose_video">选择视频</string>
-  <string name="view_video">查看视频</string>
   <string name="play_video">播放视频</string>
   <!--Text for button that deletes a file that is the answer to a question-->
   <!--Text for button that starts recording sound-->
@@ -179,8 +177,7 @@
     tile caches, and are not shown in the UI.-->
   <string name="view_change_location">查看或修改位置</string>
   <string name="change_location">更改地点</string>
-  <string name="getting_location">正在获取位置</string>
-  <string name="get_location">获取位置</string>
+    <string name="get_location">获取位置</string>
   <string name="provider_disabled_error">位置服务被关闭!</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->

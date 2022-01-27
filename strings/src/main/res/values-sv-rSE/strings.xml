@@ -176,7 +176,6 @@
   <string name="capture_image">Ta bild</string>
   <string name="choose_image">Välj bild</string>
   <string name="selected_invalid_image">Vald fil är inte en giltig bild</string>
-  <string name="view_image">Visa bild</string>
   <string name="take_picture_instruction">Knacka på skärmen för att ta ett kort</string>
   <string name="error_front_camera_unavailable">Frontkamera inte tillgänglig på denna enhet</string>
   <string name="camera_error">Denna enhet stöder inte Camera2 API:et.</string>
@@ -190,7 +189,6 @@
   <string name="set_color">Välj färg</string>
   <string name="capture_video">Spela in film</string>
   <string name="choose_video">Välj film</string>
-  <string name="view_video">Visa video</string>
   <string name="start_video_capture_instruction">Tryck på skärmen för att starta inspelning</string>
   <string name="stop_video_capture_instruction">Inspelning startad. Tryck igen för att stoppa.</string>
   <string name="play_video">Spela upp film</string>
@@ -339,13 +337,11 @@
   <string name="reference_layer">Referenslager</string>
   <string name="view_change_location">Visa eller ändra position</string>
   <string name="change_location">Ändra plats</string>
-  <string name="getting_location">Laddar position</string>
-  <string name="get_location">Spara position</string>
+    <string name="get_location">Spara position</string>
   <string name="provider_disabled_error">Tyvärr, platstjänster är inaktiverade!</string>
   <string name="gps_result">Latitud: %1$s\nLongitud: %2$s\nAltitud: %3$sm\nNoggrannhet: %4$sm</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->
-  <string name="save_point">Spara GeoPoint</string>
   <string name="get_point">Starta GeoPoint</string>
   <string name="geopoint_view_read_only">Visa GeoPoint</string>
   <string name="get_shape">Starta GeoShape</string>
@@ -402,7 +398,6 @@
   <string name="media_upload_error">Fel vid uppladdning av mediafil som inte finns: %1$s</string>
   <string name="send_in_progress">Sändning pågår i bakgrunden, vänligen försök igen senare</string>
   <string name="odk_permissions_fail">ODK auto inskickningsfel, kontrollera att du har beviljat nödvändiga rättigheter</string>
-  <string name="notification_error">Fel vid visning av notifikationstext</string>
   <!--##############################################
     # GET BLANK FORM
     ##############################################-->
@@ -694,7 +689,6 @@ Dela ODK Collect med dem.</string>
   <string name="canceling">Avbryter</string>
   <string name="notification_channel_name">Allmäna notifieringar</string>
   <string name="success">Lyckades</string>
-  <string name="failures">Fel</string>
   <string name="error_occured">Ett fel inträffade</string>
   <string name="please_wait">Var vänlig och vänta ett tag.</string>
   <string name="please_wait_long">Var vänlig och vänta. Detta kan ta en stund.</string>

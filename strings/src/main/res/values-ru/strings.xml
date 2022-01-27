@@ -174,7 +174,6 @@
   <string name="capture_image">Сделать снимок</string>
   <string name="choose_image">Выберите изображение</string>
   <string name="selected_invalid_image">Выбрайнный файл не является изображением</string>
-  <string name="view_image">Просмотреть изображение</string>
   <string name="take_picture_instruction">Нажмите на экран, чтобы сделать фото</string>
   <string name="error_front_camera_unavailable">Передняя камера недоступна на данном устройстве</string>
   <string name="camera_error">Это устройство не поддерживает API Camera2.</string>
@@ -189,7 +188,6 @@
   <string name="set_color">Выбрать цвет</string>
   <string name="capture_video">Записать видео</string>
   <string name="choose_video">Выберите видео</string>
-  <string name="view_video">Просмотреть видео</string>
   <string name="start_video_capture_instruction">Коснитесь экрана, чтобы начать запись</string>
   <string name="stop_video_capture_instruction">Запись началась. Коснитесь экрана ещё раз, чтобы остановить.</string>
   <string name="play_video">Проиграть видео</string>
@@ -326,14 +324,11 @@
   <string name="google_play_services_error_occured">Не удалось получить доступ к Google картам. Установлен ли Google Play Services?</string>
   <string name="view_change_location">Показать или изменить местоположение</string>
   <string name="change_location">Изменить местоположение</string>
-  <string name="getting_location">Определяется местоположение</string>
-  <string name="get_location">Записать местоположение</string>
+    <string name="get_location">Записать местоположение</string>
   <string name="provider_disabled_error">Включите функцию определения местоположения на вашем устройстве!</string>
   <string name="gps_result">Широта: %1$s\nДолгота: %2$s\nВысота: %3$sм\nТочность:%4$sм</string>
-  <string name="location_metadata">Спутников видно: %1$d/24\n\nВремени прошло: %2$s</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->
-  <string name="save_point">Сохранить местоположение</string>
   <string name="get_point">Определить местоположение</string>
   <string name="geopoint_view_read_only">Просмотреть геоточку</string>
   <string name="get_shape">Начать геофигуру</string>
@@ -385,9 +380,6 @@
   <string name="media_upload_error">Не удалось загрузить медиа-файл, который не существует %1$s</string>
   <string name="send_in_progress">Выполняется отправка в фоне, попробуйте снова через некоторое время.</string>
   <string name="odk_permissions_fail">Нет разрешения на авто-выгрузку. Проверьте системные настройки приложения</string>
-  <string name="odk_auto_note">Результаты авто-выгрузки</string>
-  <string name="odk_auto_download_notification_title">Результаты авто-загрузки</string>
-  <string name="notification_error">Ошибка отображения текста уведомления</string>
   <!--##############################################
     # GET BLANK FORM
     ##############################################-->
@@ -676,7 +668,6 @@
   <string name="do_not_exit">Отмена</string>
   <string name="canceling">Отменяю</string>
   <string name="success">Успешно</string>
-  <string name="failures">Неудачи</string>
   <string name="error_occured">Произошла ошибка</string>
   <string name="please_wait">Подождите несколько секунд.</string>
   <string name="please_wait_long">Пожалуйста, подождите. Это может занять несколько минут.</string>

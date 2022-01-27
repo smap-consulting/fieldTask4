@@ -102,7 +102,6 @@
   <string name="replace_barcode">Palitan ang Barcode</string>
   <string name="capture_image">Kumuha ng Larawan</string>
   <string name="choose_image">Pumili ng Imahe</string>
-  <string name="view_image">Ipakita ang Imahe</string>
   <!--Dialog heading for saving annotated image-->
   <string name="save_and_close">Impukin at Isara</string>
   <string name="sign_button">Kalapin ang Pirma</string>
@@ -158,8 +157,7 @@
    These strings are only being used to preserve compatibility with pre-existing
     tile caches, and are not shown in the UI.-->
   <string name="change_location">Palitan ang Lokasyon</string>
-  <string name="getting_location">Sini-set ang Kinalalagyan</string>
-  <string name="get_location">Itala ang Kinalalagyan</string>
+    <string name="get_location">Itala ang Kinalalagyan</string>
   <string name="provider_disabled_error">Paumanhin, ang mga provider ng Kinalalagyan ay hindi pinagana!</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->

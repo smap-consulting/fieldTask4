@@ -135,7 +135,6 @@
   <string name="barcode_scanner_prompt">बार कोडलाई समकोण (चार पाटे बाक्सा) भित्र राख्नुहोस्</string>
   <string name="capture_image">फोटो लिनुहोस् </string>
   <string name="choose_image">तस्विर छान्नुहोस् </string>
-  <string name="view_image">तस्विर हेर्नुहोस्।</string>
   <string name="take_picture_instruction">फोटो लिन स्क्रीन ट्याप गर्नुहोस्</string>
   <string name="error_front_camera_unavailable">यस यन्त्रमा फ्रन्ट क्यामेरा छैन</string>
   <string name="camera_error">यस यन्त्रले Camera2 API सपोर्ट गर्देन ।</string>
@@ -150,7 +149,6 @@
   <string name="set_color">रंग छान्नुहोस् </string>
   <string name="capture_video">भिडियो रेकर्ड गर्नुहोस् </string>
   <string name="choose_video">भिडियो छान्नुहोस् </string>
-  <string name="view_video">भिडियो हेर्नुहोस्।</string>
   <string name="stop_video_capture_instruction">रेकर्डिङ सुरु भयो। रोक्न फेरि छुनुहोस् ।</string>
   <string name="play_video">भिडियो हेर्नुहोस्</string>
   <string name="choose_file">फाइलहरू छान्नुहोस्</string>
@@ -236,12 +234,10 @@
   <string name="google_play_services_error_occured">गुगल  म्याप्स् मा जान सकिएन । के गुगल प्ले सर्भिसेस इन्स्टल गरिएको छ ?</string>
   <string name="view_change_location">स्थान हेर्नुहोस् वा परिवर्तन गर्नुहोस् </string>
   <string name="change_location">स्थान परिवर्तन गर्नुहोस्</string>
-  <string name="getting_location">स्थान लोड हुँदै</string>
-  <string name="get_location">स्थान रेकर्ड गर्नुहोस् </string>
+    <string name="get_location">स्थान रेकर्ड गर्नुहोस् </string>
   <string name="provider_disabled_error">माफ गर्नुहोस्, स्थान प्रदायकहरु निष्क्रिय गरिएका छन् !</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <!--Label for a menu item that can be toggled to turn background location tracking on and off during form filling-->
-  <string name="save_point">जियो पोइन्ट संचित गर्नुहोस्</string>
   <string name="get_point">जियो पोइन्ट शुरू गर्नुहोस्</string>
   <string name="geopoint_view_read_only">जियो पोइन्ट हेर्नुहोस्</string>
   <string name="get_shape">जियो सेप शुरू गर्नुहोस्</string>
@@ -283,7 +279,6 @@
   <string name="show_sent_and_unsent_forms">पठाईएका र नपठाईएका फारमहरू देखाउनुहोस् </string>
   <string name="show_unsent_forms">नपठाईएका फारमहरू देखाउनुहोस् </string>
   <string name="send_in_progress">पृष्‍ठभूमीमा send सन्चालित हुँदै , कृपया फेरी प्रयास गर्नुहोस् ।</string>
-  <string name="notification_error">सूचना देखाउन गल्ती भयो </string>
   <!--##############################################
     # GET BLANK FORM
     ##############################################-->

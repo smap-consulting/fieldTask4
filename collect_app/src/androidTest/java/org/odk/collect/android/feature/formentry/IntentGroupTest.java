@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.odk.collect.android.support.CustomMatchers.withIndex;
 import static org.odk.collect.android.support.FileUtils.copyFileFromAssets;
-import static org.odk.collect.android.support.actions.NestedScrollToAction.nestedScrollTo;
+import static org.odk.collect.testshared.NestedScrollToAction.nestedScrollTo;
 
 import android.Manifest;
 import android.app.Activity;
@@ -55,11 +55,11 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.R;
-import org.odk.collect.android.RecordedIntentsRule;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.support.CopyFormRule;
 import org.odk.collect.android.support.FormActivityTestRule;
 import org.odk.collect.android.support.TestRuleChain;
+import org.odk.collect.testshared.RecordedIntentsRule;
 
 import java.io.File;
 import java.io.IOException;

@@ -151,7 +151,6 @@
   <string name="open_file">Open bestand</string>
   <string name="capture_image">Foto nemen</string>
   <string name="choose_image">Selecteer afbeelding</string>
-  <string name="view_image">Afbeelding bekijken</string>
   <string name="annotate_image">Aantekening maken bij afbeelding</string>
   <!--Dialog heading for saving annotated image-->
   <string name="save_and_close">Opslaan en sluiten</string>
@@ -163,7 +162,6 @@
   <string name="set_color">Set Color</string>
   <string name="capture_video">Video vastleggen</string>
   <string name="choose_video">Selecteer video</string>
-  <string name="view_video">Video bekijken</string>
   <string name="play_video">Bekijk video</string>
   <string name="choose_file">Bestand Kiezen</string>
   <!--Text for button that deletes a file that is the answer to a question-->
@@ -244,8 +242,7 @@
   <string name="outdoors">Buiten</string>
   <string name="view_change_location">Bekijk of wijzig positie</string>
   <string name="change_location">Locatie wijzigen</string>
-  <string name="getting_location">Positie bepalen</string>
-  <string name="get_location">Positie vastleggen</string>
+    <string name="get_location">Positie vastleggen</string>
   <string name="provider_disabled_error">Sorry, GPS is uitgeschakeld!</string>
   <!--Action to go to Android settings. Displayed when location providers are disabled.-->
   <string name="go_to_settings">Ga naar instellingen</string>
@@ -278,9 +275,6 @@
   <string name="change_view">Wijzig weergave</string>
   <string name="show_sent_and_unsent_forms">Verzonden en niet-verzonden formulieren</string>
   <string name="show_unsent_forms">Alleen niet-verzonden formulieren</string>
-  <string name="odk_auto_note">ODK automatische verzendresultaten</string>
-  <string name="odk_auto_download_notification_title">ODK automatische downloadresultaten</string>
-  <string name="notification_error">Fout in de weergave van melding</string>
   <!--##############################################
     # GET BLANK FORM
     ##############################################-->

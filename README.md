@@ -98,7 +98,7 @@ If you have finished testing a pull request, please use a template from [Testing
 
 1. Use Android Studio to import the project from its Gradle settings. To run the project, click on the green arrow at the top of the screen.
 
-1. Windows developers: continue configuring Android Studio with the steps in this document: [Developing ODK Collect on Windows](docs/WindowsDevSetup.md).
+1. Windows developers: continue configuring Android Studio with the steps in this document: [Developing ODK Collect on Windows](docs/WINDOWS-DEV-SETUP.md).
 
 1. Make sure you can run unit tests by running everything under `collect_app/src/test/java` in Android Studio or on the command line:
 
@@ -120,7 +120,7 @@ If you have finished testing a pull request, please use a template from [Testing
 You can customize the heap size that is used for compiling and running tests. Increasing these will most likely speed up compilation and tests on your local machine. The default values are specified in the project's `gradle.properties` and this can be overriden by your user level `gradle.properties` (found in your `GRADLE_USER_HOME` directory). An example `gradle.properties` that would give you a heap size of 4GB (rather than the default 1GB) would look like:
 
 ```
-org.gradle.jvmargs=-Xmx4096 -Dkotlin.daemon.jvm.options\="-Xmx4096"
+org.gradle.jvmargs=-Xmx4096
 ```
 
 ## Testing a form without a server

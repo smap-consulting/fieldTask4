@@ -70,6 +70,8 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.SelectChoice;
@@ -137,13 +139,11 @@ import org.odk.collect.android.javarosawrapper.FormController.FailedConstraint;
 import org.odk.collect.android.javarosawrapper.RepeatsInFieldListException;
 import org.odk.collect.android.listeners.AdvanceToNextListener;
 import org.odk.collect.android.listeners.FormLoaderListener;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.listeners.SavePointListener;
 import org.odk.collect.android.listeners.SwipeHandler;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.logic.ImmutableDisplayableQuestion;
 import org.odk.collect.android.logic.PropertyManager;
-import org.odk.collect.androidshared.system.PermissionsChecker;
 import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
 import org.odk.collect.android.projects.CurrentProjectProvider;
@@ -182,6 +182,8 @@ import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.forms.Form;
 import org.odk.collect.forms.FormsRepository;
 import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.permissions.PermissionListener;
+import org.odk.collect.permissions.PermissionsChecker;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -378,7 +380,11 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         // Workaround for https://issuetracker.google.com/issues/37124582. Some widgets trigger
         // this issue by including WebViews
         if (Build.VERSION.SDK_INT >= 24) {
-            new WebView(this);
+            try {
+                new WebView(this);
+            } catch (Exception | Error e) {
+                // Don't crash if WebView not available
+            }
         }
 
         super.onCreate(savedInstanceState);
@@ -1672,7 +1678,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             errorMsg = errorMessage + "\n\n" + errorMsg;
             errorMessage = errorMsg;
         } else {
-            alertDialog = new AlertDialog.Builder(this).create();
+            alertDialog = new MaterialAlertDialogBuilder(this).create();
             errorMessage = errorMsg;
         }
 
@@ -1815,7 +1821,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
      * Confirm clear answer dialog
      */
     private void createClearDialog(final QuestionWidget qw) {
-        alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog = new MaterialAlertDialogBuilder(this).create();
         alertDialog.setTitle(getString(R.string.clear_answer_ask));
 
         String question = qw.getFormEntryPrompt().getLongText();
@@ -1865,7 +1871,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 }
             }
         }
-        alertDialog = new AlertDialog.Builder(this)
+        alertDialog = new MaterialAlertDialogBuilder(this)
                 .setSingleChoiceItems(languages, selected,
                         (dialog, whichButton) -> {
                             Form form = formsRepository.getOneByPath(formPath);

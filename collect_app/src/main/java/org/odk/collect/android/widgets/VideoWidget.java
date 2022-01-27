@@ -37,17 +37,16 @@ import org.odk.collect.android.activities.CaptureSelfieVideoActivity;
 import org.odk.collect.android.analytics.AnalyticsUtils;
 import org.odk.collect.android.formentry.questions.QuestionDetails;
 import org.odk.collect.android.formentry.questions.WidgetViewUtils;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.utilities.Appearances;
 import org.odk.collect.android.utilities.CameraUtils;
-import org.odk.collect.android.utilities.MediaUtils;
 import org.odk.collect.android.utilities.QuestionMediaManager;
 import org.odk.collect.android.widgets.interfaces.ButtonClickListener;
 import org.odk.collect.android.widgets.interfaces.FileWidget;
 import org.odk.collect.android.widgets.interfaces.WidgetDataReceiver;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
 import org.odk.collect.androidshared.ui.ToastUtils;
+import org.odk.collect.permissions.PermissionListener;
 
 import java.io.File;
 import java.util.Locale;
@@ -65,7 +64,6 @@ import timber.log.Timber;
 public class VideoWidget extends QuestionWidget implements FileWidget, ButtonClickListener, WidgetDataReceiver {
     private final WaitingForDataRegistry waitingForDataRegistry;
     private final QuestionMediaManager questionMediaManager;
-    private final MediaUtils mediaUtils;
 
     Button captureButton;
     Button playButton;
@@ -75,15 +73,14 @@ public class VideoWidget extends QuestionWidget implements FileWidget, ButtonCli
     private final boolean selfie;
 
     public VideoWidget(Context context, QuestionDetails prompt,  QuestionMediaManager questionMediaManager, WaitingForDataRegistry waitingForDataRegistry) {
-        this(context, prompt, waitingForDataRegistry, questionMediaManager, new CameraUtils(), new MediaUtils());
+        this(context, prompt, waitingForDataRegistry, questionMediaManager, new CameraUtils());
     }
 
-    public VideoWidget(Context context, QuestionDetails questionDetails, WaitingForDataRegistry waitingForDataRegistry, QuestionMediaManager questionMediaManager, CameraUtils cameraUtils, MediaUtils mediaUtils) {
+    public VideoWidget(Context context, QuestionDetails questionDetails, WaitingForDataRegistry waitingForDataRegistry, QuestionMediaManager questionMediaManager, CameraUtils cameraUtils) {
         super(context, questionDetails);
 
         this.waitingForDataRegistry = waitingForDataRegistry;
         this.questionMediaManager = questionMediaManager;
-        this.mediaUtils = mediaUtils;
 
         selfie = Appearances.isFrontCameraAppearance(getFormEntryPrompt());
 

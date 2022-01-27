@@ -33,6 +33,7 @@ import androidx.appcompat.app.AlertDialog;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.odk.collect.analytics.Analytics;
 import org.odk.collect.android.R;
@@ -40,7 +41,6 @@ import org.odk.collect.android.activities.CollectAbstractActivity;
 import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.InstanceUploaderListener;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.network.NetworkStateProvider;
 import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.utilities.ArrayUtils;
@@ -49,6 +49,7 @@ import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.InstanceUploaderUtils;
 import org.odk.collect.android.utilities.InstancesRepositoryProvider;
 import org.odk.collect.androidshared.ui.ToastUtils;
+import org.odk.collect.permissions.PermissionListener;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -280,7 +281,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
     @Override
     protected Dialog onCreateDialog(int id) {
         if (id == GOOGLE_USER_DIALOG) {
-            AlertDialog.Builder gudBuilder = new AlertDialog.Builder(this);
+            MaterialAlertDialogBuilder gudBuilder = new MaterialAlertDialogBuilder(this);
 
             gudBuilder.setTitle(getString(R.string.no_google_account));
             gudBuilder.setMessage(getString(R.string.google_set_account));
@@ -297,7 +298,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
     }
 
     private void createAlertDialog(String message) {
-        alertDialog = new AlertDialog.Builder(this).create();
+        alertDialog = new MaterialAlertDialogBuilder(this).create();
         alertDialog.setTitle(getString(R.string.upload_results));
         alertDialog.setMessage(message);
         DialogInterface.OnClickListener quitListener = (dialog, i) -> {

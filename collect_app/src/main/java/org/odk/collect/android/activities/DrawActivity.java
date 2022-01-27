@@ -21,6 +21,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
+
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AlertDialog;
 import androidx.cardview.widget.CardView;
@@ -41,7 +43,7 @@ import org.odk.collect.android.adapters.model.IconMenuItem;
 import org.odk.collect.android.utilities.AnimationUtils;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.utilities.DialogUtils;
-import org.odk.collect.android.utilities.FileUtils;
+import org.odk.collect.android.utilities.ImageFileUtils;
 import org.odk.collect.android.views.DrawView;
 
 import java.io.File;
@@ -180,13 +182,13 @@ public class DrawActivity extends CollectAbstractActivity {
                 savepointImage = new File(savepoint);
                 if (!savepointImage.exists() && refImage != null
                         && refImage.exists()) {
-                    FileUtils.copyFile(refImage, savepointImage);
+                    ImageFileUtils.copyImageAndApplyExifRotation(refImage, savepointImage);
                 }
             } else {
                 savepointImage = new File(storagePathProvider.getTmpImageFilePath());
                 savepointImage.delete();
                 if (refImage != null && refImage.exists()) {
-                    FileUtils.copyFile(refImage, savepointImage);
+                    ImageFileUtils.copyImageAndApplyExifRotation(refImage, savepointImage);
                 }
             }
             uri = (Uri) extras.get(EXTRA_OUTPUT);
@@ -256,7 +258,7 @@ public class DrawActivity extends CollectAbstractActivity {
         savepointImage.delete();
         if (!OPTION_SIGNATURE.equals(loadOption) && refImage != null
                 && refImage.exists()) {
-            FileUtils.copyFile(refImage, savepointImage);
+            ImageFileUtils.copyImageAndApplyExifRotation(refImage, savepointImage);
         }
         drawView.reset();
         drawView.invalidate();
@@ -309,7 +311,7 @@ public class DrawActivity extends CollectAbstractActivity {
                 alertDialog.dismiss();
             }
         });
-        alertDialog = new AlertDialog.Builder(this)
+        alertDialog = new MaterialAlertDialogBuilder(this)
                 .setTitle(alertTitleString)
                 .setPositiveButton(getString(R.string.do_not_exit), null)
                 .setView(listView).create();
@@ -339,7 +341,7 @@ public class DrawActivity extends CollectAbstractActivity {
             picker.showAlpha(false);
             picker.showHex(false);
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
             builder
                     .setView(picker)
                     .setPositiveButton(R.string.ok, (dialog, which) -> drawView.setColor(picker.getColor()))
