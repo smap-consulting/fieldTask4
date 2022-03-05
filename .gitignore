@@ -19,7 +19,9 @@ collect_app/src/pop/
 collect_app/src/informEd/
 collect_app/src/tdh/
 collect_app/src/assignfield/
+collect_app/src/assignfield2/
 collect_app/src/stl/
+collect_app/src/stl2/
 collect_app/src/ljs/
 
 collect_app/plan/
@@ -30,10 +32,12 @@ collect_app/atempi/
 collect_app/pop/
 collect_app/informEd/
 collect_app/assignfield/
+collect_app/assignfield2/
 collect_app/tdh/
 collect_app/kontrolid/
 collect_app/kontrolid_corporate/
 collect_app/stl/
+collect_app/stl2/
 collect_app/ljs/
 
 collect_app/kontrolid/release/trace.db
