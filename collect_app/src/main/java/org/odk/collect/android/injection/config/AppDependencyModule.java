@@ -1,7 +1,8 @@
 package org.odk.collect.android.injection.config;
 
 import static androidx.core.content.FileProvider.getUriForFile;
-import static org.odk.collect.android.preferences.keys.MetaKeys.KEY_INSTALL_ID;
+import static org.odk.collect.settings.keys.MetaKeys.KEY_INSTALL_ID;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 import android.app.Application;
@@ -25,25 +26,20 @@ import org.odk.collect.analytics.Analytics;
 import org.odk.collect.analytics.BlockableFirebaseAnalytics;
 import org.odk.collect.analytics.NoopAnalytics;
 import org.odk.collect.android.BuildConfig;
+import org.odk.collect.android.R;
 import org.odk.collect.android.activities.viewmodels.CurrentProjectViewModel;
 import org.odk.collect.android.activities.viewmodels.MainMenuViewModel;
 import org.odk.collect.android.activities.viewmodels.SplashScreenViewModel;
 import org.odk.collect.android.application.CollectSettingsChangeHandler;
 import org.odk.collect.android.application.initialization.AnalyticsInitializer;
 import org.odk.collect.android.application.initialization.ApplicationInitializer;
-import org.odk.collect.android.application.initialization.CollectSettingsMigrator;
 import org.odk.collect.android.application.initialization.ExistingProjectMigrator;
 import org.odk.collect.android.application.initialization.ExistingSettingsMigrator;
 import org.odk.collect.android.application.initialization.FormUpdatesUpgrade;
-import org.odk.collect.android.application.initialization.SettingsMigrator;
 import org.odk.collect.android.application.initialization.upgrade.UpgradeInitializer;
 import org.odk.collect.android.backgroundwork.FormUpdateAndInstanceSubmitScheduler;
 import org.odk.collect.android.backgroundwork.FormUpdateScheduler;
 import org.odk.collect.android.backgroundwork.InstanceSubmitScheduler;
-import org.odk.collect.android.configure.SettingsChangeHandler;
-import org.odk.collect.android.configure.SettingsImporter;
-import org.odk.collect.android.configure.SettingsValidator;
-import org.odk.collect.android.configure.StructureAndTypeSettingsValidator;
 import org.odk.collect.android.configure.qr.AppConfigurationGenerator;
 import org.odk.collect.android.configure.qr.CachingQRCodeGenerator;
 import org.odk.collect.android.configure.qr.QRCodeDecoder;
@@ -85,18 +81,14 @@ import org.odk.collect.android.openrosa.CollectThenSystemContentTypeMapper;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
 import org.odk.collect.android.openrosa.okhttp.OkHttpConnection;
 import org.odk.collect.android.openrosa.okhttp.OkHttpOpenRosaServerClientProvider;
+import org.odk.collect.android.preferences.Defaults;
 import org.odk.collect.android.preferences.PreferenceVisibilityHandler;
 import org.odk.collect.android.preferences.ProjectPreferencesViewModel;
-import org.odk.collect.android.preferences.keys.MetaKeys;
-import org.odk.collect.android.preferences.keys.ProjectKeys;
-import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
-import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.preferences.source.SettingsStore;
 import org.odk.collect.android.preferences.source.SharedPreferencesSettingsProvider;
 import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.projects.ProjectCreator;
 import org.odk.collect.android.projects.ProjectDeleter;
-import org.odk.collect.android.projects.ProjectDetailsCreator;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.utilities.AdminPasswordProvider;
@@ -130,14 +122,22 @@ import org.odk.collect.async.Scheduler;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.recording.AudioRecorderFactory;
 import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.geo.maps.MapFragmentFactory;
+import org.odk.collect.imageloader.GlideImageLoader;
+import org.odk.collect.imageloader.ImageLoader;
 import org.odk.collect.location.LocationClient;
 import org.odk.collect.location.LocationClientProvider;
 import org.odk.collect.permissions.PermissionsChecker;
 import org.odk.collect.permissions.PermissionsProvider;
 import org.odk.collect.projects.ProjectsRepository;
 import org.odk.collect.projects.SharedPreferencesProjectsRepository;
+import org.odk.collect.settings.ODKAppSettingsImporter;
+import org.odk.collect.settings.ODKAppSettingsMigrator;
+import org.odk.collect.settings.SettingsProvider;
+import org.odk.collect.settings.importing.ProjectDetailsCreatorImpl;
+import org.odk.collect.settings.importing.SettingsChangeHandler;
+import org.odk.collect.settings.keys.MetaKeys;
 import org.odk.collect.shared.strings.UUIDGenerator;
-import org.odk.collect.utilities.Clock;
 import org.odk.collect.utilities.UserAgentProvider;
 
 import java.io.File;
@@ -305,8 +305,8 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public SettingsMigrator providesPreferenceMigrator(SettingsProvider settingsProvider) {
-        return new CollectSettingsMigrator(settingsProvider.getMetaSettings());
+    public ODKAppSettingsMigrator providesPreferenceMigrator(SettingsProvider settingsProvider) {
+        return new ODKAppSettingsMigrator(settingsProvider.getMetaSettings());
     }
 
     @Provides
@@ -321,22 +321,15 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public SettingsImporter providesCollectSettingsImporter(SettingsProvider settingsProvider, SettingsMigrator preferenceMigrator, SettingsValidator settingsValidator, SettingsChangeHandler settingsChangeHandler, ProjectsRepository projectsRepository, Context context) {
-        return new SettingsImporter(
-                settingsProvider,
-                preferenceMigrator,
-                settingsValidator,
-                ProjectKeys.getDefaults(),
-                ProtectedProjectKeys.getDefaults(),
-                settingsChangeHandler,
+    public ODKAppSettingsImporter providesODKAppSettingsImporter(Context context, ProjectsRepository projectsRepository, SettingsProvider settingsProvider, SettingsChangeHandler settingsChangeHandler) {
+        return new ODKAppSettingsImporter(
                 projectsRepository,
-                new ProjectDetailsCreator(context)
+                settingsProvider,
+                Defaults.getUnprotected(),
+                Defaults.getProtected(),
+                asList(context.getResources().getStringArray(R.array.project_colors)),
+                settingsChangeHandler
         );
-    }
-
-    @Provides
-    public SettingsValidator providesSettingsValidator() {
-        return new StructureAndTypeSettingsValidator(ProjectKeys.getDefaults(), ProtectedProjectKeys.getDefaults());
     }
 
     @Provides
@@ -406,11 +399,6 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public Clock providesClock() {
-        return System::currentTimeMillis;
-    }
-
-    @Provides
     public SoftKeyboardController provideSoftKeyboardController() {
         return new SoftKeyboardController();
     }
@@ -433,13 +421,13 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public FormEntryViewModel.Factory providesFormEntryViewModelFactory(Clock clock, Analytics analytics) {
-        return new FormEntryViewModel.Factory(clock);
+    public FormEntryViewModel.Factory providesFormEntryViewModelFactory(Analytics analytics) {
+        return new FormEntryViewModel.Factory(System::currentTimeMillis);
     }
 
     @Provides
-    public BackgroundAudioViewModel.Factory providesBackgroundAudioViewModelFactory(AudioRecorder audioRecorder, SettingsProvider settingsProvider, PermissionsChecker permissionsChecker, Clock clock, Analytics analytics) {
-        return new BackgroundAudioViewModel.Factory(audioRecorder, settingsProvider.getUnprotectedSettings(), permissionsChecker, clock);
+    public BackgroundAudioViewModel.Factory providesBackgroundAudioViewModelFactory(AudioRecorder audioRecorder, SettingsProvider settingsProvider, PermissionsChecker permissionsChecker, Analytics analytics) {
+        return new BackgroundAudioViewModel.Factory(audioRecorder, settingsProvider.getUnprotectedSettings(), permissionsChecker, System::currentTimeMillis);
     }
 
     @Provides
@@ -467,7 +455,7 @@ public class AppDependencyModule {
 
     @Provides
     public ProjectCreator providesProjectCreator(ProjectsRepository projectsRepository,
-                                                 CurrentProjectProvider currentProjectProvider, SettingsImporter settingsImporter,
+                                                 CurrentProjectProvider currentProjectProvider, ODKAppSettingsImporter settingsImporter,
                                                  Context context) {
         return new ProjectCreator(projectsRepository, currentProjectProvider, settingsImporter);
     }
@@ -558,7 +546,7 @@ public class AppDependencyModule {
 
     @Provides
     public ExistingProjectMigrator providesExistingProjectMigrator(Context context, StoragePathProvider storagePathProvider, ProjectsRepository projectsRepository, SettingsProvider settingsProvider, CurrentProjectProvider currentProjectProvider) {
-        return new ExistingProjectMigrator(context, storagePathProvider, projectsRepository, settingsProvider, currentProjectProvider, new ProjectDetailsCreator(context));
+        return new ExistingProjectMigrator(context, storagePathProvider, projectsRepository, settingsProvider, currentProjectProvider, new ProjectDetailsCreatorImpl(asList(context.getResources().getStringArray(R.array.project_colors)), Defaults.getUnprotected()));
     }
 
     @Provides
@@ -567,7 +555,7 @@ public class AppDependencyModule {
     }
 
     @Provides
-    public ExistingSettingsMigrator providesExistingSettingsMigrator(ProjectsRepository projectsRepository, SettingsProvider settingsProvider, SettingsMigrator settingsMigrator) {
+    public ExistingSettingsMigrator providesExistingSettingsMigrator(ProjectsRepository projectsRepository, SettingsProvider settingsProvider, ODKAppSettingsMigrator settingsMigrator) {
         return new ExistingSettingsMigrator(projectsRepository, settingsProvider, settingsMigrator);
     }
 
@@ -633,5 +621,15 @@ public class AppDependencyModule {
     @Provides
     public MediaUtils providesMediaUtils(IntentLauncher intentLauncher) {
         return new MediaUtils(intentLauncher, new ContentUriProvider());
+    }
+
+    @Provides
+    public MapFragmentFactory providesMapFragmentFactory(MapProvider mapProvider) {
+        return mapProvider;
+    }
+
+    @Provides
+    public ImageLoader providesImageLoader() {
+        return new GlideImageLoader();
     }
 }

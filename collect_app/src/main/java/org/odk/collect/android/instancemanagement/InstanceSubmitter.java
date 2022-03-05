@@ -1,5 +1,10 @@
 package org.odk.collect.android.instancemanagement;
 
+import static org.odk.collect.android.analytics.AnalyticsEvents.SUBMISSION;
+import static org.odk.collect.android.utilities.InstanceUploaderUtils.SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE;
+import static org.odk.collect.settings.keys.ProjectKeys.KEY_GOOGLE_SHEETS_URL;
+import static org.odk.collect.strings.localization.LocalizedApplicationKt.getLocalizedString;
+
 import android.util.Pair;
 
 import org.odk.collect.analytics.Analytics;
@@ -11,30 +16,25 @@ import org.odk.collect.android.gdrive.InstanceGoogleSheetsUploader;
 import org.odk.collect.android.instancemanagement.SubmitException.Type;
 import org.odk.collect.android.logic.PropertyManager;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
-import org.odk.collect.android.preferences.keys.ProjectKeys;
 import org.odk.collect.android.upload.InstanceServerUploader;
 import org.odk.collect.android.upload.InstanceUploader;
 import org.odk.collect.android.upload.UploadException;
 import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.InstanceUploaderUtils;
 import org.odk.collect.android.utilities.InstancesRepositoryProvider;
-import org.odk.collect.android.utilities.TranslationHandler;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 import org.odk.collect.forms.FormsRepository;
 import org.odk.collect.forms.instances.Instance;
 import org.odk.collect.forms.instances.InstancesRepository;
 import org.odk.collect.permissions.PermissionsProvider;
-import org.odk.collect.shared.Settings;
+import org.odk.collect.settings.keys.ProjectKeys;
+import org.odk.collect.shared.settings.Settings;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import timber.log.Timber;
-
-import static org.odk.collect.android.analytics.AnalyticsEvents.SUBMISSION;
-import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_GOOGLE_SHEETS_URL;
-import static org.odk.collect.android.utilities.InstanceUploaderUtils.SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE;
 
 public class InstanceSubmitter {
 
@@ -102,7 +102,7 @@ public class InstanceSubmitter {
                 }
 
                 String customMessage = uploader.uploadOneSubmission(instance, destinationUrl);
-                resultMessagesByInstanceId.put(instance.getDbId().toString(), customMessage != null ? customMessage : TranslationHandler.getString(Collect.getInstance(), R.string.success));
+                resultMessagesByInstanceId.put(instance.getDbId().toString(), customMessage != null ? customMessage : getLocalizedString(Collect.getInstance(), R.string.success));
 
                 // If the submission was successful, delete the instance if either the app-level
                 // delete preference is set or the form definition requests auto-deletion.

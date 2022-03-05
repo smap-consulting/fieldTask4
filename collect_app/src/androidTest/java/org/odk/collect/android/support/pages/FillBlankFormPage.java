@@ -22,7 +22,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.odk.collect.android.support.CustomMatchers.withIndex;
+import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 
 public class FillBlankFormPage extends Page<FillBlankFormPage> {
 
@@ -75,7 +75,7 @@ public class FillBlankFormPage extends Page<FillBlankFormPage> {
         onData(allOf(is(instanceOf(Cursor.class)), CursorMatchers.withRowString(DatabaseFormColumns.DISPLAY_NAME, is(formName))))
                 .onChildView(withId(R.id.map_button))
                 .perform(click());
-        return new FormMapPage().assertOnPage();
+        return new FormMapPage(formName).assertOnPage();
     }
 
     public FormEntryPage clickOnForm(String formName) {

@@ -52,8 +52,8 @@ import org.odk.collect.android.formentry.repeats.DeleteRepeatDialogFragment;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.logic.HierarchyElement;
 import org.odk.collect.android.utilities.FormEntryPromptUtils;
-import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.androidshared.ui.DialogFragmentUtils;
+import org.odk.collect.androidshared.ui.multiclicksafe.MultiClickGuard;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -785,7 +785,6 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
     protected void createErrorDialog(String errorMsg) {
         AlertDialog alertDialog = new MaterialAlertDialogBuilder(this).create();
 
-        alertDialog.setIcon(android.R.drawable.ic_dialog_info);
         alertDialog.setTitle(getString(R.string.error_occured));
         alertDialog.setMessage(errorMsg);
         DialogInterface.OnClickListener errorListener = new DialogInterface.OnClickListener() {

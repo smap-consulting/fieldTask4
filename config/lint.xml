@@ -62,4 +62,7 @@
 
     <!-- This flags IDs used via View Binding: https://issuetracker.google.com/issues/170658134 -->
     <issue id="UnusedIds" severity="ignore" />
+
+    <!-- This flags calls to `getColumnIndex` incorrectly: https://issuetracker.google.com/issues/202193843 -->
+    <issue id="Range" severity="ignore" />
 </lint>

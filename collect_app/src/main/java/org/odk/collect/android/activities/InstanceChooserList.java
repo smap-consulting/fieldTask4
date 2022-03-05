@@ -39,7 +39,7 @@ import org.odk.collect.android.external.InstancesContract;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.utilities.ApplicationConstants;
-import org.odk.collect.android.utilities.MultiClickGuard;
+import org.odk.collect.androidshared.ui.multiclicksafe.MultiClickGuard;
 import org.odk.collect.forms.instances.Instance;
 
 import javax.inject.Inject;
@@ -190,7 +190,6 @@ public class InstanceChooserList extends InstanceListActivity implements Adapter
 
     private void createErrorDialog(String errorMsg, final boolean shouldExit) {
         AlertDialog alertDialog = new MaterialAlertDialogBuilder(this).create();
-        alertDialog.setIcon(android.R.drawable.ic_dialog_info);
         alertDialog.setMessage(errorMsg);
         DialogInterface.OnClickListener errorListener = new DialogInterface.OnClickListener() {
             @Override

@@ -1,5 +1,7 @@
 package org.odk.collect.android.formentry;
 
+import static org.odk.collect.settings.keys.ProjectKeys.KEY_BACKGROUND_RECORDING;
+
 import android.Manifest;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,16 +25,14 @@ import org.odk.collect.audiorecorder.recorder.Output;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.audiorecorder.recording.RecordingSession;
 import org.odk.collect.permissions.PermissionsChecker;
-import org.odk.collect.shared.Settings;
-import org.odk.collect.utilities.Clock;
+import org.odk.collect.shared.settings.Settings;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 
 import javax.inject.Inject;
-
-import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_BACKGROUND_RECORDING;
 
 public class BackgroundAudioViewModel extends ViewModel implements RequiresFormController {
 
@@ -40,7 +40,7 @@ public class BackgroundAudioViewModel extends ViewModel implements RequiresFormC
     private final Settings generalSettings;
     private final RecordAudioActionRegistry recordAudioActionRegistry;
     private final PermissionsChecker permissionsChecker;
-    private final Clock clock;
+    private final Supplier<Long> clock;
 
     private final MutableNonNullLiveData<Boolean> isPermissionRequired = new MutableNonNullLiveData<>(false);
     private final MutableNonNullLiveData<Boolean> isBackgroundRecordingEnabled;
@@ -53,7 +53,7 @@ public class BackgroundAudioViewModel extends ViewModel implements RequiresFormC
     private AuditEventLogger auditEventLogger;
     private FormController formController;
 
-    public BackgroundAudioViewModel(AudioRecorder audioRecorder, Settings generalSettings, RecordAudioActionRegistry recordAudioActionRegistry, PermissionsChecker permissionsChecker, Clock clock) {
+    public BackgroundAudioViewModel(AudioRecorder audioRecorder, Settings generalSettings, RecordAudioActionRegistry recordAudioActionRegistry, PermissionsChecker permissionsChecker, Supplier<Long> clock) {
         this.audioRecorder = audioRecorder;
         this.generalSettings = generalSettings;
         this.recordAudioActionRegistry = recordAudioActionRegistry;
@@ -89,7 +89,7 @@ public class BackgroundAudioViewModel extends ViewModel implements RequiresFormC
     public void setBackgroundRecordingEnabled(boolean enabled) {
         if (enabled) {
             if (auditEventLogger != null) {
-                auditEventLogger.logEvent(AuditEvent.AuditEventType.BACKGROUND_AUDIO_ENABLED, true, clock.getCurrentTime());
+                auditEventLogger.logEvent(AuditEvent.AuditEventType.BACKGROUND_AUDIO_ENABLED, true, clock.get());
             }
 
             if (formController != null) {
@@ -99,7 +99,7 @@ public class BackgroundAudioViewModel extends ViewModel implements RequiresFormC
             audioRecorder.cleanUp();
 
             if (auditEventLogger != null) {
-                auditEventLogger.logEvent(AuditEvent.AuditEventType.BACKGROUND_AUDIO_DISABLED, true, clock.getCurrentTime());
+                auditEventLogger.logEvent(AuditEvent.AuditEventType.BACKGROUND_AUDIO_DISABLED, true, clock.get());
             }
 
             if (formController != null) {
@@ -174,10 +174,10 @@ public class BackgroundAudioViewModel extends ViewModel implements RequiresFormC
         private final AudioRecorder audioRecorder;
         private final Settings generalSettings;
         private final PermissionsChecker permissionsChecker;
-        private final Clock clock;
+        private final Supplier<Long> clock;
 
         @Inject
-        public Factory(AudioRecorder audioRecorder, Settings generalSettings, PermissionsChecker permissionsChecker, Clock clock) {
+        public Factory(AudioRecorder audioRecorder, Settings generalSettings, PermissionsChecker permissionsChecker, Supplier<Long> clock) {
             this.audioRecorder = audioRecorder;
             this.generalSettings = generalSettings;
             this.permissionsChecker = permissionsChecker;

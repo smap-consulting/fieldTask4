@@ -6,9 +6,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.TestRuleChain;
+import org.odk.collect.android.support.rules.CollectTestRule;
+import org.odk.collect.android.support.rules.TestRuleChain;
 import org.odk.collect.android.support.pages.MainMenuPage;
 
 @RunWith(AndroidJUnit4.class)
@@ -18,12 +17,12 @@ public class DeleteFilledFormTest {
 
     @Rule
     public final RuleChain chain = TestRuleChain.chain()
-            .around(new CopyFormRule("one-question.xml"))
             .around(rule);
 
     @Test
     public void deletingAForm_removesFormFromFinalizedForms() {
         rule.startAtMainMenu()
+                .copyForm("one-question.xml")
                 .startBlankForm("One Question")
                 .answerQuestion("what is your age", "30")
                 .swipeToEndScreen()

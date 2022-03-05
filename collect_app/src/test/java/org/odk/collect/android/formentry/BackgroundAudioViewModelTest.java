@@ -1,5 +1,12 @@
 package org.odk.collect.android.formentry;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.Manifest;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
@@ -15,19 +22,12 @@ import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.audiorecorder.recorder.Output;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
 import org.odk.collect.permissions.PermissionsChecker;
-import org.odk.collect.shared.Settings;
+import org.odk.collect.shared.settings.Settings;
 import org.odk.collect.testshared.RobolectricHelpers;
-import org.odk.collect.utilities.Clock;
 
 import java.util.HashSet;
 import java.util.function.BiConsumer;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import java.util.function.Supplier;
 
 @RunWith(AndroidJUnit4.class)
 @SuppressWarnings("PMD.DoubleBraceInitialization")
@@ -38,11 +38,11 @@ public class BackgroundAudioViewModelTest {
     private final AudioRecorder audioRecorder = mock(AudioRecorder.class);
 
     private BackgroundAudioViewModel viewModel;
-    private Clock clock;
+    private Supplier<Long> clock;
 
     @Before
     public void setup() {
-        clock = mock(Clock.class);
+        clock = mock(Supplier.class);
 
         Settings generalSettings = TestSettingsProvider.getUnprotectedSettings();
         generalSettings.clear();
@@ -163,7 +163,7 @@ public class BackgroundAudioViewModelTest {
         when(formController.getAuditEventLogger()).thenReturn(auditEventLogger);
         viewModel.formLoaded(formController);
 
-        when(clock.getCurrentTime()).thenReturn(1234L);
+        when(clock.get()).thenReturn(1234L);
         viewModel.setBackgroundRecordingEnabled(false);
         verify(auditEventLogger).logEvent(AuditEvent.AuditEventType.BACKGROUND_AUDIO_DISABLED, true, 1234L);
     }
@@ -175,7 +175,7 @@ public class BackgroundAudioViewModelTest {
         when(formController.getAuditEventLogger()).thenReturn(auditEventLogger);
         viewModel.formLoaded(formController);
 
-        when(clock.getCurrentTime()).thenReturn(1234L);
+        when(clock.get()).thenReturn(1234L);
         viewModel.setBackgroundRecordingEnabled(true);
         verify(auditEventLogger).logEvent(AuditEvent.AuditEventType.BACKGROUND_AUDIO_ENABLED, true, 1234L);
     }

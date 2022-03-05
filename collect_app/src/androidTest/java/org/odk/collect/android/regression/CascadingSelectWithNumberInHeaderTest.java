@@ -6,10 +6,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
-import org.odk.collect.android.support.pages.MainMenuPage;
+import org.odk.collect.android.support.rules.CollectTestRule;
+import org.odk.collect.android.support.rules.TestRuleChain;
 
 import java.util.Collections;
 
@@ -20,26 +18,25 @@ public class CascadingSelectWithNumberInHeaderTest {
     public CollectTestRule rule = new CollectTestRule();
 
     @Rule
-    public RuleChain copyFormChain = RuleChain
-            .outerRule(new ResetStateRule())
-            .around(new CopyFormRule("numberInCSV.xml", Collections.singletonList("itemSets.csv")))
+    public RuleChain copyFormChain = TestRuleChain.chain()
             .around(rule);
 
     @Test
     public void fillForm_ShouldFillFormWithNumberInCsvHeader() {
 
-        new MainMenuPage()
+        rule.startAtMainMenu()
+                .copyForm("numberInCSV.xml", Collections.singletonList("itemSets.csv"))
                 .startBlankForm("numberInCSV")
-                .swipeToNextQuestion()
+                .swipeToNextQuestion("1a")
                 .clickOnText("Venda de animais")
                 .assertText("1a")
-                .swipeToNextQuestion()
+                .swipeToNextQuestion("2a")
                 .clickOnText("Vendas agrícolas")
                 .assertText("2a")
-                .swipeToNextQuestion()
+                .swipeToNextQuestion("3a")
                 .clickOnText("Pensão")
                 .assertText("3a")
-                .swipeToNextQuestion()
+                .swipeToNextQuestion("Thank you for taking the time to complete this form!")
                 .swipeToEndScreen()
                 .clickSaveAndExit();
     }

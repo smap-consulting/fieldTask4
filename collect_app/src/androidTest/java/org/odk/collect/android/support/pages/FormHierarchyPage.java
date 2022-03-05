@@ -1,5 +1,6 @@
 package org.odk.collect.android.support.pages;
 
+import androidx.annotation.NonNull;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 
 import org.odk.collect.android.R;
@@ -18,6 +19,7 @@ public class FormHierarchyPage extends Page<FormHierarchyPage> {
         this.formName = formName;
     }
 
+    @NonNull
     @Override
     public FormHierarchyPage assertOnPage() {
         assertToolbarTitle(formName);
@@ -43,8 +45,7 @@ public class FormHierarchyPage extends Page<FormHierarchyPage> {
 
     public FormHierarchyPage deleteGroup() {
         onView(withId(R.id.menu_delete_child)).perform(click());
-        onView(withText(R.string.delete_repeat)).perform(click());
-        return this;
+        return clickOnButtonInDialog(R.string.delete_repeat, this);
     }
 
     public FormEndPage clickJumpEndButton() {

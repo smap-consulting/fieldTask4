@@ -174,6 +174,8 @@ android {
         pickFirst 'META-INF/services/com.fasterxml.jackson.core.ObjectCodec'
         pickFirst 'META-INF/services/javax.ws.rs.ext.MessageBodyReader'
         pickFirst 'META-INF/services/javax.ws.rs.ext.MessageBodyWriter'
+        pickFirst 'draftv4/schema'
+        pickFirst 'draftv3/schema'
 
         // To ensure that ODK Collect is installable on all devices, we don't use
         // abiFilters to exclude any ABIs; but to keep the APK slim, we include
@@ -181,6 +183,10 @@ android {
         // omit it for all X86 devices.
         exclude 'lib/x86/libmapbox-gl.so'
         exclude 'lib/x86_64/libmapbox-gl.so'
+
+        // These library licenses will be referenced in-app
+        exclude 'META-INF/ASL-2.0.txt'
+        exclude 'META-INF/LGPL-3.0.txt'
     }
 
     compileOptions {
@@ -197,6 +203,11 @@ android {
         unitTests {
             includeAndroidResources = true
             returnDefaultValues = true
+
+            all {
+                minHeapSize = '512m'
+                maxHeapSize = project.properties['test.heap.max']
+            }
         }
     }
 
@@ -226,6 +237,7 @@ configurations.all {
 
         force 'org.objenesis:objenesis:2.6'
     }
+    
     transitive = true
 }
 
@@ -249,10 +261,14 @@ dependencies {
     implementation project(':projects')
     implementation project(':location')
     implementation project(':geo')
-    implementation project(':glide')
+    implementation project(':imageloader')
     implementation project(':errors')
     implementation project(':upgrade')
     implementation project(':permissions')
+    implementation(project(':settings')) {
+        exclude group: 'joda-time'
+    }
+    implementation project(':externalapp')
 
     implementation Dependencies.androidx_startup
     implementation Dependencies.androidx_legacy_support
@@ -292,7 +308,9 @@ dependencies {
     implementation Dependencies.bikram_sambat
     implementation Dependencies.rarepebble_colorpicker
     implementation Dependencies.commons_io
-    implementation Dependencies.opencsv
+    implementation (Dependencies.opencsv) {
+        exclude group: 'commons-logging'
+    }
     implementation(Dependencies.javarosa) {
         exclude group: 'joda-time'
         exclude group: 'org.slf4j'
@@ -346,9 +364,6 @@ dependencies {
 
     implementation Dependencies.armen101_audio_recorder_view
 
-    // Glide
-    implementation Dependencies.glide
-
     implementation(Dependencies.mp4parser_muxer) {
         exclude group: 'org.hamcrest'
     }
@@ -361,6 +376,7 @@ dependencies {
     testImplementation Dependencies.mockito_inline
     testImplementation Dependencies.mockito_kotlin
 
+    testImplementation project(':androidtest')
     testImplementation(project(path: ':testshared')) {
         exclude group: 'org.robolectric' // Some tests in `collect_app` don't work with newer Robolectric
     }
@@ -375,11 +391,12 @@ dependencies {
 
     testImplementation Dependencies.hamcrest
 
-    testImplementation Dependencies.json
     testImplementation Dependencies.androidx_test_espresso_core
     testImplementation Dependencies.androidx_test_espresso_intents
     testImplementation Dependencies.androidx_test_core_ktx
     testImplementation Dependencies.kotlinx_coroutines_test
+
+    androidTestImplementation project(':androidtest')
 
     // Used to generate documentation screenshots.
     androidTestImplementation Dependencies.fastlane_screengrab

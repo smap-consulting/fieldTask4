@@ -22,15 +22,15 @@ import static org.odk.collect.android.analytics.AnalyticsEvents.OPEN_MAP_KIT_RES
 import static org.odk.collect.android.analytics.AnalyticsEvents.SAVE_INCOMPLETE;
 import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.BACKWARDS;
 import static org.odk.collect.android.formentry.FormIndexAnimationHandler.Direction.FORWARDS;
-import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_COMPLETED_DEFAULT;
-import static org.odk.collect.android.preferences.keys.ProjectKeys.KEY_NAVIGATION;
-import static org.odk.collect.android.preferences.keys.ProtectedProjectKeys.KEY_MOVING_BACKWARDS;
 import static org.odk.collect.android.utilities.AnimationUtils.areAnimationsEnabled;
 import static org.odk.collect.android.utilities.ApplicationConstants.RequestCodes;
 import static org.odk.collect.android.utilities.DialogUtils.getDialog;
 import static org.odk.collect.androidshared.ui.DialogFragmentUtils.showIfNotShowing;
 import static org.odk.collect.androidshared.ui.ToastUtils.showLongToast;
 import static org.odk.collect.androidshared.ui.ToastUtils.showShortToast;
+import static org.odk.collect.settings.keys.ProjectKeys.KEY_COMPLETED_DEFAULT;
+import static org.odk.collect.settings.keys.ProjectKeys.KEY_NAVIGATION;
+import static org.odk.collect.settings.keys.ProtectedProjectKeys.KEY_MOVING_BACKWARDS;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -63,8 +63,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.ViewModelProvider;
@@ -130,7 +128,6 @@ import org.odk.collect.android.fragments.dialogs.CustomDatePickerDialog;
 import org.odk.collect.android.fragments.dialogs.CustomTimePickerDialog;
 import org.odk.collect.android.fragments.dialogs.LocationProvidersDisabledDialog;
 import org.odk.collect.android.fragments.dialogs.NumberPickerDialog;
-import org.odk.collect.android.fragments.dialogs.ProgressDialogFragment;
 import org.odk.collect.android.fragments.dialogs.RankingWidgetDialog;
 import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
 import org.odk.collect.android.instancemanagement.InstanceDeleter;
@@ -144,8 +141,6 @@ import org.odk.collect.android.listeners.SwipeHandler;
 import org.odk.collect.android.listeners.WidgetValueChangedListener;
 import org.odk.collect.android.logic.ImmutableDisplayableQuestion;
 import org.odk.collect.android.logic.PropertyManager;
-import org.odk.collect.android.preferences.keys.ProjectKeys;
-import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
 import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
@@ -158,7 +153,6 @@ import org.odk.collect.android.utilities.DestroyableLifecyleOwner;
 import org.odk.collect.android.utilities.ExternalAppIntentProvider;
 import org.odk.collect.android.utilities.FormsRepositoryProvider;
 import org.odk.collect.android.utilities.InstancesRepositoryProvider;
-import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.PlayServicesChecker;
 import org.odk.collect.android.utilities.ScreenContext;
 import org.odk.collect.android.utilities.SnackbarUtils;
@@ -173,17 +167,22 @@ import org.odk.collect.android.widgets.utilities.FormControllerWaitingForDataReg
 import org.odk.collect.android.widgets.utilities.InternalRecordingRequester;
 import org.odk.collect.android.widgets.utilities.ViewModelAudioPlayer;
 import org.odk.collect.android.widgets.utilities.WaitingForDataRegistry;
+import org.odk.collect.androidshared.system.IntentLauncher;
 import org.odk.collect.androidshared.ui.DialogFragmentUtils;
 import org.odk.collect.androidshared.ui.ToastUtils;
-import org.odk.collect.androidshared.system.IntentLauncher;
+import org.odk.collect.androidshared.ui.multiclicksafe.MultiClickGuard;
 import org.odk.collect.async.Scheduler;
 import org.odk.collect.audioclips.AudioClipViewModel;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
+import org.odk.collect.externalapp.ExternalAppUtils;
 import org.odk.collect.forms.Form;
 import org.odk.collect.forms.FormsRepository;
 import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.material.MaterialProgressDialogFragment;
 import org.odk.collect.permissions.PermissionListener;
 import org.odk.collect.permissions.PermissionsChecker;
+import org.odk.collect.settings.keys.ProjectKeys;
+import org.odk.collect.settings.keys.ProtectedProjectKeys;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -222,12 +221,6 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private static final boolean EVALUATE_CONSTRAINTS = true;
     public static final boolean DO_NOT_EVALUATE_CONSTRAINTS = false;
 
-    /**
-     * Should use {@link org.odk.collect.android.externaldata.ExternalAppsUtils} instead
-     */
-    @Deprecated
-    public static final String ANSWER_KEY = "value"; // this value can not be changed because it is also used by external apps
-
     public static final String KEY_INSTANCES = "instances";
     public static final String KEY_SUCCESS = "success";
     public static final String KEY_ERROR = "error";
@@ -253,6 +246,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     public static final String KEY_AUTO_SAVED = "autosaved";
 
     public static final String KEY_READ_PHONE_STATE_PERMISSION_REQUEST_NEEDED = "readPhoneStatePermissionRequestNeeded";
+
+    public static final String TAG_PROGRESS_DIALOG_MEDIA_LOADING = FormEntryActivity.class.getName() + MaterialProgressDialogFragment.class.getName() + "mediaLoading";
 
     private boolean autoSaved;
     private boolean allowMovingBackwards;
@@ -874,7 +869,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             case RequestCodes.EX_STRING_CAPTURE:
             case RequestCodes.EX_INT_CAPTURE:
             case RequestCodes.EX_DECIMAL_CAPTURE:
-                setWidgetData(intent.getExtras().get(ANSWER_KEY));
+                setWidgetData(ExternalAppUtils.getReturnedSingleValue(intent));
                 break;
         }
     }
@@ -883,9 +878,9 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         permissionsProvider.requestReadUriPermission(this, uri, getContentResolver(), new PermissionListener() {
             @Override
             public void granted() {
-                ProgressDialogFragment progressDialog = new ProgressDialogFragment();
+                MaterialProgressDialogFragment progressDialog = new MaterialProgressDialogFragment();
                 progressDialog.setMessage(getString(R.string.please_wait));
-                progressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.COLLECT_PROGRESS_DIALOG_TAG);
+                DialogFragmentUtils.showIfNotShowing(progressDialog, TAG_PROGRESS_DIALOG_MEDIA_LOADING, getSupportFragmentManager());
 
                 mediaLoadingFragment.beginMediaLoadingTask(uri);
             }
@@ -2018,11 +2013,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
           to avoid blocking the UI.
          */
         if (!mediaLoadingFragment.isMediaLoadingTaskRunning()) {
-            Fragment progressDialogFragment =
-                    getSupportFragmentManager().findFragmentByTag(ProgressDialogFragment.COLLECT_PROGRESS_DIALOG_TAG);
-            if (progressDialogFragment != null) {
-                ((DialogFragment) progressDialogFragment).dismiss();
-            }
+            DialogFragmentUtils.dismissDialog(TAG_PROGRESS_DIALOG_MEDIA_LOADING, getSupportFragmentManager());
         }
     }
 

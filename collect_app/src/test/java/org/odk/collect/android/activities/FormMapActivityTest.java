@@ -1,45 +1,5 @@
 package org.odk.collect.android.activities;
 
-import android.content.Intent;
-import android.view.View;
-import android.widget.TextView;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.chip.Chip;
-
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatchers;
-import org.odk.collect.android.R;
-import org.odk.collect.android.TestSettingsProvider;
-import org.odk.collect.android.activities.viewmodels.FormMapViewModel;
-import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.external.InstanceProvider;
-import org.odk.collect.geo.maps.MapPoint;
-import org.odk.collect.android.geo.MapProvider;
-import org.odk.collect.android.geo.TestMapFragment;
-import org.odk.collect.android.injection.config.AppDependencyModule;
-import org.odk.collect.android.preferences.keys.ProtectedProjectKeys;
-import org.odk.collect.android.preferences.screens.MapsPreferencesFragment;
-import org.odk.collect.android.support.CollectHelpers;
-import org.odk.collect.android.utilities.ApplicationConstants;
-import org.odk.collect.formstest.InMemInstancesRepository;
-import org.robolectric.RuntimeEnvironment;
-import org.robolectric.android.controller.ActivityController;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.isA;
@@ -48,8 +8,48 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.odk.collect.android.activities.FormMapViewModelTest.testInstances;
-import static org.robolectric.Shadows.shadowOf;
+import static org.odk.collect.android.activities.viewmodels.FormMapViewModel.ClickAction.DELETED_TOAST;
+import static org.odk.collect.android.activities.viewmodels.FormMapViewModel.ClickAction.NOT_VIEWABLE_TOAST;
+import static org.odk.collect.android.activities.viewmodels.FormMapViewModel.ClickAction.OPEN_EDIT;
+import static org.odk.collect.android.activities.viewmodels.FormMapViewModel.ClickAction.OPEN_READ_ONLY;
+
+import android.content.Intent;
+import android.util.Pair;
+import android.view.View;
+import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import com.google.android.material.chip.Chip;
+
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.odk.collect.android.R;
+import org.odk.collect.android.activities.viewmodels.FormMapViewModel;
+import org.odk.collect.android.external.InstanceProvider;
+import org.odk.collect.android.geo.MapProvider;
+import org.odk.collect.android.geo.TestMapFragment;
+import org.odk.collect.android.injection.config.AppDependencyComponent;
+import org.odk.collect.android.injection.config.AppDependencyModule;
+import org.odk.collect.android.preferences.screens.MapsPreferencesFragment;
+import org.odk.collect.android.support.CollectHelpers;
+import org.odk.collect.forms.Form;
+import org.odk.collect.forms.FormsRepository;
+import org.odk.collect.forms.instances.Instance;
+import org.odk.collect.forms.instances.InstancesRepository;
+import org.odk.collect.formstest.FormUtils;
+import org.odk.collect.geo.maps.MapPoint;
+import org.odk.collect.shared.TempFiles;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.android.controller.ActivityController;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class FormMapActivityTest {
@@ -63,12 +63,14 @@ public class FormMapActivityTest {
             new MapPoint(10.3, 125.6), new MapPoint(10.3, 125.7),
             new MapPoint(10.4, 125.6));
     private final MapPoint currentLocation = new MapPoint(5, 5);
+    private InstancesRepository instancesRepository;
+    private Form form;
 
     @Before
     public void setUpActivity() {
         CollectHelpers.setupDemoProject();
 
-        CollectHelpers.overrideAppDependencyModule(new AppDependencyModule() {
+        AppDependencyComponent component = CollectHelpers.overrideAppDependencyModule(new AppDependencyModule() {
             @Override
             public MapProvider providesMapProvider() {
                 MapProvider mapProvider = mock(MapProvider.class);
@@ -77,13 +79,15 @@ public class FormMapActivityTest {
             }
         });
 
-        activityController = CollectHelpers.buildThemedActivity(FormMapActivity.class);
+        FormsRepository formsRepository = component.formsRepositoryProvider().get();
+        instancesRepository = component.instancesRepositoryProvider().get();
+        form = formsRepository.save(testForm);
+        Arrays.stream(testInstances).forEach(instancesRepository::save);
+
+        Intent intent = new Intent();
+        intent.putExtra(FormMapActivity.EXTRA_FORM_ID, form.getDbId());
+        activityController = CollectHelpers.buildThemedActivity(FormMapActivity.class, intent);
         activity = (FormMapActivity) activityController.get();
-
-        InMemInstancesRepository inMemInstancesRepository = new InMemInstancesRepository(Arrays.asList(testInstances));
-        FormMapViewModel viewModel = new FormMapViewModel(FormMapViewModelTest.TEST_FORM_1, inMemInstancesRepository);
-        activity.viewModelFactory = new TestFactory(viewModel);
-
         activityController.setup();
     }
 
@@ -101,13 +105,10 @@ public class FormMapActivityTest {
         // The @Before block set up a map with points. Reset everything for this test.
         map.resetState();
 
-        ActivityController controller = CollectHelpers.buildThemedActivity(FormMapActivity.class);
-        FormMapActivity activity = (FormMapActivity) controller.get();
-
-        InMemInstancesRepository inMemInstancesRepository = new InMemInstancesRepository(new ArrayList<>());
-        FormMapViewModel viewModel = new FormMapViewModel(FormMapViewModelTest.TEST_FORM_1, inMemInstancesRepository);
-        activity.viewModelFactory = new TestFactory(viewModel);
-
+        instancesRepository.deleteAll();
+        Intent intent = new Intent();
+        intent.putExtra(FormMapActivity.EXTRA_FORM_ID, form.getDbId());
+        ActivityController controller = CollectHelpers.buildThemedActivity(FormMapActivity.class, intent);
         controller.setup();
 
         assertThat(map.getZoomCount(), is(0));
@@ -118,13 +119,10 @@ public class FormMapActivityTest {
         // The @Before block set up a map with points. Reset everything for this test.
         map.resetState();
 
-        ActivityController controller = CollectHelpers.buildThemedActivity(FormMapActivity.class);
-        FormMapActivity activity = (FormMapActivity) controller.get();
-
-        InMemInstancesRepository inMemInstancesRepository = new InMemInstancesRepository(new ArrayList<>());
-        FormMapViewModel viewModel = new FormMapViewModel(FormMapViewModelTest.TEST_FORM_1, inMemInstancesRepository);
-        activity.viewModelFactory = new TestFactory(viewModel);
-
+        instancesRepository.deleteAll();
+        Intent intent = new Intent();
+        intent.putExtra(FormMapActivity.EXTRA_FORM_ID, form.getDbId());
+        ActivityController controller = CollectHelpers.buildThemedActivity(FormMapActivity.class, intent);
         controller.setup();
 
         assertThat(map.getZoomCount(), is(0));
@@ -184,16 +182,6 @@ public class FormMapActivityTest {
         assertThat(map.getZoom(), is(7.0));
     }
 
-    @Test
-    public void tappingOnNewInstanceButton_opensNewInstance() {
-        activity.findViewById(R.id.new_instance).performClick();
-
-        Intent actual = shadowOf((Collect) ApplicationProvider.getApplicationContext()).getNextStartedActivity();
-
-        assertThat(actual.getAction(), is(Intent.ACTION_EDIT));
-        assertThat(actual.getStringExtra(ApplicationConstants.BundleKeys.FORM_MODE), is(nullValue()));
-    }
-
     @Ignore("Doesn't work with field-based dependency injection because we don't get an opportunity" +
             "to set test doubles before onCreate() is called after the orientation change")
     @Test
@@ -219,165 +207,185 @@ public class FormMapActivityTest {
     }
 
     @Test
-    public void openingEditableInstances_launchesEditActivity() {
-        MapPoint editableAndFinalized = new MapPoint(10.1, 125.6);
-        MapPoint unfinalized = new MapPoint(10.1, 126.6);
-
-        MapPoint[] testPoints = {editableAndFinalized, unfinalized};
-
-        for (MapPoint toTap : testPoints) {
-            int featureId = map.getFeatureIdFor(toTap);
-
-            activity.onFeatureClicked(featureId);
-            clickOnOpenFormChip();
-            Intent actual = shadowOf((Collect) ApplicationProvider.getApplicationContext()).getNextStartedActivity();
-
-            assertThat(actual.getAction(), is(Intent.ACTION_EDIT));
-            assertThat(actual.getStringExtra(ApplicationConstants.BundleKeys.FORM_MODE), is(nullValue()));
-        }
-    }
-
-    @Test
-    public void openingEditableInstance_whenEditingSettingisOff_launchesViewActivity() {
-        TestSettingsProvider.getProtectedSettings().save(ProtectedProjectKeys.KEY_EDIT_SAVED, false);
-
-        MapPoint editableAndFinalized = new MapPoint(10.1, 125.6);
-        MapPoint unfinalized = new MapPoint(10.1, 126.6);
-        MapPoint failedToSend = new MapPoint(10.3, 125.6);
-
-        MapPoint[] testPoints = {editableAndFinalized, unfinalized, failedToSend};
-
-        for (MapPoint toTap : testPoints) {
-            int featureId = map.getFeatureIdFor(toTap);
-
-            activity.onFeatureClicked(featureId);
-            clickOnOpenFormChip();
-            Intent actual = shadowOf((Collect) ApplicationProvider.getApplicationContext()).getNextStartedActivity();
-
-            assertThat(actual.getAction(), is(Intent.ACTION_EDIT));
-            assertThat(actual.getStringExtra(ApplicationConstants.BundleKeys.FORM_MODE), is(ApplicationConstants.FormModes.VIEW_SENT));
-        }
-    }
-
-    @Test
-    public void openingUneditableInstances_launchesViewActivity() {
-        MapPoint sent = new MapPoint(10.3, 125.7);
-        MapPoint failedToSend = new MapPoint(10.3, 125.6);
-
-        MapPoint[] testPoints = {sent, failedToSend};
-
-        for (MapPoint toTap : testPoints) {
-            int featureId = map.getFeatureIdFor(toTap);
-
-            activity.onFeatureClicked(featureId);
-            clickOnOpenFormChip();
-            Intent actual = shadowOf((Collect) ApplicationProvider.getApplicationContext()).getNextStartedActivity();
-
-            assertThat(actual.getAction(), is(Intent.ACTION_EDIT));
-            assertThat(actual.getStringExtra(ApplicationConstants.BundleKeys.FORM_MODE), is(ApplicationConstants.FormModes.VIEW_SENT));
-        }
-    }
-
-    @Test
     public void tappingOnEditableInstance_showsSubmissionSummaryWithAppropriateMessage() {
-        MapPoint editableAndFinalized = new MapPoint(10.1, 125.6);
-        MapPoint unfinalized = new MapPoint(10.1, 126.6);
-        MapPoint failedToSend = new MapPoint(10.3, 125.6);
+        Pair<Instance, MapPoint> editableAndFinalized = new Pair<>(testInstances[1], new MapPoint(10.1, 125.6));
+        Pair<Instance, MapPoint> unfinalized = new Pair<>(testInstances[2], new MapPoint(10.1, 126.6));
+        Pair<Instance, MapPoint> failedToSend = new Pair<>(testInstances[4], new MapPoint(10.3, 125.6));
 
-        MapPoint[] testPoints = {editableAndFinalized, unfinalized, failedToSend};
+        activity.onFeatureClicked(map.getFeatureIdFor(editableAndFinalized.second));
+        assertSubmissionSummaryContent(editableAndFinalized.first.getDisplayName(), editableAndFinalized.first.getStatus(), new Date(editableAndFinalized.first.getLastStatusChangeDate()), OPEN_EDIT);
 
-        for (MapPoint toTap : testPoints) {
-            int featureId = map.getFeatureIdFor(toTap);
+        activity.onFeatureClicked(map.getFeatureIdFor(unfinalized.second));
+        assertSubmissionSummaryContent(unfinalized.first.getDisplayName(), unfinalized.first.getStatus(), new Date(unfinalized.first.getLastStatusChangeDate()), OPEN_EDIT);
 
-            FormMapViewModel.MappableFormInstance mappableFormInstance = activity.instancesByFeatureId.get(featureId);
-            activity.onFeatureClicked(featureId);
-
-            assertSubmissionSummaryContent(mappableFormInstance);
-        }
+        activity.onFeatureClicked(map.getFeatureIdFor(failedToSend.second));
+        assertSubmissionSummaryContent(failedToSend.first.getDisplayName(), failedToSend.first.getStatus(), new Date(failedToSend.first.getLastStatusChangeDate()), OPEN_READ_ONLY);
     }
 
     @Test
     public void tappingOnUneditableInstances_showsSubmissionSummaryWithAppropriateMessage() {
-        MapPoint sent = new MapPoint(10.3, 125.7);
+        Pair<Instance, MapPoint> sent = new Pair<>(testInstances[5], new MapPoint(10.3, 125.7));
 
-        int featureId = map.getFeatureIdFor(sent);
-        FormMapViewModel.MappableFormInstance mappableFormInstance = activity.instancesByFeatureId.get(featureId);
+        int featureId = map.getFeatureIdFor(sent.second);
         activity.onFeatureClicked(featureId);
-
-        assertSubmissionSummaryContent(mappableFormInstance);
+        assertSubmissionSummaryContent(sent.first.getDisplayName(), sent.first.getStatus(), new Date(sent.first.getLastStatusChangeDate()), OPEN_READ_ONLY);
     }
 
-    // Geometry is removed from the database on instance encryption but just in case there is an
-    // encrypted instance with geometry available, show an encrypted toast.
     @Test
-    public void tappingOnEncryptedInstances_showsSubmissionSummaryWithAppropriateMessage() {
-        MapPoint submissionFailedCantEditWhenFinalized = new MapPoint(10.4, 125.6);
+    public void tappingOnFailedSubmission_showsSubmissionSummaryWithAppropriateMessage() {
+        Pair<Instance, MapPoint> submissionFailedCantEditWhenFinalized = new Pair<>(testInstances[6], new MapPoint(10.4, 125.6));
 
-        int featureId = map.getFeatureIdFor(submissionFailedCantEditWhenFinalized);
-        FormMapViewModel.MappableFormInstance mappableFormInstance = activity.instancesByFeatureId.get(featureId);
+        int featureId = map.getFeatureIdFor(submissionFailedCantEditWhenFinalized.second);
         activity.onFeatureClicked(featureId);
-
-        assertSubmissionSummaryContent(mappableFormInstance);
+        assertSubmissionSummaryContent(submissionFailedCantEditWhenFinalized.first.getDisplayName(), submissionFailedCantEditWhenFinalized.first.getStatus(), new Date(submissionFailedCantEditWhenFinalized.first.getLastStatusChangeDate()), NOT_VIEWABLE_TOAST);
     }
 
     // Geometry is removed from the database on instance deletion but just in case there is a
     // deleted instance with geometry available, show a deleted toast.
     @Test
     public void tappingOnDeletedInstances_showsSubmissionSummaryWithAppropriateMessage() {
-        MapPoint deleted = new MapPoint(10.0, 125.6);
+        Pair<Instance, MapPoint> deleted = new Pair<>(testInstances[0], new MapPoint(10.0, 125.6));
 
-        int featureId = map.getFeatureIdFor(deleted);
-        FormMapViewModel.MappableFormInstance mappableFormInstance = activity.instancesByFeatureId.get(featureId);
+        int featureId = map.getFeatureIdFor(deleted.second);
         activity.onFeatureClicked(featureId);
-
-        assertSubmissionSummaryContent(mappableFormInstance);
+        assertSubmissionSummaryContent(deleted.first.getDisplayName(), deleted.first.getStatus(), new Date(deleted.first.getLastStatusChangeDate()), DELETED_TOAST);
     }
 
-    private void clickOnOpenFormChip() {
-        activity.findViewById(R.id.openFormChip).performClick();
-        assertThat(activity.summarySheet.getState(), is(BottomSheetBehavior.STATE_HIDDEN));
+    @Test
+    public void recreating_maintainsZoom() {
+        map.zoomToPoint(new MapPoint(55d, 66d), 7, false);
+
+        activityController.recreate();
+
+        assertThat(map.getLatestZoomBoundingBox(), is(nullValue()));
+        assertThat(map.getCenter(), is(new MapPoint(55d, 66d)));
+        assertThat(map.getZoom(), is(7d));
     }
 
-    private void assertSubmissionSummaryContent(FormMapViewModel.MappableFormInstance mappableFormInstance) {
-        assertThat(((TextView) activity.findViewById(R.id.submission_name)).getText().toString(), is(mappableFormInstance.getInstanceName()));
-        String instanceLastStatusChangeDate = InstanceProvider.getDisplaySubtext(activity, mappableFormInstance.getStatus(), mappableFormInstance.getLastStatusChangeDate());
+    private void assertSubmissionSummaryContent(String instanceName, String status, Date lastStatusChangeDate, FormMapViewModel.ClickAction clickAction) {
+        assertThat(((TextView) activity.findViewById(R.id.name)).getText().toString(), is(instanceName));
+        String instanceLastStatusChangeDate = InstanceProvider.getDisplaySubtext(activity, status, lastStatusChangeDate);
         assertThat(((TextView) activity.findViewById(R.id.status_text)).getText().toString(), is(instanceLastStatusChangeDate));
 
-        switch (mappableFormInstance.getClickAction()) {
+        switch (clickAction) {
             case DELETED_TOAST:
                 assertThat(activity.findViewById(R.id.info).getVisibility(), is(View.VISIBLE));
-                assertThat(activity.findViewById(R.id.openFormChip).getVisibility(), is(View.GONE));
+                assertThat(activity.findViewById(R.id.action).getVisibility(), is(View.GONE));
                 break;
             case NOT_VIEWABLE_TOAST:
                 assertThat(activity.findViewById(R.id.info).getVisibility(), is(View.VISIBLE));
                 assertThat(((TextView) activity.findViewById(R.id.info)).getText().toString(), is(activity.getString(R.string.cannot_edit_completed_form)));
-                assertThat(activity.findViewById(R.id.openFormChip).getVisibility(), is(View.GONE));
+                assertThat(activity.findViewById(R.id.action).getVisibility(), is(View.GONE));
                 break;
             case OPEN_READ_ONLY:
                 assertThat(activity.findViewById(R.id.info).getVisibility(), is(View.GONE));
-                assertThat(activity.findViewById(R.id.openFormChip).getVisibility(), is(View.VISIBLE));
-                assertThat(((Chip) activity.findViewById(R.id.openFormChip)).getText(), is(activity.getString(R.string.view_data)));
+                assertThat(activity.findViewById(R.id.action).getVisibility(), is(View.VISIBLE));
+                assertThat(((Chip) activity.findViewById(R.id.action)).getText(), is(activity.getString(R.string.view_data)));
                 break;
             case OPEN_EDIT:
                 assertThat(activity.findViewById(R.id.info).getVisibility(), is(View.GONE));
-                assertThat(activity.findViewById(R.id.openFormChip).getVisibility(), is(View.VISIBLE));
-                assertThat(((Chip) activity.findViewById(R.id.openFormChip)).getText(), is(activity.getString(R.string.review_data)));
+                assertThat(activity.findViewById(R.id.action).getVisibility(), is(View.VISIBLE));
+                assertThat(((Chip) activity.findViewById(R.id.action)).getText(), is(activity.getString(R.string.review_data)));
                 break;
         }
     }
 
-    private static class TestFactory implements ViewModelProvider.Factory {
+    private final Form testForm = FormUtils
+            .buildForm("formId1", "2019103101", TempFiles.createTempDir().getAbsolutePath())
+            .build();
 
-        private final FormMapViewModel viewModel;
+    private static Instance[] testInstances = {
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form1")
+                    .lastStatusChangeDate(1487782554846L)
+                    .formId("formId1")
+                    .formVersion("2019103101")
+                    .deletedDate(1487782554846L)
+                    .geometryType("Point")
+                    .geometry("{\"type\":\"Point\",\"coordinates\":[125.6, 10.0]}")
+                    .status(Instance.STATUS_SUBMITTED).build(),
 
-        TestFactory(FormMapViewModel viewModel) {
-            this.viewModel = viewModel;
-        }
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form2")
+                    .lastStatusChangeDate(1488782558743L)
+                    .formId("formId1")
+                    .formVersion("2019103101")
+                    .geometryType("Point")
+                    .geometry("{\"type\":\"Point\",\"coordinates\":[125.6, 10.1]}")
+                    .canEditWhenComplete(true)
+                    .status(Instance.STATUS_COMPLETE).build(),
 
-        @NonNull
-        @Override
-        public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-            return (T) viewModel;
-        }
-    }
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form3")
+                    .lastStatusChangeDate(1484582553254L)
+                    .formId("formId1")
+                    .formVersion("2019103102")
+                    .geometryType("Point")
+                    .geometry("{\"type\":\"Point\",\"coordinates\":[126.6, 10.1]}")
+                    .status(Instance.STATUS_INCOMPLETE).build(),
+
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form4")
+                    .lastStatusChangeDate(1488582557456L)
+                    .formId("formId1")
+                    .formVersion("2019103101")
+                    .status(Instance.STATUS_COMPLETE).build(),
+
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form5")
+                    .lastStatusChangeDate(1483582557438L)
+                    .formId("formId1")
+                    .formVersion("2019103106")
+                    .geometryType("Point")
+                    .geometry("{\"type\":\"Point\",\"coordinates\":[125.6, 10.3]}")
+                    .canEditWhenComplete(true)
+                    .status(Instance.STATUS_SUBMISSION_FAILED).build(),
+
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form6")
+                    .lastStatusChangeDate(1482282559618L)
+                    .formId("formId1")
+                    .formVersion("2019103101")
+                    .geometryType("Point")
+                    .geometry("{\"type\":\"Point\",\"coordinates\":[125.7, 10.3]}")
+                    .canEditWhenComplete(true)
+                    .status(Instance.STATUS_SUBMITTED).build(),
+
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form7")
+                    .lastStatusChangeDate(1484782559836L)
+                    .formId("formId1")
+                    .formVersion("2019103101")
+                    .geometryType("Point")
+                    .geometry("{\"type\":\"Point\",\"coordinates\":[125.6, 10.4]}")
+                    .canEditWhenComplete(false)
+                    .status(Instance.STATUS_SUBMISSION_FAILED).build(),
+
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form8")
+                    .lastStatusChangeDate(1487982552254L)
+                    .formId("formId2")
+                    .formVersion("2019103101")
+                    .geometryType("Point")
+                    .geometry("Crazy stuff")
+                    .status(Instance.STATUS_COMPLETE).build(),
+
+            new Instance.Builder()
+                    .instanceFilePath("")
+                    .displayName("Form9")
+                    .lastStatusChangeDate(1484682557369L)
+                    .formId("formId2")
+                    .formVersion("2019103101")
+                    .geometryType("Crazy stuff")
+                    .geometry("{\"type\":\"Point\",\"coordinates\":[125.6, 10.4]}")
+                    .status(Instance.STATUS_COMPLETE).build(),
+    };
 }

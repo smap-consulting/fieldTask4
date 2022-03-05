@@ -1,5 +1,11 @@
 package org.odk.collect.android.activities;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.not;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,12 +20,6 @@ import org.odk.collect.formstest.InMemInstancesRepository;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.not;
-
 public class FormMapViewModelTest {
     @Rule public MockitoRule rule = MockitoJUnit.rule();
 
@@ -27,16 +27,6 @@ public class FormMapViewModelTest {
 
     @Before public void setUp() {
         testInstancesRepository = new InMemInstancesRepository(Arrays.asList(testInstances));
-    }
-
-    @Test public void getFormTitle_returnsFormTitle() {
-        FormMapViewModel viewModel = new FormMapViewModel(TEST_FORM_1, testInstancesRepository);
-        assertThat(viewModel.getFormTitle(), is("Form with ID 1"));
-    }
-
-    @Test public void getFormId_returnsFormDatabaseId() {
-        FormMapViewModel viewModel = new FormMapViewModel(TEST_FORM_1, testInstancesRepository);
-        assertThat(viewModel.getFormId(), is(0L));
     }
 
     @Test public void getTotalInstanceCount_returnsCountOfAllInstances() {
@@ -172,8 +162,9 @@ public class FormMapViewModelTest {
             .geometryXpath("/data/my-point2")
             .build();
 
-    static Instance[] testInstances = {
+    private static Instance[] testInstances = {
             new Instance.Builder().dbId(0L)
+                    .instanceFilePath("")
                     .displayName("Form1")
                     .lastStatusChangeDate(1487782554846L)
                     .formId("formId1")
@@ -184,6 +175,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_SUBMITTED).build(),
 
             new Instance.Builder().dbId(1L)
+                    .instanceFilePath("")
                     .displayName("Form2")
                     .lastStatusChangeDate(1488782558743L)
                     .formId("formId1")
@@ -194,6 +186,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_COMPLETE).build(),
 
             new Instance.Builder().dbId(2L)
+                    .instanceFilePath("")
                     .displayName("Form3")
                     .lastStatusChangeDate(1484582553254L)
                     .formId("formId1")
@@ -203,6 +196,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_INCOMPLETE).build(),
 
             new Instance.Builder().dbId(3L)
+                    .instanceFilePath("")
                     .displayName("Form4")
                     .lastStatusChangeDate(1488582557456L)
                     .formId("formId1")
@@ -210,6 +204,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_COMPLETE).build(),
 
             new Instance.Builder().dbId(4L)
+                    .instanceFilePath("")
                     .displayName("Form5")
                     .lastStatusChangeDate(1483582557438L)
                     .formId("formId1")
@@ -220,6 +215,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_SUBMISSION_FAILED).build(),
 
             new Instance.Builder().dbId(5L)
+                    .instanceFilePath("")
                     .displayName("Form6")
                     .lastStatusChangeDate(1482282559618L)
                     .formId("formId1")
@@ -230,6 +226,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_SUBMITTED).build(),
 
             new Instance.Builder().dbId(6L)
+                    .instanceFilePath("")
                     .displayName("Form7")
                     .lastStatusChangeDate(1484782559836L)
                     .formId("formId1")
@@ -240,6 +237,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_SUBMISSION_FAILED).build(),
 
             new Instance.Builder().dbId(7L)
+                    .instanceFilePath("")
                     .displayName("Form8")
                     .lastStatusChangeDate(1487982552254L)
                     .formId("formId2")
@@ -249,6 +247,7 @@ public class FormMapViewModelTest {
                     .status(Instance.STATUS_COMPLETE).build(),
 
             new Instance.Builder().dbId(8L)
+                    .instanceFilePath("")
                     .displayName("Form9")
                     .lastStatusChangeDate(1484682557369L)
                     .formId("formId2")

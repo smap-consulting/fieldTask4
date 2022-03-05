@@ -27,7 +27,6 @@ import org.odk.collect.android.audio.AudioRecordingErrorDialogFragment;
 import org.odk.collect.android.backgroundwork.AutoSendTaskSpec;
 import org.odk.collect.android.backgroundwork.AutoUpdateTaskSpec;
 import org.odk.collect.android.backgroundwork.SyncFormsTaskSpec;
-import org.odk.collect.android.configure.SettingsImporter;
 import org.odk.collect.android.configure.qr.QRCodeScannerFragment;
 import org.odk.collect.android.configure.qr.QRCodeTabsActivity;
 import org.odk.collect.android.configure.qr.ShowQRCodeFragment;
@@ -53,7 +52,6 @@ import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
 import org.odk.collect.android.gdrive.GoogleDriveActivity;
 import org.odk.collect.android.gdrive.GoogleSheetsUploaderActivity;
 import org.odk.collect.android.geo.GoogleMapFragment;
-import org.odk.collect.android.geo.MapProvider;
 import org.odk.collect.android.geo.MapboxMapFragment;
 import org.odk.collect.android.geo.OsmDroidMapFragment;
 import org.odk.collect.android.logic.PropertyManager;
@@ -77,7 +75,6 @@ import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity;
 import org.odk.collect.android.preferences.screens.ProjectPreferencesFragment;
 import org.odk.collect.android.preferences.screens.ServerPreferencesFragment;
 import org.odk.collect.android.preferences.screens.UserInterfacePreferencesFragment;
-import org.odk.collect.android.preferences.source.SettingsProvider;
 import org.odk.collect.android.projects.CurrentProjectProvider;
 import org.odk.collect.android.projects.ManualProjectCreatorDialog;
 import org.odk.collect.android.projects.ProjectSettingsDialog;
@@ -94,8 +91,12 @@ import org.odk.collect.android.utilities.ThemeUtils;
 import org.odk.collect.android.widgets.ExStringWidget;
 import org.odk.collect.android.widgets.QuestionWidget;
 import org.odk.collect.async.Scheduler;
+import org.odk.collect.geo.maps.MapFragmentFactory;
 import org.odk.collect.location.LocationClient;
+import org.odk.collect.permissions.PermissionsProvider;
 import org.odk.collect.projects.ProjectsRepository;
+import org.odk.collect.settings.ODKAppSettingsImporter;
+import org.odk.collect.settings.SettingsProvider;
 
 import javax.inject.Singleton;
 
@@ -298,7 +299,7 @@ public interface AppDependencyComponent {
 
     ApplicationInitializer applicationInitializer();
 
-    SettingsImporter settingsImporter();
+    ODKAppSettingsImporter settingsImporter();
 
     ProjectsRepository projectsRepository();
 
@@ -320,9 +321,11 @@ public interface AppDependencyComponent {
 
     ProjectResetter projectResetter();
 
-    MapProvider mapProvider();
+    MapFragmentFactory mapFragmentFactory();
 
     Scheduler scheduler();
 
     LocationClient locationClient();
+
+    PermissionsProvider permissionsProvider();
 }

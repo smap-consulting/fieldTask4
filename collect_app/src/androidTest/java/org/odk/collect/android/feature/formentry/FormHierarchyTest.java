@@ -10,8 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.ResetStateRule;
+import org.odk.collect.android.support.rules.CollectTestRule;
+import org.odk.collect.android.support.rules.TestRuleChain;
 import org.odk.collect.android.support.matchers.RecyclerViewMatcher;
 import org.odk.collect.android.support.pages.AddNewRepeatDialog;
 import org.odk.collect.android.support.pages.FormEntryPage;
@@ -22,8 +22,7 @@ public class FormHierarchyTest {
     public CollectTestRule rule = new CollectTestRule();
 
     @Rule
-    public RuleChain copyFormChain = RuleChain
-            .outerRule(new ResetStateRule())
+    public RuleChain copyFormChain = TestRuleChain.chain()
             .around(rule);
 
     @Test

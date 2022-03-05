@@ -12,7 +12,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.startsWith;
-import static org.odk.collect.android.support.CustomMatchers.withIndex;
+import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 
 import android.Manifest;
 
@@ -22,23 +22,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.FormActivityTestRule;
-import org.odk.collect.android.support.ResetStateRule;
+import org.odk.collect.android.support.rules.FormActivityTestRule;
+import org.odk.collect.android.support.rules.ResetStateRule;
 
 import java.util.Collections;
 
 public class LikertTest {
     private static final String LIKERT_TEST_FORM = "likert_test.xml";
 
-    @Rule
-    public FormActivityTestRule activityTestRule = new FormActivityTestRule(LIKERT_TEST_FORM, "All widgets likert icon");
+    public FormActivityTestRule activityTestRule = new FormActivityTestRule(LIKERT_TEST_FORM, "All widgets likert icon", Collections.singletonList("famous.jpg"));
 
     @Rule
     public RuleChain copyFormChain = RuleChain
             .outerRule(GrantPermissionRule.grant(Manifest.permission.CAMERA))
             .around(new ResetStateRule())
-            .around(new CopyFormRule(LIKERT_TEST_FORM, Collections.singletonList("famous.jpg"), true));
+            .around(activityTestRule);
 
     @Test
     public void allText_canClick() {

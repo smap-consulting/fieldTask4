@@ -19,20 +19,18 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.RuleChain
 import org.odk.collect.android.R
-import org.odk.collect.android.support.CollectTestRule
-import org.odk.collect.android.support.ResetStateRule
-import org.odk.collect.android.support.TestRuleChain
 import org.odk.collect.android.support.pages.AccessControlPage
 import org.odk.collect.android.support.pages.FormEntryPage
 import org.odk.collect.android.support.pages.MainMenuPage
 import org.odk.collect.android.support.pages.ProjectSettingsPage
+import org.odk.collect.android.support.rules.CollectTestRule
+import org.odk.collect.android.support.rules.TestRuleChain
 
 class FormNavigationTest {
     var rule = CollectTestRule()
 
     @get:Rule
     var copyFormChain: RuleChain = TestRuleChain.chain()
-        .around(ResetStateRule())
         .around(rule)
 
     @Test // TestCase14

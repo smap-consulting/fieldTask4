@@ -8,16 +8,16 @@ import org.odk.collect.android.external.FormsContract
 import org.odk.collect.android.formmanagement.matchexactly.ServerFormsSynchronizer
 import org.odk.collect.android.formmanagement.matchexactly.SyncStatusAppState
 import org.odk.collect.android.notifications.Notifier
-import org.odk.collect.android.preferences.keys.ProjectKeys
-import org.odk.collect.android.preferences.source.SettingsProvider
 import org.odk.collect.android.storage.StoragePathProvider
 import org.odk.collect.android.storage.StorageSubdirectory
 import org.odk.collect.android.utilities.ChangeLockProvider
 import org.odk.collect.android.utilities.FormsDirDiskFormsSynchronizer
 import org.odk.collect.android.utilities.FormsRepositoryProvider
 import org.odk.collect.android.utilities.InstancesRepositoryProvider
-import org.odk.collect.android.utilities.TranslationHandler
 import org.odk.collect.forms.FormSourceException
+import org.odk.collect.settings.SettingsProvider
+import org.odk.collect.settings.keys.ProjectKeys
+import org.odk.collect.strings.localization.getLocalizedString
 import java.io.File
 import java.util.stream.Collectors
 
@@ -57,8 +57,8 @@ class FormsUpdater(
                         updatedForms,
                         sandbox.formsLock,
                         formDownloader,
-                        TranslationHandler.getString(context, R.string.success),
-                        TranslationHandler.getString(context, R.string.failure)
+                        context.getLocalizedString(R.string.success),
+                        context.getLocalizedString(R.string.failure)
                     )
 
                     notifier.onUpdatesDownloaded(results, projectId)
@@ -77,7 +77,8 @@ class FormsUpdater(
      * Downloads new forms, updates existing forms and deletes forms that are no longer part of
      * the project's form list.
      */
-    fun matchFormsWithServer(projectId: String): Boolean {
+    @JvmOverloads
+    fun matchFormsWithServer(projectId: String, notify: Boolean = true): Boolean {
         val sandbox = getProjectSandbox(projectId)
 
         val diskFormsSynchronizer = diskFormsSynchronizer(sandbox)
@@ -98,15 +99,20 @@ class FormsUpdater(
                 val exception = try {
                     serverFormsSynchronizer.synchronize()
                     syncStatusAppState.finishSync(projectId, null)
-                    notifier.onSync(null, projectId)
+                    if (notify) {
+                        notifier.onSync(null, projectId)
+                        AnalyticsUtils.logMatchExactlyCompleted(analytics, null)
+                    }
                     null
                 } catch (e: FormSourceException) {
                     syncStatusAppState.finishSync(projectId, e)
-                    notifier.onSync(e, projectId)
+                    if (notify) {
+                        notifier.onSync(e, projectId)
+                        AnalyticsUtils.logMatchExactlyCompleted(analytics, e)
+                    }
                     e
                 }
 
-                AnalyticsUtils.logMatchExactlyCompleted(analytics, exception)
                 exception == null
             } else {
                 false

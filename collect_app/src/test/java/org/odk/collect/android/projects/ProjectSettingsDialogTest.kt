@@ -14,6 +14,7 @@ import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.Matchers.notNullValue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
@@ -24,14 +25,14 @@ import org.odk.collect.android.activities.viewmodels.CurrentProjectViewModel
 import org.odk.collect.android.application.initialization.AnalyticsInitializer
 import org.odk.collect.android.injection.config.AppDependencyModule
 import org.odk.collect.android.preferences.screens.ProjectPreferencesActivity
-import org.odk.collect.android.preferences.source.SettingsProvider
 import org.odk.collect.android.storage.StoragePathProvider
 import org.odk.collect.android.support.CollectHelpers
 import org.odk.collect.androidshared.livedata.MutableNonNullLiveData
-import org.odk.collect.fragmentstest.DialogFragmentTest
+import org.odk.collect.fragmentstest.FragmentScenarioLauncherRule
 import org.odk.collect.projects.InMemProjectsRepository
 import org.odk.collect.projects.Project
 import org.odk.collect.projects.ProjectsRepository
+import org.odk.collect.settings.SettingsProvider
 import org.odk.collect.shared.strings.UUIDGenerator
 import org.odk.collect.testshared.RobolectricHelpers
 
@@ -51,6 +52,9 @@ class ProjectSettingsDialogTest {
 
     val projectsRepository = InMemProjectsRepository(UUIDGenerator(),)
 
+    @get:Rule
+    val launcherRule = FragmentScenarioLauncherRule()
+
     @Before
     fun setup() {
         CollectHelpers.overrideAppDependencyModule(object : AppDependencyModule() {
@@ -59,12 +63,12 @@ class ProjectSettingsDialogTest {
                 analyticsInitializer: AnalyticsInitializer,
                 storagePathProvider: StoragePathProvider,
                 projectsRepository: ProjectsRepository
-            ): CurrentProjectViewModel.Factory? {
+            ): CurrentProjectViewModel.Factory {
                 return object : CurrentProjectViewModel.Factory(
                     currentProjectProvider,
                     analyticsInitializer
                 ) {
-                    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                    override fun <T : ViewModel> create(modelClass: Class<T>): T {
                         return currentProjectViewModel as T
                     }
                 }
@@ -82,7 +86,7 @@ class ProjectSettingsDialogTest {
 
     @Test
     fun `The dialog should be dismissed after clicking on the 'X' button`() {
-        val scenario = DialogFragmentTest.launchDialogFragment(ProjectSettingsDialog::class.java)
+        val scenario = launcherRule.launchDialogFragment(ProjectSettingsDialog::class.java)
 
         scenario.onFragment {
             assertThat(it.dialog!!.isShowing, `is`(true))
@@ -94,7 +98,7 @@ class ProjectSettingsDialogTest {
 
     @Test
     fun `The dialog should be dismissed after clicking on a device back button`() {
-        val scenario = DialogFragmentTest.launchDialogFragment(ProjectSettingsDialog::class.java)
+        val scenario = launcherRule.launchDialogFragment(ProjectSettingsDialog::class.java)
         scenario.onFragment {
             assertThat(it.dialog!!.isShowing, `is`(true))
             onView(isRoot()).perform(pressBack())
@@ -105,7 +109,7 @@ class ProjectSettingsDialogTest {
 
     @Test
     fun `Project settings should be started after clicking on the 'Settings' button`() {
-        val scenario = DialogFragmentTest.launchDialogFragment(ProjectSettingsDialog::class.java)
+        val scenario = launcherRule.launchDialogFragment(ProjectSettingsDialog::class.java)
         scenario.onFragment {
             Intents.init()
             assertThat(it.dialog!!.isShowing, `is`(true))
@@ -122,7 +126,7 @@ class ProjectSettingsDialogTest {
 
     @Test
     fun `About section should be started after clicking on the 'About' button`() {
-        val scenario = DialogFragmentTest.launchDialogFragment(ProjectSettingsDialog::class.java)
+        val scenario = launcherRule.launchDialogFragment(ProjectSettingsDialog::class.java)
         scenario.onFragment {
             Intents.init()
             assertThat(it.dialog!!.isShowing, `is`(true))
@@ -136,7 +140,7 @@ class ProjectSettingsDialogTest {
 
     @Test
     fun `QrCodeProjectCreatorDialog should be displayed after clicking on the 'Add project' button`() {
-        val scenario = DialogFragmentTest.launchDialogFragment(ProjectSettingsDialog::class.java)
+        val scenario = launcherRule.launchDialogFragment(ProjectSettingsDialog::class.java)
         scenario.onFragment {
             it.binding.addProjectButton.performClick()
             assertThat(
@@ -152,7 +156,7 @@ class ProjectSettingsDialogTest {
     fun `currentProjectViewModel should be notified when project switched`() {
         val projectY = projectsRepository.save(Project.New("Project Y", "Y", "#ffffff"))
 
-        val scenario = DialogFragmentTest.launchDialogFragment(ProjectSettingsDialog::class.java)
+        val scenario = launcherRule.launchDialogFragment(ProjectSettingsDialog::class.java)
         scenario.onFragment {
             it.binding.projectList.children.iterator().asSequence().first().performClick()
             verify(currentProjectViewModel).setCurrentProject(projectY)

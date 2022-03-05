@@ -1,6 +1,7 @@
 package org.odk.collect.android.support;
 
 import android.app.Application;
+import android.content.Intent;
 
 import androidx.core.util.Pair;
 import androidx.fragment.app.FragmentActivity;
@@ -58,12 +59,13 @@ public final class CollectHelpers {
         return localURI;
     }
 
-    public static void overrideAppDependencyModule(AppDependencyModule appDependencyModule) {
+    public static AppDependencyComponent overrideAppDependencyModule(AppDependencyModule appDependencyModule) {
         AppDependencyComponent testComponent = DaggerAppDependencyComponent.builder()
                 .application(ApplicationProvider.getApplicationContext())
                 .appDependencyModule(appDependencyModule)
                 .build();
         ((Collect) ApplicationProvider.getApplicationContext()).setComponent(testComponent);
+        return testComponent;
     }
 
     public static <T extends FragmentActivity> T createThemedActivity(Class<T> clazz) {
@@ -76,6 +78,13 @@ public final class CollectHelpers {
 
     public static <T extends FragmentActivity> ActivityController<T> buildThemedActivity(Class<T> clazz) {
         ActivityController<T> activity = Robolectric.buildActivity(clazz);
+        activity.get().setTheme(R.style.Theme_MaterialComponents);
+
+        return activity;
+    }
+
+    public static <T extends FragmentActivity> ActivityController<T> buildThemedActivity(Class<T> clazz, Intent intent) {
+        ActivityController<T> activity = Robolectric.buildActivity(clazz, intent);
         activity.get().setTheme(R.style.Theme_MaterialComponents);
 
         return activity;

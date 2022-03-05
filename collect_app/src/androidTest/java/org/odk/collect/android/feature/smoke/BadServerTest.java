@@ -7,9 +7,9 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.CollectTestRule;
+import org.odk.collect.android.support.rules.CollectTestRule;
 import org.odk.collect.android.support.TestDependencies;
-import org.odk.collect.android.support.TestRuleChain;
+import org.odk.collect.android.support.rules.TestRuleChain;
 import org.odk.collect.android.support.TranslatedStringBuilder;
 
 import java.util.Arrays;
@@ -59,7 +59,7 @@ public class BadServerTest {
         testDependencies.server.addForm("One Question", "one_question", "1", "one-question.xml", Arrays.asList("fruits.csv"));
 
         rule.withProject(testDependencies.server.getURL())
-                .copyForm("one-question.xml", Arrays.asList("fruits.csv"), testDependencies.server.getHostName())
+                .copyForm("one-question.xml", Arrays.asList("fruits.csv"), false, testDependencies.server.getHostName())
                 .clickGetBlankForm()
                 .assertText(R.string.newer_version_of_a_form_info);
     }

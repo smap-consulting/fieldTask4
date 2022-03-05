@@ -1,7 +1,6 @@
 package org.odk.collect.android.feature.external
 
 import android.content.Intent
-import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
@@ -10,16 +9,18 @@ import org.junit.rules.RuleChain
 import org.junit.runner.RunWith
 import org.odk.collect.android.R
 import org.odk.collect.android.activities.InstanceUploaderActivity
-import org.odk.collect.android.support.CollectTestRule
-import org.odk.collect.android.support.TestRuleChain
 import org.odk.collect.android.support.pages.OkDialog
+import org.odk.collect.android.support.rules.CollectTestRule
+import org.odk.collect.android.support.rules.TestRuleChain
 
 @RunWith(AndroidJUnit4::class)
 class InstanceUploadActionTest {
 
+    val collectTestRule = CollectTestRule()
+
     @get:Rule
     val rule: RuleChain = TestRuleChain.chain()
-        .around(CollectTestRule())
+        .around(collectTestRule)
 
     @Test
     fun whenInstanceDoesNotExist_showsError() {
@@ -39,6 +40,6 @@ class InstanceUploadActionTest {
          */
         val intent = Intent(getApplicationContext(), InstanceUploaderActivity::class.java)
         intent.putExtra("instances", instanceIds)
-        ActivityScenario.launch<InstanceUploaderActivity>(intent)
+        collectTestRule.launch<InstanceUploaderActivity>(intent)
     }
 }

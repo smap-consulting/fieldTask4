@@ -23,6 +23,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.opencsv.CSVParserBuilder;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.database.AltDatabasePathContext;
@@ -31,20 +35,19 @@ import org.odk.collect.android.tasks.FormLoaderTask;
 import org.odk.collect.android.utilities.CustomSQLiteQueryBuilder;
 import org.odk.collect.android.utilities.CustomSQLiteQueryExecutor;
 import org.odk.collect.android.utilities.SQLiteUtils;
-import org.odk.collect.android.utilities.TranslationHandler;
 import org.odk.collect.shared.strings.Md5;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import au.com.bytecode.opencsv.CSVReader;
 import timber.log.Timber;
+
+import static org.odk.collect.strings.localization.LocalizedApplicationKt.getLocalizedString;
 
 /**
  * Author: Meletis Margaritis
@@ -99,7 +102,7 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
             }
         } catch (Exception e) {
             throw new ExternalDataException(
-                    TranslationHandler.getString(Collect.getInstance(), R.string.ext_import_generic_error,
+                    getLocalizedString(Collect.getInstance(), R.string.ext_import_generic_error,
                             dataSetFile.getName(), e.getMessage()), e);
         }
     }
@@ -107,20 +110,25 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
     private void onCreateNamed(SQLiteDatabase db, String tableName) throws Exception {
         Timber.w("Reading data from '%s", dataSetFile.toString());
 
-        onProgress(TranslationHandler.getString(Collect.getInstance(), R.string.ext_import_progress_message,
+        onProgress(getLocalizedString(Collect.getInstance(), R.string.ext_import_progress_message,
                 dataSetFile.getName(), ""));
 
         CSVReader reader = null;
         try {
-            reader = new CSVReader(new InputStreamReader(new FileInputStream(dataSetFile), "UTF-8"),
-                    DELIMITING_CHAR, QUOTE_CHAR, ESCAPE_CHAR);
+            reader = new CSVReaderBuilder(new FileReader(dataSetFile))
+                    .withCSVParser(new CSVParserBuilder()
+                            .withSeparator(DELIMITING_CHAR)
+                            .withQuoteChar(QUOTE_CHAR)
+                            .withEscapeChar(ESCAPE_CHAR)
+                            .build())
+                    .build();
             String[] headerRow = reader.readNext();
 
             headerRow[0] = removeByteOrderMark(headerRow[0]);
 
             if (!ExternalDataUtil.containsAnyData(headerRow)) {
                 throw new ExternalDataException(
-                        TranslationHandler.getString(Collect.getInstance(), R.string.ext_file_no_data_error));
+                        getLocalizedString(Collect.getInstance(), R.string.ext_file_no_data_error));
             }
 
             List<String> conflictingColumns =
@@ -131,7 +139,7 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
                 // with the same name,
                 // so the create table query will fail with "duplicate column" error.
                 throw new ExternalDataException(
-                        TranslationHandler.getString(Collect.getInstance(), R.string.ext_conflicting_columns_error,
+                        getLocalizedString(Collect.getInstance(), R.string.ext_conflicting_columns_error,
                                 conflictingColumns));
             }
 
@@ -222,7 +230,7 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
                         try {
                             values.put(safeColumnName, Double.parseDouble(columnValue));
                         } catch (NumberFormatException e) {
-                            throw new ExternalDataException(TranslationHandler.getString(Collect.getInstance(), R.string.ext_sortBy_numeric_error, columnValue));
+                            throw new ExternalDataException(getLocalizedString(Collect.getInstance(), R.string.ext_sortBy_numeric_error, columnValue));
                         }
                     } else {
                         values.put(safeColumnName, columnValue);
@@ -232,17 +240,17 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
                 row = reader.readNext();
                 rowCount++;
                 if (rowCount % 100 == 0) {
-                    onProgress(TranslationHandler.getString(Collect.getInstance(), R.string.ext_import_progress_message,
+                    onProgress(getLocalizedString(Collect.getInstance(), R.string.ext_import_progress_message,
                             dataSetFile.getName(), " (" + rowCount + " records so far)"));
                 }
             }
 
             if (isCancelled()) {
                 Timber.w("User canceled reading data from %s", dataSetFile.toString());
-                onProgress(TranslationHandler.getString(Collect.getInstance(), R.string.ext_import_cancelled_message));
+                onProgress(getLocalizedString(Collect.getInstance(), R.string.ext_import_cancelled_message));
             } else {
 
-                onProgress(TranslationHandler.getString(Collect.getInstance(), R.string.ext_import_finalizing_message));
+                onProgress(getLocalizedString(Collect.getInstance(), R.string.ext_import_finalizing_message));
 
                 // now create the indexes
                 for (String createIndexCommand : createIndexesCommands) {
@@ -251,7 +259,7 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
                 }
 
                 Timber.w("Read all data from %s", dataSetFile.toString());
-                onProgress(TranslationHandler.getString(Collect.getInstance(), R.string.ext_import_completed_message));
+                onProgress(getLocalizedString(Collect.getInstance(), R.string.ext_import_completed_message));
             }
         } finally {
             if (reader != null) {

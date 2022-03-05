@@ -33,9 +33,9 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.StringEndsWith.endsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.odk.collect.android.support.CustomMatchers.withIndex;
+import static org.odk.collect.android.support.matchers.CustomMatchers.withIndex;
 import static org.odk.collect.android.support.FileUtils.copyFileFromAssets;
-import static org.odk.collect.testshared.NestedScrollToAction.nestedScrollTo;
+import static org.odk.collect.androidtest.NestedScrollToAction.nestedScrollTo;
 
 import android.Manifest;
 import android.app.Activity;
@@ -56,10 +56,9 @@ import org.junit.rules.RuleChain;
 import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
-import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.FormActivityTestRule;
-import org.odk.collect.android.support.TestRuleChain;
-import org.odk.collect.testshared.RecordedIntentsRule;
+import org.odk.collect.android.support.rules.FormActivityTestRule;
+import org.odk.collect.android.support.rules.TestRuleChain;
+import org.odk.collect.androidtest.RecordedIntentsRule;
 
 import java.io.File;
 import java.io.IOException;
@@ -76,7 +75,6 @@ public class IntentGroupTest {
     public RuleChain copyFormChain = TestRuleChain.chain()
             .around(new RecordedIntentsRule())
             .around(GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE)) // Needed to write temp file
-            .around(new CopyFormRule(INTENT_GROUP_FORM, true))
             .around(rule);
 
     // Verifies that a value given to the label text with form buttonText is used as the button text.
