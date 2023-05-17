@@ -54,6 +54,8 @@ collect_app/dogman/
 collect_app/src/dogman/
 collect_app/ljslocation/
 collect_app/src/ljslocation/
+collect_app/portero/
+collect_app/src/portero/
 
 # gradle env props
 secrets.properties
