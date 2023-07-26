@@ -317,7 +317,7 @@ public class Utilities {
                                 e.printStackTrace();
                                 throw e;
                             }
-                            InputStream isMedia = httpInterface.executeGetRequest(uri, null, null).getInputStream();     // Smap do not use credentials
+                            InputStream isMedia = httpInterface.executeGetRequest(uri, null, webCredentialsUtils.getCredentials(uri)).getInputStream();
                             try {
                                 File f = new File(mediaPath);
                                 fd.downloadFile(f, isMedia, mediaUrl);
@@ -339,7 +339,7 @@ public class Utilities {
                                 e.printStackTrace();
                                 throw e;
                             }
-                            InputStream isMedia = httpInterface.executeGetRequest(uri, null, null).getInputStream();     // Smap do not use credentials
+                            InputStream isMedia = httpInterface.executeGetRequest(uri, null, webCredentialsUtils.getCredentials(uri)).getInputStream();
                             try {
                                 File f = new File(mediaPath);
                                 fd.downloadFile(f, isMedia, mediaUrl);
