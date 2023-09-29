@@ -295,10 +295,10 @@ public class SaveFormToDisk {
                         Timber.w("Instance null: %s", instance == null);
                     }
                     c.moveToFirst();
-                    String formname = c.getString(c.getColumnIndex(FormsColumns.DISPLAY_NAME));
+                    String formname = c.getString(c.getColumnIndexOrThrow(FormsColumns.DISPLAY_NAME));
                     String submissionUri = null;
-                    if (!c.isNull(c.getColumnIndex(FormsColumns.SUBMISSION_URI))) {
-                        submissionUri = c.getString(c.getColumnIndex(FormsColumns.SUBMISSION_URI));
+                    if (!c.isNull(c.getColumnIndexOrThrow(FormsColumns.SUBMISSION_URI))) {
+                        submissionUri = c.getString(c.getColumnIndexOrThrow(FormsColumns.SUBMISSION_URI));
                     }
 
                     // add missing fields into values
@@ -319,8 +319,8 @@ public class SaveFormToDisk {
                         values.put(InstanceColumns.T_TITLE, formname);  // smap get from name from form details
                     }
 
-                    String jrformid = c.getString(c.getColumnIndex(FormsColumns.JR_FORM_ID));
-                    String jrversion = c.getString(c.getColumnIndex(FormsColumns.JR_VERSION));
+                    String jrformid = c.getString(c.getColumnIndexOrThrow(FormsColumns.JR_FORM_ID));
+                    String jrversion = c.getString(c.getColumnIndexOrThrow(FormsColumns.JR_VERSION));
                     values.put(InstanceColumns.JR_FORM_ID, jrformid);
                     values.put(InstanceColumns.JR_VERSION, jrversion);
 
