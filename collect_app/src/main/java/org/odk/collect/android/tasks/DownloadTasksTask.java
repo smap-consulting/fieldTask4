@@ -472,11 +472,15 @@ public class DownloadTasksTask extends AsyncTask<Void, String, HashMap<String, S
                         values = initialData.getJSONObject("values");
                     }
                     if (initialData != null) {
-                        ta.task.phone = values.getString("Phone");
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(InstanceColumns.PHONE, ta.task.phone);
-                        String where = "tTitle = ?";
-                        dao.updateInstance(contentValues, where, new String[]{ta.task.title});
+                        try {
+                            ta.task.phone = values.getString("Phone");
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(InstanceColumns.PHONE, ta.task.phone);
+                            String where = "tTitle = ?";
+                            dao.updateInstance(contentValues, where, new String[]{ta.task.title});
+                        } catch (Exception e) {
+                            Timber.i("Failed to add phone value %s", e.getMessage());
+                        }
                     }
                 }
             }

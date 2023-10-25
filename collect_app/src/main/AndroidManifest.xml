@@ -13,6 +13,7 @@ the specific language governing permissions and limitations under the License.
     tools:ignore="GoogleAppIndexingWarning">
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!-- smap for maps directions -->
     <queries>

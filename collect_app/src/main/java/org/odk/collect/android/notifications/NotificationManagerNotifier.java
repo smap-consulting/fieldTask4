@@ -178,6 +178,11 @@ public class NotificationManagerNotifier implements Notifier {
                                         String contentText,
                                         boolean start) {    // smap add start/end of notification
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            boolean e = notificationManager.areNotificationsEnabled();
+            String a = "d";
+        }
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(application, COLLECT_NOTIFICATION_CHANNEL).setContentIntent(contentIntent);
 
         builder
