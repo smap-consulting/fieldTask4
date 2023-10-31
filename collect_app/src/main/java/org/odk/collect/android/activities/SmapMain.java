@@ -225,6 +225,8 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
         tabLayout.setTabTextColors(Color.LTGRAY, Color.WHITE);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
         stateChanged();
 
