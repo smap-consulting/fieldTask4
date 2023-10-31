@@ -13,8 +13,8 @@
 
 <resources>
     <!-- strings that should not be translated -->
-    <string translatable="false" name="action_name">SLOS Tracker</string>
-    <string translatable="false" name="app_name">SLOS Tracker</string>
+    <string translatable="false" name="action_name">SLOS Field App</string>
+    <string translatable="false" name="app_name">SLOS Field App</string>
 	<string translatable="false" name="default_server_url">https://slos.gov.pg/</string>
 	<string translatable="false" name="default_username"></string>
 	<string translatable="false" name="default_password"></string>
