@@ -56,6 +56,7 @@ collect_app/ljslocation/
 collect_app/src/ljslocation/
 collect_app/portero/
 collect_app/src/portero/
+collect_app/ljstracker/
 
 # gradle env props
 secrets.properties
