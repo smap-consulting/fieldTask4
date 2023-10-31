@@ -146,6 +146,10 @@ android {
             applicationId "org.smap.smapTask.android.ljslocation"
             versionName "6.814-ljslocation"
         }
+        ljstracker {
+            applicationId "org.smap.smapTask.android.ljstracker"
+            versionName "6.814-ljstracker"
+        }
         bps {
             applicationId "org.smap.smapTask.android.bps"
             versionName "6.814-bps"
