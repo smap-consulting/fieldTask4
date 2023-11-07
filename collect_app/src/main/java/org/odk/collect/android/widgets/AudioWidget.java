@@ -197,7 +197,7 @@ public class AudioWidget extends QuestionWidget implements FileWidget, WidgetDat
 
     private void updatePlayerMedia() {
         if (binaryName != null) {
-            Clip clip = new Clip("audio:" + getFormEntryPrompt().getIndex().toString(), getAudioFile().getAbsolutePath());
+            Clip clip = new Clip("audio:" + getFormEntryPrompt().getIndex().toString(), "file:"  + getAudioFile().getAbsolutePath()); // smap add file to URI
 
             audioPlayer.onPlayingChanged(clip.getClipID(), binding.audioPlayer.audioController::setPlaying);
             audioPlayer.onPositionChanged(clip.getClipID(), binding.audioPlayer.audioController::setPosition);

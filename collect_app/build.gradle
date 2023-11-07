@@ -114,10 +114,6 @@ android {
             applicationId "org.smap.smapTask.android.tdh"
             versionName "6.815-tdh"
         }
-        assignfield {
-            applicationId "org.smap.smapTask.android.assignfield"
-            versionName "6.815-assignfield"
-        }
         assignfield2 {
             applicationId "org.smap.smapTask.android.assignfield2"
             versionName "6.815-assignfield2"
@@ -133,18 +129,6 @@ android {
         stl2 {
             applicationId "org.smap.smapTask.android.stl2"
             versionName "6.815-stl2"
-        }
-        stl {
-            applicationId "org.smap.smapTask.android.stl"
-            versionName "6.815-stl"
-        }
-        ljs {
-            applicationId "org.smap.smapTask.android.ljs"
-            versionName "6.815-ljs"
-        }
-        ljsLocation {
-            applicationId "org.smap.smapTask.android.ljslocation"
-            versionName "6.815-ljslocation"
         }
         ljstracker {
             applicationId "org.smap.smapTask.android.ljstracker"
