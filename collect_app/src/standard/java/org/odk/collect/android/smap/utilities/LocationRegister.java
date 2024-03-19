@@ -33,4 +33,8 @@ public class LocationRegister {
         editor.putBoolean(GeneralKeys.KEY_SMAP_USER_LOCATION, false);
         editor.putBoolean(GeneralKeys.KEY_SMAP_OVERRIDE_LOCATION, true);
     }
+
+    public void locationStart(Activity currentActivity) {
+        ((SmapMain) currentActivity).startLocationService();
+    }
 }
