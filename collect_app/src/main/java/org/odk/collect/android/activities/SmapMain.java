@@ -254,30 +254,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         // Start the location service
         currentActivity = this;
         LocationRegister lr = new LocationRegister();
-        if(lr.locationEnabled()) {
-            permissionsProvider.requestLocationPermissions(this, new PermissionListener() {
-                @Override
-                public void granted() {
-
-                    permissionsProvider.requestBackgroundLocationPermissions(currentActivity, new PermissionListener() {
-                        @Override
-                        public void granted() {
-                            startLocationService();
-                        }
-
-                        @Override
-                        public void denied() {
-                            startLocationService();     // Start the service anyway it will only work when the app is in the foreground
-                        }
-                    });
-
-                }
-
-                @Override
-                public void denied() {
-                }
-            });
-        }
+        lr.locationStart(currentActivity);
 
         LegacySettingsFileImporter legacySettingsFileImporter = new LegacySettingsFileImporter(storagePathProvider, null, settingsImporter);
         if (legacySettingsFileImporter.importFromFile()) {
