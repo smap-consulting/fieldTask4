@@ -289,6 +289,7 @@ public class InstanceProvider extends ContentProvider {
                 break;
 
             case INSTANCE_ID:
+                // Keep sent instance database rows but delete corresponding files
                 String instanceId = uri.getPathSegments().get(1);
 
                 Cursor c = null;
@@ -297,10 +298,10 @@ public class InstanceProvider extends ContentProvider {
                     c = this.query(uri, null, where, whereArgs, null);
                     if (c != null && c.getCount() > 0) {
                         c.moveToFirst();
-                        status = c.getString(c.getColumnIndex(InstanceColumns.STATUS));
+                        status = c.getString(c.getColumnIndexOrThrow(InstanceColumns.STATUS));
                         do {
                                 String instanceFile = new StoragePathProvider().getAbsoluteInstanceFilePath(c.getString(
-                                        c.getColumnIndex(InstanceColumns.INSTANCE_FILE_PATH)));
+                                        c.getColumnIndexOrThrow(InstanceColumns.INSTANCE_FILE_PATH)));
                             File instanceDir = (new File(instanceFile)).getParentFile();
                             deleteAllFilesInDirectory(instanceDir);
                         } while (c.moveToNext());
@@ -311,29 +312,21 @@ public class InstanceProvider extends ContentProvider {
                     }
                 }
 
-                // Keep sent instance database rows but delete corresponding files
+                ContentValues cv = new ContentValues();
                 if (status != null && status.equals(Instance.STATUS_SUBMITTED)) {
-                    ContentValues cv = new ContentValues();
+
                     cv.put(InstanceColumns.DELETED_DATE, System.currentTimeMillis());
 
-                    // Geometry fields represent data inside the form which can be very
-                    // sensitive so they are removed on delete.
-                    cv.put(InstanceColumns.GEOMETRY_TYPE, (String) null);
-                    cv.put(InstanceColumns.GEOMETRY, (String) null);
-
-                    count = Collect.getInstance().getContentResolver().update(uri, cv, null, null);
                 } else {
                     // smap Update the deleted date and also change the assignment status to closed
-                    ContentValues cv = new ContentValues();
                     cv.put(InstanceColumns.DELETED_DATE, System.currentTimeMillis());
                     cv.put(InstanceColumns.T_TASK_STATUS, Utilities.STATUS_T_CLOSED);
-                    // Geometry fields represent data inside the form which can be very
-                    // sensitive so they are removed on delete.
-                    cv.put(InstanceColumns.GEOMETRY_TYPE, (String) null);
-                    cv.put(InstanceColumns.GEOMETRY, (String) null);
-
-                    count = Collect.getInstance().getContentResolver().update(uri, cv, null, null);
                 }
+                // Geometry fields represent data inside the form which can be very
+                // sensitive so they are removed on delete.
+                cv.put(InstanceColumns.GEOMETRY_TYPE, (String) null);
+                cv.put(InstanceColumns.GEOMETRY, (String) null);
+                count = Collect.getInstance().getContentResolver().update(uri, cv, null, null);
 
                 break;
 

@@ -443,7 +443,8 @@ public class Utilities {
                     " and " + InstanceColumns.T_TASK_STATUS + " != ? ";
         }
         if (!getDeletedTasks) {
-            selectClause += " and " + InstanceColumns.DELETED_DATE + " is null ";
+            selectClause += " and (" + InstanceColumns.DELETED_DATE + " is null or "
+                    + InstanceColumns.T_TASK_STATUS + " = 'submitted')";    // Show submitted tasks even if deleted
         }
 
         if (serverOnly) {
