@@ -254,7 +254,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         // Start the location service
         currentActivity = this;
         LocationRegister lr = new LocationRegister();
-        lr.locationStart(currentActivity);
+        lr.locationStart(currentActivity, permissionsProvider);
 
         LegacySettingsFileImporter legacySettingsFileImporter = new LegacySettingsFileImporter(storagePathProvider, null, settingsImporter);
         if (legacySettingsFileImporter.importFromFile()) {

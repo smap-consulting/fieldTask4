@@ -70,6 +70,10 @@ android {
             applicationId "org.smap.smapTask.android"
             versionName "6.817"
         }
+        fieldTaskMax {
+            applicationId "org.smap.smapTask.android.fieldTaskMax"
+            versionName "6.817"
+        }
         plan {
             applicationId "org.smap.smapTask.android.plan"
             versionName "6.817-plan"

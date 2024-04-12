@@ -218,7 +218,7 @@ public class PermissionsProvider {
         }, Manifest.permission.READ_PHONE_STATE);
     }
 
-    protected void requestPermissions(Activity activity, @NonNull PermissionListener listener, String... permissions) {
+    public void requestPermissions(Activity activity, @NonNull PermissionListener listener, String... permissions) {
         DexterBuilder builder = null;
 
         if (permissions.length == 1) {
@@ -273,7 +273,7 @@ public class PermissionsProvider {
                 });
     }
 
-    protected void showAdditionalExplanation(Activity activity, int title, int message, int drawable, @NonNull PermissionListener action) {
+    public void showAdditionalExplanation(Activity activity, int title, int message, int drawable, @NonNull PermissionListener action) {
         AlertDialog alertDialog = new AlertDialog.Builder(activity, R.style.Theme_Collect_Dialog_PermissionAlert)
                 .setTitle(title)
                 .setMessage(message)
