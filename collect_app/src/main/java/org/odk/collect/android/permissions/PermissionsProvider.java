@@ -149,7 +149,7 @@ public class PermissionsProvider {
             @Override
             public void denied() {
                 showAdditionalExplanation(activity, R.string.location_runtime_permissions_denied_title,
-                        R.string.location_runtime_permissions_denied_desc, R.drawable.ic_room_black_24dp, action);
+                        R.string.smap_location_runtime_permissions_denied_desc, R.drawable.ic_room_black_24dp, action);
             }
         }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
     }

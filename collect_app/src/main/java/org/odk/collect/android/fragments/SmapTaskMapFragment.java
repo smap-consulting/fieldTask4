@@ -14,9 +14,12 @@
 
 package org.odk.collect.android.fragments;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -47,6 +50,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
@@ -68,7 +72,6 @@ import org.odk.collect.android.activities.SmapMain;
 import org.odk.collect.android.activities.viewmodels.SurveyDataViewModel;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.loaders.MapLocationObserver;
 import org.odk.collect.android.loaders.PointEntry;
 import org.odk.collect.android.loaders.SurveyData;
@@ -257,22 +260,18 @@ public class SmapTaskMapFragment extends Fragment
     public void onMapReady(GoogleMap googleMap) {
         Timber.i("######## onMapReady");
         mMap = googleMap;
-
-        permissionsProvider.requestLocationPermissions((Activity) getContext(), new PermissionListener() {
-            @Override
-            public void granted() {
-                ((SmapMain) getActivity()).startLocationService();
-                mapReadyPermissionGranted();
-            }
-
-            @Override
-            public void denied() {
-            }
-        });
-
-
+        boolean hasFineLocation = ContextCompat.checkSelfPermission(((SmapMain) getActivity()), ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
+        boolean hasCoarseLocation = ContextCompat.checkSelfPermission(((SmapMain) getActivity()), ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED;
+        if (hasFineLocation || hasCoarseLocation) {
+            mapReadyPermissionGranted();
+        }
     }
 
+    public void permissionsGranted() {
+        if(mMap != null) {
+            mapReadyPermissionGranted();
+        }
+    }
     @SuppressLint("MissingPermission")
     private void mapReadyPermissionGranted() {
 

@@ -128,6 +128,7 @@ public final class GeneralKeys {
     public static final String KEY_SMAP_INPUT_METHOD = "smap_input_method";
     public static final String KEY_SMAP_IM_RI = "smap_im_ri";
     public static final String KEY_SMAP_IM_ACC = "smap_im_acc";
+    public static final String KEY_SMAP_REQUEST_LOCATION_DONE = "smap_request_location_done";
     // end smap
 
     // experimental
@@ -210,6 +211,7 @@ public final class GeneralKeys {
         hashMap.put(KEY_SMAP_INPUT_METHOD, "not set");
         hashMap.put(KEY_SMAP_IM_RI, GeoPolyActivity.DEFAULT_INTERVAL_INDEX);
         hashMap.put(KEY_SMAP_IM_ACC, GeoPolyActivity.DEFAULT_ACCURACY_THRESHOLD_INDEX);
+        hashMap.put(KEY_SMAP_REQUEST_LOCATION_DONE , "no");
         // end smap
 
         // map_preferences.xml

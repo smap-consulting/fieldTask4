@@ -14,10 +14,13 @@
 
 package org.odk.collect.android.activities;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -58,10 +61,10 @@ import org.odk.collect.android.configure.legacy.LegacySettingsFileImporter;
 import org.odk.collect.android.fragments.SmapFormListFragment;
 import org.odk.collect.android.fragments.SmapTaskListFragment;
 import org.odk.collect.android.fragments.SmapTaskMapFragment;
+import org.odk.collect.android.fragments.dialogs.RequestLocationPermissionsDialog;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.InstanceUploaderListener;
 import org.odk.collect.android.listeners.NFCListener;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.listeners.TaskDownloaderListener;
 import org.odk.collect.android.loaders.SurveyData;
 import org.odk.collect.android.loaders.TaskEntry;
@@ -106,6 +109,8 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -146,7 +151,6 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
     private String mProgressMsg;
     public DownloadTasksTask mDownloadTasks;
-    private Activity currentActivity;
 
     SurveyDataViewModel model;
     private MainTaskListener listener = null;
@@ -251,10 +255,18 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             processGetTask(true);   // Set manual true so that refresh after logon works (logon = manual refresh request)
         }
 
-        // Start the location service
-        currentActivity = this;
-        LocationRegister lr = new LocationRegister();
-        lr.locationStart(currentActivity, permissionsProvider);
+        /*
+         * Show a notice if location recording has not been granted
+         */
+        boolean hasFineLocation = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
+        boolean hasCoarseLocation = ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED;
+        String asked = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_REQUEST_LOCATION_DONE);
+        if (asked.equals("no")) {
+            (new RequestLocationPermissionsDialog()).show(this.getSupportFragmentManager(), "LOCATION_PERMISSIONS_DIALOG");
+        } else if ((hasFineLocation || hasCoarseLocation) && (asked.equals("accept"))){
+            LocationRegister lr = new LocationRegister();
+            lr.locationStart(this, permissionsProvider);
+        }
 
         LegacySettingsFileImporter legacySettingsFileImporter = new LegacySettingsFileImporter(storagePathProvider, null, settingsImporter);
         if (legacySettingsFileImporter.importFromFile()) {
@@ -294,6 +306,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         } else {
             startService(mLocationServiceIntent);
         }
+        taskManagerMap.permissionsGranted();
     }
 
     /*

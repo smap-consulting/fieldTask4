@@ -2,17 +2,16 @@ package org.odk.collect.android.smap.utilities;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.location.Location;
-import android.preference.PreferenceManager;
+
+import org.odk.collect.android.R;
+import org.odk.collect.android.fragments.SmapTaskMapFragment;
+import org.odk.collect.android.listeners.PermissionListener;
 
 import org.odk.collect.android.activities.SmapMain;
-import org.odk.collect.android.database.TraceUtilities;
+import org.odk.collect.android.permissions.PermissionsProvider;
 import org.odk.collect.android.preferences.GeneralKeys;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import timber.log.Timber;
 
 public class LocationRegister {
 
@@ -28,6 +27,9 @@ public class LocationRegister {
        // Do nothing
     }
 
+    public int getMessageId() {
+        return R.string.smap_request_foreground_location_permission;
+    }
     /*
      * Disable permissions concerned with background location
      */
@@ -37,7 +39,16 @@ public class LocationRegister {
     }
 
     // Start foreground location recording
-    public void locationStart(Activity currentActivity) {
-        ((SmapMain) currentActivity).startLocationService();
+    public void locationStart(Activity currentActivity, PermissionsProvider permissionsProvider) {
+        permissionsProvider.requestLocationPermissions(currentActivity, new PermissionListener() {
+            @Override
+            public void granted() {
+                ((SmapMain) currentActivity).startLocationService();
+            }
+
+            @Override
+            public void denied() {
+            }
+        });
     }
 }

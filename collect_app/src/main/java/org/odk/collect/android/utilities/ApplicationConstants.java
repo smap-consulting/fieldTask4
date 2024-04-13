@@ -110,6 +110,7 @@ public class ApplicationConstants {
 
         public static final int NFC_CAPTURE = 50;                           // smap
         public static final int GEOCOMPOUND_CAPTURE = 51;                   // smap
+        public static final int LOCATION_PERMISSIONS = 52;                   // smap
 
         public static final int FORMS_UPLOADED_NOTIFICATION = 97;
         public static final int FORMS_DOWNLOADED_NOTIFICATION = 98;
