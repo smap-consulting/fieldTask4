@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.location.Location;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.fragments.SmapTaskMapFragment;
 import org.odk.collect.android.listeners.PermissionListener;
 
 import org.odk.collect.android.activities.SmapMain;
