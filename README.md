@@ -96,6 +96,7 @@ Downloads
 
 |Name          |Link                                                          |Version    |
 |------------- |------------------------------------------------------------- |-----------|
+|Server        |https://smap-code.s3.amazonaws.com/os_smap_24_05_09_2044.tgz  |24.05.09   |
 |Server        |https://smap-code.s3.amazonaws.com/os_smap_24_05_06_2328.tgz  |24.05.06   |
 
 [Server Administration Documentation](https://www.smap.com.au/docs/server-admin.html)
