@@ -56,6 +56,10 @@ public class LocationRegister {
         }
     }
 
+    public int getMessageId() {
+        return R.string.smap_request_foreground_location_permission;
+    }
+
     public void set(SharedPreferences.Editor editor, String sendLocation) {
         /*
          * SAVE_LOCATION is used to store the setting so that it can be restored if overriden by EXIT
