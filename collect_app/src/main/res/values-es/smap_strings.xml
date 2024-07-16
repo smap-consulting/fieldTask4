@@ -79,6 +79,7 @@
   <string name="smap_visit_website">Visite el sitio web</string>
   <string name="smap_get_media">Archivo actualizado: %s</string>
   <string name="smap_lookup">Consultando datos remotos</string>
+  <string name="smap_phone_number_not_found">No puedo encontrar el número de teléfono</string>
   <string name="smap_unknown_error">Error desconocido</string>
   <string name="smap_forbidden">No se pueden subir los datos de %s. El formulario está inactivo o fué borrado del servidor. Consulte al responsable en su Organización.</string>
   <string name="smap_form_not_specified">No se ha escrito el ID del formulario en parámetros.</string>
@@ -94,6 +95,14 @@
   <string name="smap_login_unauthorized">Error de Inicio de sesión</string>
   <string name="smap_geofence_tasks">Nuevas tareas locales</string>
   <string name="smap_reason">Razón para rechazar la tarea</string>
+  <string name="smap_reject_title">Rechazar Tarea</string>
+  <string name="smap_reason_title">Motivo</string>
+  <string name="smap_locate">Localizar</string>
+  <string name="smap_phone">Llamar</string>
+  <string name="smap_sms">SMS</string>
+  <string name="smap_directions">Direcciones</string>
+  <string name="smap_accept">Aceptar tarea</string>
+  <string name="smap_reject">Rechazar Tarea</string>
   <string name="smap_history">Historial</string>
   <string name="smap_reason_not_specified">Debe especificar una razón mayor a 5 caracteres</string>
   <string name="smap_continue_tracking">La opción Salir ha sido deshabilitada. </string>
@@ -114,10 +123,16 @@
   <string name="smap_default">Por Defecto</string>
   <string name="smap_local_data">Cargando datos locales</string>
   <string name="smap_checking_file">Comprobando %1$s.\n\nForm. %2$s de %3$s formulario(s).</string>
-  <string name="smap_storage_runtime_permission_denied_desc">Sin estos permisos, la app no puede acceder a sus formularios ni guardar respuestas. Vuelva a abrir la aplicación cuando esté listo para otorgarlos.</string>
+  <string name="smap_location_runtime_permissions_denied_desc">Sin estos permisos, la aplicación no puede registrar su ubicación, lo cual necesitará si está recopilando datos de ubicación. Puede cambiar los permisos de ubicación en la configuración de Android en \"Aplicaciones\".</string>
+  <string name="smap_storage_runtime_permission_denied_desc">Sin estos permisos, la aplicación no puede acceder a sus formularios ni guardar respuestas.</string>
   <string name="smap_background_location_permission_denied">Si el registro de la ubicación no está permitida todo el tiempo, la app no podrá alertarle si hay una tarea que dependa de la ubicación cerca.</string>
+  <string name="smap_request_background_location_permission">La aplicación recopila datos de ubicación para alertarlo cuando está cerca de una tarea que depende de la ubicación, incluso cuando la aplicación está cerrada o no está en uso.</string>
+  <string name="smap_request_foreground_location_permission">La aplicación recopila datos de ubicación para avisarle cuando esté cerca de una tarea que dependa de la ubicación.</string>
   <string name="smap_set_marker">Establecer marcador</string>
   <string name="smap_apply">Aplicar</string>
+  <string name="smap_deny">Denegar</string>
+  <string name="smap_accept2">Aceptar</string>
+  <string name="smap_media_download">\"No se pueden descargar los datos iniciales de \"%s\" al archivo %s</string>
   <string-array name="smap_kontrolid_servers">
     <item>Servidor Kontrolid ORG</item>
     <item>Servidor Kontrolid COM</item>
