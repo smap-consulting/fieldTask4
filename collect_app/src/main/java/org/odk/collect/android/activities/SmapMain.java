@@ -337,7 +337,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             listener = new MainTaskListener(this);
             IntentFilter filter = new IntentFilter();
             filter.addAction("startTask");
-            registerReceiver(listener, filter);
+            registerReceiver(listener, filter, Context.RECEIVER_NOT_EXPORTED);
 
             refreshListener = new RefreshListener(this);   // Listen for updates to the form list
 

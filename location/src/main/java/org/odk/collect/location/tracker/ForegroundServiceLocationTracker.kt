@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -62,7 +63,8 @@ class LocationTrackerService : Service() {
         setupNotificationChannel()
         startForeground(
             NOTIFICATION_ID,
-            createNotification()
+            createNotification(),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
         )
 
         locationClient.setListener(object : LocationClient.LocationClientListener {
