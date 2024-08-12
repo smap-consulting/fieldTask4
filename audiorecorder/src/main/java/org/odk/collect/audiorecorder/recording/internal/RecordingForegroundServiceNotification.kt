@@ -40,7 +40,7 @@ internal class RecordingForegroundServiceNotification(private val service: Servi
         val notification = notificationBuilder
             .build()
 
-        service.startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_LOCATION)
+        service.startForeground(NOTIFICATION_ID, notification)
         recordingRepository.currentSession.observeForever(sessionObserver)
     }
 

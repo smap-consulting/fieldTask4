@@ -110,7 +110,6 @@ import javax.inject.Inject;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -556,12 +555,6 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         try {
             dismissDialog(PROGRESS_DIALOG);
             removeDialog(PROGRESS_DIALOG);
-        } catch (Exception e) {
-            // tried to close a dialog not open. don't care.
-        }
-        try {
-            dismissDialog(ALERT_DIALOG);
-            removeDialog(ALERT_DIALOG);
         } catch (Exception e) {
             // tried to close a dialog not open. don't care.
         }

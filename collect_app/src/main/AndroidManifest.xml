@@ -47,6 +47,7 @@ the specific language governing permissions and limitations under the License.
     <!-- smap - add foreground service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <!-- Normal permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -216,6 +217,9 @@ the specific language governing permissions and limitations under the License.
             android:foregroundServiceType="location"
             android:exported="false">
         </service>
+
+        <service android:name="org.odk.collect.audiorecorder.recording.internal.AudioRecorderService"
+            android:foregroundServiceType="microphone"/>
 
         <!-- end smap -->
         <!-- Configure this key by setting GOOGLE_MAPS_API_KEY in collect_app/secrets.properties. -->
