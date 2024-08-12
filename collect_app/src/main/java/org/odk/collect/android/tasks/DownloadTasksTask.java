@@ -88,6 +88,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -233,6 +234,14 @@ public class DownloadTasksTask extends AsyncTask<Void, String, HashMap<String, S
     protected void onPostExecute(HashMap<String, String> value) {
         synchronized (this) {
             if (mStateListener != null) {
+                if(value == null) {
+                    // Pause for 1 second to allow the user to see the progress dialog
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (Exception e) {
+
+                    }
+                }
                 mStateListener.taskDownloadingComplete(value);
             }
         }
