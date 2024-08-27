@@ -4,10 +4,12 @@ public class HttpCredentials implements HttpCredentialsInterface {
 
     private final String username;
     private final String password;
+    private final boolean useToken;  // smap
 
-    public HttpCredentials(String username, String password) {
+    public HttpCredentials(String username, String password, boolean useToken) {
         this.username = (username == null) ? "" : username;
         this.password = (password == null) ? "" : password;
+        this.useToken = useToken;
     }
 
     @Override

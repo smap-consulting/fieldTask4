@@ -27,7 +27,7 @@ public class WebCredentialsUtils {
         }
 
         String host = Uri.parse(url).getHost();
-        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password));
+        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password, false));
     }
 
     public void saveCredentialsPreferences(GeneralSharedPreferences generalSharedPreferences, String userName, String password, PropertyManager propertyManager) {
@@ -89,13 +89,16 @@ public class WebCredentialsUtils {
             return "";
         }
         // smap start - default username
-        String username = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_USERNAME);
-        //if(username == null || username.equals("")) {   // cater for username getting set to "" on initial startup
-        //    username = Collect.getInstance().getString(R.string.default_username);
-        //}
-        // smap end
+        return (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_USERNAME);
+    }
 
-        return username;    // smap default username
+    // smap
+    public boolean getUseTokenFromPreferences() {
+        if (GeneralSharedPreferences.getInstance() == null) {
+            return false;
+        }
+        // smap start - default username
+        return (boolean) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_USE_TOKEN);
     }
 
     /**
@@ -115,7 +118,7 @@ public class WebCredentialsUtils {
             if (HOST_CREDENTIALS.containsKey(host)) {
                 return HOST_CREDENTIALS.get(host);
             } else {
-                return new HttpCredentials(getUserNameFromPreferences(), getPasswordFromPreferences());
+                return new HttpCredentials(getUserNameFromPreferences(), getPasswordFromPreferences(), getUseTokenFromPreferences());
             }
         } else {
             return HOST_CREDENTIALS.get(host);
