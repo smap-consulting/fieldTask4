@@ -34,6 +34,27 @@ public class SettingsImporter {
         this.settingsChangedHandler = settingsChangedHandler;
     }
 
+    public boolean fromJSONSmap(@NonNull String json) {
+
+        try {
+            JSONObject jsonObject = new JSONObject(json);
+
+            // validate
+            String url = jsonObject.getString("url");
+            String token = jsonObject.getString("token");
+            if(url == null || token == null) {
+                return false;
+            }
+            // Store in preferences
+            importToPrefs(jsonObject, generalSharedPrefs);
+
+        } catch (JSONException ignored) {
+            // Ignored
+        }
+
+        return true;
+    }
+
     public boolean fromJSON(@NonNull String json) {
         if (!settingsValidator.isValid(json)) {
             return false;
@@ -72,8 +93,6 @@ public class SettingsImporter {
 
         return true;
     }
-
-
 
     private void importToPrefs(JSONObject object, SharedPreferences sharedPreferences) throws JSONException {
         Iterator<String> generalKeys = object.keys();
