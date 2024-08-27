@@ -357,10 +357,6 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
                     maskPasswordSummary(pw);
                     break;
 
-                case GeneralKeys.KEY_SMAP_USE_TOKEN:
-                    preference.setSummary(newValue.toString());
-                    break;
-
                 case GeneralKeys.KEY_GOOGLE_SHEETS_URL:
                     url = newValue.toString();
 

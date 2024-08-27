@@ -50,8 +50,6 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
     protected void handleScanningResult(BarcodeResult result) throws IOException, DataFormatException {
 
         boolean importSuccess = settingsImporter.fromJSONSmap(result.getText());
-        //boolean importSuccess = settingsImporter.fromJSON(decompress(result.getText()));
-        String settingsHash = FileUtils.getMd5Hash(new ByteArrayInputStream(result.getText().getBytes()));
 
         if (importSuccess) {
             ToastUtils.showLongToast(getString(R.string.successfully_imported_settings));

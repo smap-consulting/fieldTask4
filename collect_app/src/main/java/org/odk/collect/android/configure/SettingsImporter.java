@@ -40,8 +40,8 @@ public class SettingsImporter {
             JSONObject jsonObject = new JSONObject(json);
 
             // validate
-            String url = jsonObject.getString("url");
-            String token = jsonObject.getString("token");
+            String url = jsonObject.getString("server_url");
+            String token = jsonObject.getString("auth_token");
             if(url == null || token == null) {
                 return false;
             }
