@@ -95,6 +95,8 @@ public final class GeneralKeys {
     public static final String BASEMAP_SOURCE_CARTO = "carto";
 
     // start smap
+    public static final String KEY_SMAP_USE_TOKEN = "smap_use_token";    // Use token for logon
+    public static final String KEY_SMAP_SCAN_TOKEN = "smap_scan_token";    // Scan the token
     public static final String KEY_SMAP_REVIEW_FINAL = "review_final";    // Allow review of Form after finalising
     public static final String KEY_SMAP_USER_LOCATION = "smap_gps_trail";    // Record a user trail
     public static final String KEY_SMAP_USER_SAVE_LOCATION = "smap_gps_trail";    // Backup of decision to record the user trail
@@ -181,6 +183,8 @@ public final class GeneralKeys {
         hashMap.put(KEY_EXTERNAL_APP_RECORDING, true);
 
         // start smap
+        hashMap.put(KEY_SMAP_USE_TOKEN, false);
+        hashMap.put(KEY_SMAP_SCAN_TOKEN, false);
         hashMap.put(KEY_SMAP_REVIEW_FINAL, true);
         hashMap.put(KEY_SMAP_USER_LOCATION, false);
         hashMap.put(KEY_SMAP_LOCATION_TRIGGER, true);

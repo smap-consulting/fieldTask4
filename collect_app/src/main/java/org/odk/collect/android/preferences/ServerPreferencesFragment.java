@@ -41,9 +41,11 @@ import androidx.preference.Preference;
 
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.SmapMain;
 import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.backgroundwork.FormUpdateManager;
 import org.odk.collect.android.configure.ServerRepository;
+import org.odk.collect.android.configure.qr.QRCodeTabsActivity;
 import org.odk.collect.android.gdrive.GoogleAccountsManager;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.OnBackPressedListener;
@@ -65,6 +67,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
+import static org.odk.collect.android.activities.ActivityUtils.startActivityAndCloseAllOthers;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SET_FALLBACK_SHEETS_URL;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SET_SERVER;
 import static org.odk.collect.android.preferences.GeneralKeys.KEY_FORMLIST_URL;
@@ -163,6 +166,30 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
         EditTextPreference serverUrlPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_SERVER_URL);
         EditTextPreference usernamePreference = (EditTextPreference) findPreference(GeneralKeys.KEY_USERNAME);
         passwordPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_PASSWORD);
+
+        // smap
+        // Button to scan for a QR code
+        Preference scanButton = (Preference) findPreference(GeneralKeys.KEY_SMAP_SCAN_TOKEN);
+        scanButton.setOnPreferenceClickListener(preference -> {
+            startActivity(new Intent(getActivity(), QRCodeTabsActivity.class));
+            return true;
+        });
+
+
+        // Respond to changes in authentication approach
+        findPreference(GeneralKeys.KEY_SMAP_USE_TOKEN).setOnPreferenceChangeListener((preference, newValue) -> {
+            boolean useToken = (boolean) newValue;
+
+            // show or hide basic authentication preferences
+            serverUrlPreference.setEnabled(!useToken);
+            usernamePreference.setVisible(!useToken);
+            passwordPreference.setVisible(!useToken);
+
+            // show or hide tken authentication preferences
+            scanButton.setVisible(useToken);
+
+            return true;
+        });
 
         serverUrlPreference.setOnPreferenceChangeListener(createChangeListener());
         serverUrlPreference.setSummary(serverUrlPreference.getText());
@@ -320,6 +347,10 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
                     }
 
                     maskPasswordSummary(pw);
+                    break;
+
+                case GeneralKeys.KEY_SMAP_USE_TOKEN:
+                    String useToken = newValue.toString();
                     break;
 
                 case GeneralKeys.KEY_GOOGLE_SHEETS_URL:

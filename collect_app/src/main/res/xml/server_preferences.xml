@@ -3,6 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/server_preferences">
 
+    <SwitchPreference
+        android:key="smap_use_token"
+        app:iconSpaceReserved="false"
+        app:title="@string/smap_use_token" />
+
+    <Preference
+        android:key="smap_scan_token"
+        app:iconSpaceReserved="false"
+        app:title="@string/smap_scan_qr" />
+
     <!-- smap not type selection
     <ListPreference
         android:entries="@array/protocol_entries"

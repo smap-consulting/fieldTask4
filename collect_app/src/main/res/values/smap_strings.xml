@@ -148,7 +148,9 @@
     <string name="smap_apply">Apply</string>
     <string name="smap_deny">Deny</string>
     <string name="smap_accept2">Accept</string>
-    <string name="smap_media_download">"Unable to download initial data from \"%s\" into file %s</string>
+    <string name="smap_media_download">Unable to download initial data from \"%s\" into file %s</string>
+    <string name="smap_use_token">Use a token to access the server</string>
+    <string name="smap_scan_qr">Scan QR code</string>
     <string-array name="smap_kontrolid_servers">
         <item>Kontrolid Org Server</item>
         <item>Kontrolid Com Server</item>
