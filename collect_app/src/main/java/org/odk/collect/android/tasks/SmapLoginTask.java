@@ -47,7 +47,7 @@ public class SmapLoginTask extends AsyncTask<String, Void, String> {
             URI uri = url.toURI();
 
             status = httpInterface.loginRequest(uri, null,
-                    new HttpCredentials(username, password, false));
+                    new HttpCredentials(username, password, false, null));
 
         } catch (Exception e) {
             status = "error: " + e.getLocalizedMessage();

@@ -21,13 +21,13 @@ public class WebCredentialsUtils {
 
     private static final Map<String, HttpCredentialsInterface> HOST_CREDENTIALS = new HashMap<>();
 
-    public void saveCredentials(@NonNull String url, @NonNull String username, @NonNull String password) {
+    public void saveCredentials(@NonNull String url, @NonNull String username, @NonNull String password, boolean useToken, String authToken) {
         if (username.isEmpty()) {
             return;
         }
 
         String host = Uri.parse(url).getHost();
-        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password, false));
+        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password, useToken, authToken));
     }
 
     public void saveCredentialsPreferences(GeneralSharedPreferences generalSharedPreferences, String userName, String password, PropertyManager propertyManager) {
@@ -100,7 +100,13 @@ public class WebCredentialsUtils {
         // smap start - default username
         return (boolean) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_USE_TOKEN);
     }
-
+    public String getTokenFromPreferences() {
+        if (GeneralSharedPreferences.getInstance() == null) {
+            return "";
+        }
+        // smap start - default username
+        return (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_AUTH_TOKEN);
+    }
     /**
      * Returns a credentials object from the url
      *
@@ -118,7 +124,7 @@ public class WebCredentialsUtils {
             if (HOST_CREDENTIALS.containsKey(host)) {
                 return HOST_CREDENTIALS.get(host);
             } else {
-                return new HttpCredentials(getUserNameFromPreferences(), getPasswordFromPreferences(), getUseTokenFromPreferences());
+                return new HttpCredentials(getUserNameFromPreferences(), getPasswordFromPreferences(), getUseTokenFromPreferences(), getTokenFromPreferences());
             }
         } else {
             return HOST_CREDENTIALS.get(host);
