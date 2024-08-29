@@ -506,7 +506,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
             } else {
                 urlBuilder.append(uri.getPath());
             }
-            if(uri.getQuery().length() > 0) {
+            if(uri.getQuery() != null && uri.getQuery().length() > 0) {
                 urlBuilder.append("?").append(uri.getQuery());
             }
             physicalUri = new URL(urlBuilder.toString()).toURI();
