@@ -17,6 +17,9 @@
 package org.odk.collect.android.preferences;
 
 import android.accounts.AccountManager;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import timber.log.Timber;
@@ -68,6 +71,7 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Intent.getIntent;
 import static org.odk.collect.android.activities.ActivityUtils.startActivityAndCloseAllOthers;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SET_FALLBACK_SHEETS_URL;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SET_SERVER;
@@ -85,6 +89,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     private EditTextPreference serverUrlPreference;
     private EditTextPreference usernamePreference;
     private Preference scanButton;
+    private EditTextPreference authTokenPreference;
     @Inject
     GoogleAccountsManager accountsManager;
 
@@ -109,6 +114,16 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     private ListPopupWindow listPopupWindow;
     private Preference selectedGoogleAccountPreference;
     private boolean allowClickSelectedGoogleAccountPreference = true;
+
+    private final ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        setResult(RESULT_OK, result.getData());
+    });
+
+    private void setResult(int resultOk, Intent data) {
+
+        authTokenPreference.setSummary(data.getStringExtra("auth_token"));
+        serverUrlPreference.setSummary(data.getStringExtra("server_url"));
+    }
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -206,9 +221,15 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
         // Button to scan for a QR code
         scanButton = (Preference) findPreference(GeneralKeys.KEY_SMAP_SCAN_TOKEN);
         scanButton.setOnPreferenceClickListener(preference -> {
-            startActivity(new Intent(getActivity(), QRCodeTabsActivity.class));
+            formLauncher.launch(new Intent(getActivity(), QRCodeTabsActivity.class));
+            //startActivity(new Intent(getActivity(), QRCodeTabsActivity.class));
             return true;
         });
+
+        // Smap show the authToken when it changes
+        authTokenPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_SMAP_AUTH_TOKEN);
+        authTokenPreference.setSummary(authTokenPreference.getText());
+        authTokenPreference.setEnabled(false);
 
         // Respond to changes in authentication approach
         SwitchPreference useTokenPreference = findPreference(GeneralKeys.KEY_SMAP_USE_TOKEN);
@@ -229,6 +250,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
 
         // show or hide tken authentication preferences
         scanButton.setVisible(useToken);
+        authTokenPreference.setVisible(useToken);
 
         return true;
     }

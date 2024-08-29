@@ -1,6 +1,9 @@
 package org.odk.collect.android.configure.qr;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.google.zxing.integration.android.IntentIntegrator;
@@ -49,10 +52,33 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
     @Override
     protected void handleScanningResult(BarcodeResult result) throws IOException, DataFormatException {
 
-        boolean importSuccess = settingsImporter.fromJSONSmap(result.getText());
+        JSONObject jsonObject;
+        String url = null;
+        String token = null;
+        boolean importSuccess = false;
+        try {
+            jsonObject = new JSONObject(result.getText());
+
+            // validate
+            url = jsonObject.getString("server_url");
+            token = jsonObject.getString("auth_token");
+
+            if(url == null || token == null) {
+                importSuccess = false;
+            } else {
+                importSuccess = settingsImporter.fromJSONSmap(jsonObject);
+            }
+        } catch(JSONException e) {
+            // Ignore
+        }
 
         if (importSuccess) {
             ToastUtils.showLongToast(getString(R.string.successfully_imported_settings));
+            Intent data = new Intent();
+            data.putExtra("server_url",url);
+            data.putExtra("auth_token",token);
+            data.putExtra("homekey","homename");
+            getActivity().setResult(RESULT_OK, data);
             getActivity().finish();
         } else {
             ToastUtils.showLongToast(getString(R.string.invalid_qrcode));

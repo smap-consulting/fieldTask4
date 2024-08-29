@@ -34,25 +34,16 @@ public class SettingsImporter {
         this.settingsChangedHandler = settingsChangedHandler;
     }
 
-    public boolean fromJSONSmap(@NonNull String json) {
+    public boolean fromJSONSmap(@NonNull JSONObject jsonObject) {
+        boolean success = false;
 
         try {
-            JSONObject jsonObject = new JSONObject(json);
-
-            // validate
-            String url = jsonObject.getString("server_url");
-            String token = jsonObject.getString("auth_token");
-            if(url == null || token == null) {
-                return false;
-            }
-            // Store in preferences
             importToPrefs(jsonObject, generalSharedPrefs);
-
+            success = true;
         } catch (JSONException ignored) {
-            // Ignored
         }
 
-        return true;
+        return success;
     }
 
     public boolean fromJSON(@NonNull String json) {

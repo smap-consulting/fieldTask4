@@ -13,6 +13,13 @@
         app:iconSpaceReserved="false"
         app:title="@string/smap_scan_qr" />
 
+    <EditTextPreference
+        android:key="auth_token"
+        app:iconSpaceReserved="false"
+        android:inputType="textNoSuggestions"
+        android:shouldDisableView="false"
+        app:title="@string/smap_auth_token" />
+
     <!-- smap not type selection
     <ListPreference
         android:entries="@array/protocol_entries"

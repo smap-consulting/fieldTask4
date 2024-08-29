@@ -21,13 +21,13 @@ public class WebCredentialsUtils {
 
     private static final Map<String, HttpCredentialsInterface> HOST_CREDENTIALS = new HashMap<>();
 
-    public void saveCredentials(@NonNull String url, @NonNull String username, @NonNull String password, boolean useToken, String authToken) {
+    public void saveCredentials(@NonNull String url, @NonNull String username, @NonNull String password) {
         if (username.isEmpty()) {
             return;
         }
 
         String host = Uri.parse(url).getHost();
-        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password, useToken, authToken));
+        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password, false, null));
     }
 
     public void saveCredentialsPreferences(GeneralSharedPreferences generalSharedPreferences, String userName, String password, PropertyManager propertyManager) {
