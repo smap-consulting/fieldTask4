@@ -8,5 +8,5 @@ import okhttp3.Response;
 
 public interface OpenRosaServerClient {
 
-    Response makeRequest(Request request, Date currentTime) throws IOException;
+    Response makeRequest(Request request, Date currentTime, HttpCredentialsInterface credentials) throws IOException;
 }
