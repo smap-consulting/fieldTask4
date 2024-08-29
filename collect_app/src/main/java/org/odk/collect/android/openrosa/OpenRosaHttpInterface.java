@@ -24,6 +24,7 @@ import org.odk.collect.android.taskModel.TaskResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,7 +87,7 @@ public interface OpenRosaHttpInterface {
     HttpPostResult uploadTaskStatus(@NonNull TaskResponse updateResponse,
                                                @NonNull URI uri,
                                                @Nullable HttpCredentialsInterface credentials
-                                             ) throws IOException;
+                                             ) throws IOException, URISyntaxException;
 
     /**
      * smap
@@ -103,7 +104,7 @@ public interface OpenRosaHttpInterface {
                                     String lon,
                                     @NonNull URI uri,
                                     @Nullable HttpCredentialsInterface credentials
-    ) throws IOException;
+    ) throws IOException, URISyntaxException;
 
     /**
      * smap
@@ -119,7 +120,7 @@ public interface OpenRosaHttpInterface {
                                             @NonNull File file,
                                             @NonNull URI uri,
                                             @Nullable HttpCredentialsInterface credentials
-    ) throws IOException;
+    ) throws IOException, URISyntaxException;
 
     /**
      * Creates a http connection and sets up an input stream. Thats all it does as opposed to the
