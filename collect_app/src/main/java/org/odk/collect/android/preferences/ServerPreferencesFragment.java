@@ -123,6 +123,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
 
         authTokenPreference.setSummary(data.getStringExtra("auth_token"));
         serverUrlPreference.setSummary(data.getStringExtra("server_url"));
+        usernamePreference.setSummary(data.getStringExtra("username"));
     }
 
     @Override
@@ -245,7 +246,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     private boolean useTokenChanged(boolean useToken) {
         // show or hide basic authentication preferences
         serverUrlPreference.setEnabled(!useToken);
-        usernamePreference.setVisible(!useToken);
+        usernamePreference.setEnabled(!useToken);
         passwordPreference.setVisible(!useToken);
 
         // show or hide tken authentication preferences

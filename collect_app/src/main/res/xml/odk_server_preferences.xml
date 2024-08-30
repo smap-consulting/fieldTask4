@@ -17,6 +17,7 @@
         android:inputType="textNoSuggestions"
         android:key="username"
         android:title="@string/username"
+        android:shouldDisableView="false"
         app:iconSpaceReserved="false" />
     <EditTextPreference
         android:dialogTitle="@string/server_password"

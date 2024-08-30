@@ -55,6 +55,7 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
         JSONObject jsonObject;
         String url = null;
         String token = null;
+        String username = null;
         boolean importSuccess = false;
         try {
             jsonObject = new JSONObject(result.getText());
@@ -62,8 +63,9 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
             // validate
             url = jsonObject.getString("server_url");
             token = jsonObject.getString("auth_token");
+            username = jsonObject.getString("username");
 
-            if(url == null || token == null) {
+            if(url == null || token == null || username == null) {
                 importSuccess = false;
             } else {
                 importSuccess = settingsImporter.fromJSONSmap(jsonObject);
@@ -77,7 +79,7 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
             Intent data = new Intent();
             data.putExtra("server_url",url);
             data.putExtra("auth_token",token);
-            data.putExtra("homekey","homename");
+            data.putExtra("username",username);
             getActivity().setResult(RESULT_OK, data);
             getActivity().finish();
         } else {
