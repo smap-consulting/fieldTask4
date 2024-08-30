@@ -12,7 +12,7 @@ public interface FormListApiSmap {
 
     ManifestFile fetchManifest(String manifestURL) throws FormApiExceptionSmap;
 
-    InputStream fetchForm(String formURL, boolean credentials) throws FormApiExceptionSmap;             // smap add credentials
+    InputStream fetchForm(String formURL, boolean credentials) throws Exception;             // smap add credentials
 
     InputStream fetchMediaFile(String mediaFileURL, boolean credentials) throws FormApiExceptionSmap;   // smap add credentials
 
