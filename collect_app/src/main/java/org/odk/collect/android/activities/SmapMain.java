@@ -583,6 +583,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                 try {
                     showDialog(ALERT_DIALOG);
                 } catch (Exception e) {
+                    Timber.e(e);
                     // Tried to show a dialog but the activity may have been closed don't care
                     // However presumably this dialog showing should be replaced by use of progress bar
                 }
