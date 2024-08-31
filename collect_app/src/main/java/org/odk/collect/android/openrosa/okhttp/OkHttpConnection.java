@@ -161,7 +161,6 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
                                                String survey_notes,        // smap
                                                String assignment_id,       // smap
                                                @NonNull long contentLength) throws Exception {
-        URI physicalUri = getPhysicalUri(uri, credentials);
         HttpPostResult postResult = null;
 
         boolean first = true;
@@ -219,7 +218,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
             // end smap
 
             MultipartBody multipartBody = multipartBuilder.build();
-            postResult = executePostRequest(physicalUri, credentials, multipartBody);
+            postResult = executePostRequest(uri, credentials, multipartBody);
 
             if (postResult.getResponseCode() != HttpURLConnection.HTTP_CREATED &&
                     postResult.getResponseCode() != HttpURLConnection.HTTP_ACCEPTED) {
