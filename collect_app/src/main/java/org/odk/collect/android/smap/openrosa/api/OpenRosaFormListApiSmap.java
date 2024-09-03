@@ -81,7 +81,6 @@ public class OpenRosaFormListApiSmap implements FormListApiSmap {
             return null;
         }
 
-        //DocumentFetchResult result = mapException(() -> openRosaXMLFetcher.getXML(manifestURL));
         DocumentFetchResult result = openRosaXMLFetcher.getXML(manifestURL);
 
         if (result.errorMessage != null) {
@@ -117,7 +116,6 @@ public class OpenRosaFormListApiSmap implements FormListApiSmap {
 
     @NotNull
     private InputStream fetchFile(String formURL, boolean credentials) throws Exception {    // smap add credentials
-        //InputStream formFile = mapException(() -> openRosaXMLFetcher.getFile(formURL, null, credentials));
         InputStream formFile = openRosaXMLFetcher.getFile(formURL, null, credentials);
         if (formFile != null) {
             return formFile;

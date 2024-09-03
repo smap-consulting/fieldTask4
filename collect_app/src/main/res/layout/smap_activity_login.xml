@@ -6,7 +6,7 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:fitsSystemWindows="true">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -33,6 +33,18 @@
                    android:layout_height="100dp"
                    android:layout_marginBottom="24dp"
                    android:layout_gravity="center_horizontal" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/smap_use_token"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/smap_use_token" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <!--  URL Label -->
         <com.google.android.material.textfield.TextInputLayout
@@ -61,7 +73,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <!--  Password Label -->
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout android:id="@+id/input_password_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:passwordToggleEnabled="true"

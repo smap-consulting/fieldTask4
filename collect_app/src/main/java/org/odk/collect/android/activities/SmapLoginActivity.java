@@ -14,20 +14,20 @@ package org.odk.collect.android.activities;
  * the License.
  */
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import org.odk.collect.android.BuildConfig;
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.listeners.SmapLoginListener;
@@ -40,12 +40,15 @@ import org.odk.collect.android.utilities.Validator;
 import java.util.ArrayList;
 
 import androidx.appcompat.widget.AppCompatSpinner;
+import androidx.appcompat.widget.SwitchCompat;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import timber.log.Timber;
 
 public class SmapLoginActivity extends CollectAbstractActivity implements SmapLoginListener {
 
+    @BindView(R.id.smap_use_token) SwitchCompat smapUseToken;
     @BindView(R.id.input_url) EditText urlText;
     @BindView(R.id.input_username) EditText userText;
     @BindView(R.id.input_password) EditText passwordText;
@@ -54,7 +57,6 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
 
 
     private String url;
-    private boolean useSpinner;
     private AppCompatSpinner urlSpinner;
     private ArrayAdapter<CharSequence> urlAdapter;
     ArrayList<String> urlValues;
@@ -65,66 +67,21 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         //setTheme(R.style.DarkAppTheme);     // override theme for login
         setContentView(R.layout.smap_activity_login);
         ButterKnife.bind(this);
-        //urlSpinner = findViewById(R.id.urlSpinner);   URL spinner no longer included - need to add back in if it is required
+
+        // Responds to switch being checked/unchecked
+        useTokenChanged(smapUseToken.isChecked());
+        smapUseToken.setOnCheckedChangeListener(new SwitchCompat.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton var, boolean b) {
+                useTokenChanged(b);
+            }
+
+        });
 
         url = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SERVER_URL);
-
-        if(BuildConfig.FLAVOR.equals("kontrolid") && false) {   // Disable this option
-            useSpinner = true;
-            urlText.setVisibility(View.GONE);
-
-            // Setup the values list this must have the same number of entries as specified in smap_string
-            urlValues = new ArrayList<> ();
-            urlValues.add("https://app.kontrolid.org");        // https://app.kontrolid.org
-            urlValues.add("https://app.kontrolid.com");        // https://app.kontrolid.com
-
-            // Add the choices to the Spinner
-            urlAdapter = ArrayAdapter.createFromResource(this,
-                    R.array.smap_kontrolid_servers,
-                    android.R.layout.simple_spinner_dropdown_item);
-            urlAdapter.setDropDownViewResource(android.R.layout.select_dialog_singlechoice);
-            urlSpinner.setAdapter(urlAdapter);
-
-            // Set the initial value
-            for(int i = 0; i < urlValues.size(); i++) {
-                if(urlValues.get(i).equals(url)) {
-                    urlSpinner.setSelection(i);
-                    break;
-                }
-            }
-            urlSpinner.setPrompt(Collect.getInstance().getString(R.string.change_server_url));
-            urlSpinner.setEnabled(true);
-            urlSpinner.setFocusable(true);
-
-            // Respond to the spinner value being changes
-            urlSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                @Override
-                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    if(position < urlValues.size()) {
-                        url = urlValues.get(urlSpinner.getSelectedItemPosition());
-                    }
-                }
-
-                @Override
-                public void onNothingSelected(AdapterView<?> arg0) {
-                }
-            });
-
-
-        } else {        // Use the text field
-            useSpinner = false;
-           // urlSpinner.setVisibility(View.GONE);  // smap disable for the moment
-            urlText.setText(url);
-        }
+        urlText.setText(url);
 
         userText.setText((String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_USERNAME));
-
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                login();
-            }
-        });
 
         passwordText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -136,14 +93,19 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
             }
         });
 
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                login();
+            }
+        });
     }
 
     public void login() {
         Timber.i("Login started");
 
-        if(!useSpinner) {
-            url = urlText.getText().toString();
-        }
+        url = urlText.getText().toString();
+
         String username = userText.getText().toString();
         String password = passwordText.getText().toString();
 
@@ -258,6 +220,19 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         }
 
         return valid;
+    }
+
+    private boolean useTokenChanged(boolean useToken) {
+        // show or hide basic authentication preferences
+        urlText.setEnabled(!useToken);
+        userText.setEnabled(!useToken);
+
+        this.findViewById(R.id.input_password_layout).setVisibility(useToken ? View.INVISIBLE : View.VISIBLE);
+        // show or hide tken authentication preferences
+        //scanButton.setVisible(useToken);
+        //authTokenPreference.setVisible(useToken);
+
+        return true;
     }
 
     private CharSequence[] getChoices() {
