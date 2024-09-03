@@ -76,12 +76,13 @@ public class OpenRosaFormListApiSmap implements FormListApiSmap {
     }
 
     @Override
-    public ManifestFile fetchManifest(String manifestURL) throws FormApiExceptionSmap {
+    public ManifestFile fetchManifest(String manifestURL) throws Exception {
         if (manifestURL == null) {
             return null;
         }
 
-        DocumentFetchResult result = mapException(() -> openRosaXMLFetcher.getXML(manifestURL));
+        //DocumentFetchResult result = mapException(() -> openRosaXMLFetcher.getXML(manifestURL));
+        DocumentFetchResult result = openRosaXMLFetcher.getXML(manifestURL);
 
         if (result.errorMessage != null) {
             throw new FormApiExceptionSmap(FETCH_ERROR);
