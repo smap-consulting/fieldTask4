@@ -14,7 +14,6 @@ package org.odk.collect.android.activities;
  * the License.
  */
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -30,6 +29,7 @@ import android.widget.TextView;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
+import org.odk.collect.android.configure.qr.QRCodeTabsActivity;
 import org.odk.collect.android.listeners.SmapLoginListener;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
@@ -37,8 +37,8 @@ import org.odk.collect.android.tasks.SmapLoginTask;
 import org.odk.collect.android.utilities.SnackbarUtils;
 import org.odk.collect.android.utilities.Validator;
 
-import java.util.ArrayList;
-
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.SwitchCompat;
 
@@ -54,13 +54,22 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
     @BindView(R.id.input_password) EditText passwordText;
     @BindView(R.id.btn_login) Button loginButton;
     @BindView(R.id.progressBar) ProgressBar progressBar;
+    @BindView(R.id.btn_scan) Button scanButton;
+    @BindView(R.id.auth_token) EditText tokenText;
 
 
     private String url;
     private AppCompatSpinner urlSpinner;
     private ArrayAdapter<CharSequence> urlAdapter;
-    ArrayList<String> urlValues;
+    private final ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        gotResult(RESULT_OK, result.getData());
+    });
 
+    private void gotResult(int resultOk, Intent data) {
+        urlText.setText(data.getStringExtra("server_url"));
+        userText.setText(data.getStringExtra("username"));
+        tokenText.setText(data.getStringExtra("auth_token"));
+    }
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +102,15 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
             }
         });
 
+        scanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                formLauncher.launch(new Intent(SmapLoginActivity.this, QRCodeTabsActivity.class));
+            }
+        });
+
+        tokenText.setEnabled(false);
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,12 +122,13 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
     public void login() {
         Timber.i("Login started");
 
+        boolean useToken = smapUseToken.isChecked();
         url = urlText.getText().toString();
-
         String username = userText.getText().toString();
         String password = passwordText.getText().toString();
+        String token = tokenText.getText().toString();
 
-        if (!validate(url, username, password)) {
+        if (!validate(useToken, url, username, password, token)) {
             return;
         }
 
@@ -118,7 +137,7 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
 
         SmapLoginTask smapLoginTask = new SmapLoginTask();
         smapLoginTask.setListener(this);
-        smapLoginTask.execute(url, username, password);
+        smapLoginTask.execute(String.valueOf(useToken), url, username, password, token);
 
     }
 
@@ -146,7 +165,13 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         GeneralSharedPreferences prefs = GeneralSharedPreferences.getInstance();
         prefs.save(GeneralKeys.KEY_SERVER_URL, url);
         prefs.save(GeneralKeys.KEY_USERNAME, userText.getText().toString());
-        prefs.save(GeneralKeys.KEY_PASSWORD, passwordText.getText().toString());
+        prefs.save(GeneralKeys.KEY_SMAP_SCAN_TOKEN, smapUseToken.isChecked());
+
+        if(smapUseToken.isChecked()) {
+            prefs.save(GeneralKeys.KEY_SMAP_AUTH_TOKEN, tokenText.getText().toString());
+        } else {
+            prefs.save(GeneralKeys.KEY_PASSWORD, passwordText.getText().toString());
+        }
 
         // Save the login time in case the password policy is set to periodic
         prefs.save(GeneralKeys.KEY_SMAP_LAST_LOGIN, String.valueOf(System.currentTimeMillis()));
@@ -162,14 +187,17 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
     public void loginFailed(String status) {
 
         // Attempt to login by comparing values agains stored preferences
+        boolean useToken = smapUseToken.isChecked();
         String username = userText.getText().toString();
         String password = passwordText.getText().toString();
+        String token = tokenText.getText().toString();
 
         String prefUrl = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SERVER_URL);
         String prefUsername = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_USERNAME);
         String prefPassword = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_PASSWORD);
-
-        if(url.equals(prefUrl) && username.equals(prefUsername) && password.equals(prefPassword)) {
+        String prefToken = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_AUTH_TOKEN);
+        if((useToken && url.equals(prefUrl) && username.equals(prefUsername) && token.equals(prefToken))
+                || (!useToken && url.equals(prefUrl) && username.equals(prefUsername) && password.equals(prefPassword))) {
             // Start Main Activity no refresh as presumably there is no network
             Intent i = new Intent(SmapLoginActivity.this, SmapMain.class);
             i.putExtra(SmapMain.EXTRA_REFRESH, "no");
@@ -190,7 +218,7 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         SnackbarUtils.showShortSnackbar(findViewById(R.id.loginMain), msg);
     }
 
-    public boolean validate(String url, String username, String pw) {
+    public boolean validate(boolean useToken, String url, String username, String pw, String token) {
         boolean valid = true;
 
         // remove all trailing "/"s
@@ -205,18 +233,27 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
             urlText.setError(null);
         }
 
-        if (pw.isEmpty() || !pw.equals(pw.trim())) {
-            passwordText.setError(Collect.getInstance().getString(R.string.password_error_whitespace));
-            valid = false;
+        if(useToken) {
+            if (token.isEmpty()) {
+                passwordText.setError(Collect.getInstance().getString(R.string.password_error_whitespace));
+                valid = false;
+            } else {
+                tokenText.setError(null);
+            }
         } else {
-            passwordText.setError(null);
-        }
+            if (pw.isEmpty() || !pw.equals(pw.trim())) {
+                passwordText.setError(Collect.getInstance().getString(R.string.password_error_whitespace));
+                valid = false;
+            } else {
+                passwordText.setError(null);
+            }
 
-        if (username.isEmpty() || !username.equals(username.trim())) {
-            userText.setError(Collect.getInstance().getString(R.string.username_error_whitespace));
-            valid = false;
-        } else {
-            userText.setError(null);
+            if (username.isEmpty() || !username.equals(username.trim())) {
+                userText.setError(Collect.getInstance().getString(R.string.username_error_whitespace));
+                valid = false;
+            } else {
+                userText.setError(null);
+            }
         }
 
         return valid;
@@ -226,11 +263,11 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         // show or hide basic authentication preferences
         urlText.setEnabled(!useToken);
         userText.setEnabled(!useToken);
-
         this.findViewById(R.id.input_password_layout).setVisibility(useToken ? View.INVISIBLE : View.VISIBLE);
-        // show or hide tken authentication preferences
-        //scanButton.setVisible(useToken);
-        //authTokenPreference.setVisible(useToken);
+
+        // show or hide token authentication preferences
+        scanButton.setVisibility(!useToken ? View.INVISIBLE : View.VISIBLE);
+        this.findViewById(R.id.auth_token_layout).setVisibility(!useToken ? View.INVISIBLE : View.VISIBLE);
 
         return true;
     }

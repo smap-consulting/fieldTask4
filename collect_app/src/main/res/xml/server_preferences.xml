@@ -20,12 +20,4 @@
         android:shouldDisableView="false"
         app:title="@string/smap_auth_token" />
 
-    <!-- smap not type selection
-    <ListPreference
-        android:entries="@array/protocol_entries"
-        android:entryValues="@array/protocol_entry_values"
-        android:key="protocol"
-        android:title="@string/type"
-        app:iconSpaceReserved="false" />
-        -->
 </PreferenceScreen>

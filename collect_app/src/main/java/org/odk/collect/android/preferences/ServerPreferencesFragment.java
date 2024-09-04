@@ -120,7 +120,6 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     });
 
     private void setResult(int resultOk, Intent data) {
-
         authTokenPreference.setSummary(data.getStringExtra("auth_token"));
         serverUrlPreference.setSummary(data.getStringExtra("server_url"));
         usernamePreference.setSummary(data.getStringExtra("username"));
