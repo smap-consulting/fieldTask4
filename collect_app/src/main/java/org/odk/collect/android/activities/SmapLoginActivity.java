@@ -165,7 +165,7 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         GeneralSharedPreferences prefs = GeneralSharedPreferences.getInstance();
         prefs.save(GeneralKeys.KEY_SERVER_URL, url);
         prefs.save(GeneralKeys.KEY_USERNAME, userText.getText().toString());
-        prefs.save(GeneralKeys.KEY_SMAP_SCAN_TOKEN, smapUseToken.isChecked());
+        prefs.save(GeneralKeys.KEY_SMAP_USE_TOKEN, smapUseToken.isChecked());
 
         if(smapUseToken.isChecked()) {
             prefs.save(GeneralKeys.KEY_SMAP_AUTH_TOKEN, tokenText.getText().toString());
