@@ -26,6 +26,6 @@ public class QRCodeTabsAdapter extends FragmentStateAdapter {
 
     @Override
     public int getItemCount() {
-        return 2;
-    }
+        return 1;
+    }   // smap remove second tab which displays qr code
 }
