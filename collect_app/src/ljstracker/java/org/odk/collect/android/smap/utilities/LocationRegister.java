@@ -63,4 +63,8 @@ public class LocationRegister {
             editor.putBoolean(GeneralKeys.KEY_SMAP_OVERRIDE_LOCATION, false);
         }
     }
+
+    // Check that the installation is good
+    public void isValidInstallation(Context context) {
+    }
 }

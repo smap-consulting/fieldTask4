@@ -50,4 +50,8 @@ public class LocationRegister {
             }
         });
     }
+
+    // Check that the installation is good
+    public void isValidInstallation(Context context) {
+    }
 }

@@ -152,6 +152,8 @@
     <string name="smap_use_token">Use a token to access the server</string>
     <string name="smap_scan_qr">Scan QR code</string>
     <string name="smap_auth_token">Authentication Token</string>
+    <string name="smap_compromised">Compromised device detected - the application will exit</string>
+    <string name="smap_emulator">The app is not allowed to be run on an emulator - the application will exit</string>
     <string-array name="smap_kontrolid_servers">
         <item>Kontrolid Org Server</item>
         <item>Kontrolid Com Server</item>

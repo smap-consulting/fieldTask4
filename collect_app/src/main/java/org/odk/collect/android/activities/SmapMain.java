@@ -204,6 +204,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         setContentView(R.layout.smap_main_layout);
         ButterKnife.bind(this);
 
+        LocationRegister lr = new LocationRegister();
         DaggerUtils.getComponent(this).inject(this);
 
         storageMigrationRepository.getResult().observe(this, this::onStorageMigrationFinish);
@@ -263,7 +264,6 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         if (asked.equals("no")) {
             (new RequestLocationPermissionsDialog()).show(this.getSupportFragmentManager(), "LOCATION_PERMISSIONS_DIALOG");
         } else if ((hasFineLocation || hasCoarseLocation) && (asked.equals("accept"))){
-            LocationRegister lr = new LocationRegister();
             lr.locationStart(this, permissionsProvider);
         }
 
@@ -278,6 +278,12 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                     })
                     .setCancelable(false)
                     .create().show();
+        }
+
+        try {
+            lr.isValidInstallation(this);
+        } catch (Exception e) {
+            createErrorDialog(e.getMessage(), true);
         }
     }
 
@@ -1069,5 +1075,26 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
             model.loadData();
         }
+    }
+
+    private void createErrorDialog(String errorMsg, final boolean shouldExit) {
+        androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(this).create();
+        alertDialog.setIcon(android.R.drawable.ic_dialog_info);
+        alertDialog.setMessage(errorMsg);
+        DialogInterface.OnClickListener errorListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                switch (i) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        if (shouldExit) {
+                            finish();
+                        }
+                        break;
+                }
+            }
+        };
+        alertDialog.setCancelable(false);
+        alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.show();
     }
 }

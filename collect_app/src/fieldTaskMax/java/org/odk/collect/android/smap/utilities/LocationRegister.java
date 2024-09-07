@@ -121,4 +121,8 @@ public class LocationRegister {
             action.granted();
         }
     }
+
+    // Check that the installation is good
+    public void isValidInstallation(Context context) {
+    }
 }
