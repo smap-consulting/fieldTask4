@@ -99,6 +99,7 @@ public final class GeneralKeys {
     public static final String KEY_SMAP_SCAN_TOKEN = "smap_scan_token";    // Scan the token
     public static final String KEY_SMAP_AUTH_TOKEN = "auth_token";    // Authentication Token
     public static final String KEY_SMAP_REVIEW_FINAL = "review_final";    // Allow review of Form after finalising
+    public static final String KEY_SMAP_FORCE_TOKEN = "force_token";    // Require the use of tokens for authentication
     public static final String KEY_SMAP_USER_LOCATION = "smap_gps_trail";    // Record a user trail
     public static final String KEY_SMAP_USER_SAVE_LOCATION = "smap_gps_trail";    // Backup of decision to record the user trail
     public static final String KEY_SMAP_LOCATION_TRIGGER = "location_trigger";  // Enable triggering of forms by location
@@ -188,6 +189,7 @@ public final class GeneralKeys {
         hashMap.put(KEY_SMAP_SCAN_TOKEN, false);
         hashMap.put(KEY_SMAP_AUTH_TOKEN, "");
         hashMap.put(KEY_SMAP_REVIEW_FINAL, true);
+        hashMap.put(KEY_SMAP_FORCE_TOKEN, false);
         hashMap.put(KEY_SMAP_USER_LOCATION, false);
         hashMap.put(KEY_SMAP_LOCATION_TRIGGER, true);
         hashMap.put(KEY_SMAP_ODK_STYLE_MENUS, true);

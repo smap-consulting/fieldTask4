@@ -926,6 +926,7 @@ public class DownloadTasksTask extends AsyncTask<Void, String, HashMap<String, S
             editor.putBoolean(GeneralKeys.KEY_SMAP_EXIT_TRACK_MENU, tr.settings.ft_exit_track_menu);
             editor.putBoolean(GeneralKeys.KEY_SMAP_BG_STOP_MENU, tr.settings.ft_bg_stop_menu);
             editor.putBoolean(GeneralKeys.KEY_SMAP_REVIEW_FINAL, tr.settings.ft_review_final);
+            editor.putBoolean(GeneralKeys.KEY_SMAP_FORCE_TOKEN, tr.settings.ft_force_token);
 
             /*
              * Override the user trail setting if this is set from the server

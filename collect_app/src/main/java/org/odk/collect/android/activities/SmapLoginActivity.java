@@ -66,9 +66,25 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
     });
 
     private void gotResult(int resultOk, Intent data) {
-        urlText.setText(data.getStringExtra("server_url"));
-        userText.setText(data.getStringExtra("username"));
-        tokenText.setText(data.getStringExtra("auth_token"));
+        if(data != null) {
+            String url = data.getStringExtra("server_url");
+            if (url == null) {
+                url = "";
+            }
+            urlText.setText(url);
+
+            String user = data.getStringExtra("username");
+            if (user == null) {
+                user = "";
+            }
+            userText.setText(user);
+
+            String token = data.getStringExtra("auth_token");
+            if (token == null) {
+                token = "";
+            }
+            tokenText.setText(token);
+        }
     }
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +92,12 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         //setTheme(R.style.DarkAppTheme);     // override theme for login
         setContentView(R.layout.smap_activity_login);
         ButterKnife.bind(this);
+
+        boolean forceToken = (Boolean) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_FORCE_TOKEN);
+        if(forceToken) {
+            smapUseToken.setChecked(true);
+            smapUseToken.setEnabled(false);
+        }
 
         // Responds to switch being checked/unchecked
         useTokenChanged(smapUseToken.isChecked());

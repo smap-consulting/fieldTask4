@@ -33,6 +33,7 @@ public class FieldTaskSettings {
     public boolean ft_exit_track_menu;
     public boolean ft_bg_stop_menu;
     public boolean ft_review_final;
+    public boolean ft_force_token;
     public String ft_high_res_video;
     public String ft_guidance;
     public String ft_send;

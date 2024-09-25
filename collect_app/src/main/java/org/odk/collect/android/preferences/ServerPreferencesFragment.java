@@ -232,7 +232,13 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
         authTokenPreference.setEnabled(false);
 
         // Respond to changes in authentication approach
+        boolean forceToken = (Boolean) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_FORCE_TOKEN);
         SwitchPreference useTokenPreference = findPreference(GeneralKeys.KEY_SMAP_USE_TOKEN);
+        if(forceToken) {
+            useTokenPreference.setChecked(true);
+            useTokenPreference.setEnabled(false);
+        }
+
         useTokenPreference.setOnPreferenceChangeListener((preference, newValue) -> {
             return useTokenChanged((boolean) newValue);
         });
