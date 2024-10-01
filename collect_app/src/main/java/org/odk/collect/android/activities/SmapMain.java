@@ -164,6 +164,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
     private LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
 
+    private AlertDialog mAlertDialog;
     private ViewPager viewPager;
 
     @Inject
@@ -451,19 +452,18 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                 mProgressDialog.setCancelable(false);
                 mProgressDialog.setButton(getString(R.string.cancel), loadingButtonListener);
                 return mProgressDialog;
-            case ALERT_DIALOG:
-                AlertDialog mAlertDialog = new AlertDialog.Builder(this).create();
-                mAlertDialog.setMessage(mAlertMsg);
-                mAlertDialog.setTitle(getString(R.string.smap_get_tasks));
-                DialogInterface.OnClickListener quitListener = new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int i) {
-                        dialog.dismiss();
-                    }
-                };
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setButton(getString(R.string.ok), quitListener);
-                mAlertDialog.setIcon(android.R.drawable.ic_dialog_info);
-                return mAlertDialog;
+            //case ALERT_DIALOG:
+            //    mAlertDialog = new AlertDialog.Builder(this).create();
+            //    mAlertDialog.setTitle(getString(R.string.smap_get_tasks));
+            //    DialogInterface.OnClickListener quitListener = new DialogInterface.OnClickListener() {
+            //        public void onClick(DialogInterface dialog, int i) {
+            //            dialog.dismiss();
+            //        }
+            //    };
+            //    mAlertDialog.setCancelable(false);
+            //    mAlertDialog.setButton(getString(R.string.ok), quitListener);
+            //    mAlertDialog.setIcon(android.R.drawable.ic_dialog_info);
+            //    return mAlertDialog;
             case PASSWORD_DIALOG:
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -573,13 +573,16 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             if(it != null) {
                 while (it.hasNext()) {
                     String key = it.next();
+                    String m = result.get(key);
                     if (key.equals("err_not_enabled")) {
                         message.append(this.getString(R.string.smap_tasks_not_enabled));
                     } else if (key.equals("err_no_tasks")) {
                         // No tasks is fine, in fact its the most common state
                         //message.append(this.getString(R.string.smap_no_tasks));
+                    } else if (key.equals("Error:") && m != null && m.startsWith("403")) {
+                        message.append(this.getString(R.string.smap_invalid_auth_token));
                     } else {
-                        message.append(key + " - " + result.get(key) + "\n\n");
+                        message.append(key + " - " + m + "\n\n");
                     }
                 }
             }
@@ -587,7 +590,18 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             mAlertMsg = message.toString().trim();
             if (mAlertMsg.length() > 0) {
                 try {
-                    showDialog(ALERT_DIALOG);
+                    if(mAlertDialog == null) {
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SmapMain.this).setCancelable(true)
+                                .setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int i) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        mAlertDialog = dialogBuilder.create();
+                        mAlertDialog.setTitle(getString(R.string.smap_get_tasks));
+                    }
+                    mAlertDialog.setMessage(mAlertMsg);
+                    mAlertDialog.show();
                 } catch (Exception e) {
                     Timber.e(e);
                     // Tried to show a dialog but the activity may have been closed don't care
