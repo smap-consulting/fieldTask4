@@ -340,7 +340,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
 
         Response response = httpClient.makeRequest(request, new Date(), credentials);
 
-        if (response.code() != 204) {
+        if (response.code() != 204 && response.code() != 200) {
             Timber.e(new Exception(response.message()));
         }
 

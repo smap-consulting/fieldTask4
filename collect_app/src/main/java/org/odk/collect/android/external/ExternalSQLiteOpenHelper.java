@@ -123,9 +123,8 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
                             .withEscapeChar(ESCAPE_CHAR)
                             .build())
                     .build();
-            String[] headerRow = reader.readNext();
 
-            headerRow[0] = removeByteOrderMark(headerRow[0]);
+            String[] headerRow = reader.readNext();
 
             if (!ExternalDataUtil.containsAnyData(headerRow)) {
                 /* start smap - So no data that can change no need to throw an exception
@@ -136,6 +135,7 @@ public class ExternalSQLiteOpenHelper extends SQLiteOpenHelper {
                 return;     // smap just return and continue
             }
 
+            headerRow[0] = removeByteOrderMark(headerRow[0]);
 
             List<String> conflictingColumns =
                     ExternalDataUtil.findMatchingColumnsAfterSafeningNames(headerRow);
