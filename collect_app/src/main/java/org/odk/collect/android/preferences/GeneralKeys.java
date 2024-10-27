@@ -6,6 +6,7 @@ import com.mapbox.mapboxsdk.maps.Style;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.GeoPolyActivity;
 import org.odk.collect.android.application.Collect;
+import org.odk.collect.android.smap.utilities.LocationRegister;
 import org.odk.collect.android.utilities.QuestionFontSizeUtils;
 
 import java.util.HashMap;
@@ -189,14 +190,14 @@ public final class GeneralKeys {
         hashMap.put(KEY_SMAP_SCAN_TOKEN, false);
         hashMap.put(KEY_SMAP_AUTH_TOKEN, "");
         hashMap.put(KEY_SMAP_REVIEW_FINAL, true);
-        hashMap.put(KEY_SMAP_FORCE_TOKEN, false);
+        hashMap.put(KEY_SMAP_FORCE_TOKEN, LocationRegister.defaultForceToken());
         hashMap.put(KEY_SMAP_USER_LOCATION, false);
         hashMap.put(KEY_SMAP_LOCATION_TRIGGER, true);
         hashMap.put(KEY_SMAP_ODK_STYLE_MENUS, true);
         hashMap.put(KEY_SMAP_ODK_INSTANCENAME, false);
         hashMap.put(KEY_SMAP_ODK_MARK_FINALIZED, false);
         hashMap.put(KEY_SMAP_PREVENT_DISABLE_TRACK, false);
-        hashMap.put(KEY_SMAP_ENABLE_GEOFENCE, true);    // Default geofence on until notififid otherwise
+        hashMap.put(KEY_SMAP_ENABLE_GEOFENCE, true);    // Default geofence on until notified otherwise
         hashMap.put(KEY_SMAP_ODK_ADMIN_MENU, false);
         hashMap.put(KEY_SMAP_ADMIN_SERVER_MENU, true);
         hashMap.put(KEY_SMAP_ADMIN_META_MENU, true);
