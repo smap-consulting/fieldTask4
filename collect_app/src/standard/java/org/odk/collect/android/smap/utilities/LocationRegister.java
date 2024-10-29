@@ -51,10 +51,11 @@ public class LocationRegister {
         });
     }
 
-    // Check that the installation is good
+    // Check that the installation is not on a rooted device
     public void isValidInstallation(Context context) {
     }
 
+    // Return true if the default for a new installation is to logon with a token rather than a password
     public static boolean defaultForceToken() {
         return false;
     }

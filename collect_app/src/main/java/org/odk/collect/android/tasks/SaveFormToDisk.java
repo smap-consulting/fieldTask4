@@ -218,14 +218,15 @@ public class SaveFormToDisk {
 
         // Add actual location
         if(canUpdate) {
-            Location location = Collect.getInstance().getLocation();
             double lon = 0.0;
             double lat = 0.0;
+            Location location = Collect.getInstance().getLocation();
             if (location != null) {
                 Timber.i("Setting location");
                 lon = location.getLongitude();
                 lat = location.getLatitude();
             } else {
+
                 Timber.i("Location is null");
             }
             values.put(InstanceColumns.ACT_LON, lon);
