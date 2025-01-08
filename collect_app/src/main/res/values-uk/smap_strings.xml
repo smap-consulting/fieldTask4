@@ -95,14 +95,12 @@
   <string name="smap_login_unauthorized">Не вдалося під\'єднатися до сервера</string>
   <string name="smap_geofence_tasks">Нові локальні задачі</string>
   <string name="smap_reason">Причина відхилення задачі</string>
-  <string name="smap_reject_title">Відхилити задачу</string>
   <string name="smap_reason_title">Причина</string>
   <string name="smap_locate">Визначити розташування</string>
   <string name="smap_phone">Подзвонити</string>
   <string name="smap_sms">СМС</string>
   <string name="smap_directions">Напрямки</string>
   <string name="smap_accept">Прийняти задачу</string>
-  <string name="smap_reject">Відхилити задачу</string>
   <string name="smap_history">Історія</string>
   <string name="smap_reason_not_specified">Необхідно вказати причину довжиною більше ніж 5 символів</string>
   <string name="smap_continue_tracking">Вимкнено можливість виходу. Щоб припинити відстеження телефону, його потрібно вимкнути.</string>

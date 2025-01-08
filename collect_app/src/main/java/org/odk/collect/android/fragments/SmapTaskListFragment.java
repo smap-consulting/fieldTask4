@@ -50,7 +50,6 @@ import org.odk.collect.android.activities.AboutActivity;
 import org.odk.collect.android.activities.FillBlankFormActivity;
 import org.odk.collect.android.activities.FormDownloadListActivity;
 import org.odk.collect.android.activities.SmapMain;
-import org.odk.collect.android.activities.SmapTaskStatusActivity;
 import org.odk.collect.android.activities.viewmodels.SurveyDataViewModel;
 import org.odk.collect.android.adapters.SortDialogAdapter;
 import org.odk.collect.android.adapters.TaskListArrayAdapter;
@@ -530,22 +529,6 @@ public class SmapTaskListFragment extends ListFragment {
     private void processManageFiles() {
         Intent i = new Intent(getContext(), org.odk.collect.android.activities.DeleteSavedFormActivity.class);
         startActivity(i);
-    }
-
-    /*
-     * Handle a long click on a list item
-     */
-    protected boolean onLongListItemClick(View v, int position, long id) {
-
-        TaskEntry task = (TaskEntry) getListAdapter().getItem(position);
-
-        if (task.type.equals("task")) {
-            Intent i = new Intent(getActivity(), SmapTaskStatusActivity.class);
-            i.putExtra("id", task.id);
-
-            startActivity(i);
-        }
-        return true;
     }
 
     private void rejectTask(String reason, TaskEntry taskEntry) {

@@ -160,6 +160,13 @@ public class TaskListArrayAdapter extends ArrayAdapter<TaskEntry> {
         View popupTaskView = mInflater.inflate(R.layout.popup_task_window, parent, false);
         TextView textView = popupTaskView.findViewById(R.id.task_name);
         textView.setText(taskNameText.getText());
+        if(item.taskType != null && item.taskType.equals("case")) {
+            Button rejectButton = popupTaskView.findViewById(R.id.reject);
+            rejectButton.setText(getContext().getString(R.string.smap_release_case));
+
+            Button acceptButton = popupTaskView.findViewById(R.id.accept);
+            acceptButton.setVisibility(View.GONE);
+        }
 
         AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                 .setView(popupTaskView)

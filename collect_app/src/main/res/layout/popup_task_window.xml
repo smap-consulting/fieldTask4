@@ -63,6 +63,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:background="?selectableItemBackground"
-        android:text="@string/smap_reject" />
+        android:text="@string/smap_reject_task" />
 
 </LinearLayout>

@@ -95,7 +95,6 @@
   <string name="smap_login_unauthorized">Error de Inicio de sesión</string>
   <string name="smap_geofence_tasks">Nuevas tareas locales</string>
   <string name="smap_reason">Razón para rechazar la tarea</string>
-  <string name="smap_reject_title">Rechazar Tarea</string>
   <string name="smap_reason_title">Motivo</string>
   <string name="smap_locate">Localizar</string>
   <string name="smap_phone">Llamar</string>
