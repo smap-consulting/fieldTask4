@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -190,6 +191,11 @@ public class SmapTaskListFragment extends ListFragment {
                 EditText editText = reject_popup.findViewById(R.id.input_reason);
                 Button ok = reject_popup.findViewById(R.id.ok);
                 Button cancel = reject_popup.findViewById(R.id.cancel);
+
+                if(taskEntry.taskType != null && taskEntry.taskType.equals("case")) {
+                    TextView titleText = reject_popup.findViewById(R.id.reject_title);
+                    titleText.setText(getContext().getString(R.string.smap_release_case));
+                }
                 ok.setOnClickListener(view -> {
                     String reason = editText.getText().toString();
                     rejectTask(reason, taskEntry);
