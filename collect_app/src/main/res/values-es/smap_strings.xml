@@ -22,6 +22,7 @@
   <string name="smap_no_tasks_display"></string>
   <string name="smap_pending">: pendiente. </string>
   <string name="smap_reject_task">Rechazar Tarea</string>
+  <string name="smap_release_case">Liberar caso</string>
   <string name="smap_restore_task">Restablecer Tarea</string>
   <string name="smap_route_finding_inprogress">Encontrando ruta para la tarea</string>
   <string name="smap_routing_network_error">Fallo al buscar una ruta debido a error en la red</string>
@@ -101,7 +102,6 @@
   <string name="smap_sms">SMS</string>
   <string name="smap_directions">Direcciones</string>
   <string name="smap_accept">Aceptar tarea</string>
-  <string name="smap_reject">Rechazar Tarea</string>
   <string name="smap_history">Historial</string>
   <string name="smap_reason_not_specified">Debe especificar una razón mayor a 5 caracteres</string>
   <string name="smap_continue_tracking">La opción Salir ha sido deshabilitada. </string>
@@ -131,7 +131,13 @@
   <string name="smap_apply">Aplicar</string>
   <string name="smap_deny">Denegar</string>
   <string name="smap_accept2">Aceptar</string>
-  <string name="smap_media_download">\"No se pueden descargar los datos iniciales de \"%s\" al archivo %s</string>
+  <string name="smap_media_download">No se pueden descargar los datos iniciales de \"%s\" al archivo %s</string>
+  <string name="smap_use_token">Utilice un token para acceder al servidor</string>
+  <string name="smap_scan_qr">Escanear código QR</string>
+  <string name="smap_auth_token">Token de autenticación</string>
+  <string name="smap_invalid_auth_token">Error Token no válido</string>
+  <string name="smap_compromised">Dispositivo comprometido detectado: la aplicación se cerrará</string>
+  <string name="smap_emulator">No se permite ejecutar la aplicación en un emulador: la aplicación se cerrará</string>
   <string-array name="smap_kontrolid_servers">
     <item>Servidor Kontrolid ORG</item>
     <item>Servidor Kontrolid COM</item>
