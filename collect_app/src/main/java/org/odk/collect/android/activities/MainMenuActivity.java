@@ -502,9 +502,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
     }
 
     private void setUpStorageMigrationBanner() {
-        if (!storageStateProvider.isScopedStorageUsed()) {
-            displayStorageMigrationBanner();
-        }
+        // Remove storage migration code - only scoped storage is now used
     }
 
     private void displayStorageMigrationBanner() {

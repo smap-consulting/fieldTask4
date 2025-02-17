@@ -52,8 +52,7 @@ public class PermissionsProvider {
     }
 
     public boolean areStoragePermissionsGranted() {
-        return storageStateProvider.isScopedStorageUsed()
-                || permissionsChecker.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        return true;        // Scoped Storage Permissions
     }
 
     public boolean isCameraPermissionGranted() {
@@ -85,43 +84,8 @@ public class PermissionsProvider {
      */
     public void requestStoragePermissions(Activity activity, @NonNull PermissionListener action) {
 
-        if (storageStateProvider.isScopedStorageUsed()) {
-            action.granted();
-            return;
-        }
+        action.granted();
 
-        requestPermissions(activity, new PermissionListener() {
-            @Override
-            public void granted() {
-                action.granted();
-            }
-
-            @Override
-            public void denied() {
-                Timber.e("xoxoxo - fieldTask storage permissions denied");   // smap
-                for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {   // smap
-                    Timber.i(ste.toString());
-                }
-
-                showAdditionalExplanation(activity, R.string.storage_runtime_permission_denied_title,
-                        R.string.smap_storage_runtime_permission_denied_desc, R.drawable.sd, action);
-            }
-        }, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-    }
-
-    public void requestReadStoragePermission(Activity activity, @NonNull PermissionListener action) {
-        requestPermissions(activity, new PermissionListener() {
-            @Override
-            public void granted() {
-                action.granted();
-            }
-
-            @Override
-            public void denied() {
-                showAdditionalExplanation(activity, R.string.storage_runtime_permission_denied_title,
-                        R.string.smap_storage_runtime_permission_denied_desc, R.drawable.sd, action);
-            }
-        }, Manifest.permission.READ_EXTERNAL_STORAGE);
     }
 
     public void requestCameraPermission(Activity activity, @NonNull PermissionListener action) {
@@ -283,25 +247,5 @@ public class PermissionsProvider {
                 .create();
 
         DialogUtils.showDialog(alertDialog, activity);
-    }
-
-    public void requestReadUriPermission(Activity activity, Uri uri, ContentResolver contentResolver, PermissionListener listener) {
-        try (Cursor ignored = contentResolver.query(uri, null, null, null, null)) {
-            listener.granted();
-        } catch (SecurityException e) {
-            requestReadStoragePermission(activity, new PermissionListener() {
-                @Override
-                public void granted() {
-                    listener.granted();
-                }
-
-                @Override
-                public void denied() {
-                    listener.denied();
-                }
-            });
-        } catch (Exception | Error e) {
-            listener.denied();
-        }
     }
 }

@@ -28,10 +28,6 @@ public class StorageStateProvider {
         metaSharedPreferences = Collect.getInstance().getComponent().preferencesProvider().getMetaSharedPreferences();
     }
 
-    public boolean isScopedStorageUsed() {
-        return metaSharedPreferences.getBoolean(KEY_SCOPED_STORAGE_USED, false);
-    }
-
     public void enableUsingScopedStorage() {
         metaSharedPreferences.edit()
                 .putBoolean(KEY_SCOPED_STORAGE_USED, true)
@@ -86,7 +82,7 @@ public class StorageStateProvider {
     }
 
     public boolean shouldPerformAutomaticMigration() {
-        return !isScopedStorageUsed() && !alreadyTriedToMigrateDataToday(clock.getCurrentTime());
+        return false;       // Migration no longer available
     }
 
     public boolean alreadyTriedToMigrateDataToday(long currentTime) {

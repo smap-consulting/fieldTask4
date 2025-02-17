@@ -64,10 +64,6 @@ public class ApplicationInitializer {
         initializePreferences();
         initializeFrameworks();
         initializeLocale();
-
-        if (appStateProvider.isFreshInstall(context)) {
-            storageStateProvider.enableUsingScopedStorage();
-        }
     }
 
     private void initializePreferences() {
