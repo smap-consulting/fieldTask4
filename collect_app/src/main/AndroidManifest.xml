@@ -55,6 +55,9 @@ the specific language governing permissions and limitations under the License.
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.NFC" />  <!-- smap -->
 
+    <!-- Don't use ads so remove permission -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+
     <!-- Removed in API 23 -->
     <uses-permission
         android:name="android.permission.USE_CREDENTIALS"
