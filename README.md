@@ -96,7 +96,12 @@ Downloads
 
 |Name          |Link                                                          |Version    |
 |------------- |------------------------------------------------------------- |-----------|
-|Server        |https://smap-master.s3.amazonaws.com/smap_24_03_04_719.tgz    |23.03.04   |
+|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_01_15_1649.tgz  |25.01.15   |
+|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_01_12_2587.tgz  |25.01.12   |
+|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_01_09_4145.tgz  |25.01.09   |
+|Server        |https://smap-code.s3.amazonaws.com/os_smap_24_10_07_9281.tgz  |24.10.07   |
+|Server        |https://smap-code.s3.amazonaws.com/os_smap_24_05_47_5768.tgz  |24.05.47   |
+
 
 [Server Administration Documentation](https://www.smap.com.au/docs/server-admin.html)
 
