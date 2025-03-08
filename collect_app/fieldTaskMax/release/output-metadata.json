@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "org.smap.smapTask.android.fieldTaskMax",
+  "variantName": "fieldTaskMaxRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 6818,
+      "versionName": "6.819",
+      "outputFile": "fieldTask-fieldTaskMax-release-null.apk"
+    }
+  ],
+  "elementType": "File"
+}
