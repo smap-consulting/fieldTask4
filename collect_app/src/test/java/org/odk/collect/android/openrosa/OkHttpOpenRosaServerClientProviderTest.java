@@ -25,7 +25,7 @@ public class OkHttpOpenRosaServerClientProviderTest extends OpenRosaServerClient
     @Test
     public void credentialsHaveChangedTest() {
         OkHttpOpenRosaServerClientProvider clientProvider = (OkHttpOpenRosaServerClientProvider) buildSubject();
-        HttpCredentials newCredentials = new HttpCredentials("Admin", "Admin");
+        HttpCredentials newCredentials = new HttpCredentials("Admin", "Admin", false);
 
         assertFalse(clientProvider.credentialsHaveChanged(null));
         assertTrue(clientProvider.credentialsHaveChanged(newCredentials));

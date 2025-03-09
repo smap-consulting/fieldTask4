@@ -41,7 +41,7 @@ public class ExternalAppIntentProvider {
 
     @Nullable
     public Object getValueFromIntent(Intent intent) {
-        return intent.getExtras().containsKey(RETURNED_DATA_NAME)
+        return intent != null && intent.getExtras() != null && intent.getExtras().containsKey(RETURNED_DATA_NAME)  // smap add null checks
                 ? intent.getExtras().get(RETURNED_DATA_NAME)
                 : null;
     }

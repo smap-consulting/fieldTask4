@@ -25,7 +25,10 @@ import java.io.File;
 import java.io.IOException;    // smap
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -65,20 +68,21 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     @NonNull
     @Override
     public HttpGetResult executeGetRequest(@NonNull URI uri, @Nullable String contentType, @Nullable HttpCredentialsInterface credentials) throws Exception {
-        OpenRosaServerClient httpClient = clientFactory.get(uri.getScheme(), userAgent, credentials, uri.getHost());  // smap add host
+        URI physicalUri = getPhysicalUri(uri, credentials);
+        OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost());  // smap add host
         Request request = new Request.Builder()
-                .url(uri.toURL())
+                .url(physicalUri.toURL())
                 .get()
                 .build();
 
-        Response response = httpClient.makeRequest(request, new Date());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
         int statusCode = response.code();
 
         if (statusCode != HttpURLConnection.HTTP_OK) {
             discardEntityBytes(response);
-            Timber.i("Error: %s (%s at %s", response.message(), String.valueOf(statusCode), uri.toString());
+            Timber.i("Error: %s (%s at %s", response.message(), String.valueOf(statusCode), physicalUri.toString());
 
-            String errMsg = response.message() +  " : " + String.valueOf(statusCode) +  " : " + uri.toString();     // smap
+            String errMsg = response.message() +  " : " + String.valueOf(statusCode) +  " : " + physicalUri.toString();     // smap
             throw new Exception(errMsg);    // smap
             //return new HttpGetResult(null, new HashMap<String, String>(), "", statusCode);    // smap
         }
@@ -86,7 +90,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
         ResponseBody body = response.body();
 
         if (body == null) {
-            throw new Exception("No entity body returned from: " + uri.toString());
+            throw new Exception("No entity body returned from: " + physicalUri.toString());
         }
 
         if (contentType != null && contentType.length() > 0) {
@@ -96,7 +100,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
                 discardEntityBytes(response);
 
                 String error = "ContentType: " + type.toString() + " returned from: "
-                        + uri.toString() + " is not " + contentType
+                        + physicalUri.toString() + " is not " + contentType
                         + ".  This is often caused by a network proxy.  Do you need "
                         + "to login to your network?";
 
@@ -127,14 +131,15 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     @NonNull
     @Override
     public HttpHeadResult executeHeadRequest(@NonNull URI uri, @Nullable HttpCredentialsInterface credentials) throws Exception {
-        OpenRosaServerClient httpClient = clientFactory.get(uri.getScheme(), userAgent, credentials, uri.getHost());  // smap add host
+        URI physicalUri = getPhysicalUri(uri, credentials);
+        OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost());  // smap add host
         Request request = new Request.Builder()
-                .url(uri.toURL())
+                .url(physicalUri.toURL())
                 .head()
                 .build();
 
-        Timber.i("Issuing HEAD request to: %s", uri.toString());
-        Response response = httpClient.makeRequest(request, new Date());
+        Timber.i("Issuing HEAD request to: %s", physicalUri.toString());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
         int statusCode = response.code();
 
         CaseInsensitiveHeaders responseHeaders = new CaseInsensitiveEmptyHeaders();
@@ -229,15 +234,16 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     }
 
     @NonNull
-    private HttpPostResult executePostRequest(@NonNull URI uri, @Nullable HttpCredentialsInterface credentials, MultipartBody multipartBody, String status) throws Exception {
-        OpenRosaServerClient httpClient = clientFactory.get(uri.getScheme(), userAgent, credentials, uri.getHost());    // smap add host
+    private HttpPostResult executePostRequest(@NonNull URI uri, @Nullable HttpCredentialsInterface credentials, MultipartBody multipartBody) throws Exception {
+        URI physicalUri = getPhysicalUri(uri, credentials);
+        OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost());    // smap add host
         HttpPostResult postResult;
         Request request = new Request.Builder()
-                .url(uri.toURL())
+                .url(physicalUri.toURL())
                 .post(multipartBody)
                 .addHeader("form_status", status)
                 .build();
-        Response response = httpClient.makeRequest(request, new Date());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
 
         if (response.code() == 204) {
             throw new Exception();
@@ -280,12 +286,8 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     public @NonNull HttpPostResult uploadTaskStatus(@NonNull TaskResponse updateResponse,
                                                     @NonNull URI uri,
                                                     @Nullable HttpCredentialsInterface credentials
-    ) throws IOException {
-
-        // debug
-        //for(PointEntry p : updateResponse.userTrail) {
-        //    Timber.i(String.valueOf(p.time));
-        //}
+    ) throws IOException, URISyntaxException {
+        URI physicalUri = getPhysicalUri(uri, credentials);
         Gson gson = new GsonBuilder().disableHtmlEscaping().setDateFormat("yyyy-MM-dd HH:mm").create();
         String resp = gson.toJson(updateResponse);
         Timber.i("########################################### %s", resp);
@@ -294,15 +296,15 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
                 .add("assignInput", resp)
                 .build();
 
-        OpenRosaServerClient httpClient = clientFactory.get(uri.getScheme(), userAgent, credentials, uri.getHost());
+        OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost());
 
         HttpPostResult postResult;
         Request request = new Request.Builder()
-                .url(uri.toURL())
+                .url(physicalUri.toURL())
                 .post(formBody)
                 .build();
 
-        Response response = httpClient.makeRequest(request, new Date());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
 
         if (response.code() == 204) {
             throw new IOException();
@@ -324,8 +326,9 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
                                                   String lon,
                                                   @NonNull URI uri,
                                                   @Nullable HttpCredentialsInterface credentials
-    ) throws IOException {
+    ) throws IOException, URISyntaxException {
 
+        URI physicalUri = getPhysicalUri(uri, credentials);
         RequestBody formBody = new FormBody.Builder()
                 .add("lat", lat)
                 .add("lon", lon)
@@ -335,13 +338,13 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
 
         HttpPostResult postResult;
         Request request = new Request.Builder()
-                .url(uri.toURL())
+                .url(physicalUri.toURL())
                 .post(formBody)
                 .build();
 
-        Response response = httpClient.makeRequest(request, new Date());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
 
-        if (response.code() != 204) {
+        if (response.code() != 204 && response.code() != 200) {
             Timber.e(new Exception(response.message()));
         }
 
@@ -360,9 +363,10 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     public @NonNull String SubmitFileForResponse(@NonNull String fileName,
                                                  @NonNull File file,
                                                  @NonNull URI uri,
-                                                 @Nullable HttpCredentialsInterface credentials) throws IOException {
+                                                 @Nullable HttpCredentialsInterface credentials) throws IOException, URISyntaxException {
 
-        OpenRosaServerClient httpClient = clientFactory.get(uri.getScheme(), userAgent, credentials, uri.getHost());  // smap add host
+        URI physicalUri = getPhysicalUri(uri, credentials);
+        OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost());  // smap add host
 
         String contentType = fileToContentTypeMapper.map(file.getName());
         RequestBody requestBody = RequestBody.create(MediaType.parse(contentType), file);
@@ -373,11 +377,11 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
         MultipartBody mpBody = multipartBuilder.build();
 
         Request request = new Request.Builder()
-                .url(uri.toURL())
+                .url(physicalUri.toURL())
                 .post(mpBody)
                 .build();
 
-        Response response = httpClient.makeRequest(request, new Date());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
 
         int code = response.code();
         String body = response.body().string();
@@ -398,10 +402,11 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
                       @Nullable HttpCredentialsInterface credentials,
                       HashMap<String, String> headers) throws Exception {
 
-        OpenRosaServerClient httpClient = clientFactory.get(uri.getScheme(), userAgent, credentials, uri.getHost()); // smap add host
+        URI physicalUri = getPhysicalUri(uri, credentials);
+        OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost()); // smap add host
 
         Request.Builder b = new Request.Builder()
-                .url(uri.toURL());
+                .url(physicalUri.toURL());
 
         // Add headers
         if(!headers.isEmpty()) {
@@ -411,7 +416,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
         }
         Request request = b.get().build();
 
-        Response response = httpClient.makeRequest(request, new Date());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
         int statusCode = response.code();
         ByteArrayOutputStream os = null;
 
@@ -431,7 +436,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
         ResponseBody body = response.body();
 
         if (body == null) {
-            throw new Exception("No entity body returned from: " + uri.toString());
+            throw new Exception("No entity body returned from: " + physicalUri.toString());
         }
 
         if (contentType != null && contentType.length() > 0) {
@@ -441,7 +446,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
                 discardEntityBytes(response);
 
                 String error = "ContentType: " + type.toString() + " returned from: "
-                        + uri.toString() + " is not " + contentType
+                        + physicalUri.toString() + " is not " + contentType
                         + ".  This is often caused by a network proxy.  Do you need "
                         + "to login to your network?";
 
@@ -456,15 +461,16 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     public @NonNull
     String loginRequest(@NonNull URI uri, @Nullable final String contentType, @Nullable HttpCredentialsInterface credentials) throws Exception {
 
-        OpenRosaServerClient httpClient = clientFactory.get(uri.getScheme(), userAgent, credentials, uri.getHost());  // smap add host
+        URI physicalUri = getPhysicalUri(uri, credentials);
+        OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost());  // smap add host
 
         Request request = new Request.Builder()
-                .url(uri.toURL())
+                .url(physicalUri.toURL())
                 .addHeader(ACCEPT_ENCODING_HEADER, GZIP_CONTENT_ENCODING)
                 .get()
                 .build();
 
-        Response response = httpClient.makeRequest(request, new Date());
+        Response response = httpClient.makeRequest(request, new Date(), credentials);
         int statusCode = response.code();
         ByteArrayOutputStream os = null;
 
@@ -473,7 +479,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
 
         } else if (statusCode == HttpURLConnection.HTTP_NOT_FOUND) {
             // Treat not found as "success" except for hosts that are known to support the login service
-            String host = uri.getHost();
+            String host = physicalUri.getHost();
             if(host.equals("app.kontrolid.com") || host.endsWith("smap.com.au")) {
                 return "error";
             } else {
@@ -486,6 +492,32 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
         } else {
             return "error";
         }
+    }
+
+    /*
+     * Smap
+     * Add "token" to the path if authentication is to be via a token
+     */
+    private URI getPhysicalUri(URI uri, HttpCredentialsInterface credentials) throws MalformedURLException, URISyntaxException {
+        URI physicalUri;
+        if(credentials.getUseToken()) {
+            StringBuilder urlBuilder = new StringBuilder(uri.getScheme())
+                    .append("://")
+                    .append(uri.getHost())
+                    .append("/token");
+            if(uri.getPath().contains("myassignments")) {
+                urlBuilder.append("/refresh");      // My assignments needs a completely different path
+            } else {
+                urlBuilder.append(uri.getPath());
+            }
+            if(uri.getQuery() != null && uri.getQuery().length() > 0) {
+                urlBuilder.append("?").append(uri.getQuery());
+            }
+            physicalUri = new URL(urlBuilder.toString()).toURI();
+        } else {
+            physicalUri = uri;
+        }
+        return physicalUri;
     }
 
     /*

@@ -61,7 +61,7 @@ public class InstanceListCursorAdapter extends SimpleCursorAdapter {
             return view;
         }
 
-        String formId = getCursor().getString(getCursor().getColumnIndex(InstanceColumns.JR_FORM_ID));
+        String formId = getCursor().getString(getCursor().getColumnIndexOrThrow(InstanceColumns.JR_FORM_ID));
         Cursor cursor = new FormsDao().getFormsCursorForFormId(formId);
 
         boolean formExists = false;
@@ -79,8 +79,8 @@ public class InstanceListCursorAdapter extends SimpleCursorAdapter {
             }
         }
 
-        long date = getCursor().getLong(getCursor().getColumnIndex(InstanceColumns.DELETED_DATE));
-        String reason = getCursor().getString(getCursor().getColumnIndex(InstanceColumns.T_TASK_COMMENT)); // smap
+        long date = getCursor().getLong(getCursor().getColumnIndexOrThrow(InstanceColumns.DELETED_DATE));
+        String reason = getCursor().getString(getCursor().getColumnIndexOrThrow(InstanceColumns.T_TASK_COMMENT)); // smap
 
         if (date != 0 || !formExists || isFormEncrypted) {
             String disabledMessage;
@@ -145,8 +145,8 @@ public class InstanceListCursorAdapter extends SimpleCursorAdapter {
     }
 
     private void setUpSubtext(View view) {
-        long lastStatusChangeDate = getCursor().getLong(getCursor().getColumnIndex(InstanceColumns.LAST_STATUS_CHANGE_DATE));
-        String status = getCursor().getString(getCursor().getColumnIndex(InstanceColumns.STATUS));
+        long lastStatusChangeDate = getCursor().getLong(getCursor().getColumnIndexOrThrow(InstanceColumns.LAST_STATUS_CHANGE_DATE));
+        String status = getCursor().getString(getCursor().getColumnIndexOrThrow(InstanceColumns.STATUS));
         String subtext = InstanceProvider.getDisplaySubtext(context, status, new Date(lastStatusChangeDate));
 
         final TextView formSubtitle = view.findViewById(R.id.form_subtitle);
@@ -154,7 +154,7 @@ public class InstanceListCursorAdapter extends SimpleCursorAdapter {
     }
 
     private void setImageFromStatus(ImageView imageView) {
-        String formStatus = getCursor().getString(getCursor().getColumnIndex(InstanceColumns.STATUS));
+        String formStatus = getCursor().getString(getCursor().getColumnIndexOrThrow(InstanceColumns.STATUS));
 
         int imageResourceId = getFormStateImageResourceIdForStatus(formStatus);
         imageView.setImageResource(imageResourceId);

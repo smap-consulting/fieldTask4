@@ -90,6 +90,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -235,6 +236,14 @@ public class DownloadTasksTask extends AsyncTask<Void, String, HashMap<String, S
     protected void onPostExecute(HashMap<String, String> value) {
         synchronized (this) {
             if (mStateListener != null) {
+                if(value == null) {
+                    // Pause for 1 second to allow the user to see the progress dialog
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (Exception e) {
+
+                    }
+                }
                 mStateListener.taskDownloadingComplete(value);
             }
         }
@@ -514,11 +523,15 @@ public class DownloadTasksTask extends AsyncTask<Void, String, HashMap<String, S
                         values = initialData.getJSONObject("values");
                     }
                     if (initialData != null) {
-                        ta.task.phone = values.getString("Phone");
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(InstanceColumns.PHONE, ta.task.phone);
-                        String where = "tTitle = ?";
-                        dao.updateInstance(contentValues, where, new String[]{ta.task.title});
+                        try {
+                            ta.task.phone = values.getString("Phone");
+                            ContentValues contentValues = new ContentValues();
+                            contentValues.put(InstanceColumns.PHONE, ta.task.phone);
+                            String where = "tTitle = ?";
+                            dao.updateInstance(contentValues, where, new String[]{ta.task.title});
+                        } catch (Exception e) {
+                            Timber.i("Failed to add phone value %s", e.getMessage());
+                        }
                     }
                 }
             }
@@ -955,6 +968,7 @@ public class DownloadTasksTask extends AsyncTask<Void, String, HashMap<String, S
             editor.putBoolean(GeneralKeys.KEY_SMAP_EXIT_TRACK_MENU, tr.settings.ft_exit_track_menu);
             editor.putBoolean(GeneralKeys.KEY_SMAP_BG_STOP_MENU, tr.settings.ft_bg_stop_menu);
             editor.putBoolean(GeneralKeys.KEY_SMAP_REVIEW_FINAL, tr.settings.ft_review_final);
+            editor.putBoolean(GeneralKeys.KEY_SMAP_FORCE_TOKEN, tr.settings.ft_force_token);
 
             /*
              * Override the user trail setting if this is set from the server

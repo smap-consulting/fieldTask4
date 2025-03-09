@@ -10,9 +10,9 @@ import java.util.List;
 public interface FormListApiSmap {
     List<FormListItem> fetchFormList() throws FormApiExceptionSmap;
 
-    ManifestFile fetchManifest(String manifestURL) throws FormApiExceptionSmap;
+    ManifestFile fetchManifest(String manifestURL) throws Exception;
 
-    InputStream fetchForm(String formURL, boolean credentials) throws FormApiExceptionSmap;             // smap add credentials
+    InputStream fetchForm(String formURL, boolean credentials) throws Exception;             // smap add credentials
 
     InputStream fetchMediaFile(String mediaFileURL, boolean credentials) throws FormApiExceptionSmap;   // smap add credentials
 

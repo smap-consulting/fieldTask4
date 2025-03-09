@@ -14,11 +14,9 @@
 
 package org.odk.collect.android.fragments;
 
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
@@ -27,7 +25,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -37,7 +34,6 @@ import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.ListFragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,15 +45,11 @@ import org.odk.collect.android.activities.AboutActivity;
 import org.odk.collect.android.activities.DeleteSavedFormActivity;
 import org.odk.collect.android.activities.FillBlankFormActivity;
 import org.odk.collect.android.activities.FormDownloadListActivity;
-import org.odk.collect.android.activities.FormMapActivity;
 import org.odk.collect.android.activities.SmapMain;
-import org.odk.collect.android.activities.SmapTaskStatusActivity;
 import org.odk.collect.android.activities.viewmodels.SurveyDataViewModel;
-import org.odk.collect.android.activities.viewmodels.SurveyDataViewModelFactory;
 import org.odk.collect.android.adapters.SortDialogAdapter;
 import org.odk.collect.android.adapters.TaskListArrayAdapter;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.loaders.SurveyData;
 import org.odk.collect.android.loaders.TaskEntry;
 import org.odk.collect.android.location.SystemLocationProvider;
@@ -66,7 +58,6 @@ import org.odk.collect.android.preferences.AdminKeys;
 import org.odk.collect.android.preferences.AdminPreferencesActivity;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.PreferencesActivity;
-import org.odk.collect.android.provider.FormsProviderAPI;
 import org.odk.collect.android.smap.utilities.LocationRegister;
 import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.SnackbarUtils;
@@ -152,12 +143,6 @@ public class SmapFormListFragment extends ListFragment {
 
         // Handle long item clicks
         ListView lv = getListView();
-        lv.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> av, View v, int pos, long id) {
-                return onLongListItemClick(v, pos, id);
-            }
-        });
 
         adminPreferences = getActivity().getSharedPreferences(
                 AdminPreferencesActivity.ADMIN_PREFERENCES, 0);
@@ -457,35 +442,6 @@ public class SmapFormListFragment extends ListFragment {
     private void processManageFiles() {
         Intent i = new Intent(getContext(), DeleteSavedFormActivity.class);
         startActivity(i);
-    }
-
-    /*
-     * Handle a long click on a list item
-     */
-    protected boolean onLongListItemClick(View v, int position, long id) {
-
-        TaskEntry task = (TaskEntry) getListAdapter().getItem(position);
-
-        if (task.type.equals("task")) {
-            Intent i = new Intent(getActivity(), SmapTaskStatusActivity.class);
-            i.putExtra("id", task.id);
-
-            startActivity(i);
-        } else {
-            final Uri formUri = ContentUris.withAppendedId(FormsProviderAPI.FormsColumns.CONTENT_URI, task.id);
-            final Intent intent = new Intent(Intent.ACTION_EDIT, formUri, getActivity(), FormMapActivity.class);
-            permissionsProvider.requestLocationPermissions(getActivity(), new PermissionListener() {
-                @Override
-                public void granted() {
-                    startActivity(intent);
-                }
-
-                @Override
-                public void denied() {
-                }
-            });
-        }
-        return true;
     }
 
 }

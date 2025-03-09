@@ -14,6 +14,10 @@
 
 package org.odk.collect.android.activities;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -57,10 +61,10 @@ import org.odk.collect.android.configure.legacy.LegacySettingsFileImporter;
 import org.odk.collect.android.fragments.SmapFormListFragment;
 import org.odk.collect.android.fragments.SmapTaskListFragment;
 import org.odk.collect.android.fragments.SmapTaskMapFragment;
+import org.odk.collect.android.fragments.dialogs.RequestLocationPermissionsDialog;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.InstanceUploaderListener;
 import org.odk.collect.android.listeners.NFCListener;
-import org.odk.collect.android.listeners.PermissionListener;
 import org.odk.collect.android.listeners.TaskDownloaderListener;
 import org.odk.collect.android.loaders.SurveyData;
 import org.odk.collect.android.loaders.TaskEntry;
@@ -105,6 +109,7 @@ import javax.inject.Inject;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -145,7 +150,6 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
     private String mProgressMsg;
     public DownloadTasksTask mDownloadTasks;
-    private Activity currentActivity;
 
     SurveyDataViewModel model;
     private MainTaskListener listener = null;
@@ -160,6 +164,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
     private LocationRequest locationRequest;
     private FusedLocationProviderClient fusedLocationClient;
 
+    private AlertDialog mAlertDialog;
     private ViewPager viewPager;
 
     @Inject
@@ -200,6 +205,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         setContentView(R.layout.smap_main_layout);
         ButterKnife.bind(this);
 
+        LocationRegister lr = new LocationRegister();
         DaggerUtils.getComponent(this).inject(this);
 
         storageMigrationRepository.getResult().observe(this, this::onStorageMigrationFinish);
@@ -224,6 +230,8 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
         tabLayout.setTabTextColors(Color.LTGRAY, Color.WHITE);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        tabLayout.setTabMode(TabLayout.MODE_FIXED);
 
         stateChanged();
 
@@ -248,10 +256,17 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             processGetTask(true);   // Set manual true so that refresh after logon works (logon = manual refresh request)
         }
 
-        // Start the location service
-        currentActivity = this;
-        LocationRegister lr = new LocationRegister();
-        lr.locationStart(currentActivity);
+        /*
+         * Show a notice if location recording has not been granted
+         */
+        boolean hasFineLocation = ContextCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
+        boolean hasCoarseLocation = ContextCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED;
+        String asked = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_REQUEST_LOCATION_DONE);
+        if (asked.equals("no")) {
+            (new RequestLocationPermissionsDialog()).show(this.getSupportFragmentManager(), "LOCATION_PERMISSIONS_DIALOG");
+        } else if ((hasFineLocation || hasCoarseLocation) && (asked.equals("accept"))){
+            lr.locationStart(this, permissionsProvider);
+        }
 
         LegacySettingsFileImporter legacySettingsFileImporter = new LegacySettingsFileImporter(storagePathProvider, null, settingsImporter);
         if (legacySettingsFileImporter.importFromFile()) {
@@ -264,6 +279,12 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                     })
                     .setCancelable(false)
                     .create().show();
+        }
+
+        try {
+            lr.isValidInstallation(this);
+        } catch (Exception e) {
+            createErrorDialog(e.getMessage(), true);
         }
     }
 
@@ -291,6 +312,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         } else {
             startService(mLocationServiceIntent);
         }
+        taskManagerMap.permissionsGranted();
     }
 
     /*
@@ -321,7 +343,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             listener = new MainTaskListener(this);
             IntentFilter filter = new IntentFilter();
             filter.addAction("startTask");
-            registerReceiver(listener, filter);
+            registerReceiver(listener, filter, Context.RECEIVER_NOT_EXPORTED);
 
             refreshListener = new RefreshListener(this);   // Listen for updates to the form list
 
@@ -430,19 +452,18 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                 mProgressDialog.setCancelable(false);
                 mProgressDialog.setButton(getString(R.string.cancel), loadingButtonListener);
                 return mProgressDialog;
-            case ALERT_DIALOG:
-                AlertDialog mAlertDialog = new AlertDialog.Builder(this).create();
-                mAlertDialog.setMessage(mAlertMsg);
-                mAlertDialog.setTitle(getString(R.string.smap_get_tasks));
-                DialogInterface.OnClickListener quitListener = new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int i) {
-                        dialog.dismiss();
-                    }
-                };
-                mAlertDialog.setCancelable(false);
-                mAlertDialog.setButton(getString(R.string.ok), quitListener);
-                mAlertDialog.setIcon(android.R.drawable.ic_dialog_info);
-                return mAlertDialog;
+            //case ALERT_DIALOG:
+            //    mAlertDialog = new AlertDialog.Builder(this).create();
+            //    mAlertDialog.setTitle(getString(R.string.smap_get_tasks));
+            //    DialogInterface.OnClickListener quitListener = new DialogInterface.OnClickListener() {
+            //        public void onClick(DialogInterface dialog, int i) {
+            //            dialog.dismiss();
+            //        }
+            //    };
+            //    mAlertDialog.setCancelable(false);
+            //    mAlertDialog.setButton(getString(R.string.ok), quitListener);
+            //    mAlertDialog.setIcon(android.R.drawable.ic_dialog_info);
+            //    return mAlertDialog;
             case PASSWORD_DIALOG:
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -543,12 +564,6 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         } catch (Exception e) {
             // tried to close a dialog not open. don't care.
         }
-        try {
-            dismissDialog(ALERT_DIALOG);
-            removeDialog(ALERT_DIALOG);
-        } catch (Exception e) {
-            // tried to close a dialog not open. don't care.
-        }
 
         if (result != null) {
             StringBuilder message = new StringBuilder();
@@ -558,13 +573,16 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             if(it != null) {
                 while (it.hasNext()) {
                     String key = it.next();
+                    String m = result.get(key);
                     if (key.equals("err_not_enabled")) {
                         message.append(this.getString(R.string.smap_tasks_not_enabled));
                     } else if (key.equals("err_no_tasks")) {
                         // No tasks is fine, in fact its the most common state
                         //message.append(this.getString(R.string.smap_no_tasks));
+                    } else if (key.equals("Error:") && m != null && m.startsWith("403")) {
+                        message.append(this.getString(R.string.smap_invalid_auth_token));
                     } else {
-                        message.append(key + " - " + result.get(key) + "\n\n");
+                        message.append(key + " - " + m + "\n\n");
                     }
                 }
             }
@@ -572,8 +590,20 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             mAlertMsg = message.toString().trim();
             if (mAlertMsg.length() > 0) {
                 try {
-                    showDialog(ALERT_DIALOG);
+                    if(mAlertDialog == null) {
+                        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SmapMain.this).setCancelable(true)
+                                .setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int i) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        mAlertDialog = dialogBuilder.create();
+                        mAlertDialog.setTitle(getString(R.string.smap_get_tasks));
+                    }
+                    mAlertDialog.setMessage(mAlertMsg);
+                    mAlertDialog.show();
                 } catch (Exception e) {
+                    Timber.e(e);
                     // Tried to show a dialog but the activity may have been closed don't care
                     // However presumably this dialog showing should be replaced by use of progress bar
                 }
@@ -1059,5 +1089,26 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
             model.loadData();
         }
+    }
+
+    private void createErrorDialog(String errorMsg, final boolean shouldExit) {
+        androidx.appcompat.app.AlertDialog alertDialog = new androidx.appcompat.app.AlertDialog.Builder(this).create();
+        alertDialog.setIcon(android.R.drawable.ic_dialog_info);
+        alertDialog.setMessage(errorMsg);
+        DialogInterface.OnClickListener errorListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                switch (i) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        if (shouldExit) {
+                            finish();
+                        }
+                        break;
+                }
+            }
+        };
+        alertDialog.setCancelable(false);
+        alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.show();
     }
 }

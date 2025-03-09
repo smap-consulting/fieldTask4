@@ -38,6 +38,7 @@
     <string name="smap_no_tasks_display"></string>
     <string name="smap_pending">: pending. </string>
     <string name="smap_reject_task">Reject Task</string>
+    <string name="smap_release_case">Release Case</string>
     <string name="smap_restore_task">Restore Task</string>
     <string name="smap_route_finding_inprogress">Finding route to the task</string>
     <string name="smap_routing_network_error">Failed to find a route due to networking error</string>
@@ -111,14 +112,12 @@
     <string name="smap_login_unauthorized">Login failed</string>
     <string name="smap_geofence_tasks">New local tasks</string>
     <string name="smap_reason">Reason to reject task</string>
-    <string name="smap_reject_title">Reject Task</string>
     <string name="smap_reason_title">Reason</string>
     <string name="smap_locate">Locate</string>
     <string name="smap_phone">Call</string>
     <string name="smap_sms">SMS</string>
     <string name="smap_directions">Directions</string>
     <string name="smap_accept">Accept Task</string>
-    <string name="smap_reject">Reject Task</string>
     <string name="smap_history">History</string>
     <string name="smap_reason_not_specified">A reason longer than 5 characters must be specified</string>
     <string name="smap_continue_tracking">Exit has been disabled.  To stop tracking of the phone it should be turned off.</string>
@@ -139,10 +138,22 @@
     <string name="smap_default">Default</string>
     <string name="smap_local_data">Loading local data</string>
     <string name="smap_checking_file">Checking %1$s.\n\nForm %2$s of %3$s form(s).</string>
-    <string name="smap_storage_runtime_permission_denied_desc">Without these permissions FieldTask can\'t access your forms or save answers. Reopen the app when you are ready to grant them.</string>
+    <string name="smap_location_runtime_permissions_denied_desc">Without these permissions FieldTask can\'t record your location which you will need if you are collecting location data. You can change the location permissions in the android settings under "Apps".</string>
+    <string name="smap_storage_runtime_permission_denied_desc">Without these permissions FieldTask can\'t access your forms or save answers. </string>
     <string name="smap_background_location_permission_denied">If location recording is not allowed all the time FieldTask will not be able to alert you if a location dependent task is nearby.</string>
+    <string name="smap_request_background_location_permission">FieldTask collects location data to alert you when you are near a location dependent task even when the app is closed or not in use.</string>
+    <string name="smap_request_foreground_location_permission">FieldTask collects location data to alert you when you are near a location dependent task.</string>
     <string name="smap_set_marker">Set Marker</string>
     <string name="smap_apply">Apply</string>
+    <string name="smap_deny">Deny</string>
+    <string name="smap_accept2">Accept</string>
+    <string name="smap_media_download">Unable to download initial data from \"%s\" into file %s</string>
+    <string name="smap_use_token">Use a token to access the server</string>
+    <string name="smap_scan_qr">Scan QR code</string>
+    <string name="smap_auth_token">Authentication Token</string>
+    <string name="smap_invalid_auth_token">Error Invalid Token</string>
+    <string name="smap_compromised">Compromised device detected - the application will exit</string>
+    <string name="smap_emulator">The app is not allowed to be run on an emulator - the application will exit</string>
     <string-array name="smap_kontrolid_servers">
         <item>Kontrolid Org Server</item>
         <item>Kontrolid Com Server</item>

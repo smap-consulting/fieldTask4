@@ -17,6 +17,9 @@
 package org.odk.collect.android.preferences;
 
 import android.accounts.AccountManager;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AlertDialog;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import timber.log.Timber;
@@ -38,12 +41,15 @@ import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.SwitchPreference;
 
 import org.jetbrains.annotations.NotNull;
 import org.odk.collect.android.R;
+import org.odk.collect.android.activities.SmapMain;
 import org.odk.collect.android.analytics.Analytics;
 import org.odk.collect.android.backgroundwork.FormUpdateManager;
 import org.odk.collect.android.configure.ServerRepository;
+import org.odk.collect.android.configure.qr.QRCodeTabsActivity;
 import org.odk.collect.android.gdrive.GoogleAccountsManager;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.OnBackPressedListener;
@@ -65,6 +71,8 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Intent.getIntent;
+import static org.odk.collect.android.activities.ActivityUtils.startActivityAndCloseAllOthers;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SET_FALLBACK_SHEETS_URL;
 import static org.odk.collect.android.analytics.AnalyticsEvents.SET_SERVER;
 import static org.odk.collect.android.preferences.GeneralKeys.KEY_FORMLIST_URL;
@@ -78,7 +86,10 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     private static final int REQUEST_ACCOUNT_PICKER = 1000;
 
     private EditTextPreference passwordPreference;
-
+    private EditTextPreference serverUrlPreference;
+    private EditTextPreference usernamePreference;
+    private Preference scanButton;
+    private EditTextPreference authTokenPreference;
     @Inject
     GoogleAccountsManager accountsManager;
 
@@ -103,6 +114,16 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     private ListPopupWindow listPopupWindow;
     private Preference selectedGoogleAccountPreference;
     private boolean allowClickSelectedGoogleAccountPreference = true;
+
+    private final ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+        setResult(RESULT_OK, result.getData());
+    });
+
+    private void setResult(int resultOk, Intent data) {
+        authTokenPreference.setSummary(data.getStringExtra("auth_token"));
+        serverUrlPreference.setSummary(data.getStringExtra("server_url"));
+        usernamePreference.setSummary(data.getStringExtra("username"));
+    }
 
     @Override
     public void onAttach(@NotNull Context context) {
@@ -160,8 +181,8 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
         if (!new AggregatePreferencesAdder(this).add()) {
             return;
         }
-        EditTextPreference serverUrlPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_SERVER_URL);
-        EditTextPreference usernamePreference = (EditTextPreference) findPreference(GeneralKeys.KEY_USERNAME);
+        serverUrlPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_SERVER_URL);
+        usernamePreference = (EditTextPreference) findPreference(GeneralKeys.KEY_USERNAME);
         passwordPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_PASSWORD);
 
         serverUrlPreference.setOnPreferenceChangeListener(createChangeListener());
@@ -196,6 +217,48 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
             editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         });
 
+        // smap
+        // Button to scan for a QR code
+        scanButton = (Preference) findPreference(GeneralKeys.KEY_SMAP_SCAN_TOKEN);
+        scanButton.setOnPreferenceClickListener(preference -> {
+            formLauncher.launch(new Intent(getActivity(), QRCodeTabsActivity.class));
+            //startActivity(new Intent(getActivity(), QRCodeTabsActivity.class));
+            return true;
+        });
+
+        // Smap show the authToken when it changes
+        authTokenPreference = (EditTextPreference) findPreference(GeneralKeys.KEY_SMAP_AUTH_TOKEN);
+        authTokenPreference.setSummary(authTokenPreference.getText());
+        authTokenPreference.setEnabled(false);
+
+        // Respond to changes in authentication approach
+        boolean forceToken = (Boolean) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_FORCE_TOKEN);
+        SwitchPreference useTokenPreference = findPreference(GeneralKeys.KEY_SMAP_USE_TOKEN);
+        if(forceToken) {
+            useTokenPreference.setChecked(true);
+            useTokenPreference.setEnabled(false);
+        }
+
+        useTokenPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+            return useTokenChanged((boolean) newValue);
+        });
+        useTokenChanged(useTokenPreference.isChecked());
+        // End Smap
+
+    }
+
+    // smap
+    private boolean useTokenChanged(boolean useToken) {
+        // show or hide basic authentication preferences
+        serverUrlPreference.setEnabled(!useToken);
+        usernamePreference.setEnabled(!useToken);
+        passwordPreference.setVisible(!useToken);
+
+        // show or hide tken authentication preferences
+        scanButton.setVisible(useToken);
+        authTokenPreference.setVisible(useToken);
+
+        return true;
     }
 
     private void urlDropdownSetup(EditText editText) {

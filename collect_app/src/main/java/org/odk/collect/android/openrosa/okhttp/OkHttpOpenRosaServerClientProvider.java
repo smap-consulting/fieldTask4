@@ -45,6 +45,7 @@ public class OkHttpOpenRosaServerClientProvider implements OpenRosaServerClientP
     private static final int READ_CONNECTION_TIMEOUT = 60000; // it can take up to 27 seconds to spin up an Aggregate
     private static final String USER_AGENT_HEADER = "User-Agent";
     private static final String OPEN_ROSA_VERSION_HEADER = OpenRosaConstants.VERSION_HEADER;
+    private static final String TOKEN_HEADER = "x-api-key";
     private static final String OPEN_ROSA_VERSION = "1.0";
     private static final String DATE_HEADER = "Date";
 
@@ -72,7 +73,9 @@ public class OkHttpOpenRosaServerClientProvider implements OpenRosaServerClientP
 
     public boolean credentialsHaveChanged(@Nullable HttpCredentialsInterface credentials) {
         return lastCredentials != null && !lastCredentials.equals(credentials)
-                || lastCredentials == null && credentials != null;
+                || lastCredentials == null && credentials != null
+                || lastCredentials != null && credentials != null && lastCredentials.getUseToken() != credentials.getUseToken()
+                || lastCredentials != null && credentials != null && credentials.getAuthToken() != null && credentials.getAuthToken().equals(lastCredentials.getAuthToken());
     }
 
     // smap
@@ -98,7 +101,7 @@ public class OkHttpOpenRosaServerClientProvider implements OpenRosaServerClientP
             }
         }
 
-        if (credentials != null) {
+        if (credentials != null && !credentials.getUseToken()) {    // Smap skip if we are using a token
             Credentials cred = new Credentials(credentials.getUsername(), credentials.getPassword());
 
             DispatchingAuthenticator.Builder daBuilder = new DispatchingAuthenticator.Builder();
@@ -173,12 +176,15 @@ public class OkHttpOpenRosaServerClientProvider implements OpenRosaServerClientP
         }
 
         @Override
-        public Response makeRequest(Request request, Date currentTime) throws IOException {
-            return client.newCall(request.newBuilder()
+        public Response makeRequest(Request request, Date currentTime, HttpCredentialsInterface credentials) throws IOException {
+            Request.Builder builder = request.newBuilder()
                     .addHeader(USER_AGENT_HEADER, userAgent)
                     .addHeader(OPEN_ROSA_VERSION_HEADER, OPEN_ROSA_VERSION)
-                    .addHeader(DATE_HEADER, getHeaderDate(currentTime))
-                    .build()).execute();
+                    .addHeader(DATE_HEADER, getHeaderDate(currentTime));
+            if(credentials.getUseToken()) {
+                builder.addHeader(TOKEN_HEADER, credentials.getAuthToken());
+            }
+            return client.newCall(builder.build()).execute();
         }
 
         private static String getHeaderDate(Date currentTime) {

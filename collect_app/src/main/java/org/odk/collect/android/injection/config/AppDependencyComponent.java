@@ -42,6 +42,7 @@ import org.odk.collect.android.fragments.BlankFormListFragment;
 import org.odk.collect.android.fragments.SavedFormListFragment;
 import org.odk.collect.android.fragments.SmapFormListFragment;
 import org.odk.collect.android.fragments.SmapTaskMapFragment;
+import org.odk.collect.android.fragments.dialogs.RequestLocationPermissionsDialog;
 import org.odk.collect.android.fragments.dialogs.SelectMinimalDialog;
 import org.odk.collect.android.gdrive.GoogleDriveActivity;
 import org.odk.collect.android.gdrive.GoogleSheetsUploaderActivity;
@@ -148,6 +149,7 @@ public interface AppDependencyComponent {
     void inject(FormDownloadListActivity formDownloadListActivity);
 
     void inject(SmapMain smapMain);                                             // smap
+    void inject(RequestLocationPermissionsDialog requestLocationPermissionsDialog);             // smap
 
     void inject(DownloadTasksTask downloadTasksTask);                           // smap
 

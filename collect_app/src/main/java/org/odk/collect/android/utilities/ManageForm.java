@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 
+import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.database.TaskResponseAssignment;
 import org.odk.collect.android.instances.Instance;
@@ -83,12 +84,12 @@ public class ManageForm {
         		
             	// Form is already on the phone
 	        	 c.moveToFirst();
-	        	 fd.id = c.getLong(c.getColumnIndex(FormsColumns._ID));
-	             fd.formName = c.getString(c.getColumnIndex(FormsColumns.DISPLAY_NAME));
-	             fd.submissionUri = c.getString(c.getColumnIndex(FormsColumns.SUBMISSION_URI));
-	             fd.formPath = c.getString(c.getColumnIndex(FormsColumns.FORM_FILE_PATH));
-                 fd.formMediaPath = getAbsoluteFilePath(new StoragePathProvider().getDirPath(StorageSubdirectory.FORMS), c.getString(c.getColumnIndex(FormsColumns.FORM_MEDIA_PATH)));
-                 fd.version = c.getString(c.getColumnIndex(FormsColumns.JR_VERSION));
+	        	 fd.id = c.getLong(c.getColumnIndexOrThrow(FormsColumns._ID));
+	             fd.formName = c.getString(c.getColumnIndexOrThrow(FormsColumns.DISPLAY_NAME));
+	             fd.submissionUri = c.getString(c.getColumnIndexOrThrow(FormsColumns.SUBMISSION_URI));
+	             fd.formPath = c.getString(c.getColumnIndexOrThrow(FormsColumns.FORM_FILE_PATH));
+                 fd.formMediaPath = getAbsoluteFilePath(new StoragePathProvider().getDirPath(StorageSubdirectory.FORMS), c.getString(c.getColumnIndexOrThrow(FormsColumns.FORM_MEDIA_PATH)));
+                 fd.version = c.getString(c.getColumnIndexOrThrow(FormsColumns.JR_VERSION));
 	             fd.exists = true;
              
         	} else {
@@ -130,8 +131,8 @@ public class ManageForm {
 
                 // Form is already on the phone
                 c.moveToFirst();
-                fd.id = c.getLong(c.getColumnIndex(FormsColumns._ID));
-                fd.formName = c.getString(c.getColumnIndex(FormsColumns.DISPLAY_NAME));
+                fd.id = c.getLong(c.getColumnIndexOrThrow(FormsColumns._ID));
+                fd.formName = c.getString(c.getColumnIndexOrThrow(FormsColumns.DISPLAY_NAME));
                 fd.exists = true;
 
             } else {
@@ -244,9 +245,9 @@ public class ManageForm {
         		
 	        	 
 	        	 while(c.moveToNext()) {
-		        	 Long table_id = c.getLong(c.getColumnIndex(FormsColumns._ID));
-		             String formId = c.getString(c.getColumnIndex(FormsColumns.JR_FORM_ID));
-		             String version = c.getString(c.getColumnIndex(FormsColumns.JR_VERSION));
+		        	 Long table_id = c.getLong(c.getColumnIndexOrThrow(FormsColumns._ID));
+		             String formId = c.getString(c.getColumnIndexOrThrow(FormsColumns.JR_FORM_ID));
+		             String version = c.getString(c.getColumnIndexOrThrow(FormsColumns.JR_VERSION));
 
                      Timber.i("   Delete Check: Found Form Id: " + formId + " : " + version);
 
@@ -322,8 +323,8 @@ public class ManageForm {
                  } catch (Exception e) {
                      e.printStackTrace();
                      mfResponse.isError = true;
-                     mfResponse.statusMsg = "Unable to download initial data from " + initialDataURL + " into file: "
-                             + instancePath + " " + e.getMessage();
+                     mfResponse.statusMsg = TranslationHandler.getString(Collect.getInstance(), R.string.smap_media_download, initialDataURL,instancePath )
+                             + " " + e.getMessage();
                      return mfResponse;
                  }
 

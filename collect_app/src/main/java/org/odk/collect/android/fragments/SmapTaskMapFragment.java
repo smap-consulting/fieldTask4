@@ -15,6 +15,12 @@
 package org.odk.collect.android.fragments;
 
 import android.app.Activity;
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -47,6 +54,7 @@ import org.odk.collect.android.geo.MapTabMapProvider;
 import org.odk.collect.android.geo.TaskMapMarker;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.PermissionListener;
+import org.odk.collect.android.loaders.MapLocationObserver;
 import org.odk.collect.android.loaders.PointEntry;
 import org.odk.collect.android.loaders.SurveyData;
 import org.odk.collect.android.loaders.TaskEntry;
@@ -251,6 +259,140 @@ public class SmapTaskMapFragment extends Fragment {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Timber.i("######## onMapReady");
+        mMap = googleMap;
+        boolean hasFineLocation = ContextCompat.checkSelfPermission(((SmapMain) getActivity()), ACCESS_FINE_LOCATION) == PERMISSION_GRANTED;
+        boolean hasCoarseLocation = ContextCompat.checkSelfPermission(((SmapMain) getActivity()), ACCESS_COARSE_LOCATION) == PERMISSION_GRANTED;
+        if (hasFineLocation || hasCoarseLocation) {
+            mapReadyPermissionGranted();
+        }
+    }
+
+    public void permissionsGranted() {
+        if(mMap != null) {
+            mapReadyPermissionGranted();
+        }
+    }
+    @SuppressLint("MissingPermission")
+    private void mapReadyPermissionGranted() {
+
+        if (mo == null) {
+
+            mMap.setMyLocationEnabled(true);
+            mMap.setOnMyLocationButtonClickListener(this);
+            mMap.setOnMyLocationClickListener(this);
+
+            mMap.setMyLocationEnabled(true);
+
+            complete = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_finalized_circle));
+            accepted = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_saved_circle));
+            late = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_late));
+            repeat = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_repeat));
+            rejected = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_rejected));
+            newtask = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_new));
+            submitted = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_submitted_circle));
+            triggered = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_triggered));
+            triggered_repeat = getMarkerIconFromDrawable(getResources().getDrawable(R.drawable.form_state_triggered));
+
+
+            mo = new MapLocationObserver(getContext(), this);
+
+            /*
+             * Add multiline info window
+             * From: Hiren Patel, http://stackoverflow.com/questions/13904651/android-google-maps-v2-how-to-add-marker-with-multiline-snippet
+             */
+            mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+                @Override
+                public View getInfoWindow(Marker arg0) {
+                    return null;
+                }
+
+                @Override
+                public View getInfoContents(Marker marker) {
+
+                    LinearLayout info = new LinearLayout(getContext());
+                    info.setOrientation(LinearLayout.VERTICAL);
+
+                    TextView title = new TextView(getContext());
+                    title.setTextColor(Color.BLACK);
+                    title.setGravity(Gravity.CENTER);
+                    title.setTypeface(null, Typeface.BOLD);
+                    title.setText(marker.getTitle());
+
+                    TextView snippet = new TextView(getContext());
+                    snippet.setTextColor(Color.GRAY);
+                    snippet.setText(marker.getSnippet());
+
+                    info.addView(title);
+                    info.addView(snippet);
+
+                    return info;
+                }
+            });
+
+            /*
+             * Add long click listener
+             */
+            mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+
+                @Override
+                public void onMapLongClick(LatLng latLng) {
+                    // Get closest marker
+                    double minDistance = 1000;
+                    Marker selMarker = null;
+                    if (markers != null) {
+                        for (Marker marker : markers) {
+                            double roughDistance = Math.sqrt(
+                                    Math.pow(marker.getPosition().latitude - latLng.latitude, 2) +
+                                            Math.pow(marker.getPosition().longitude - latLng.longitude, 2));
+                            if (roughDistance < minDistance) {
+                                minDistance = roughDistance;
+                                selMarker = marker;
+                            }
+                        }
+                    }
+                    if (selMarker != null) {
+                        Toast.makeText(getActivity(), "marker selected: " + selMarker.getTitle(), Toast.LENGTH_LONG).show();
+
+                        Integer iPos = markerMap.get(selMarker);
+                        if (iPos != null) {
+
+                            int position = iPos;
+                            List<TaskEntry> tasks = ((SmapMain) getActivity()).getTasks();
+                            TaskEntry entry = tasks.get(position);
+
+                            if (entry.locationTrigger != null) {
+                                Toast.makeText(
+                                        getActivity(),
+                                        getString(R.string.smap_must_start_from_nfc),
+                                        Toast.LENGTH_LONG).show();
+                            } else {
+                                ((SmapMain) getActivity()).completeTask(entry, false);
+                            }
+
+
+                        }
+                    }
+
+                }
+            });
+
+            // Refresh the data
+            Intent intent = new Intent("org.smap.smapTask.refresh");
+            LocalBroadcastManager.getInstance(Collect.getInstance()).sendBroadcast(intent);
+            Timber.i("######## send org.smap.smapTask.refresh from smapTaskMapFragment");
+        }
     }
 
     public void setData(SurveyData data) {

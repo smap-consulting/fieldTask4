@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "org.smap.smapTask.android.ljslocation",
+  "variantName": "ljsLocationRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 6809,
+      "versionName": "6.809-ljslocation",
+      "outputFile": "fieldTask-ljsLocation-release-null.apk"
+    }
+  ],
+  "elementType": "File"
+}

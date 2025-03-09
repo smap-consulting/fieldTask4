@@ -22,24 +22,11 @@ public class StoragePathProvider {
     }
 
     public String[] getOdkDirPaths() {
-        return storageStateProvider.isScopedStorageUsed()
-                ? getOdkDirPathsForScopedStorage()
-                : getOdkDirPathsForUnScopedStorage();
+        return getOdkDirPathsForScopedStorage();
     }
 
     private String[] getOdkDirPathsForScopedStorage() {
         return new String[]{
-                getDirPath(StorageSubdirectory.FORMS),
-                getDirPath(StorageSubdirectory.INSTANCES),
-                getDirPath(StorageSubdirectory.CACHE),
-                getDirPath(StorageSubdirectory.METADATA),
-                getDirPath(StorageSubdirectory.LAYERS)
-        };
-    }
-
-    private String[] getOdkDirPathsForUnScopedStorage() {
-        return new String[]{
-                getUnscopedStorageRootDirPath(),
                 getDirPath(StorageSubdirectory.FORMS),
                 getDirPath(StorageSubdirectory.INSTANCES),
                 getDirPath(StorageSubdirectory.CACHE),
@@ -68,15 +55,11 @@ public class StoragePathProvider {
     }
 
     public String getDirPath(StorageSubdirectory subdirectory) {
-        return storageStateProvider.isScopedStorageUsed()
-                ? getScopedStorageDirPath(subdirectory)
-                : getUnscopedStorageDirPath(subdirectory);
+        return getScopedStorageDirPath(subdirectory);
     }
 
     public String getStorageRootDirPath() {
-        return storageStateProvider.isScopedStorageUsed()
-                ? getScopedStorageRootDirPath()
-                : getUnscopedStorageRootDirPath();
+        return getScopedStorageRootDirPath();
     }
 
     public String getCustomSplashScreenImagePath() {
@@ -116,19 +99,14 @@ public class StoragePathProvider {
     }
 
     private String getDbPath(String dirPath, String filePath) {
-        String absoluteFilePath;
         String relativeFilePath;
         if (filePath.startsWith(dirPath)) {
-            absoluteFilePath = filePath;
             relativeFilePath = getRelativeFilePath(dirPath, filePath);
         } else {
             relativeFilePath = filePath;
-            absoluteFilePath = getAbsoluteFilePath(dirPath, filePath);
         }
 
-        return storageStateProvider.isScopedStorageUsed()
-                ? relativeFilePath
-                : absoluteFilePath;
+        return relativeFilePath;
     }
 
     @SuppressWarnings("PMD.DoNotHardCodeSDCard")

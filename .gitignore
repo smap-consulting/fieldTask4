@@ -16,6 +16,7 @@ fieldTask4.iml
 *.swp
 collect_app/collect_app.iml
 
+collect_app/fieldTaskMax
 collect_app/src/kontrolid_corporate
 collect_app/kontrolid_corporate/
 collect_app/src/kontrolid
@@ -52,6 +53,11 @@ collect_app/dogman/
 collect_app/src/dogman/
 collect_app/ljsLocation/
 collect_app/src/ljsLocation/
+collect_app/ljslocation/
+collect_app/src/ljslocation/
+collect_app/portero/
+collect_app/src/portero/
+collect_app/ljstracker/
 
 # gradle env props
 secrets.properties

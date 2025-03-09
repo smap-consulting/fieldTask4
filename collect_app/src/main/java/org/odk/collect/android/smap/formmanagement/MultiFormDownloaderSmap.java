@@ -119,10 +119,6 @@ public class MultiFormDownloaderSmap {
      */
     private boolean processOneForm(int total, int count, ServerFormDetailsSmap fd, FormDownloaderListener stateListener) throws Exception {
 
-        //if (stateListener != null) {
-        //    stateListener.progressUpdate(fd.getFormName(), String.valueOf(count), String.valueOf(total));
-        //}
-
         if (stateListener != null && stateListener.isTaskCancelled()) {
             throw new TaskCancelledException();
         }

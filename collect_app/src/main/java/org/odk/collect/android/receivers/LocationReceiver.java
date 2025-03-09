@@ -119,6 +119,9 @@ public class LocationReceiver  extends BroadcastReceiver {
                 lr.register(context, location);
             }
 
+        } else if(isValidLocation(location) && isMoreAccurateLocation(location, Collect.getInstance().getLocation())) { // smap
+            // Set the stored location even if inaccurate if it is more accurate than the previous one
+            Collect.getInstance().setLocation(location);
         }
     }
 
@@ -133,6 +136,18 @@ public class LocationReceiver  extends BroadcastReceiver {
             accurate = false;
         }
         return accurate;
+    }
+
+    private boolean isMoreAccurateLocation(Location location, Location previousLocation) {
+
+        boolean moreAccurate = true;
+        if(previousLocation != null && previousLocation.hasAccuracy()) {
+            if (!location.hasAccuracy() || location.getAccuracy() < previousLocation.getAccuracy()) {
+                Timber.i("===== Less accurate location");
+                moreAccurate = false;
+            }
+        }
+        return moreAccurate;
     }
 
 

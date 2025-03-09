@@ -36,10 +36,14 @@ public class SmapLoginTask extends AsyncTask<String, Void, String> {
     @Override
     protected String doInBackground(String... params) {
 
-        String server = params[0];
-        String username = params[1];
-        String password = params[2];
+        String useTokenString = params[0];
+        String server = params[1];
+        String username = params[2];
+        String password = params[3];
+        String token = params[4];
         String status = null;
+
+        boolean useToken = useTokenString.equals("true");
 
         try {
 
@@ -47,7 +51,7 @@ public class SmapLoginTask extends AsyncTask<String, Void, String> {
             URI uri = url.toURI();
 
             status = httpInterface.loginRequest(uri, null,
-                    new HttpCredentials(username, password));
+                    new HttpCredentials(username, password, useToken, token));
 
         } catch (Exception e) {
             status = "error: " + e.getLocalizedMessage();

@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -50,7 +51,6 @@ import org.odk.collect.android.activities.AboutActivity;
 import org.odk.collect.android.activities.FillBlankFormActivity;
 import org.odk.collect.android.activities.FormDownloadListActivity;
 import org.odk.collect.android.activities.SmapMain;
-import org.odk.collect.android.activities.SmapTaskStatusActivity;
 import org.odk.collect.android.activities.viewmodels.SurveyDataViewModel;
 import org.odk.collect.android.adapters.SortDialogAdapter;
 import org.odk.collect.android.adapters.TaskListArrayAdapter;
@@ -65,7 +65,6 @@ import org.odk.collect.android.preferences.AdminPreferencesActivity;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.PreferencesActivity;
 import org.odk.collect.android.smap.utilities.LocationRegister;
-import org.odk.collect.android.utilities.ApplicationConstants;
 import org.odk.collect.android.utilities.MultiClickGuard;
 import org.odk.collect.android.utilities.SnackbarUtils;
 import org.odk.collect.android.utilities.ThemeUtils;
@@ -193,6 +192,11 @@ public class SmapTaskListFragment extends ListFragment {
                 EditText editText = reject_popup.findViewById(R.id.input_reason);
                 Button ok = reject_popup.findViewById(R.id.ok);
                 Button cancel = reject_popup.findViewById(R.id.cancel);
+
+                if(taskEntry.taskType != null && taskEntry.taskType.equals("case")) {
+                    TextView titleText = reject_popup.findViewById(R.id.reject_title);
+                    titleText.setText(getContext().getString(R.string.smap_release_case));
+                }
                 ok.setOnClickListener(view -> {
                     String reason = editText.getText().toString();
                     rejectTask(reason, taskEntry);
@@ -532,22 +536,6 @@ public class SmapTaskListFragment extends ListFragment {
     private void processManageFiles() {
         Intent i = new Intent(getContext(), org.odk.collect.android.activities.DeleteSavedFormActivity.class);
         startActivity(i);
-    }
-
-    /*
-     * Handle a long click on a list item
-     */
-    protected boolean onLongListItemClick(View v, int position, long id) {
-
-        TaskEntry task = (TaskEntry) getListAdapter().getItem(position);
-
-        if (task.type.equals("task")) {
-            Intent i = new Intent(getActivity(), SmapTaskStatusActivity.class);
-            i.putExtra("id", task.id);
-
-            startActivity(i);
-        }
-        return true;
     }
 
     private void rejectTask(String reason, TaskEntry taskEntry) {

@@ -27,7 +27,7 @@ public class WebCredentialsUtils {
         }
 
         String host = Uri.parse(url).getHost();
-        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password));
+        HOST_CREDENTIALS.put(host, new HttpCredentials(username, password, false, null));
     }
 
     public void saveCredentialsPreferences(GeneralSharedPreferences generalSharedPreferences, String userName, String password, PropertyManager propertyManager) {
@@ -89,15 +89,24 @@ public class WebCredentialsUtils {
             return "";
         }
         // smap start - default username
-        String username = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_USERNAME);
-        //if(username == null || username.equals("")) {   // cater for username getting set to "" on initial startup
-        //    username = Collect.getInstance().getString(R.string.default_username);
-        //}
-        // smap end
-
-        return username;    // smap default username
+        return (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_USERNAME);
     }
 
+    // smap
+    public boolean getUseTokenFromPreferences() {
+        if (GeneralSharedPreferences.getInstance() == null) {
+            return false;
+        }
+        // smap start - default username
+        return (boolean) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_USE_TOKEN);
+    }
+    public String getTokenFromPreferences() {
+        if (GeneralSharedPreferences.getInstance() == null) {
+            return "";
+        }
+        // smap start - default username
+        return (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_AUTH_TOKEN);
+    }
     /**
      * Returns a credentials object from the url
      *
@@ -115,7 +124,7 @@ public class WebCredentialsUtils {
             if (HOST_CREDENTIALS.containsKey(host)) {
                 return HOST_CREDENTIALS.get(host);
             } else {
-                return new HttpCredentials(getUserNameFromPreferences(), getPasswordFromPreferences());
+                return new HttpCredentials(getUserNameFromPreferences(), getPasswordFromPreferences(), getUseTokenFromPreferences(), getTokenFromPreferences());
             }
         } else {
             return HOST_CREDENTIALS.get(host);

@@ -3,12 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:title="@string/server_preferences">
 
-    <!-- smap not type selection
-    <ListPreference
-        android:entries="@array/protocol_entries"
-        android:entryValues="@array/protocol_entry_values"
-        android:key="protocol"
-        android:title="@string/type"
-        app:iconSpaceReserved="false" />
-        -->
+    <SwitchPreference
+        android:key="smap_use_token"
+        app:iconSpaceReserved="false"
+        app:title="@string/smap_use_token" />
+
+    <Preference
+        android:key="smap_scan_token"
+        app:iconSpaceReserved="false"
+        app:title="@string/smap_scan_qr" />
+
+    <EditTextPreference
+        android:key="auth_token"
+        app:iconSpaceReserved="false"
+        android:inputType="textNoSuggestions"
+        android:shouldDisableView="false"
+        app:title="@string/smap_auth_token" />
+
 </PreferenceScreen>

@@ -704,22 +704,13 @@ public class ODKView extends FrameLayout implements OnLongClickListener, WidgetV
                                         throw new RuntimeException("The value for " + key + " must be a URI but it is " + answer);
                                     }
 
-                                    permissionsProvider.requestReadUriPermission((Activity) getContext(), uri, getContext().getContentResolver(), new PermissionListener() {
-                                        @Override
-                                        public void granted() {
-                                            File destFile = FileUtils.createDestinationMediaFile(formController.getInstanceFile().getParent(), ContentResolverHelper.getFileExtensionFromUri(uri));
-                                            //TODO might be better to use QuestionMediaManager in the future
-                                            FileUtils.saveAnswerFileFromUri(uri, destFile, getContext());
-                                            ((WidgetDataReceiver) questionWidget).setData(destFile);
+                                    File destFile = FileUtils.createDestinationMediaFile(formController.getInstanceFile().getParent(), ContentResolverHelper.getFileExtensionFromUri(uri));
+                                    //TODO might be better to use QuestionMediaManager in the future
+                                    FileUtils.saveAnswerFileFromUri(uri, destFile, getContext());
+                                    ((WidgetDataReceiver) questionWidget).setData(destFile);
 
-                                            questionWidget.showAnswerContainer();
-                                        }
+                                    questionWidget.showAnswerContainer();
 
-                                        @Override
-                                        public void denied() {
-
-                                        }
-                                    });
                                 } catch (Exception | Error e) {
                                     Timber.w(e);
                                 }

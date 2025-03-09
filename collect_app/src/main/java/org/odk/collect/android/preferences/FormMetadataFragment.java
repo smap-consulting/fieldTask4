@@ -60,18 +60,20 @@ public class FormMetadataFragment extends BasePreferenceFragment {
 
         if (permissionsProvider.isReadPhoneStatePermissionGranted()) {
             phonePreference.setSummaryProvider(new PropertyManagerPropertySummaryProvider(propertyManager, PROPMGR_PHONE_NUMBER));
-        } else if (savedInstanceState == null) {
-            permissionsProvider.requestReadPhoneStatePermission(getActivity(), true, new PermissionListener() {
-                @Override
-                public void granted() {
-                    phonePreference.setSummaryProvider(new PropertyManagerPropertySummaryProvider(propertyManager, PROPMGR_PHONE_NUMBER));
-                }
-
-                @Override
-                public void denied() {
-                }
-            });
         }
+        // Disable the retrieval of the phone number - I don't think we need this
+        //else if (savedInstanceState == null) {
+        //    permissionsProvider.requestReadPhoneStatePermission(getActivity(), true, new PermissionListener() {
+        //        @Override
+        //        public void granted() {
+        //            phonePreference.setSummaryProvider(new PropertyManagerPropertySummaryProvider(propertyManager, PROPMGR_PHONE_NUMBER));
+        //        }
+
+        //        @Override
+        //        public void denied() {
+        //        }
+        //    });
+        //}
     }
 
     private void setupPrefs() {

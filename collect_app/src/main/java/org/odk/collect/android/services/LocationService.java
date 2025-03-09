@@ -14,6 +14,8 @@
 
 package org.odk.collect.android.services;
 
+import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION;
+
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -95,7 +97,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
                     .setAutoCancel(true);
 
             Notification notification = builder.build();
-            startForeground(1, notification);
+            startForeground(1, notification, FOREGROUND_SERVICE_TYPE_LOCATION);
 
         } else {
 
@@ -107,7 +109,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
 
             Notification notification = builder.build();
 
-            startForeground(1, notification);
+            startForeground(1, notification, FOREGROUND_SERVICE_TYPE_LOCATION);
         }
 
         return START_STICKY;
@@ -195,7 +197,7 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         Intent intent = new Intent(this, LocationReceiver.class);
         intent.setAction(LocationReceiver.ACTION_PROCESS_UPDATES);
         return PendingIntent.getBroadcast(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
 }

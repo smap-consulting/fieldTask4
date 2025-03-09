@@ -13,6 +13,7 @@ the specific language governing permissions and limitations under the License.
     tools:ignore="GoogleAppIndexingWarning">
 
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <!-- smap for maps directions -->
     <queries>
@@ -38,13 +39,14 @@ the specific language governing permissions and limitations under the License.
     <!-- Dangerous permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!-- smap - add foreground service -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <!-- Normal permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -52,6 +54,9 @@ the specific language governing permissions and limitations under the License.
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.NFC" />  <!-- smap -->
+
+    <!-- Don't use ads so remove permission -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
 
     <!-- Removed in API 23 -->
     <uses-permission
@@ -181,11 +186,6 @@ the specific language governing permissions and limitations under the License.
         <activity
             android:name=".activities.SplashScreenActivity"
             android:theme="@android:style/Theme.Dialog" />
-        <!-- smap add task status -->
-        <activity
-            android:name=".activities.SmapTaskStatusActivity"
-            android:label="@string/app_name"
-            android:noHistory="true" />
         <activity android:name=".activities.CaptureSelfieActivity" />
         <activity android:name=".activities.WebViewActivity" />
         <activity android:name=".activities.CaptureSelfieVideoActivity" />
@@ -209,6 +209,9 @@ the specific language governing permissions and limitations under the License.
             android:foregroundServiceType="location"
             android:exported="false">
         </service>
+
+        <service android:name="org.odk.collect.audiorecorder.recording.internal.AudioRecorderService"
+            android:foregroundServiceType="microphone"/>
 
         <!-- end smap -->
         <!-- Configure this key by setting GOOGLE_MAPS_API_KEY in collect_app/secrets.properties. -->

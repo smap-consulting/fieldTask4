@@ -10,12 +10,14 @@
         android:inputType="textNoSuggestions"
         android:key="server_url"
         android:title="@string/server_url"
+        android:shouldDisableView="false"
         app:iconSpaceReserved="false" />
     <EditTextPreference
         android:dialogTitle="@string/username"
         android:inputType="textNoSuggestions"
         android:key="username"
         android:title="@string/username"
+        android:shouldDisableView="false"
         app:iconSpaceReserved="false" />
     <EditTextPreference
         android:dialogTitle="@string/server_password"

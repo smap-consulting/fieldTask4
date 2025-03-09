@@ -984,21 +984,12 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     }
 
     private void loadFile(Uri uri) {
-        permissionsProvider.requestReadUriPermission(this, uri, getContentResolver(), new PermissionListener() {
-            @Override
-            public void granted() {
-                ProgressDialogFragment progressDialog = new ProgressDialogFragment();
-                progressDialog.setMessage(getString(R.string.please_wait));
-                progressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.COLLECT_PROGRESS_DIALOG_TAG);
+        ProgressDialogFragment progressDialog = new ProgressDialogFragment();
+        progressDialog.setMessage(getString(R.string.please_wait));
+        progressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.COLLECT_PROGRESS_DIALOG_TAG);
 
-                mediaLoadingFragment.beginMediaLoadingTask(uri);
-            }
+        mediaLoadingFragment.beginMediaLoadingTask(uri);
 
-            @Override
-            public void denied() {
-
-            }
-        });
     }
 
     public QuestionWidget getWidgetWaitingForBinaryData() {
@@ -2038,6 +2029,10 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private void createLanguageDialog() {
         FormController formController = getFormController();
         final String[] languages = formController.getLanguages();
+
+        // Smap Remove codes in displayed language
+        String[] displayLanguages = new String[languages.length];
+
         int selected = -1;
         if (languages != null) {
             String language = formController.getLanguage();
@@ -2045,10 +2040,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 if (language.equals(languages[i])) {
                     selected = i;
                 }
+                int idx = languages[i].indexOf('(');
+                if(idx > 0) {
+                    displayLanguages[i] = languages[i].substring(0, idx).trim();
+                }
             }
         }
         alertDialog = new AlertDialog.Builder(this)
-                .setSingleChoiceItems(languages, selected,
+                .setSingleChoiceItems(displayLanguages, selected,
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog,

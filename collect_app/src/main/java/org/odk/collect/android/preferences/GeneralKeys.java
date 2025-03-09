@@ -6,6 +6,7 @@ import com.mapbox.mapboxsdk.maps.Style;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.GeoPolyActivity;
 import org.odk.collect.android.application.Collect;
+import org.odk.collect.android.smap.utilities.LocationRegister;
 import org.odk.collect.android.utilities.QuestionFontSizeUtils;
 
 import java.util.HashMap;
@@ -95,7 +96,11 @@ public final class GeneralKeys {
     public static final String BASEMAP_SOURCE_CARTO = "carto";
 
     // start smap
+    public static final String KEY_SMAP_USE_TOKEN = "smap_use_token";    // Use token for logon
+    public static final String KEY_SMAP_SCAN_TOKEN = "smap_scan_token";    // Scan the token
+    public static final String KEY_SMAP_AUTH_TOKEN = "auth_token";    // Authentication Token
     public static final String KEY_SMAP_REVIEW_FINAL = "review_final";    // Allow review of Form after finalising
+    public static final String KEY_SMAP_FORCE_TOKEN = "force_token";    // Require the use of tokens for authentication
     public static final String KEY_SMAP_USER_LOCATION = "smap_gps_trail";    // Record a user trail
     public static final String KEY_SMAP_USER_SAVE_LOCATION = "smap_gps_trail";    // Backup of decision to record the user trail
     public static final String KEY_SMAP_LOCATION_TRIGGER = "location_trigger";  // Enable triggering of forms by location
@@ -128,6 +133,7 @@ public final class GeneralKeys {
     public static final String KEY_SMAP_INPUT_METHOD = "smap_input_method";
     public static final String KEY_SMAP_IM_RI = "smap_im_ri";
     public static final String KEY_SMAP_IM_ACC = "smap_im_acc";
+    public static final String KEY_SMAP_REQUEST_LOCATION_DONE = "smap_request_location_done";
     // end smap
 
     // experimental
@@ -180,14 +186,18 @@ public final class GeneralKeys {
         hashMap.put(KEY_EXTERNAL_APP_RECORDING, true);
 
         // start smap
+        hashMap.put(KEY_SMAP_USE_TOKEN, false);
+        hashMap.put(KEY_SMAP_SCAN_TOKEN, false);
+        hashMap.put(KEY_SMAP_AUTH_TOKEN, "");
         hashMap.put(KEY_SMAP_REVIEW_FINAL, true);
+        hashMap.put(KEY_SMAP_FORCE_TOKEN, LocationRegister.defaultForceToken());
         hashMap.put(KEY_SMAP_USER_LOCATION, false);
         hashMap.put(KEY_SMAP_LOCATION_TRIGGER, true);
         hashMap.put(KEY_SMAP_ODK_STYLE_MENUS, true);
         hashMap.put(KEY_SMAP_ODK_INSTANCENAME, false);
         hashMap.put(KEY_SMAP_ODK_MARK_FINALIZED, false);
         hashMap.put(KEY_SMAP_PREVENT_DISABLE_TRACK, false);
-        hashMap.put(KEY_SMAP_ENABLE_GEOFENCE, true);    // Default geofence on until notififid otherwise
+        hashMap.put(KEY_SMAP_ENABLE_GEOFENCE, true);    // Default geofence on until notified otherwise
         hashMap.put(KEY_SMAP_ODK_ADMIN_MENU, false);
         hashMap.put(KEY_SMAP_ADMIN_SERVER_MENU, true);
         hashMap.put(KEY_SMAP_ADMIN_META_MENU, true);
@@ -210,6 +220,7 @@ public final class GeneralKeys {
         hashMap.put(KEY_SMAP_INPUT_METHOD, "not set");
         hashMap.put(KEY_SMAP_IM_RI, GeoPolyActivity.DEFAULT_INTERVAL_INDEX);
         hashMap.put(KEY_SMAP_IM_ACC, GeoPolyActivity.DEFAULT_ACCURACY_THRESHOLD_INDEX);
+        hashMap.put(KEY_SMAP_REQUEST_LOCATION_DONE , "no");
         // end smap
 
         // map_preferences.xml

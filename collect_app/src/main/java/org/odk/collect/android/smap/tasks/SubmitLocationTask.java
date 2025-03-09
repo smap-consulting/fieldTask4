@@ -5,13 +5,11 @@ import android.os.AsyncTask;
 
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
-import org.odk.collect.android.tasks.DownloadTasksTask;
 import org.odk.collect.android.utilities.WebCredentialsUtils;
 
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.util.HashMap;
 
 import javax.inject.Inject;
 
