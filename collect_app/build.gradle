@@ -146,7 +146,6 @@ android {
             applicationId "org.smap.smapTask.android.fieldTaskMax"
             versionName "6.900"
         }
-        }
     }
 
     buildTypes {

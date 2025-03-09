@@ -20,10 +20,10 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -41,6 +41,7 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.odk.collect.android.R;
@@ -54,7 +55,6 @@ import org.odk.collect.android.geo.MapTabMapProvider;
 import org.odk.collect.android.geo.TaskMapMarker;
 import org.odk.collect.android.injection.DaggerUtils;
 import org.odk.collect.android.listeners.PermissionListener;
-import org.odk.collect.android.loaders.MapLocationObserver;
 import org.odk.collect.android.loaders.PointEntry;
 import org.odk.collect.android.loaders.SurveyData;
 import org.odk.collect.android.loaders.TaskEntry;
