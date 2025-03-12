@@ -234,7 +234,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
     }
 
     @NonNull
-    private HttpPostResult executePostRequest(@NonNull URI uri, @Nullable HttpCredentialsInterface credentials, MultipartBody multipartBody) throws Exception {
+    private HttpPostResult executePostRequest(@NonNull URI uri, @Nullable HttpCredentialsInterface credentials, MultipartBody multipartBody, String status) throws Exception {
         URI physicalUri = getPhysicalUri(uri, credentials);
         OpenRosaServerClient httpClient = clientFactory.get(physicalUri.getScheme(), userAgent, credentials, physicalUri.getHost());    // smap add host
         HttpPostResult postResult;

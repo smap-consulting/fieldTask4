@@ -312,7 +312,6 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         } else {
             startService(mLocationServiceIntent);
         }
-        taskManagerMap.permissionsGranted();
     }
 
     /*
