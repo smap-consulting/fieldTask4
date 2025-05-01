@@ -495,7 +495,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
      */
     private URI getPhysicalUri(URI uri, HttpCredentialsInterface credentials) throws MalformedURLException, URISyntaxException {
         URI physicalUri;
-        if(credentials.getUseToken()) {
+        if(credentials != null && credentials.getUseToken()) {
             StringBuilder urlBuilder = new StringBuilder(uri.getScheme())
                     .append("://")
                     .append(uri.getHost())

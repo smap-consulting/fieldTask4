@@ -181,7 +181,7 @@ public class OkHttpOpenRosaServerClientProvider implements OpenRosaServerClientP
                     .addHeader(USER_AGENT_HEADER, userAgent)
                     .addHeader(OPEN_ROSA_VERSION_HEADER, OPEN_ROSA_VERSION)
                     .addHeader(DATE_HEADER, getHeaderDate(currentTime));
-            if(credentials.getUseToken()) {
+            if(credentials != null && credentials.getUseToken()) {
                 builder.addHeader(TOKEN_HEADER, credentials.getAuthToken());
             }
             return client.newCall(builder.build()).execute();
