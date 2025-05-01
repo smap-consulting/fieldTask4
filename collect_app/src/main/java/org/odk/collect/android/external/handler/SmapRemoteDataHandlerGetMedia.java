@@ -24,6 +24,7 @@ import org.javarosa.xpath.expr.XPathFuncExpr;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.tasks.SmapRemoteWebServiceTask;
+import org.odk.collect.android.utilities.Utilities;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,7 +38,6 @@ import timber.log.Timber;
 public class SmapRemoteDataHandlerGetMedia implements IFunctionHandler {
 
     public static final String HANDLER_NAME = "get_media";
-
 
     public SmapRemoteDataHandlerGetMedia() {
     }
@@ -75,6 +75,15 @@ public class SmapRemoteDataHandlerGetMedia implements IFunctionHandler {
         String url = XPathFuncExpr.toString(args[0]);
         String timeoutValue = "0";
 
+        /*
+         * Allow for relative URLS as webforms does
+         */
+        if(url.length() > 0 && (url.startsWith("/attachments") || url.startsWith("attachments"))) {
+            if(url.startsWith("attachments")) {
+                url = "/" + url;
+            }
+            url = "https://" + Utilities.getSource() + url;
+        }
         if(url.length() > 0 && url.startsWith("http")) {
 
             int idx = url.lastIndexOf('/');
