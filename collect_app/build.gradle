@@ -99,8 +99,8 @@ android {
             versionName "6.829-supply"
         }
         seracis {
-            applicationId "org.smap.smapTask.android.seracis"
-            versionName "6.829-seracis"
+            applicationId "org.smap.smapTask.android.xxx1"
+            versionName "6.829-xxx1"
         }
         meqa {
             applicationId "org.smap.smapTask.android.meqa"
