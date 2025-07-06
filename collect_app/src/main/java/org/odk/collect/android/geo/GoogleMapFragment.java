@@ -589,7 +589,7 @@ public class GoogleMapFragment extends SupportMapFragment implements
             locationClient.setListener(this);
 
             if (enable) {
-                Timber.i("Starting LocationClient %s (for MapFragment %s)", locationClient, this);
+                Timber.i("Starting LocationClient (after creating new Client) %s (for MapFragment %s)", locationClient, this);
                 locationClient.start();
             }
         } else {

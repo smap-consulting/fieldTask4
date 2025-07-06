@@ -21,32 +21,33 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '21'
     }
 
     testOptions {
         unitTests.includeAndroidResources = true
     }
+    namespace 'org.odk.collect.audiorecorder'
 }
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.9.0'
-    implementation 'androidx.activity:activity-ktx:1.6.1'
-    implementation 'androidx.appcompat:appcompat:1.5.1'
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'androidx.activity:activity-ktx:1.10.1'
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation project(':strings')
-    implementation "com.google.dagger:dagger:${rootProject.daggerVersion}"
+    implementation "com.google.dagger:dagger:2.56.2"
     implementation "com.jakewharton.timber:timber:${rootProject.timberVersion}"
     implementation project(path: ':async')
     //testImplementation project(path: ':testshared')
-    kapt "com.google.dagger:dagger-compiler:${rootProject.daggerVersion}"
+    kapt "com.google.dagger:dagger-compiler:2.56.2"
 
     //testImplementation 'junit:junit:4.13.1'
     ///testImplementation "org.robolectric:robolectric:4.4"

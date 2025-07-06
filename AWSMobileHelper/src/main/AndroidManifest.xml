@@ -8,8 +8,7 @@
  Source code generated from template: aws-my-sample-app-android v0.18
 --> 
 
-<manifest package="com.amazonaws.mobilehelper"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application android:allowBackup="true"
                  android:supportsRtl="true">

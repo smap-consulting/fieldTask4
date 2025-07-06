@@ -210,7 +210,7 @@ public class GoogleFusedLocationClient
 
     @Override
     public void onLocationChanged(Location location) {
-        Timber.i("Location changed: %s", location.toString());
+        Timber.i("Google Fused Location changed: %s", location.toString());
 
         if (locationListener != null) {
             locationListener.onLocationChanged(LocationUtils.sanitizeAccuracy(location, retainMockAccuracy));

@@ -461,7 +461,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         }
 
         if (enable) {
-            Timber.i("Starting LocationClient %s (for MapFragment %s)", locationClient, this);
+            Timber.i("Starting LocationClient (OsmDroid) %s (for MapFragment %s)", locationClient, this);
             locationClient.start();
         } else {
             Timber.i("Stopping LocationClient %s (for MapFragment %s)", locationClient, this);

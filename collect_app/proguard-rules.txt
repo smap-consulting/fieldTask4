@@ -20,7 +20,6 @@
 -keepattributes *Annotation*
 
 -keep class org.apache.commons.logging.**               { *; }
--keep class com.amazonaws.services.sqs.QueueUrlHandler  { *; }
 -keep class com.amazonaws.javax.xml.transform.sax.*     { public *; }
 -keep class com.amazonaws.javax.xml.stream.**           { *; }
 -keep class com.amazonaws.services.**.model.*Exception* { *; }
@@ -39,10 +38,28 @@
 
 -keep class org.odk.collect.android.taskModel.** { *; }
 -keep class org.odk.collect.android.database.** { *; }
+-keep class org.kxml2.io.** { *; }
+-keep class org.xmlpull.v1.** { *; }
+-keep class android.content.res.** { *; }
+
+-keep class com.google.gson.reflect.TypeToken
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep public class * implements java.lang.reflect.Type
+
+-dontwarn android.content.res.*
+-dontwarn org.openjsse.javax.net.*
+
 
 # recommended okhttp rules
 # https://github.com/square/okhttp#r8--proguard
 -dontwarn javax.annotation.**
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 -dontwarn org.codehaus.mojo.animal_sniffer.*
--dontwarn okhttp3.internal.platform.ConscryptPlatform
+
+-dontwarn okhttp3.internal.platform.*
+-dontwarn org.bouncycastle.jsse.*
+
+-dontwarn org.openjsse.javax.*
+-dontwarn org.conscrypt.*
+-keep class javax.net.ssl.* { *; }
+-keep class org.bouncycastle.** { *; }
