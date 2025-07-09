@@ -98,7 +98,7 @@ ext {
     fragmentVersion = '1.5.4'
     daggerVersion = '2.43.2'
     okhttp3Version = '4.10.0'
-    timberVersion = '4.7.1'
+    timberVersion = '5.0.1'
     materialVersion = '1.7.0'
     coreKtxVersion = '1.9.0'
 }
