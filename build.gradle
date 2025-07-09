@@ -94,7 +94,7 @@ ext {
     androidTargetSdk = 35
 
     fragmentVersion = '1.8.8'
-    daggerVersion = '2.43.2'
+    daggerVersion = '2.56.2'
     okhttp3Version = '4.10.0'
     timberVersion = '5.0.1'
     materialVersion = '1.12.0'
