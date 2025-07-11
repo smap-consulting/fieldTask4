@@ -10,11 +10,13 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+    namespace = "com.amazonaws.mobilehelper"
+
+    compileSdkVersion 35
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion 29
+        targetSdkVersion 35
     }
     buildTypes {
         release {

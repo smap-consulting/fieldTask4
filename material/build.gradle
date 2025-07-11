@@ -3,6 +3,8 @@ apply plugin: 'com.android.library'
 apply from: '../config/quality.gradle'
 
 android {
+    namespace = "org.odk.collect.material"
+
     compileSdkVersion rootProject.androidCompileSdk
 
     defaultConfig {

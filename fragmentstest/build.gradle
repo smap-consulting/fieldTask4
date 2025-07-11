@@ -6,11 +6,13 @@ plugins {
 apply from: '../config/quality.gradle'
 
 android {
-    compileSdkVersion 30
+    namespace = "org.odk.collect.fragmentstest"
+
+    compileSdkVersion 35
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 30
+        minSdkVersion 29
+        targetSdkVersion 35
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

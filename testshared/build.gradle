@@ -4,6 +4,8 @@ apply plugin: 'kotlin-android'
 apply from: '../config/quality.gradle'
 
 android {
+    namespace = "org.odk.collect.testshared"
+
     compileSdkVersion rootProject.androidCompileSdk
 
     defaultConfig {
@@ -28,7 +30,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.2.0'
+    coreLibraryDesugaring(libs.desugar)
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"

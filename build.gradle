@@ -11,14 +11,14 @@ buildscript {
         }
     }
 
-    ext.kotlin_version = '1.7.20'
+    ext.kotlin_version = '2.2.0'
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath 'com.google.gms:google-services:4.4.0'
-        classpath 'org.jacoco:org.jacoco.core:0.8.8'
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath libs.gradle
+        classpath 'com.google.gms:google-services:4.4.3'
+        classpath 'org.jacoco:org.jacoco.core:0.8.13'
+        classpath 'com.google.firebase:firebase-crashlytics-gradle:3.0.4'
+        classpath libs.kotlinGradlePlugin
         classpath "org.jlleitschuh.gradle:ktlint-gradle:10.0.0"
         classpath "com.github.ben-manes:gradle-versions-plugin:0.42.0"
     }
@@ -91,14 +91,15 @@ task checkInstrumented(type: GradleBuild) {
 }
 
 ext {
-    androidCompileSdk = 33
+    androidCompileSdk = 35
     androidMinSdk = 29
-    androidTargetSdk = 34
+    androidTargetSdk = 35
 
-    fragmentVersion = '1.5.4'
-    daggerVersion = '2.43.2'
+    fragmentVersion = '1.8.8'
+    daggerVersion = '2.56.2'
     okhttp3Version = '4.10.0'
-    timberVersion = '4.7.1'
-    materialVersion = '1.7.0'
+    timberVersion = '5.0.1'
+    materialVersion = '1.12.0'
     coreKtxVersion = '1.9.0'
+    kotlinVersion = '2.2.0'
 }

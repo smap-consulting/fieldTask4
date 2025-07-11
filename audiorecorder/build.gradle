@@ -5,6 +5,8 @@ apply plugin: 'kotlin-kapt'
 apply from: '../config/quality.gradle'
 
 android {
+    namespace = "org.odk.collect.audiorecorder"
+
     compileSdkVersion rootProject.androidCompileSdk
 
     defaultConfig {
@@ -42,18 +44,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.7.0'
     implementation project(':strings')
-    implementation "com.google.dagger:dagger:${rootProject.daggerVersion}"
+    implementation libs.dagger
+    implementation libs.daggerCompiler
     implementation "com.jakewharton.timber:timber:${rootProject.timberVersion}"
     implementation project(path: ':async')
-    //testImplementation project(path: ':testshared')
-    kapt "com.google.dagger:dagger-compiler:${rootProject.daggerVersion}"
 
-    //testImplementation 'junit:junit:4.13.1'
-    ///testImplementation "org.robolectric:robolectric:4.4"
-    //testImplementation 'androidx.test.ext:junit:1.1.2'
-    //testImplementation 'androidx.test:core-ktx:1.3.0'
-    //testImplementation 'androidx.test:rules:1.3.0'
-    //testImplementation "androidx.arch.core:core-testing:2.1.0"
-    //testImplementation "org.mockito:mockito-core:3.6.28"
-    //testImplementation 'org.hamcrest:hamcrest:2.2'
 }

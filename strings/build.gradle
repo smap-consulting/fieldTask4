@@ -6,6 +6,8 @@ apply plugin: 'kotlin-android'
 apply from: '../config/quality.gradle'
 
 android {
+    namespace = "org.odk.collect.strings"
+
     compileSdkVersion rootProject.androidCompileSdk
 
     defaultConfig {
