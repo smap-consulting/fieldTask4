@@ -2,10 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.odk.collect.audiorecorder">
 
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
 
     <application>
-        <service android:name=".recording.internal.AudioRecorderService" />
+        <service android:name=".recording.internal.AudioRecorderService" android:foregroundServiceType="microphone"/>
         <activity android:name=".recording.internal.ReturnToAppActivity" />
     </application>
 
