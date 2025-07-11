@@ -92,7 +92,7 @@
     <string name="smap_been_submitted">"This form has already been submitted and cannot be opened for review"</string>
     <string name="smap_location_tracking">Device location is being tracked. (Exit app to stop).</string>
     <string name="smap_reset_locations">"Recorded GPS Trail"</string>
-    <string name="smap_reset_locations_result">Recorded GPS Trail ::</string>
+    <string name="smap_reset_locations_result">Recorded GPS Trail :: %s</string>
     <string name="smap_visit_website">Visit the website</string>
     <string name="smap_get_media">"Getting media file: %s"</string>
     <string name="smap_lookup">"Requesting remote data"</string>
