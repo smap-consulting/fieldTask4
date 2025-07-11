@@ -581,7 +581,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
 
                         FormEntryCaption caption = formController.getCaptionPrompt();
                         HierarchyElement groupElement = new HierarchyElement(
-                                caption.getShortText(), getString(R.string.group_label),
+                                caption.getShortText(), getString(org.odk.collect.strings.R.string.group_label),
                                 ContextCompat.getDrawable(this, R.drawable.ic_folder_open),
                                 HierarchyElement.Type.VISIBLE_GROUP, caption.getIndex());
                         elementsToDisplay.add(groupElement);
@@ -638,7 +638,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
                         } else if (fc.getMultiplicity() == 0) {
                             // Display the repeat header for the group.
                             HierarchyElement group = new HierarchyElement(
-                                    fc.getShortText(), getString(R.string.repeatable_group_label),
+                                    fc.getShortText(), getString(org.odk.collect.strings.R.string.repeatable_group_label),
                                     ContextCompat.getDrawable(this, R.drawable.ic_repeat),
                                     HierarchyElement.Type.REPEATABLE_GROUP, fc.getIndex());
                             elementsToDisplay.add(group);
@@ -776,7 +776,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
         AlertDialog alertDialog = new AlertDialog.Builder(this).create();
 
         alertDialog.setIcon(android.R.drawable.ic_dialog_info);
-        alertDialog.setTitle(getString(R.string.error_occured));
+        alertDialog.setTitle(getString(org.odk.collect.strings.R.string.error_occured));
         alertDialog.setMessage(errorMsg);
         DialogInterface.OnClickListener errorListener = new DialogInterface.OnClickListener() {
             @Override
@@ -790,7 +790,7 @@ public class FormHierarchyActivity extends CollectAbstractActivity implements De
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.ok), errorListener);
         alertDialog.show();
     }
 

@@ -64,15 +64,15 @@ public class GeoShapeWidget extends QuestionWidget implements WidgetDataReceiver
 
         if (getFormEntryPrompt().isReadOnly()) {
             if (dataAvailable) {
-                binding.simpleButton.setText(R.string.geoshape_view_read_only);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.geoshape_view_read_only);
             } else {
                 binding.simpleButton.setVisibility(View.GONE);
             }
         } else {
             if (dataAvailable) {
-                binding.simpleButton.setText(R.string.geoshape_view_change_location);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.geoshape_view_change_location);
             } else {
-                binding.simpleButton.setText(R.string.get_shape);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.get_shape);
             }
         }
 
@@ -87,7 +87,7 @@ public class GeoShapeWidget extends QuestionWidget implements WidgetDataReceiver
     @Override
     public void clearAnswer() {
         binding.geoAnswerText.setText(null);
-        binding.simpleButton.setText(R.string.get_shape);
+        binding.simpleButton.setText(org.odk.collect.strings.R.string.get_shape);
         widgetValueChanged();
     }
 
@@ -107,7 +107,7 @@ public class GeoShapeWidget extends QuestionWidget implements WidgetDataReceiver
     @Override
     public void setData(Object answer) {
         binding.geoAnswerText.setText(answer.toString());
-        binding.simpleButton.setText(answer.toString().isEmpty() ? R.string.get_shape : R.string.geoshape_view_change_location);
+        binding.simpleButton.setText(answer.toString().isEmpty() ? org.odk.collect.strings.R.string.get_shape : org.odk.collect.strings.R.string.geoshape_view_change_location);
         widgetValueChanged();
     }
 

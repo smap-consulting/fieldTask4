@@ -58,8 +58,8 @@ public class QRCodeMenuDelegate implements MenuDelegate {
                 try {
                     activity.startActivityForResult(photoPickerIntent, SELECT_PHOTO);
                 } catch(Exception e) {
-                    ToastUtils.showShortToast(activity.getString(R.string.activity_not_found, activity.getString(R.string.choose_image)));
-                    Timber.w(activity.getString(R.string.activity_not_found, activity.getString(R.string.choose_image)));
+                    ToastUtils.showShortToast(activity.getString(org.odk.collect.strings.R.string.activity_not_found, activity.getString(org.odk.collect.strings.R.string.choose_image)));
+                    Timber.w(activity.getString(org.odk.collect.strings.R.string.activity_not_found, activity.getString(org.odk.collect.strings.R.string.choose_image)));
                 }
 
                 return true;

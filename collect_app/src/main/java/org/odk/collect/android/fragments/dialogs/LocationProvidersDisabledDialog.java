@@ -59,12 +59,12 @@ public class LocationProvidersDisabledDialog extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setIcon(R.drawable.ic_room_black_24dp)
-                .setTitle(R.string.provider_disabled_error)
-                .setMessage(R.string.location_providers_disabled_dialog_message)
-                .setPositiveButton(R.string.go_to_settings, (dialog, id) -> {
+                .setTitle(org.odk.collect.strings.R.string.provider_disabled_error)
+                .setMessage(org.odk.collect.strings.R.string.location_providers_disabled_dialog_message)
+                .setPositiveButton(org.odk.collect.strings.R.string.go_to_settings, (dialog, id) -> {
                     startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 })
-                .setNegativeButton(R.string.cancel, (dialog, id) -> {
+                .setNegativeButton(org.odk.collect.strings.R.string.cancel, (dialog, id) -> {
                 })
                 .create();
     }

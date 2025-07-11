@@ -105,7 +105,7 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
             try {
                 handleScanningResult(barcodeResult);
             } catch (IOException | DataFormatException | IllegalArgumentException e) {
-                ToastUtils.showShortToast(getString(R.string.invalid_qrcode));
+                ToastUtils.showShortToast(getString(org.odk.collect.strings.R.string.invalid_qrcode));
                 analytics.logEvent(AnalyticsEvents.SETTINGS_IMPORT_QR, "No valid settings", "none");
             }
         });
@@ -120,7 +120,7 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
     private Intent getIntent() {
         Intent intent = new IntentIntegrator(getActivity())
                 .setDesiredBarcodeFormats(getSupportedCodeFormats())
-                .setPrompt(getContext().getString(R.string.barcode_scanner_prompt))
+                .setPrompt(getContext().getString(org.odk.collect.strings.R.string.barcode_scanner_prompt))
                 .createScanIntent();
         intent.putExtra(Intents.Scan.SCAN_TYPE, Intents.Scan.MIXED_SCAN);
         return intent;
@@ -163,7 +163,7 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
     }
 
     private void switchFlashlight() {
-        if (getString(R.string.turn_on_flashlight).equals(switchFlashlightButton.getText())) {
+        if (getString(org.odk.collect.strings.R.string.turn_on_flashlight).equals(switchFlashlightButton.getText())) {
             barcodeScannerView.setTorchOn();
         } else {
             barcodeScannerView.setTorchOff();
@@ -172,12 +172,12 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
 
     @Override
     public void onTorchOn() {
-        switchFlashlightButton.setText(R.string.turn_off_flashlight);
+        switchFlashlightButton.setText(org.odk.collect.strings.R.string.turn_off_flashlight);
     }
 
     @Override
     public void onTorchOff() {
-        switchFlashlightButton.setText(R.string.turn_on_flashlight);
+        switchFlashlightButton.setText(org.odk.collect.strings.R.string.turn_on_flashlight);
     }
 
     protected abstract Collection<String> getSupportedCodeFormats();

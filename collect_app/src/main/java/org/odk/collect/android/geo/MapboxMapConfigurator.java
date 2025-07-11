@@ -39,7 +39,7 @@ class MapboxMapConfigurator implements MapConfigurator {
 
     @Override public void showUnavailableMessage(Context context) {
         ToastUtils.showLongToast(context.getString(
-            R.string.basemap_source_unavailable, context.getString(sourceLabelId)));
+                org.odk.collect.strings.R.string.basemap_source_unavailable, context.getString(sourceLabelId)));
     }
 
     @Override public MapFragment createMapFragment(Context context) {
@@ -54,7 +54,7 @@ class MapboxMapConfigurator implements MapConfigurator {
             values[i] = options[i].url;
         }
         String prefTitle = context.getString(
-            R.string.map_style_label, context.getString(sourceLabelId));
+                org.odk.collect.strings.R.string.map_style_label, context.getString(sourceLabelId));
         return Collections.singletonList(PrefUtils.createListPref(
             context, prefKey, prefTitle, labelIds, values
         ));

@@ -6,8 +6,8 @@ import org.odk.collect.android.R;
 
 public enum Protocol {
 
-    ODK(R.string.protocol_odk_default),
-    GOOGLE(R.string.protocol_google_sheets);
+    ODK(org.odk.collect.strings.R.string.protocol_odk_default),
+    GOOGLE(org.odk.collect.strings.R.string.protocol_google_sheets);
 
     private final int string;
 

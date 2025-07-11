@@ -64,9 +64,9 @@ public class GeoPointWidget extends QuestionWidget implements WidgetDataReceiver
 
         if (answerText != null && !answerText.isEmpty()) {
             binding.geoAnswerText.setText(GeoWidgetUtils.getGeoPointAnswerToDisplay(getContext(), answerText));
-            binding.simpleButton.setText(R.string.change_location);
+            binding.simpleButton.setText(org.odk.collect.strings.R.string.change_location);
         } else {
-            binding.simpleButton.setText(R.string.get_point);
+            binding.simpleButton.setText(org.odk.collect.strings.R.string.get_point);
         }
 
         return binding.getRoot();
@@ -83,7 +83,7 @@ public class GeoPointWidget extends QuestionWidget implements WidgetDataReceiver
     public void clearAnswer() {
         answerText = null;
         binding.geoAnswerText.setText(null);
-        binding.simpleButton.setText(R.string.get_point);
+        binding.simpleButton.setText(org.odk.collect.strings.R.string.get_point);
         widgetValueChanged();
     }
 
@@ -104,7 +104,7 @@ public class GeoPointWidget extends QuestionWidget implements WidgetDataReceiver
     public void setData(Object answer) {
         answerText = answer.toString();
         binding.geoAnswerText.setText(GeoWidgetUtils.getGeoPointAnswerToDisplay(getContext(), answerText));
-        binding.simpleButton.setText(answerText == null || answerText.isEmpty() ? R.string.get_point : R.string.change_location);
+        binding.simpleButton.setText(answerText == null || answerText.isEmpty() ? org.odk.collect.strings.R.string.get_point : org.odk.collect.strings.R.string.change_location);
         widgetValueChanged();
     }
 }

@@ -125,18 +125,18 @@ public class ShowQRCodeFragment extends Fragment {
     void passwordWarningClicked() {
         if (dialog == null) {
             final String[] items = {
-                    getString(R.string.admin_password),
-                    getString(R.string.server_password)};
+                    getString(org.odk.collect.strings.R.string.admin_password),
+                    getString(org.odk.collect.strings.R.string.server_password)};
 
             dialog = new AlertDialog.Builder(getActivity())
-                    .setTitle(R.string.include_password_dialog)
+                    .setTitle(org.odk.collect.strings.R.string.include_password_dialog)
                     .setMultiChoiceItems(items, checkedItems, (dialog, which, isChecked) -> checkedItems[which] = isChecked)
                     .setCancelable(false)
-                    .setPositiveButton(R.string.generate, (dialog, which) -> {
+                    .setPositiveButton(org.odk.collect.strings.R.string.generate, (dialog, which) -> {
                         qrCodeViewModel.setIncludedKeys(getSelectedPasswordKeys());
                         dialog.dismiss();
                     })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> dialog.dismiss())
+                    .setNegativeButton(org.odk.collect.strings.R.string.cancel, (dialog, which) -> dialog.dismiss())
                     .create();
 
             // disable checkbox if password not set

@@ -80,7 +80,7 @@ public class RequestLocationPermissionsDialog extends DialogFragment {
 
         android.app.AlertDialog.Builder builder = new AlertDialog.Builder(currentActivity);
         builder.setMessage(lr.getMessageId())
-                .setTitle(R.string.location_runtime_permissions_denied_title)
+                .setTitle(org.odk.collect.strings.R.string.location_runtime_permissions_denied_title)
                 .setPositiveButton(R.string.smap_accept2, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         lr.locationStart(currentActivity, permissionsProvider);

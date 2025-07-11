@@ -82,11 +82,11 @@ public class RankingWidgetDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new Builder(getActivity())
                 .setView(setUpRankingLayout())
-                .setPositiveButton(string.ok, (dialog, id) -> {
+                .setPositiveButton(org.odk.collect.strings.R.string.ok, (dialog, id) -> {
                     listener.onRankingChanged(rankingListAdapter.getItems());
                     dismiss();
                 })
-                .setNegativeButton(string.cancel, (dialog, id) -> dismiss())
+                .setNegativeButton(org.odk.collect.strings.R.string.cancel, (dialog, id) -> dismiss())
                 .create();
     }
 

@@ -19,7 +19,7 @@ internal class RecordingForegroundServiceNotification(private val service: Servi
 
     private val notificationIntent = Intent(service, ReturnToAppActivity::class.java)
     private val notificationBuilder = NotificationCompat.Builder(service, NOTIFICATION_CHANNEL)
-        .setContentTitle(service.getLocalizedString(R.string.recording))
+        .setContentTitle(service.getLocalizedString(org.odk.collect.strings.R.string.recording))
         .setContentText(formatLength(0))
         .setSmallIcon(R.drawable.ic_baseline_mic_24)
         .setContentIntent(PendingIntent.getActivity(service, 0, notificationIntent,
@@ -53,7 +53,7 @@ internal class RecordingForegroundServiceNotification(private val service: Servi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 NOTIFICATION_CHANNEL,
-                service.getLocalizedString(R.string.recording_channel),
+                service.getLocalizedString(org.odk.collect.strings.R.string.recording_channel),
                 NotificationManager.IMPORTANCE_LOW
             )
 

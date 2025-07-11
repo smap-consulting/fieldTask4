@@ -33,7 +33,7 @@ public class FormEndView extends FrameLayout {
     private void init(Context context, boolean instanceComplete) {
         inflate(context, R.layout.form_entry_end, this);
 
-        ((TextView) findViewById(R.id.description)).setText(context.getString(R.string.save_enter_data_description, formTitle));
+        ((TextView) findViewById(R.id.description)).setText(context.getString(org.odk.collect.strings.R.string.save_enter_data_description, formTitle));
 
         EditText saveAs = findViewById(R.id.save_name);
         Button saveButton = findViewById(R.id.save_exit_button);
@@ -68,7 +68,7 @@ public class FormEndView extends FrameLayout {
             });
         } else {
             // Readonly do not save
-            saveButton.setText(R.string.exit);
+            saveButton.setText(org.odk.collect.strings.R.string.exit);
             saveButton.setOnClickListener(v -> {
                 listener.onExitClicked();
             });

@@ -79,7 +79,7 @@ public class InstanceSubmitter {
         String deviceId = null;
         boolean anyFailure = false;
 
-        if (protocol.equals(TranslationHandler.getString(Collect.getInstance(), R.string.protocol_google_sheets))) {
+        if (protocol.equals(TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.protocol_google_sheets))) {
             if (permissionsProvider.isGetAccountsPermissionGranted()) {
                 String googleUsername = googleAccountsManager.getLastSelectedAccountIfValid();
                 if (googleUsername.isEmpty()) {
@@ -101,14 +101,14 @@ public class InstanceSubmitter {
         for (Instance instance : toUpload) {
             try {
                 String destinationUrl = uploader.getUrlToSubmitTo(instance, deviceId, null);
-                if (protocol.equals(TranslationHandler.getString(Collect.getInstance(), R.string.protocol_google_sheets))
+                if (protocol.equals(TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.protocol_google_sheets))
                         && !InstanceUploaderUtils.doesUrlRefersToGoogleSheetsFile(destinationUrl)) {
                     anyFailure = true;
                     resultMessagesByInstanceId.put(instance.getId().toString(), SPREADSHEET_UPLOADED_TO_GOOGLE_DRIVE);
                     continue;
                 }
                 String customMessage = uploader.uploadOneSubmission(instance, destinationUrl);
-                resultMessagesByInstanceId.put(instance.getId().toString(), customMessage != null ? customMessage : TranslationHandler.getString(Collect.getInstance(), R.string.success));
+                resultMessagesByInstanceId.put(instance.getId().toString(), customMessage != null ? customMessage : TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.success));
 
                 // If the submission was successful, delete the instance if either the app-level
                 // delete preference is set or the form definition requests auto-deletion.
@@ -121,13 +121,13 @@ public class InstanceSubmitter {
                     Collect.getInstance().getContentResolver().delete(deleteForm, null, null);
                 }
 
-                String action = protocol.equals(TranslationHandler.getString(Collect.getInstance(), R.string.protocol_google_sheets)) ?
+                String action = protocol.equals(TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.protocol_google_sheets)) ?
                         "HTTP-Sheets auto" : "HTTP auto";
                 String label = Collect.getFormIdentifierHash(instance.getJrFormId(), instance.getJrVersion());
                 analytics.logEvent(SUBMISSION, action, label);
 
                 String submissionEndpoint = (String) settings.get(GeneralKeys.KEY_SUBMISSION_URL);
-                if (!submissionEndpoint.equals(TranslationHandler.getString(Collect.getInstance(), R.string.default_odk_submission))) {
+                if (!submissionEndpoint.equals(TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.default_odk_submission))) {
                     String submissionEndpointHash = FileUtils.getMd5Hash(new ByteArrayInputStream(submissionEndpoint.getBytes()));
                     analytics.logEvent(CUSTOM_ENDPOINT_SUB, submissionEndpointHash);
                 }

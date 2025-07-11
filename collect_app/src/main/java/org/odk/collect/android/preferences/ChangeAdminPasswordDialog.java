@@ -42,22 +42,22 @@ public class ChangeAdminPasswordDialog extends DialogFragment {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-        builder.setTitle(R.string.change_admin_password);
+        builder.setTitle(org.odk.collect.strings.R.string.change_admin_password);
         builder.setView(dialogView);
-        builder.setPositiveButton(getString(R.string.ok), (dialog, which) -> {
+        builder.setPositiveButton(getString(org.odk.collect.strings.R.string.ok), (dialog, which) -> {
             String password = passwordEditText.getText().toString();
             SharedPreferences.Editor editor = getActivity().getSharedPreferences(ADMIN_PREFERENCES, MODE_PRIVATE).edit();
             editor.putString(KEY_ADMIN_PW, password);
 
             if (password.equals("")) {
-                ToastUtils.showShortToast(R.string.admin_password_disabled);
+                ToastUtils.showShortToast(org.odk.collect.strings.R.string.admin_password_disabled);
             } else {
-                ToastUtils.showShortToast(R.string.admin_password_changed);
+                ToastUtils.showShortToast(org.odk.collect.strings.R.string.admin_password_changed);
             }
             editor.apply();
             dismiss();
         });
-        builder.setNegativeButton(getString(R.string.cancel), (dialog, which) -> dismiss());
+        builder.setNegativeButton(getString(org.odk.collect.strings.R.string.cancel), (dialog, which) -> dismiss());
         builder.setCancelable(false);
         AlertDialog alertDialog = builder.create();
         alertDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);

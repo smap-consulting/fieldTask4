@@ -97,8 +97,8 @@ public class PermissionsProvider {
 
             @Override
             public void denied() {
-                showAdditionalExplanation(activity, R.string.camera_runtime_permission_denied_title,
-                        R.string.camera_runtime_permission_denied_desc, R.drawable.ic_photo_camera, action);
+                showAdditionalExplanation(activity, org.odk.collect.strings.R.string.camera_runtime_permission_denied_title,
+                        org.odk.collect.strings.R.string.camera_runtime_permission_denied_desc, R.drawable.ic_photo_camera, action);
             }
         }, Manifest.permission.CAMERA);
     }
@@ -112,7 +112,7 @@ public class PermissionsProvider {
 
             @Override
             public void denied() {
-                showAdditionalExplanation(activity, R.string.location_runtime_permissions_denied_title,
+                showAdditionalExplanation(activity, org.odk.collect.strings.R.string.location_runtime_permissions_denied_title,
                         R.string.smap_location_runtime_permissions_denied_desc, R.drawable.ic_room_black_24dp, action);
             }
         }, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
@@ -127,8 +127,8 @@ public class PermissionsProvider {
 
             @Override
             public void denied() {
-                showAdditionalExplanation(activity, R.string.record_audio_runtime_permission_denied_title,
-                        R.string.record_audio_runtime_permission_denied_desc, R.drawable.ic_mic, action);
+                showAdditionalExplanation(activity, org.odk.collect.strings.R.string.record_audio_runtime_permission_denied_title,
+                        org.odk.collect.strings.R.string.record_audio_runtime_permission_denied_desc, R.drawable.ic_mic, action);
             }
         }, Manifest.permission.RECORD_AUDIO);
     }
@@ -142,8 +142,8 @@ public class PermissionsProvider {
 
             @Override
             public void denied() {
-                showAdditionalExplanation(activity, R.string.camera_runtime_permission_denied_title,
-                        R.string.camera_runtime_permission_denied_desc, R.drawable.ic_photo_camera, action);
+                showAdditionalExplanation(activity, org.odk.collect.strings.R.string.camera_runtime_permission_denied_title,
+                        org.odk.collect.strings.R.string.camera_runtime_permission_denied_desc, R.drawable.ic_photo_camera, action);
             }
         }, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO);
     }
@@ -157,8 +157,8 @@ public class PermissionsProvider {
 
             @Override
             public void denied() {
-                showAdditionalExplanation(activity, R.string.get_accounts_runtime_permission_denied_title,
-                        R.string.get_accounts_runtime_permission_denied_desc, R.drawable.ic_get_accounts, action);
+                showAdditionalExplanation(activity, org.odk.collect.strings.R.string.get_accounts_runtime_permission_denied_title,
+                        org.odk.collect.strings.R.string.get_accounts_runtime_permission_denied_desc, R.drawable.ic_get_accounts, action);
             }
         }, Manifest.permission.GET_ACCOUNTS);
     }
@@ -173,8 +173,8 @@ public class PermissionsProvider {
             @Override
             public void denied() {
                 if (displayPermissionDeniedDialog) {
-                    showAdditionalExplanation(activity, R.string.read_phone_state_runtime_permission_denied_title,
-                            R.string.read_phone_state_runtime_permission_denied_desc, R.drawable.ic_phone, action);
+                    showAdditionalExplanation(activity, org.odk.collect.strings.R.string.read_phone_state_runtime_permission_denied_title,
+                            org.odk.collect.strings.R.string.read_phone_state_runtime_permission_denied_desc, R.drawable.ic_phone, action);
                 } else {
                     action.denied();
                 }

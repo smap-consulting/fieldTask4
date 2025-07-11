@@ -198,7 +198,7 @@ public class AdminPreferencesFragment extends BasePreferenceFragment implements 
                 if (((CheckBoxPreference) preference).isChecked()) {
                     new MovingBackwardsDialog().show(getActivity().getSupportFragmentManager(), MOVING_BACKWARDS_DIALOG_TAG);
                 } else {
-                    SimpleDialog.newInstance(getActivity().getString(R.string.moving_backwards_enabled_title), 0, getActivity().getString(R.string.moving_backwards_enabled_message), getActivity().getString(R.string.ok), false).show(((AdminPreferencesActivity) getActivity()).getSupportFragmentManager(), SimpleDialog.COLLECT_DIALOG_TAG);
+                    SimpleDialog.newInstance(getActivity().getString(org.odk.collect.strings.R.string.moving_backwards_enabled_title), 0, getActivity().getString(org.odk.collect.strings.R.string.moving_backwards_enabled_message), getActivity().getString(org.odk.collect.strings.R.string.ok), false).show(((AdminPreferencesActivity) getActivity()).getSupportFragmentManager(), SimpleDialog.COLLECT_DIALOG_TAG);
                     onMovingBackwardsEnabled();
                 }
                 return true;

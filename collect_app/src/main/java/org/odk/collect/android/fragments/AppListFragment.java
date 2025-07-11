@@ -96,9 +96,9 @@ abstract class AppListFragment extends ListFragment {
     // Function to toggle button label
     public static void toggleButtonLabel(Button toggleButton, ListView lv) {
         if (lv.getCheckedItemCount() != lv.getCount()) {
-            toggleButton.setText(R.string.select_all);
+            toggleButton.setText(org.odk.collect.strings.R.string.select_all);
         } else {
-            toggleButton.setText(R.string.clear_all);
+            toggleButton.setText(org.odk.collect.strings.R.string.clear_all);
         }
     }
 
@@ -122,7 +122,7 @@ abstract class AppListFragment extends ListFragment {
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         EditText searchEditText = searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         searchEditText.setTextColor(new ThemeUtils(getContext()).getColorOnPrimary());
-        searchView.setQueryHint(getResources().getString(R.string.search));
+        searchView.setQueryHint(getResources().getString(org.odk.collect.strings.R.string.search));
         searchView.setMaxWidth(Integer.MAX_VALUE);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

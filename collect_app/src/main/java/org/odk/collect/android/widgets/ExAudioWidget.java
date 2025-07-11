@@ -111,7 +111,7 @@ public class ExAudioWidget extends QuestionWidget implements FileWidget, WidgetD
             }
         } else if (object != null) {
             if (object instanceof File) {
-                ToastUtils.showLongToast(R.string.invalid_file_type);
+                ToastUtils.showLongToast(org.odk.collect.strings.R.string.invalid_file_type);
                 mediaUtils.deleteMediaFile(((File) object).getAbsolutePath());
                 Timber.e("ExAudioWidget's setBinaryData must receive a audio file but received: %s", ContentResolverHelper.getMimeType((File) object));
             } else {
@@ -176,10 +176,10 @@ public class ExAudioWidget extends QuestionWidget implements FileWidget, WidgetD
                 @Override
                 public void onRemoveClicked() {
                     new MaterialAlertDialogBuilder(getContext())
-                            .setTitle(R.string.delete_answer_file_question)
-                            .setMessage(R.string.answer_file_delete_warning)
-                            .setPositiveButton(R.string.delete_answer_file, (dialog, which) -> clearAnswer())
-                            .setNegativeButton(R.string.cancel, null)
+                            .setTitle(org.odk.collect.strings.R.string.delete_answer_file_question)
+                            .setMessage(org.odk.collect.strings.R.string.answer_file_delete_warning)
+                            .setPositiveButton(org.odk.collect.strings.R.string.delete_answer_file, (dialog, which) -> clearAnswer())
+                            .setNegativeButton(org.odk.collect.strings.R.string.cancel, null)
                             .show();
                 }
             });
@@ -209,7 +209,7 @@ public class ExAudioWidget extends QuestionWidget implements FileWidget, WidgetD
             ((Activity) getContext()).startActivityForResult(intent, ApplicationConstants.RequestCodes.EX_AUDIO_CHOOSER);
         } catch (SecurityException e) {
             Timber.i(e);
-            ToastUtils.showLongToast(R.string.not_granted_permission);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.not_granted_permission);
         }
     }
 

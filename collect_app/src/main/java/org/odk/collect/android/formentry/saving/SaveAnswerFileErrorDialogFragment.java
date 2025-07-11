@@ -36,9 +36,9 @@ public class SaveAnswerFileErrorDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         return new MaterialAlertDialogBuilder(requireContext())
-                .setTitle(R.string.error_occured)
-                .setMessage(getString(R.string.answer_file_copy_failed_message, formSaveViewModel.getAnswerFileError().getValue()))
-                .setPositiveButton(R.string.ok, null)
+                .setTitle(org.odk.collect.strings.R.string.error_occured)
+                .setMessage(getString(org.odk.collect.strings.R.string.answer_file_copy_failed_message, formSaveViewModel.getAnswerFileError().getValue()))
+                .setPositiveButton(org.odk.collect.strings.R.string.ok, null)
                 .create();
     }
 

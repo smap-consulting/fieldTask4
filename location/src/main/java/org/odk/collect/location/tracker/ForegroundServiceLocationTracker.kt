@@ -96,7 +96,7 @@ class LocationTrackerService : Service() {
 
     private fun createNotification(): Notification {
         val notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL)
-            .setContentTitle(getLocalizedString(R.string.location_tracking_notification_title))
+            .setContentTitle(getLocalizedString(org.odk.collect.strings.R.string.location_tracking_notification_title))
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .setContentIntent(createNotificationIntent())
 
@@ -114,7 +114,7 @@ class LocationTrackerService : Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 NOTIFICATION_CHANNEL,
-                getLocalizedString(R.string.location_tracking_notification_channel_name),
+                getLocalizedString(org.odk.collect.strings.R.string.location_tracking_notification_channel_name),
                 NotificationManager.IMPORTANCE_LOW
             )
 

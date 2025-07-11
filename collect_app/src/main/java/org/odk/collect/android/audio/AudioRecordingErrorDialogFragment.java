@@ -34,13 +34,13 @@ public class AudioRecordingErrorDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         MaterialAlertDialogBuilder dialogBuilder = new MaterialAlertDialogBuilder(requireContext())
-                .setPositiveButton(R.string.ok, null);
+                .setPositiveButton(org.odk.collect.strings.R.string.ok, null);
 
         RecordingSession session = audioRecorder.getCurrentSession().getValue();
         if (session != null && session.getFailedToStart() instanceof MicInUseException) {
-            dialogBuilder.setMessage(R.string.mic_in_use);
+            dialogBuilder.setMessage(org.odk.collect.strings.R.string.mic_in_use);
         } else {
-            dialogBuilder.setMessage(R.string.start_recording_failed);
+            dialogBuilder.setMessage(org.odk.collect.strings.R.string.start_recording_failed);
         }
 
         return dialogBuilder.create();

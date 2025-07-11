@@ -70,7 +70,7 @@ public class AboutActivity extends CollectAbstractActivity implements
 
         int[][] items = {
                 {R.drawable.ic_website, R.string.smap_visit_website, -1},                   // smap
-                {R.drawable.ic_review_rate, R.string.leave_a_review, -1},
+                {R.drawable.ic_review_rate, org.odk.collect.strings.R.string.leave_a_review, -1},
                 //{R.drawable.ic_forum, R.string.odk_forum, R.string.odk_forum_summary},    // smap
                 //{R.drawable.ic_share, R.string.tell_your_friends, -1},                    // smap
                 //{R.drawable.ic_stars, R.string.all_open_source_licenses, -1}              // smap
@@ -98,11 +98,11 @@ public class AboutActivity extends CollectAbstractActivity implements
 
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
-        setTitle(getString(R.string.about_preferences) +
+        setTitle(getString(org.odk.collect.strings.R.string.about_preferences) +
                 " " +           // smap add version
-                getString(R.string.version) +
+                getString(org.odk.collect.strings.R.string.version) +
                 " " +
-                getString(R.string.app_version));
+                getString(org.odk.collect.strings.R.string.app_version));
         setSupportActionBar(toolbar);
     }
 
@@ -145,7 +145,7 @@ public class AboutActivity extends CollectAbstractActivity implements
                         }
                     } catch (android.content.ActivityNotFoundException anfe) {
                         Toast.makeText(Collect.getInstance(),
-                                getString(R.string.activity_not_found, "market view"),
+                                getString(org.odk.collect.strings.R.string.activity_not_found, "market view"),
                                 Toast.LENGTH_SHORT).show();
                         Timber.d(anfe);
                     }

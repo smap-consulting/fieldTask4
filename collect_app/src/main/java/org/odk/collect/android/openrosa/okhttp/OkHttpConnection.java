@@ -421,7 +421,7 @@ public class OkHttpConnection implements OpenRosaHttpInterface {
             String errMsg = response.message() +  " : " + String.valueOf(statusCode) +  " : " + physicalUri.toString();
             //String errMsg = Collect
             //        .getInstance()
-            //        .getString(R.string.file_fetch_failed, uri.toString(), response.message(), String.valueOf(statusCode));
+            //        .getString(org.odk.collect.strings.R.string.file_fetch_failed, uri.toString(), response.message(), String.valueOf(statusCode));
 
             Timber.e(errMsg);
             throw new Exception(errMsg);    // smap

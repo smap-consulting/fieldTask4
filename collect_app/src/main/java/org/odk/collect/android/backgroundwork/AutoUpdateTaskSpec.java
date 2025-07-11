@@ -84,9 +84,9 @@ public class AutoUpdateTaskSpec implements TaskSpec {
                                 for (ServerFormDetails serverFormDetails : updatedForms) {
                                     try {
                                         formDownloader.downloadForm(serverFormDetails, null, null);
-                                        results.put(serverFormDetails, TranslationHandler.getString(context, R.string.success));
+                                        results.put(serverFormDetails, TranslationHandler.getString(context, org.odk.collect.strings.R.string.success));
                                     } catch (FormDownloadException e) {
-                                        results.put(serverFormDetails, TranslationHandler.getString(context, R.string.failure));
+                                        results.put(serverFormDetails, TranslationHandler.getString(context, org.odk.collect.strings.R.string.failure));
                                     } catch (InterruptedException e) {
                                         break;
                                     }

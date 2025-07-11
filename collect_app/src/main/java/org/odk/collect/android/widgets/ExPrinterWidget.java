@@ -128,7 +128,7 @@ public class ExPrinterWidget extends QuestionWidget implements WidgetDataReceive
         this.waitingForDataRegistry = waitingForDataRegistry;
 
         String v = getFormEntryPrompt().getSpecialFormQuestionText("buttonText");
-        String buttonText = (v != null) ? v : context.getString(R.string.launch_printer);
+        String buttonText = (v != null) ? v : context.getString(org.odk.collect.strings.R.string.launch_printer);
         launchIntentButton = createSimpleButton(getContext(), getFormEntryPrompt().isReadOnly(), buttonText, getAnswerFontSize(), this);
 
         // finish complex layout
@@ -228,7 +228,7 @@ public class ExPrinterWidget extends QuestionWidget implements WidgetDataReceive
                 ? "org.opendatakit.sensors.ZebraPrinter" : attrs[1];
         final String errorString;
         String v = getFormEntryPrompt().getSpecialFormQuestionText("noPrinterErrorString");
-        errorString = (v != null) ? v : getContext().getString(R.string.no_printer);
+        errorString = (v != null) ? v : getContext().getString(org.odk.collect.strings.R.string.no_printer);
         try {
             waitingForDataRegistry.waitForData(getFormEntryPrompt().getIndex());
             firePrintingActivity(intentName);

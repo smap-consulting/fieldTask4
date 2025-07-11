@@ -76,13 +76,13 @@ public class TimeWidget extends QuestionWidget implements WidgetDataReceiver {
     @Override
     public void clearAnswer() {
         selectedTime = DateTimeUtils.getCurrentDateTime();
-        binding.timeAnswerText.setText(R.string.no_time_selected);
+        binding.timeAnswerText.setText(org.odk.collect.strings.R.string.no_time_selected);
         widgetValueChanged();
     }
 
     @Override
     public IAnswerData getAnswer() {
-        return binding.timeAnswerText.getText().equals(getContext().getString(R.string.no_time_selected))
+        return binding.timeAnswerText.getText().equals(getContext().getString(org.odk.collect.strings.R.string.no_time_selected))
                 ? null
                 : new TimeData(selectedTime.toDateTime().toDate());
     }

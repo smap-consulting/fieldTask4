@@ -157,8 +157,8 @@ public class SavedFormListFragment extends InstanceListFragment
      */
     private void createDeleteInstancesDialog() {
         alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle(getString(R.string.delete_file));
-        alertDialog.setMessage(getString(R.string.delete_confirm,
+        alertDialog.setTitle(getString(org.odk.collect.strings.R.string.delete_file));
+        alertDialog.setMessage(getString(org.odk.collect.strings.R.string.delete_confirm,
                 String.valueOf(getCheckedCount())));
         DialogInterface.OnClickListener dialogYesNoListener =
                 (dialog, i) -> {
@@ -170,16 +170,16 @@ public class SavedFormListFragment extends InstanceListFragment
                     }
                 };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_yes),
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.delete_yes),
                 dialogYesNoListener);
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.delete_no),
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(org.odk.collect.strings.R.string.delete_no),
                 dialogYesNoListener);
         alertDialog.show();
     }
 
     @Override
     public void progressUpdate(int progress, int total) {
-        String message = String.format(getResources().getString(R.string.deleting_form_dialog_update_message), progress, total);
+        String message = String.format(getResources().getString(org.odk.collect.strings.R.string.deleting_form_dialog_update_message), progress, total);
         progressDialog.setMessage(message);
     }
 
@@ -190,7 +190,7 @@ public class SavedFormListFragment extends InstanceListFragment
     private void deleteSelectedInstances() {
         if (deleteInstancesTask == null) {
             progressDialog = new ProgressDialog(getContext());
-            progressDialog.setMessage(getResources().getString(R.string.form_delete_message));
+            progressDialog.setMessage(getResources().getString(org.odk.collect.strings.R.string.form_delete_message));
             progressDialog.setIndeterminate(true);
             progressDialog.setCancelable(false);
             progressDialog.show();
@@ -199,7 +199,7 @@ public class SavedFormListFragment extends InstanceListFragment
             deleteInstancesTask.setDeleteListener(this);
             deleteInstancesTask.execute(getCheckedIdObjects());
         } else {
-            ToastUtils.showLongToast(R.string.file_delete_in_progress);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.file_delete_in_progress);
         }
     }
 
@@ -215,11 +215,11 @@ public class SavedFormListFragment extends InstanceListFragment
 
         if (deletedInstances == toDeleteCount) {
             // all deletes were successful
-            ToastUtils.showShortToast(getString(R.string.file_deleted_ok, String.valueOf(deletedInstances)));
+            ToastUtils.showShortToast(getString(org.odk.collect.strings.R.string.file_deleted_ok, String.valueOf(deletedInstances)));
         } else {
             // had some failures
             Timber.e("Failed to delete %d instances", toDeleteCount - deletedInstances);
-            ToastUtils.showLongToast(getString(R.string.file_deleted_error,
+            ToastUtils.showLongToast(getString(org.odk.collect.strings.R.string.file_deleted_error,
                     String.valueOf(toDeleteCount - deletedInstances),
                     String.valueOf(toDeleteCount)));
         }
@@ -242,7 +242,7 @@ public class SavedFormListFragment extends InstanceListFragment
                 if (checkedItemCount > 0) {
                     createDeleteInstancesDialog();
                 } else {
-                    ToastUtils.showShortToast(R.string.noselect_error);
+                    ToastUtils.showShortToast(org.odk.collect.strings.R.string.noselect_error);
                 }
                 break;
 

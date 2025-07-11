@@ -47,7 +47,7 @@ public abstract class FileManagerFragment extends AppListFragment implements Loa
                              @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.file_manager_list, container, false);
         deleteButton = rootView.findViewById(R.id.delete_button);
-        deleteButton.setText(getString(R.string.delete_file));
+        deleteButton.setText(getString(org.odk.collect.strings.R.string.delete_file));
         toggleButton = rootView.findViewById(R.id.toggle_button);
         llParent = rootView.findViewById(R.id.llParent);
         progressBar = getActivity().findViewById(R.id.progressBar);
@@ -63,8 +63,8 @@ public abstract class FileManagerFragment extends AppListFragment implements Loa
         deleteButton.setEnabled(false);
 
         sortingOptions = new int[]{
-                R.string.sort_by_name_asc, R.string.sort_by_name_desc,
-                R.string.sort_by_date_asc, R.string.sort_by_date_desc
+                org.odk.collect.strings.R.string.sort_by_name_asc, org.odk.collect.strings.R.string.sort_by_name_desc,
+                org.odk.collect.strings.R.string.sort_by_date_asc, org.odk.collect.strings.R.string.sort_by_date_desc
         };
         getLoaderManager().initLoader(LOADER_ID, null, this);
         super.onViewCreated(view, savedInstanceState);

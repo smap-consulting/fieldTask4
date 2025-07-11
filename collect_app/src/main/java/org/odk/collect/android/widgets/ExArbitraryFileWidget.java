@@ -98,7 +98,7 @@ public class ExArbitraryFileWidget extends BaseArbitraryFileWidget {
             ((Activity) getContext()).startActivityForResult(intent, ApplicationConstants.RequestCodes.EX_ARBITRARY_FILE_CHOOSER);
         } catch (SecurityException e) {
             Timber.i(e);
-            ToastUtils.showLongToast(R.string.not_granted_permission);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.not_granted_permission);
         }
     }
 }

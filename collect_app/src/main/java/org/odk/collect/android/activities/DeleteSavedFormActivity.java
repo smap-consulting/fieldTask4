@@ -44,7 +44,7 @@ public class DeleteSavedFormActivity extends CollectAbstractActivity {
         viewModel = new ViewModelProvider(this, viewModelFactory).get(BlankFormsListViewModel.class);
 
         setContentView(R.layout.tabs_layout);
-        initToolbar(getString(R.string.manage_files));
+        initToolbar(getString(org.odk.collect.strings.R.string.manage_files));
         setUpViewPager();
     }
 
@@ -56,7 +56,7 @@ public class DeleteSavedFormActivity extends CollectAbstractActivity {
     }
 
     private void setUpViewPager() {
-        String[] tabNames = {getString(R.string.data), getString(R.string.forms)};
+        String[] tabNames = {getString(org.odk.collect.strings.R.string.data), getString(org.odk.collect.strings.R.string.forms)};
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);
         viewPager.setAdapter(new DeleteFormsTabsAdapter(this, viewModel.isMatchExactlyEnabled()));

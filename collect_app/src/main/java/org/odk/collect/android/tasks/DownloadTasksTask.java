@@ -348,7 +348,7 @@ public class DownloadTasksTask extends AsyncTask<Void, String, HashMap<String, S
                 headers.put("devicetime", String.valueOf(System.currentTimeMillis()));
                 headers.put("deviceid", new PropertyManager(Collect.getInstance().getApplicationContext())
                         .getSingularProperty(PropertyManager.PROPMGR_DEVICE_ID));
-                headers.put("appversion", Collect.getInstance().getString(R.string.app_version));
+                headers.put("appversion", Collect.getInstance().getString(org.odk.collect.strings.R.string.app_version));
 
                 URI uri = URI.create(taskURL);
                 String resp = httpInterface.getRequest(uri, "application/json", webCredentialsUtils.getCredentials(uri), headers);

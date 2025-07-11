@@ -222,10 +222,10 @@ public class AudioWidget extends QuestionWidget implements FileWidget, WidgetDat
                 @Override
                 public void onRemoveClicked() {
                     new MaterialAlertDialogBuilder(getContext())
-                            .setTitle(R.string.delete_answer_file_question)
-                            .setMessage(R.string.answer_file_delete_warning)
-                            .setPositiveButton(R.string.delete_answer_file, (dialog, which) -> clearAnswer())
-                            .setNegativeButton(R.string.cancel, null)
+                            .setTitle(org.odk.collect.strings.R.string.delete_answer_file_question)
+                            .setMessage(org.odk.collect.strings.R.string.answer_file_delete_warning)
+                            .setPositiveButton(org.odk.collect.strings.R.string.delete_answer_file, (dialog, which) -> clearAnswer())
+                            .setNegativeButton(org.odk.collect.strings.R.string.cancel, null)
                             .show();
                 }
             });

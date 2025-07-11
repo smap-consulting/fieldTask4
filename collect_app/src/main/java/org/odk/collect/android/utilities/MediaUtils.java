@@ -58,7 +58,7 @@ public class MediaUtils {
         try {
             context.startActivity(intent);
         } catch(Exception e) {
-            String message = context.getString(R.string.activity_not_found, context.getString(R.string.open_file));
+            String message = context.getString(org.odk.collect.strings.R.string.activity_not_found, context.getString(org.odk.collect.strings.R.string.open_file));
             ToastUtils.showLongToast(message);
             Timber.w(message);
         }

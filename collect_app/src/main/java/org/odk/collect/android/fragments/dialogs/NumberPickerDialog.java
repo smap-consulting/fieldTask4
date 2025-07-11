@@ -76,15 +76,15 @@ public class NumberPickerDialog extends DialogFragment {
         numberPicker.setValue(((String[]) getArguments().getSerializable(DISPLAYED_VALUES)).length - 1 - getArguments().getInt(PROGRESS));
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.number_picker_title)
+                .setTitle(org.odk.collect.strings.R.string.number_picker_title)
                 .setView(view)
-                .setPositiveButton(R.string.ok,
+                .setPositiveButton(org.odk.collect.strings.R.string.ok,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 listener.onNumberPickerValueSelected(getArguments().getInt(WIDGET_ID), numberPicker.getValue());
                             }
                         })
-                .setNegativeButton(R.string.cancel,
+                .setNegativeButton(org.odk.collect.strings.R.string.cancel,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
                             }

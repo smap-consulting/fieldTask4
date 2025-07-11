@@ -89,13 +89,13 @@ class QRCodeViewModel extends ViewModel {
 
                     if (serverPasswordSet || adminPasswordSet) {
                         if (serverPasswordSet && includedKeys.contains(KEY_PASSWORD) && adminPasswordSet && includedKeys.contains(KEY_ADMIN_PW)) {
-                            warning.setValue(R.string.qrcode_with_both_passwords);
+                            warning.setValue(org.odk.collect.strings.R.string.qrcode_with_both_passwords);
                         } else if (serverPasswordSet && includedKeys.contains(KEY_PASSWORD)) {
-                            warning.setValue(R.string.qrcode_with_server_password);
+                            warning.setValue(org.odk.collect.strings.R.string.qrcode_with_server_password);
                         } else if (adminPasswordSet && includedKeys.contains(KEY_ADMIN_PW)) {
-                            warning.setValue(R.string.qrcode_with_admin_password);
+                            warning.setValue(org.odk.collect.strings.R.string.qrcode_with_admin_password);
                         } else {
-                            warning.setValue(R.string.qrcode_without_passwords);
+                            warning.setValue(org.odk.collect.strings.R.string.qrcode_without_passwords);
                         }
                     } else {
                         warning.setValue(null);

@@ -72,21 +72,21 @@ public class InstanceChooserList extends InstanceListActivity implements
         String formMode = getIntent().getStringExtra(ApplicationConstants.BundleKeys.FORM_MODE);
         if (formMode == null || ApplicationConstants.FormModes.EDIT_SAVED.equalsIgnoreCase(formMode)) {
 
-            setTitle(getString(R.string.review_data));
+            setTitle(getString(org.odk.collect.strings.R.string.review_data));
             editMode = true;
             sortingOptions = new int[] {
-                    R.string.sort_by_name_asc, R.string.sort_by_name_desc,
-                    R.string.sort_by_date_asc, R.string.sort_by_date_desc,
-                    R.string.sort_by_status_asc, R.string.sort_by_status_desc
+                    org.odk.collect.strings.R.string.sort_by_name_asc, org.odk.collect.strings.R.string.sort_by_name_desc,
+                    org.odk.collect.strings.R.string.sort_by_date_asc, org.odk.collect.strings.R.string.sort_by_date_desc,
+                    org.odk.collect.strings.R.string.sort_by_status_asc, org.odk.collect.strings.R.string.sort_by_status_desc
             };
         } else {
-            setTitle(getString(R.string.view_sent_forms));
+            setTitle(getString(org.odk.collect.strings.R.string.view_sent_forms));
 
             sortingOptions = new int[] {
-                    R.string.sort_by_name_asc, R.string.sort_by_name_desc,
-                    R.string.sort_by_date_asc, R.string.sort_by_date_desc
+                    org.odk.collect.strings.R.string.sort_by_name_asc, org.odk.collect.strings.R.string.sort_by_name_desc,
+                    org.odk.collect.strings.R.string.sort_by_date_asc, org.odk.collect.strings.R.string.sort_by_date_desc
             };
-            ((TextView) findViewById(android.R.id.empty)).setText(R.string.no_items_display_sent_forms);
+            ((TextView) findViewById(android.R.id.empty)).setText(org.odk.collect.strings.R.string.no_items_display_sent_forms);
         }
 
         permissionsProvider.requestStoragePermissions(this, new PermissionListener() {
@@ -145,7 +145,7 @@ public class InstanceChooserList extends InstanceListActivity implements
                     boolean canEdit = status.equals(Instance.STATUS_INCOMPLETE)
                             || Boolean.parseBoolean(strCanEditWhenComplete);
                     if (!canEdit) {
-                        createErrorDialog(getString(R.string.cannot_edit_completed_form),
+                        createErrorDialog(getString(org.odk.collect.strings.R.string.cannot_edit_completed_form),
                                 DO_NOT_EXIT);
                         return;
                     }
@@ -253,7 +253,7 @@ public class InstanceChooserList extends InstanceListActivity implements
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.ok), errorListener);
         alertDialog.show();
     }
 }

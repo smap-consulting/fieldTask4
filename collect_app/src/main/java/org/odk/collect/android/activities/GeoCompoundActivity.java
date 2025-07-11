@@ -160,7 +160,7 @@ public class GeoCompoundActivity extends BaseGeoMapActivity implements SettingsD
         intentReadOnly = getIntent().getBooleanExtra(READ_ONLY, false);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setTitle(getString(R.string.geocompound_title));
+        setTitle(getString(org.odk.collect.strings.R.string.geocompound_title));
         setContentView(R.layout.geopoly_layout);
 
         Context context = getApplicationContext();
@@ -321,7 +321,7 @@ public class GeoCompoundActivity extends BaseGeoMapActivity implements SettingsD
 
         String result = "";     // Default result if there are no points
         if (map.getPolyPoints(featureId).size() == 1) {
-            ToastUtils.showShortToastInMiddle(getString(R.string.polyline_validator));
+            ToastUtils.showShortToastInMiddle(getString(org.odk.collect.strings.R.string.polyline_validator));
             return;     // do not finish
         } else if (map.getPolyPoints(featureId).size() > 1) {
             List<MapPoint> points = map.getPolyPoints(featureId);
@@ -549,10 +549,10 @@ public class GeoCompoundActivity extends BaseGeoMapActivity implements SettingsD
         int minutes = seconds / 60;
         int meters = ACCURACY_THRESHOLD_OPTIONS[accuracyThresholdIndex];
         locationStatus.setText(
-            location == null ? getString(R.string.location_status_searching)
-                : !usingThreshold ? getString(R.string.location_status_accuracy, location.sd)
-                : acceptable ? getString(R.string.location_status_acceptable, location.sd)
-                : getString(R.string.location_status_unacceptable, location.sd)
+            location == null ? getString(org.odk.collect.strings.R.string.location_status_searching)
+                : !usingThreshold ? getString(org.odk.collect.strings.R.string.location_status_accuracy, location.sd)
+                : acceptable ? getString(org.odk.collect.strings.R.string.location_status_acceptable, location.sd)
+                : getString(org.odk.collect.strings.R.string.location_status_unacceptable, location.sd)
         );
         locationStatus.setBackgroundColor(getResources().getColor(
             location == null ? R.color.locationStatusSearching
@@ -560,18 +560,18 @@ public class GeoCompoundActivity extends BaseGeoMapActivity implements SettingsD
                 : R.color.locationStatusUnacceptable
         ));
         collectionStatus.setText(
-            !inputActive ? getString(R.string.collection_status_paused, numPoints)
-                : !recordingEnabled ? getString(R.string.collection_status_placement, numPoints)
-                : !recordingAutomatic ? getString(R.string.collection_status_manual, numPoints)
+            !inputActive ? getString(org.odk.collect.strings.R.string.collection_status_paused, numPoints)
+                : !recordingEnabled ? getString(org.odk.collect.strings.R.string.collection_status_placement, numPoints)
+                : !recordingAutomatic ? getString(org.odk.collect.strings.R.string.collection_status_manual, numPoints)
                 : !usingThreshold ? (
                     minutes > 0 ?
-                        getString(R.string.collection_status_auto_minutes, numPoints, minutes) :
-                        getString(R.string.collection_status_auto_seconds, numPoints, seconds)
+                        getString(org.odk.collect.strings.R.string.collection_status_auto_minutes, numPoints, minutes) :
+                        getString(org.odk.collect.strings.R.string.collection_status_auto_seconds, numPoints, seconds)
                 )
                 : (
                     minutes > 0 ?
-                        getString(R.string.collection_status_auto_minutes_accuracy, numPoints, minutes, meters) :
-                        getString(R.string.collection_status_auto_seconds_accuracy, numPoints, seconds, meters)
+                        getString(org.odk.collect.strings.R.string.collection_status_auto_minutes_accuracy, numPoints, minutes, meters) :
+                        getString(org.odk.collect.strings.R.string.collection_status_auto_seconds_accuracy, numPoints, seconds, meters)
                 )
         );
     }
@@ -579,18 +579,18 @@ public class GeoCompoundActivity extends BaseGeoMapActivity implements SettingsD
     private void showClearDialog() {
         if (!map.getPolyPoints(featureId).isEmpty()) {
             new AlertDialog.Builder(this)
-                .setMessage(R.string.geo_clear_warning)
-                .setPositiveButton(R.string.clear, (dialog, id) -> clear())
-                .setNegativeButton(R.string.cancel, null)
+                .setMessage(org.odk.collect.strings.R.string.geo_clear_warning)
+                .setPositiveButton(org.odk.collect.strings.R.string.clear, (dialog, id) -> clear())
+                .setNegativeButton(org.odk.collect.strings.R.string.cancel, null)
                 .show();
         }
     }
 
     private void showBackDialog() {
         new AlertDialog.Builder(this)
-            .setMessage(getString(R.string.geo_exit_warning))
-            .setPositiveButton(R.string.discard, (dialog, id) -> finish())
-            .setNegativeButton(R.string.cancel, null)
+            .setMessage(getString(org.odk.collect.strings.R.string.geo_exit_warning))
+            .setPositiveButton(org.odk.collect.strings.R.string.discard, (dialog, id) -> finish())
+            .setNegativeButton(org.odk.collect.strings.R.string.cancel, null)
             .show();
 
     }

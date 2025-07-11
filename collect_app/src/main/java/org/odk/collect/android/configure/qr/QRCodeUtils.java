@@ -57,7 +57,7 @@ public class QRCodeUtils implements QRCodeDecoder {
 
         // Maximum capacity for QR Codes is 4,296 characters (Alphanumeric)
         if (compressedData.length() > 4000) {
-            throw new IOException(TranslationHandler.getString(Collect.getInstance(), R.string.encoding_max_limit));
+            throw new IOException(TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.encoding_max_limit));
         }
 
         Map<EncodeHintType, ErrorCorrectionLevel> hints = new HashMap<>();

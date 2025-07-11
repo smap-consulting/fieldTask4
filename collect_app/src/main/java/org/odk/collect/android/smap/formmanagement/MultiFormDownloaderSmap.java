@@ -95,13 +95,13 @@ public class MultiFormDownloaderSmap {
             try {
                 downloaded = processOneForm(total, count++, fd, stateListener);
                 if (downloaded) {
-                    result.put(fd, Collect.getInstance().getString(R.string.success));
+                    result.put(fd, Collect.getInstance().getString(org.odk.collect.strings.R.string.success));
                 }
             } catch (TaskCancelledException cd) {
                 break;
             } catch(Exception e) {
                 Timber.e(e);
-                result.put(fd, Collect.getInstance().getString(R.string.failure) + ": " + e.getMessage());
+                result.put(fd, Collect.getInstance().getString(org.odk.collect.strings.R.string.failure) + ": " + e.getMessage());
             }
         }
 
@@ -394,7 +394,7 @@ public class MultiFormDownloaderSmap {
             Timber.w("Copied %s over %s", tempFile.getAbsolutePath(), file.getAbsolutePath());
             FileUtils.deleteAndReport(tempFile);
         } else {
-            String msg = Collect.getInstance().getString(R.string.fs_file_copy_error,
+            String msg = Collect.getInstance().getString(org.odk.collect.strings.R.string.fs_file_copy_error,
                     tempFile.getAbsolutePath(), file.getAbsolutePath(), errorMessage);
             Timber.w(msg);
             throw new RuntimeException(msg);
@@ -514,7 +514,7 @@ public class MultiFormDownloaderSmap {
                     ++mediaCount;
                     if (stateListener != null) {
                         stateListener.progressUpdate(
-                                Collect.getInstance().getString(R.string.form_download_progress,
+                                Collect.getInstance().getString(org.odk.collect.strings.R.string.form_download_progress,
                                         fd.getFormName(),
                                         String.valueOf(mediaCount), String.valueOf(files.size())),
                                 String.valueOf(count), String.valueOf(total));

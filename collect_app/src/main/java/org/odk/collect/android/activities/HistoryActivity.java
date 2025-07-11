@@ -52,7 +52,7 @@ public class HistoryActivity extends SmapHistoryListActivity implements
 
         setTitle(getString(R.string.smap_history));       // smap change to history
 
-        ((TextView) findViewById(android.R.id.empty)).setText(R.string.no_items_display);
+        ((TextView) findViewById(android.R.id.empty)).setText(org.odk.collect.strings.R.string.no_items_display);
 
         init();
     }

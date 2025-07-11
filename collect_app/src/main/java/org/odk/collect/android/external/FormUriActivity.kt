@@ -42,8 +42,8 @@ class FormUriActivity : Activity() {
             )
         } else {
             AlertDialog.Builder(this)
-                .setMessage(R.string.wrong_project_selected_for_form)
-                .setPositiveButton(R.string.ok) { _, _ -> finish() }
+                .setMessage(org.odk.collect.strings.R.string.wrong_project_selected_for_form)
+                .setPositiveButton(org.odk.collect.strings.R.string.ok) { _, _ -> finish() }
                 .create()
                 .show()
         }

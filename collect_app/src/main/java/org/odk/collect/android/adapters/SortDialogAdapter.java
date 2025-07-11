@@ -66,8 +66,8 @@ public class SortDialogAdapter extends RecyclerView.Adapter<SortDialogAdapter.Vi
 
         Location location = Collect.getInstance().getLocation();
         if (location == null
-                && (sortTextId == R.string.sort_by_distance_asc
-                || sortTextId == R.string.sort_by_distance_desc)) {
+                && (sortTextId == org.odk.collect.strings.R.string.sort_by_distance_asc
+                || sortTextId == org.odk.collect.strings.R.string.sort_by_distance_desc)) {
             viewHolder.itemView.setEnabled(false);
 
             int disabledColor = ResourcesCompat.getColor(

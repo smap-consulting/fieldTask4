@@ -98,7 +98,7 @@ public class FormManagementPreferences extends BasePreferenceFragment {
         @Nullable CheckBoxPreference automaticDownload = findPreference(KEY_AUTOMATIC_UPDATE);
 
         if (Protocol.parse(getActivity(), sharedPrefs.getString(KEY_PROTOCOL, null)) == Protocol.GOOGLE) {
-            displayDisabled(findPreference(KEY_FORM_UPDATE_MODE), getString(R.string.manual));
+            displayDisabled(findPreference(KEY_FORM_UPDATE_MODE), getString(org.odk.collect.strings.R.string.manual));
             if (automaticDownload != null) {
                 displayDisabled(automaticDownload, false);
             }
@@ -166,7 +166,7 @@ public class FormManagementPreferences extends BasePreferenceFragment {
                         .get(KEY_PERIODIC_FORM_UPDATES_CHECK);
 
                 // Only enable automatic form updates if periodic updates are set
-                pref.setEnabled(!formUpdateCheckPeriod.equals(getString(R.string.never_value)));
+                pref.setEnabled(!formUpdateCheckPeriod.equals(getString(org.odk.collect.strings.R.string.never_value)));
 
                 pref.setOnPreferenceChangeListener((preference, newValue) -> {
                     analytics.logEvent(AUTO_FORM_UPDATE_PREF_CHANGE, "Automatic form updates", newValue + " " + formUpdateCheckPeriod);   // smap

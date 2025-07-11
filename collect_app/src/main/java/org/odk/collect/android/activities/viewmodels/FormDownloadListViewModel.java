@@ -92,7 +92,7 @@ public class FormDownloadListViewModel extends ViewModel {
     }
 
     public String getProgressDialogMsg() {
-        return progressDialogMsg == null ? TranslationHandler.getString(Collect.getInstance(), R.string.please_wait) : progressDialogMsg;
+        return progressDialogMsg == null ? TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.please_wait) : progressDialogMsg;
     }
 
     public void setProgressDialogMsg(String progressDialogMsg) {

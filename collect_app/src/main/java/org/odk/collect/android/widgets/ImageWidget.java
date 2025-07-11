@@ -77,9 +77,9 @@ public class ImageWidget extends BaseImageWidget implements ButtonClickListener 
         String appearance = getFormEntryPrompt().getAppearanceHint();
         selfie = Appearances.isFrontCameraAppearance(getFormEntryPrompt());
 
-        captureButton = createSimpleButton(getContext(), R.id.capture_image, questionDetails.isReadOnly(), getContext().getString(R.string.capture_image), getAnswerFontSize(), this);
+        captureButton = createSimpleButton(getContext(), R.id.capture_image, questionDetails.isReadOnly(), getContext().getString(org.odk.collect.strings.R.string.capture_image), getAnswerFontSize(), this);
 
-        chooseButton = createSimpleButton(getContext(), R.id.choose_image, questionDetails.isReadOnly(), getContext().getString(R.string.choose_image), getAnswerFontSize(), this);
+        chooseButton = createSimpleButton(getContext(), R.id.choose_image, questionDetails.isReadOnly(), getContext().getString(org.odk.collect.strings.R.string.choose_image), getAnswerFontSize(), this);
 
         answerLayout.addView(captureButton);
         answerLayout.addView(chooseButton);
@@ -91,7 +91,7 @@ public class ImageWidget extends BaseImageWidget implements ButtonClickListener 
         if (selfie) {
             if (!new CameraUtils().isFrontCameraAvailable()) {
                 captureButton.setEnabled(false);
-                errorTextView.setText(R.string.error_front_camera_unavailable);
+                errorTextView.setText(org.odk.collect.strings.R.string.error_front_camera_unavailable);
                 errorTextView.setVisibility(View.VISIBLE);
             }
         }
@@ -111,7 +111,7 @@ public class ImageWidget extends BaseImageWidget implements ButtonClickListener 
     public void clearAnswer() {
         super.clearAnswer();
         // reset buttons
-        captureButton.setText(getContext().getString(R.string.capture_image));
+        captureButton.setText(getContext().getString(org.odk.collect.strings.R.string.capture_image));
     }
 
     @Override
@@ -144,7 +144,7 @@ public class ImageWidget extends BaseImageWidget implements ButtonClickListener 
                 });
                 break;
             case R.id.choose_image:
-                imageCaptureHandler.chooseImage(R.string.choose_image);
+                imageCaptureHandler.chooseImage(org.odk.collect.strings.R.string.choose_image);
                 break;
         }
     }
@@ -186,7 +186,7 @@ public class ImageWidget extends BaseImageWidget implements ButtonClickListener 
             }
         }
 
-        imageCaptureHandler.captureImage(intent, RequestCodes.IMAGE_CAPTURE, R.string.capture_image);
+        imageCaptureHandler.captureImage(intent, RequestCodes.IMAGE_CAPTURE, org.odk.collect.strings.R.string.capture_image);
     }
 
 }

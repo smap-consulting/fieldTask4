@@ -160,7 +160,7 @@ public class NFCActivity extends Activity implements NFCListener {
         mNfcDialog.setMessage(getString(R.string.smap_swipe_nfc));
         //mLocationDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.accept_location),
         //    geopointButtonListener);
-        mNfcDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.cancel_location),
+        mNfcDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(org.odk.collect.strings.R.string.cancel_location),
                 nfcButtonListener);
     }
 

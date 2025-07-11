@@ -29,12 +29,12 @@ class SplashClickListener implements Preference.OnPreferenceClickListener {
         CharSequence cs = splashPathPreference.getSummary();
         if (cs != null && cs.toString().contains("/")) {
 
-            final CharSequence[] items = {preferencesFragment.getString(R.string.select_another_image),
-                    preferencesFragment.getString(R.string.use_odk_default)};
+            final CharSequence[] items = {preferencesFragment.getString(org.odk.collect.strings.R.string.select_another_image),
+                    preferencesFragment.getString(org.odk.collect.strings.R.string.use_odk_default)};
 
             AlertDialog.Builder builder = new AlertDialog.Builder(preferencesFragment.getActivity());
-            builder.setTitle(preferencesFragment.getString(R.string.change_splash_path));
-            builder.setNeutralButton(preferencesFragment.getString(R.string.cancel),
+            builder.setTitle(preferencesFragment.getString(org.odk.collect.strings.R.string.change_splash_path));
+            builder.setNeutralButton(preferencesFragment.getString(org.odk.collect.strings.R.string.cancel),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
@@ -44,10 +44,10 @@ class SplashClickListener implements Preference.OnPreferenceClickListener {
             builder.setItems(items, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int item) {
-                    if (items[item].equals(preferencesFragment.getString(R.string.select_another_image))) {
+                    if (items[item].equals(preferencesFragment.getString(org.odk.collect.strings.R.string.select_another_image))) {
                         launchImageChooser();
                     } else {
-                        preferencesFragment.setSplashPath(preferencesFragment.getString(R.string.default_splash_path));
+                        preferencesFragment.setSplashPath(preferencesFragment.getString(org.odk.collect.strings.R.string.default_splash_path));
                     }
                 }
             });

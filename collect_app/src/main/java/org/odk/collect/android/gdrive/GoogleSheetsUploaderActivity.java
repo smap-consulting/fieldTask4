@@ -104,9 +104,9 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
         // 1) Google Sheets is selected in preferences
         // 2) A google user is selected
 
-        alertMsg = getString(R.string.please_wait);
+        alertMsg = getString(org.odk.collect.strings.R.string.please_wait);
 
-        setTitle(getString(R.string.send_data));
+        setTitle(getString(org.odk.collect.strings.R.string.send_data));
 
         // get any simple saved state...
         // resets alert message and showing dialog if the screen is rotated
@@ -278,7 +278,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
 
     @Override
     public void progressUpdate(int progress, int total) {
-        alertMsg = getString(R.string.sending_items, String.valueOf(progress), String.valueOf(total));
+        alertMsg = getString(org.odk.collect.strings.R.string.sending_items, String.valueOf(progress), String.valueOf(total));
         GoogleSheetsUploaderProgressDialog progressDialog = getProgressDialog();
         if (progressDialog != null) {
             progressDialog.setMessage(alertMsg);
@@ -290,9 +290,9 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
         if (id == GOOGLE_USER_DIALOG) {
             AlertDialog.Builder gudBuilder = new AlertDialog.Builder(this);
 
-            gudBuilder.setTitle(getString(R.string.no_google_account));
-            gudBuilder.setMessage(getString(R.string.google_set_account));
-            gudBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            gudBuilder.setTitle(getString(org.odk.collect.strings.R.string.no_google_account));
+            gudBuilder.setMessage(getString(org.odk.collect.strings.R.string.google_set_account));
+            gudBuilder.setPositiveButton(org.odk.collect.strings.R.string.ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     finish();
@@ -306,7 +306,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
 
     private void createAlertDialog(String message) {
         alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle(getString(R.string.upload_results));
+        alertDialog.setTitle(getString(org.odk.collect.strings.R.string.upload_results));
         alertDialog.setMessage(message);
         DialogInterface.OnClickListener quitListener = (dialog, i) -> {
             if (i == DialogInterface.BUTTON1) { // ok
@@ -316,7 +316,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), quitListener);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.ok), quitListener);
         alertShowing = true;
         alertMsg = message;
         DialogUtils.showDialog(alertDialog, this);
@@ -368,7 +368,7 @@ public class GoogleSheetsUploaderActivity extends CollectAbstractActivity implem
                 runOnUiThread(() -> startActivityForResult(e.getIntent(), REQUEST_AUTHORIZATION));
             } catch (IOException | GoogleAuthException e) {
                 // authorization failed
-                runOnUiThread(() -> createAlertDialog(getString(R.string.google_auth_io_exception_msg)));
+                runOnUiThread(() -> createAlertDialog(getString(org.odk.collect.strings.R.string.google_auth_io_exception_msg)));
             }
 
             return false;

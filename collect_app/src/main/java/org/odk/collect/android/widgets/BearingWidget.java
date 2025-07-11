@@ -68,7 +68,7 @@ public class BearingWidget extends QuestionWidget implements WidgetDataReceiver 
 
         String answerText = prompt.getAnswerText();
         if (answerText != null && !answerText.isEmpty()) {
-            binding.bearingButton.setText(getContext().getString(R.string.replace_bearing));
+            binding.bearingButton.setText(getContext().getString(org.odk.collect.strings.R.string.replace_bearing));
             binding.answerText.setText(answerText);
         }
 
@@ -78,7 +78,7 @@ public class BearingWidget extends QuestionWidget implements WidgetDataReceiver 
     @Override
     public void clearAnswer() {
         binding.answerText.setText(null);
-        binding.bearingButton.setText(getContext().getString(R.string.get_bearing));
+        binding.bearingButton.setText(getContext().getString(org.odk.collect.strings.R.string.get_bearing));
         widgetValueChanged();
     }
 
@@ -91,7 +91,7 @@ public class BearingWidget extends QuestionWidget implements WidgetDataReceiver 
     @Override
     public void setData(Object answer) {
         binding.answerText.setText((String) answer);
-        binding.bearingButton.setText(getContext().getString(R.string.replace_bearing));
+        binding.bearingButton.setText(getContext().getString(org.odk.collect.strings.R.string.replace_bearing));
         widgetValueChanged();
     }
 
@@ -120,7 +120,7 @@ public class BearingWidget extends QuestionWidget implements WidgetDataReceiver 
 
             waitingForDataRegistry.waitForData(getFormEntryPrompt().getIndex());
         } else {
-            ToastUtils.showLongToast(R.string.bearing_lack_of_sensors);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.bearing_lack_of_sensors);
 
             binding.bearingButton.setEnabled(false);
 

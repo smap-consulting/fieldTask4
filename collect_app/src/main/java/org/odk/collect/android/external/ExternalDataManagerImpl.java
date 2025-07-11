@@ -49,7 +49,7 @@ public class ExternalDataManagerImpl implements ExternalDataManager {
         ExternalSQLiteOpenHelper sqLiteOpenHelper = dbMap.get(dataSetName);
         if (sqLiteOpenHelper == null) {
             if (mediaFolder == null) {
-                String msg = TranslationHandler.getString(Collect.getInstance(), R.string.ext_not_initialized_error);
+                String msg = TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.ext_not_initialized_error);
                 Timber.e(msg);
                 if (required) {
                     throw new ExternalDataException(msg);

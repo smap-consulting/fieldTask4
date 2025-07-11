@@ -56,7 +56,7 @@ public class InstanceUploaderUtils {
         }
 
         if (message.length() == 0) {
-            message = new StringBuilder(context.getString(R.string.no_forms_uploaded));
+            message = new StringBuilder(context.getString(org.odk.collect.strings.R.string.no_forms_uploaded));
         }
 
         return message.toString().trim();
@@ -78,7 +78,7 @@ public class InstanceUploaderUtils {
 
     private static String localizeDefaultAggregateSuccessfulText(String text) {
         if (text != null && text.equals(DEFAULT_SUCCESSFUL_TEXT)) {
-            text = TranslationHandler.getString(Collect.getInstance(), R.string.success);
+            text = TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.success);
         }
         return text;
     }

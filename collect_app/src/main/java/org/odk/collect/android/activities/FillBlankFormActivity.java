@@ -85,7 +85,7 @@ public class FillBlankFormActivity extends FormListActivity implements
         setContentView(R.layout.form_chooser_list);
         DaggerUtils.getComponent(this).inject(this);
 
-        setTitle(getString(R.string.enter_data));
+        setTitle(getString(org.odk.collect.strings.R.string.enter_data));
 
         BlankFormsListViewModel blankFormsListViewModel = new ViewModelProvider(this, blankFormsListViewModelFactory).get(BlankFormsListViewModel.class);
         blankFormsListViewModel.isSyncing().observe(this, syncing -> {
@@ -169,8 +169,8 @@ public class FillBlankFormActivity extends FormListActivity implements
             diskSyncTask.execute((Void[]) null);
         }
         sortingOptions = new int[]{
-                R.string.sort_by_name_asc, R.string.sort_by_name_desc,
-                R.string.sort_by_date_asc, R.string.sort_by_date_desc,
+                org.odk.collect.strings.R.string.sort_by_name_asc, org.odk.collect.strings.R.string.sort_by_name_desc,
+                org.odk.collect.strings.R.string.sort_by_date_asc, org.odk.collect.strings.R.string.sort_by_date_desc,
         };
 
         setupAdapter();
@@ -307,7 +307,7 @@ public class FillBlankFormActivity extends FormListActivity implements
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.ok), errorListener);
         alertDialog.show();
     }
 

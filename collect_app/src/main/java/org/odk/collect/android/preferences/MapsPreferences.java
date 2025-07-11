@@ -114,7 +114,7 @@ public class MapsPreferences extends BasePreferenceFragment {
      */
     private void initBasemapSourcePref() {
         basemapSourcePref = PrefUtils.createListPref(
-            context, KEY_BASEMAP_SOURCE, getString(R.string.basemap_source),
+            context, KEY_BASEMAP_SOURCE, getString(org.odk.collect.strings.R.string.basemap_source),
             MapProvider.getLabelIds(), MapProvider.getIds()
         );
         basemapSourcePref.setIconSpaceReserved(false);
@@ -182,7 +182,7 @@ public class MapsPreferences extends BasePreferenceFragment {
         if (referenceLayerPref != null) {
             String summary;
             if (value == null) {
-                summary = getString(R.string.none);
+                summary = getString(org.odk.collect.strings.R.string.none);
             } else {
                 MapConfigurator cftor = MapProvider.getConfigurator();
                 summary = cftor.getDisplayName(new File(new StoragePathProvider().getAbsoluteOfflineMapLayerPath(value.toString())));
@@ -199,7 +199,7 @@ public class MapsPreferences extends BasePreferenceFragment {
         StoragePathProvider storagePathProvider = new StoragePathProvider();
 
         List<Item> items = new ArrayList<>();
-        items.add(new Item(null, getString(R.string.none), ""));
+        items.add(new Item(null, getString(org.odk.collect.strings.R.string.none), ""));
         for (File file : getSupportedLayerFiles(cftor)) {
             String path = FileUtils.simplifyScopedStoragePath(file.getPath());
             String value = storagePathProvider.getRelativeMapLayerPath(file.getAbsolutePath());
@@ -228,7 +228,7 @@ public class MapsPreferences extends BasePreferenceFragment {
 
         String layerDir = FileUtils.simplifyScopedStoragePath(storagePathProvider.getDirPath(StorageSubdirectory.LAYERS));
         referenceLayerPref.setDialogCaption(context.getString(
-            items.size() > 1 ? R.string.layer_data_caption : R.string.layer_data_caption_none,
+            items.size() > 1 ? org.odk.collect.strings.R.string.layer_data_caption : org.odk.collect.strings.R.string.layer_data_caption_none,
             layerDir, context.getString(MapProvider.getSourceLabelId())
         ));
 

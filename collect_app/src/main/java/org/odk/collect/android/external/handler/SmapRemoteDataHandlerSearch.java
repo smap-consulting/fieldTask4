@@ -123,7 +123,7 @@ public class SmapRemoteDataHandlerSearch implements IFunctionHandler {
             // we should never get here since it is already handled in ExternalDataUtil
             // .getSearchXPathExpression(String appearance)
             throw new ExternalDataException(
-                    Collect.getInstance().getString(R.string.ext_search_wrong_arguments_error));
+                    Collect.getInstance().getString(org.odk.collect.strings.R.string.ext_search_wrong_arguments_error));
         }
 
         String searchType = null;

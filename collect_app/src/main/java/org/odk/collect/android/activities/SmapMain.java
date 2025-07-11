@@ -271,9 +271,9 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
         LegacySettingsFileImporter legacySettingsFileImporter = new LegacySettingsFileImporter(storagePathProvider, null, settingsImporter);
         if (legacySettingsFileImporter.importFromFile()) {
             new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.successfully_imported_settings)
-                    .setMessage(R.string.settings_successfully_loaded_file_notification)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    .setTitle(org.odk.collect.strings.R.string.successfully_imported_settings)
+                    .setMessage(org.odk.collect.strings.R.string.settings_successfully_loaded_file_notification)
+                    .setPositiveButton(org.odk.collect.strings.R.string.ok, (dialog, which) -> {
                         dialog.dismiss();
                         recreate();
                     })
@@ -445,12 +445,12 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                                 Timber.i("######## send org.smap.smapTask.refresh from smapMain");  // smap
                             }
                         };
-                mProgressDialog.setTitle(getString(R.string.downloading_data));
+                mProgressDialog.setTitle(getString(org.odk.collect.strings.R.string.downloading_data));
                 mProgressDialog.setMessage(mProgressMsg);
                 mProgressDialog.setIcon(android.R.drawable.ic_dialog_info);
                 mProgressDialog.setIndeterminate(true);
                 mProgressDialog.setCancelable(false);
-                mProgressDialog.setButton(getString(R.string.cancel), loadingButtonListener);
+                mProgressDialog.setButton(getString(org.odk.collect.strings.R.string.cancel), loadingButtonListener);
                 return mProgressDialog;
             //case ALERT_DIALOG:
             //    mAlertDialog = new AlertDialog.Builder(this).create();
@@ -471,7 +471,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                 final SharedPreferences adminPreferences = this.getSharedPreferences(
                         AdminPreferencesActivity.ADMIN_PREFERENCES, 0);
 
-                passwordDialog.setTitle(getString(R.string.enter_admin_password));
+                passwordDialog.setTitle(getString(org.odk.collect.strings.R.string.enter_admin_password));
                 final EditText input = new EditText(this);
                 input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 input.setTransformationMethod(PasswordTransformationMethod
@@ -479,7 +479,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                 passwordDialog.setView(input, 20, 10, 20, 10);
 
                 passwordDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-                        getString(R.string.ok),
+                        getString(org.odk.collect.strings.R.string.ok),
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
                                                 int whichButton) {
@@ -495,14 +495,14 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                                 } else {
                                     Toast.makeText(
                                             SmapMain.this,
-                                            getString(R.string.admin_password_incorrect),
+                                            getString(org.odk.collect.strings.R.string.admin_password_incorrect),
                                             Toast.LENGTH_LONG).show();
                                 }
                             }
                         });
 
                 passwordDialog.setButton(AlertDialog.BUTTON_NEGATIVE,
-                        getString(R.string.cancel),
+                        getString(org.odk.collect.strings.R.string.cancel),
                         new DialogInterface.OnClickListener() {
 
                             public void onClick(DialogInterface dialog, int which) {
@@ -592,7 +592,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                 try {
                     if(mAlertDialog == null) {
                         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(SmapMain.this).setCancelable(true)
-                                .setNeutralButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                                .setNeutralButton(getString(org.odk.collect.strings.R.string.ok), new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int i) {
                                         dialog.dismiss();
                                     }
@@ -623,7 +623,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
     @Override
     public void progressUpdate(int progress, int total) {
-        mAlertMsg = getString(R.string.sending_items, String.valueOf(progress), String.valueOf(total));
+        mAlertMsg = getString(org.odk.collect.strings.R.string.sending_items, String.valueOf(progress), String.valueOf(total));
         mProgressDialog.setMessage(mAlertMsg);
     }
 
@@ -1058,8 +1058,8 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
 
     private void displayBannerWithSuccessStorageMigrationResult() {
         storageMigrationBanner.setVisibility(View.VISIBLE);
-        storageMigrationBanner.setText(getString(R.string.storage_migration_completed));
-        storageMigrationBanner.setActionText(getString(R.string.scoped_storage_dismiss));
+        storageMigrationBanner.setText(getString(org.odk.collect.strings.R.string.storage_migration_completed));
+        storageMigrationBanner.setActionText(getString(org.odk.collect.strings.R.string.scoped_storage_dismiss));
         storageMigrationBanner.setAction(() -> {
             storageMigrationBanner.setVisibility(View.GONE);
             storageMigrationRepository.clearResult();
@@ -1108,7 +1108,7 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.setButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.ok), errorListener);
         alertDialog.show();
     }
 }

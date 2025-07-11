@@ -41,8 +41,8 @@ public abstract class BasePreferenceFragment extends PreferenceFragmentCompat im
         // the preference dialogs. This appears to have something to with the `updateLocale`
         // calls in `CollectAbstractActivity` and weirdly only happens for English.
         DialogPreference dialogPreference = (DialogPreference) preference;
-        dialogPreference.setNegativeButtonText(R.string.cancel);
-        dialogPreference.setPositiveButtonText(R.string.ok);
+        dialogPreference.setNegativeButtonText(org.odk.collect.strings.R.string.cancel);
+        dialogPreference.setPositiveButtonText(org.odk.collect.strings.R.string.ok);
     }
 
     @Override

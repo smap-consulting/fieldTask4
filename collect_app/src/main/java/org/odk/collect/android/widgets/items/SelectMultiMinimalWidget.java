@@ -82,7 +82,7 @@ public class SelectMultiMinimalWidget extends SelectMinimalWidget {
 
     private void updateAnswerLabel() {
         if (selectedItems.isEmpty()) {
-            binding.answer.setText(R.string.select_answer);
+            binding.answer.setText(org.odk.collect.strings.R.string.select_answer);
         } else {
             StringBuilder builder = new StringBuilder();
             for (Selection selectedItem : selectedItems) {

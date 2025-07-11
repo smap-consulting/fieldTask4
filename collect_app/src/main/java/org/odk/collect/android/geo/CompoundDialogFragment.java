@@ -84,7 +84,7 @@ public class CompoundDialogFragment extends DialogFragment {
                     callback.updateMarker(featureId, getMarkerType(radioGroup.getCheckedRadioButtonId()));
                     dismiss();
                 })
-                .setNegativeButton(R.string.cancel, (dialog, id) -> {
+                .setNegativeButton(org.odk.collect.strings.R.string.cancel, (dialog, id) -> {
                     dismiss();
                 })
                 .create();

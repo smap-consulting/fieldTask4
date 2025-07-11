@@ -12,6 +12,6 @@ public class SaveAnswerFileProgressDialogFragment extends ProgressDialogFragment
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        setMessage(getString(R.string.saving_file));
+        setMessage(getString(org.odk.collect.strings.R.string.saving_file));
     }
 }

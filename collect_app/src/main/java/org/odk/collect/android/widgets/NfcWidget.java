@@ -108,7 +108,7 @@ public class NfcWidget extends QuestionWidget implements WidgetDataReceiver, But
 	@Override
 	public void clearAnswer() {
 		mStringAnswer.setText(null);
-		mGetNfcButton.setText(getContext().getString(R.string.get_barcode));
+		mGetNfcButton.setText(getContext().getString(org.odk.collect.strings.R.string.get_barcode));
 	}
 
 	@Override

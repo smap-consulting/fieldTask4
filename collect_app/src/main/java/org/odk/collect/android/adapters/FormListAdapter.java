@@ -62,7 +62,7 @@ public class FormListAdapter extends SimpleCursorAdapter {
                 String versionIdText = "";
                 String version = cursor.getString(columnIndex);
                 if (version != null) {
-                    versionIdText += getString(R.string.version_number, version);
+                    versionIdText += getString(org.odk.collect.strings.R.string.version_number, version);
                 }
                 if (Arrays.asList(columnNames).contains(FormsColumns.JR_FORM_ID)) {
                     String id = cursor.getString(cursor.getColumnIndex(FormsColumns.JR_FORM_ID));
@@ -70,7 +70,7 @@ public class FormListAdapter extends SimpleCursorAdapter {
                         versionIdText += "\n";
                     }
                     if (id != null) {
-                        versionIdText += getString(R.string.id_number, id);
+                        versionIdText += getString(org.odk.collect.strings.R.string.id_number, id);
                     }
                 }
                 TextView v = (TextView) view;
@@ -108,7 +108,7 @@ public class FormListAdapter extends SimpleCursorAdapter {
         try {
             if (context != null) {
                 return new SimpleDateFormat(
-                    context.getString(R.string.added_on_date_at_time), Locale.getDefault()
+                    context.getString(org.odk.collect.strings.R.string.added_on_date_at_time), Locale.getDefault()
                 ).format(date);
             }
         } catch (IllegalArgumentException e) {

@@ -43,7 +43,7 @@ class GoogleMapConfigurator implements MapConfigurator {
     @Override public void showUnavailableMessage(Context context) {
         if (!isGoogleMapsSdkAvailable(context)) {
             ToastUtils.showLongToast(context.getString(
-                R.string.basemap_source_unavailable, context.getString(sourceLabelId)));
+                    org.odk.collect.strings.R.string.basemap_source_unavailable, context.getString(sourceLabelId)));
         }
         if (!isGooglePlayServicesAvailable(context)) {
             new PlayServicesChecker().showGooglePlayServicesAvailabilityErrorDialog(context);
@@ -73,7 +73,7 @@ class GoogleMapConfigurator implements MapConfigurator {
             values[i] = Integer.toString(options[i].mapType);
         }
         String prefTitle = context.getString(
-            R.string.map_style_label, context.getString(sourceLabelId));
+                org.odk.collect.strings.R.string.map_style_label, context.getString(sourceLabelId));
         return Collections.singletonList(PrefUtils.createListPref(
             context, prefKey, prefTitle, labelIds, values
         ));

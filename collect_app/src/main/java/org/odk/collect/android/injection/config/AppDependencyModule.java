@@ -415,7 +415,7 @@ public class AppDependencyModule {
     public FormSource providesFormSource(GeneralSharedPreferences generalSharedPreferences, Context context, OpenRosaHttpInterface openRosaHttpInterface, WebCredentialsUtils webCredentialsUtils, Analytics analytics) {
         SharedPreferences generalPrefs = generalSharedPreferences.getSharedPreferences();
         String serverURL = generalPrefs.getString(GeneralKeys.KEY_SERVER_URL, context.getString(R.string.default_server_url));
-        String formListPath = generalPrefs.getString(GeneralKeys.KEY_FORMLIST_URL, context.getString(R.string.default_odk_formlist));
+        String formListPath = generalPrefs.getString(GeneralKeys.KEY_FORMLIST_URL, context.getString(org.odk.collect.strings.R.string.default_odk_formlist));
 
         return new OpenRosaFormSource(serverURL, formListPath, openRosaHttpInterface, webCredentialsUtils, analytics, new OpenRosaResponseParserImpl());
     }

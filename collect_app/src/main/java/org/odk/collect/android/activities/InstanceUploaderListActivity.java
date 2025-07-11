@@ -109,7 +109,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
         DaggerUtils.getComponent(this).inject(this);
 
         // set title
-        setTitle(getString(R.string.send_data));
+        setTitle(getString(org.odk.collect.strings.R.string.send_data));
         setContentView(R.layout.instance_uploader_list);
 
         ButterKnife.bind(this);
@@ -136,12 +136,12 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
     @OnClick({R.id.upload_button})
     public void onUploadButtonsClicked(Button button) {
         if (!connectivityProvider.isDeviceOnline()) {
-            ToastUtils.showShortToast(R.string.no_connection);
+            ToastUtils.showShortToast(org.odk.collect.strings.R.string.no_connection);
             return;
         }
 
         if (autoSendOngoing) {
-            ToastUtils.showShortToast(R.string.send_in_progress);
+            ToastUtils.showShortToast(org.odk.collect.strings.R.string.send_in_progress);
             return;
         }
 
@@ -155,12 +155,12 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
             uploadButton.setEnabled(false);
         } else {
             // no items selected
-            ToastUtils.showLongToast(R.string.noselect_error);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.noselect_error);
         }
     }
 
     void init() {
-        uploadButton.setText(R.string.send_selected_data);
+        uploadButton.setText(org.odk.collect.strings.R.string.send_selected_data);
         instancesDao = new InstancesDao();
 
         toggleSelsButton.setLongClickable(true);
@@ -192,8 +192,8 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
         instanceSyncTask.execute();
 
         sortingOptions = new int[] {
-                R.string.sort_by_name_asc, R.string.sort_by_name_desc,
-                R.string.sort_by_date_asc, R.string.sort_by_date_desc
+                org.odk.collect.strings.R.string.sort_by_name_asc, org.odk.collect.strings.R.string.sort_by_name_desc,
+                org.odk.collect.strings.R.string.sort_by_date_asc, org.odk.collect.strings.R.string.sort_by_date_desc
         };
 
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
@@ -230,7 +230,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
             }
 
         }
-        uploadButton.setText(R.string.send_selected_data);
+        uploadButton.setText(org.odk.collect.strings.R.string.send_selected_data);
     }
 
     @Override
@@ -253,7 +253,7 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
 
         String server = (String) GeneralSharedPreferences.getInstance().get(KEY_PROTOCOL);
 
-        if (server.equalsIgnoreCase(getString(R.string.protocol_google_sheets))) {
+        if (server.equalsIgnoreCase(getString(org.odk.collect.strings.R.string.protocol_google_sheets))) {
             // if it's Sheets, start the Sheets uploader
             // first make sure we have a google account selected
             if (new PlayServicesChecker().isGooglePlayServicesAvailable(this)) {
@@ -391,14 +391,14 @@ public class InstanceUploaderListActivity extends InstanceListActivity implement
      * saving
      */
     private boolean showSentAndUnsentChoices() {
-        String[] items = {getString(R.string.show_unsent_forms),
-                getString(R.string.show_sent_and_unsent_forms),
+        String[] items = {getString(org.odk.collect.strings.R.string.show_unsent_forms),
+                getString(org.odk.collect.strings.R.string.show_sent_and_unsent_forms),
                 getString(R.string.smap_show_incomplete)};  // smap
 
         AlertDialog alertDialog = new AlertDialog.Builder(this)
                 .setIcon(android.R.drawable.ic_dialog_info)
-                .setTitle(getString(R.string.change_view))
-                .setNeutralButton(getString(R.string.cancel), (dialog, id) -> {
+                .setTitle(getString(org.odk.collect.strings.R.string.change_view))
+                .setNeutralButton(getString(org.odk.collect.strings.R.string.cancel), (dialog, id) -> {
                     dialog.cancel();
                 })
                 .setItems(items, (dialog, which) -> {

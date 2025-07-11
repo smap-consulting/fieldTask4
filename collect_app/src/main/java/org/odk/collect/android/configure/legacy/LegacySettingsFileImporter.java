@@ -40,7 +40,7 @@ public class LegacySettingsFileImporter {
                     analytics.logEvent(type, "Success", settingsHash);
                     return true;
                 } else {
-                    ToastUtils.showLongToast(R.string.corrupt_settings_file_notification);
+                    ToastUtils.showLongToast(org.odk.collect.strings.R.string.corrupt_settings_file_notification);
                     analytics.logEvent(type, "Corrupt", settingsHash);
                     return false;
                 }
@@ -48,7 +48,7 @@ public class LegacySettingsFileImporter {
                 return false;
             }
         } catch (LegacySettingsFileReader.CorruptSettingsFileException e) {
-            ToastUtils.showLongToast(R.string.corrupt_settings_file_notification);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.corrupt_settings_file_notification);
 
             String type = new File(storagePathProvider.getStorageRootDirPath() + "/collect.settings.json").exists()
                     ? SETTINGS_IMPORT_JSON : SETTINGS_IMPORT_SERIALIZED;

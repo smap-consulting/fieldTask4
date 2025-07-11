@@ -63,15 +63,15 @@ public class GeoPointMapWidget extends QuestionWidget implements WidgetDataRecei
         boolean dataAvailable = answerText != null && !answerText.isEmpty();
         if (getFormEntryPrompt().isReadOnly()) {
             if (dataAvailable) {
-                binding.simpleButton.setText(R.string.geopoint_view_read_only);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.geopoint_view_read_only);
             } else {
                 binding.simpleButton.setVisibility(View.GONE);
             }
         } else {
             if (dataAvailable) {
-                binding.simpleButton.setText(R.string.view_change_location);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.view_change_location);
             } else {
-                binding.simpleButton.setText(R.string.get_point);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.get_point);
             }
         }
 
@@ -89,7 +89,7 @@ public class GeoPointMapWidget extends QuestionWidget implements WidgetDataRecei
     public void clearAnswer() {
         answerText = null;
         binding.geoAnswerText.setText(null);
-        binding.simpleButton.setText(R.string.get_point);
+        binding.simpleButton.setText(org.odk.collect.strings.R.string.get_point);
         widgetValueChanged();
     }
 
@@ -110,7 +110,7 @@ public class GeoPointMapWidget extends QuestionWidget implements WidgetDataRecei
     public void setData(Object answer) {
         answerText = answer.toString();
         binding.geoAnswerText.setText(GeoWidgetUtils.getGeoPointAnswerToDisplay(getContext(), answerText));
-        binding.simpleButton.setText(answerText == null || answerText.isEmpty() ? R.string.get_point : R.string.view_change_location);
+        binding.simpleButton.setText(answerText == null || answerText.isEmpty() ? org.odk.collect.strings.R.string.get_point : org.odk.collect.strings.R.string.view_change_location);
         widgetValueChanged();
     }
 }

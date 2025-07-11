@@ -28,20 +28,20 @@ public class StorageInitializer {
 
     public void createOdkDirsOnStorage() throws RuntimeException {
         if (!storageStateProvider.isStorageMounted()) {
-            throw new RuntimeException(context.getString(R.string.sdcard_unmounted, Environment.getExternalStorageState()));
+            throw new RuntimeException(context.getString(org.odk.collect.strings.R.string.sdcard_unmounted, Environment.getExternalStorageState()));
         }
 
         for (String dirPath : storagePathProvider.getOdkDirPaths()) {
             File dir = new File(dirPath);
             if (!dir.exists()) {
                 if (!dir.mkdirs()) {
-                    String message = context.getString(R.string.cannot_create_directory, dirPath);
+                    String message = context.getString(org.odk.collect.strings.R.string.cannot_create_directory, dirPath);
                     Timber.w(message);
                     throw new RuntimeException(message);
                 }
             } else {
                 if (!dir.isDirectory()) {
-                    String message = context.getString(R.string.not_a_directory, dirPath);
+                    String message = context.getString(org.odk.collect.strings.R.string.not_a_directory, dirPath);
                     Timber.w(message);
                     throw new RuntimeException(message);
                 }

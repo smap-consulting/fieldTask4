@@ -11,14 +11,14 @@ public enum StorageMigrationResult {
     CHANGES_IN_PROGRESS;
 
     public String getErrorResultMessage(Context context) {
-        String errorMessage = context.getString(R.string.error) + " ";
+        String errorMessage = context.getString(org.odk.collect.strings.R.string.error) + " ";
         switch (this) {
             case NOT_ENOUGH_SPACE:
-                return errorMessage + context.getString(R.string.storage_migration_not_enough_space);
+                return errorMessage + context.getString(org.odk.collect.strings.R.string.storage_migration_not_enough_space);
             case CHANGES_IN_PROGRESS:
-                return errorMessage + context.getString(R.string.changes_in_progress);
+                return errorMessage + context.getString(org.odk.collect.strings.R.string.changes_in_progress);
             case MOVING_FILES_FAILED:
-                return errorMessage + context.getString(R.string.storage_migration_failed);
+                return errorMessage + context.getString(org.odk.collect.strings.R.string.storage_migration_failed);
             default:
                 return errorMessage;
         }

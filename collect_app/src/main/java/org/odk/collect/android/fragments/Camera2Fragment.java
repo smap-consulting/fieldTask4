@@ -525,7 +525,7 @@ public class Camera2Fragment extends Fragment
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            ErrorDialog.newInstance(getString(R.string.camera_error))
+            ErrorDialog.newInstance(getString(org.odk.collect.strings.R.string.camera_error))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         }
     }

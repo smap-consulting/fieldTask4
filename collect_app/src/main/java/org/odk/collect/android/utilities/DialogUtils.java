@@ -106,7 +106,7 @@ public final class DialogUtils {
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(R.string.ok), errorListener);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, activity.getString(org.odk.collect.strings.R.string.ok), errorListener);
 
         return alertDialog;
     }

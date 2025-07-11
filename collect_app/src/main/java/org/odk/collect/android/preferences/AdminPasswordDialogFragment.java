@@ -68,8 +68,8 @@ public class AdminPasswordDialogFragment extends DialogFragment {
 
         return new AlertDialog.Builder(getActivity())
                 .setView(dialogView)
-                .setTitle(getString(R.string.enter_admin_password))
-                .setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
+                .setTitle(getString(org.odk.collect.strings.R.string.enter_admin_password))
+                .setPositiveButton(getString(org.odk.collect.strings.R.string.ok), (dialog, whichButton) -> {
                             if (adminPasswordProvider.getAdminPassword().equals(input.getText().toString())) {
                                 callback.onCorrectAdminPassword((Action) getArguments().getSerializable(ARG_ACTION));
                             } else {
@@ -77,7 +77,7 @@ public class AdminPasswordDialogFragment extends DialogFragment {
                             }
                             dismiss();
                         })
-                .setNegativeButton(getString(R.string.cancel), (dialogInterface, i) -> dismiss())
+                .setNegativeButton(getString(org.odk.collect.strings.R.string.cancel), (dialogInterface, i) -> dismiss())
                 .create();
     }
 

@@ -162,14 +162,14 @@ public class LikertWidget extends ItemsWidget {
         leftLineViewParams.addRule(RelativeLayout.LEFT_OF, button.getId());
         leftLineViewParams.addRule(CENTER_IN_PARENT, TRUE);
         leftLineView.setLayoutParams(leftLineViewParams);
-        leftLineView.setBackgroundColor(getResources().getColor(R.color.gray600));
+        leftLineView.setBackgroundColor(getResources().getColor(com.rarepebble.colorpicker.R.color.gray600));
 
         // right line
         View rightLineView = new View(this.getContext());
         rightLineViewParams.addRule(RelativeLayout.RIGHT_OF, button.getId());
         rightLineViewParams.addRule(CENTER_IN_PARENT, TRUE);
         rightLineView.setLayoutParams(rightLineViewParams);
-        rightLineView.setBackgroundColor(getResources().getColor(R.color.gray600));
+        rightLineView.setBackgroundColor(getResources().getColor(com.rarepebble.colorpicker.R.color.gray600));
 
         if (left) {
             if (isRTL()) {
@@ -303,11 +303,11 @@ public class LikertWidget extends ItemsWidget {
                     imageView.setImageBitmap(b);
                 } else if (errorMsg == null) {
                     // Loading the image failed. The image work when in .jpg format
-                    errorMsg = getContext().getString(R.string.file_invalid, imageFile);
+                    errorMsg = getContext().getString(org.odk.collect.strings.R.string.file_invalid, imageFile);
 
                 }
             } else {
-                errorMsg = getContext().getString(R.string.file_missing, imageFile);
+                errorMsg = getContext().getString(org.odk.collect.strings.R.string.file_missing, imageFile);
             }
             if (errorMsg != null) {
                 Timber.e(errorMsg);

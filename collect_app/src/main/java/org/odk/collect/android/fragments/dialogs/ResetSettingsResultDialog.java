@@ -60,10 +60,10 @@ public class ResetSettingsResultDialog extends DialogFragment {
         String message = getArguments() != null ? getArguments().getString(MESSAGE) : "";
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(R.string.reset_app_state_result)
+                .setTitle(org.odk.collect.strings.R.string.reset_app_state_result)
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .setMessage(message)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                .setPositiveButton(org.odk.collect.strings.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         listener.onDialogClosed();

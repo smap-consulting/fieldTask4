@@ -42,8 +42,8 @@ public class ExternalAppRecordingRequester implements RecordingRequester {
                     waitingForDataRegistry.waitForData(prompt.getIndex());
                     activity.startActivityForResult(intent, ApplicationConstants.RequestCodes.AUDIO_CAPTURE);
                 } catch (ActivityNotFoundException e) {
-                    Toast.makeText(activity, activity.getString(R.string.activity_not_found,
-                            activity.getString(R.string.capture_audio)), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(activity, activity.getString(org.odk.collect.strings.R.string.activity_not_found,
+                            activity.getString(org.odk.collect.strings.R.string.capture_audio)), Toast.LENGTH_SHORT).show();
                     waitingForDataRegistry.cancelWaitingForData();
                 } catch (Exception e) {
                     Toast.makeText(activity, e.getLocalizedMessage(), Toast.LENGTH_SHORT).show();

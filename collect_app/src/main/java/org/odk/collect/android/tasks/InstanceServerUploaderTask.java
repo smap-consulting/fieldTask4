@@ -80,7 +80,7 @@ public class InstanceServerUploaderTask extends InstanceUploaderTask {
                 String destinationUrl = uploader.getUrlToSubmitTo(instance, deviceId, completeDestinationUrl);
                 String customMessage = uploader.uploadOneSubmission(instance, destinationUrl);
                 outcome.messagesByInstanceId.put(instance.getId().toString(),
-                        customMessage != null ? customMessage : TranslationHandler.getString(Collect.getInstance(), R.string.success));
+                        customMessage != null ? customMessage : TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.success));
 
                 analytics.logEvent(SUBMISSION, "HTTP", Collect.getFormIdentifierHash(instance.getJrFormId(), instance.getJrVersion()));
             } catch (UploadAuthRequestedException e) {

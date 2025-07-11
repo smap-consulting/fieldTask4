@@ -132,7 +132,7 @@ public class UserInterfacePreferencesFragment extends BasePreferenceFragment {
             pref.setEntryValues(entryValues.toArray(new String[length]));
             ArrayList<String> entries = new ArrayList<>();
             entries.add(0, getActivity().getResources()
-                    .getString(R.string.use_device_language));
+                    .getString(org.odk.collect.strings.R.string.use_device_language));
             entries.addAll(languageList.keySet());
             pref.setEntries(entries.toArray(new String[length]));
             if (pref.getValue() == null) {

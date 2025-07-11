@@ -238,7 +238,7 @@ public class FormMapActivity extends BaseGeoMapActivity {
         }
 
         TextView statusView = findViewById(R.id.geometry_status);
-        statusView.setText(getString(R.string.geometry_status, viewModel.getTotalInstanceCount(), points.size()));
+        statusView.setText(getString(org.odk.collect.strings.R.string.geometry_status, viewModel.getTotalInstanceCount(), points.size()));
     }
 
     /**
@@ -345,13 +345,13 @@ public class FormMapActivity extends BaseGeoMapActivity {
     private void adjustSubmissionSheetBasedOnItsStatus(MappableFormInstance mappableFormInstance) {
         switch (mappableFormInstance.getClickAction()) {
             case DELETED_TOAST:
-                String deletedTime = getString(R.string.deleted_on_date_at_time);
+                String deletedTime = getString(org.odk.collect.strings.R.string.deleted_on_date_at_time);
                 String disabledMessage = new SimpleDateFormat(deletedTime,
                         Locale.getDefault()).format(viewModel.getDeletedDateOf(mappableFormInstance.getDatabaseId()));
                 setUpInfoText(disabledMessage);
                 break;
             case NOT_VIEWABLE_TOAST:
-                setUpInfoText(getString(R.string.cannot_edit_completed_form));
+                setUpInfoText(getString(org.odk.collect.strings.R.string.cannot_edit_completed_form));
                 break;
             case OPEN_READ_ONLY:
                 setUpOpenFormButton(false, mappableFormInstance.getDatabaseId());
@@ -367,7 +367,7 @@ public class FormMapActivity extends BaseGeoMapActivity {
         findViewById(R.id.info).setVisibility(View.GONE);
         Chip openFormButton = findViewById(R.id.openFormChip);
         openFormButton.setVisibility(View.VISIBLE);
-        openFormButton.setText(canEdit ? R.string.review_data : R.string.view_data);
+        openFormButton.setText(canEdit ? org.odk.collect.strings.R.string.review_data : org.odk.collect.strings.R.string.view_data);
         openFormButton.setChipIcon(ContextCompat.getDrawable(this, canEdit ? R.drawable.ic_edit : R.drawable.ic_visibility));
         openFormButton.setOnClickListener(v -> {
             summarySheet.setState(BottomSheetBehavior.STATE_HIDDEN);

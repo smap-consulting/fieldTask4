@@ -60,7 +60,7 @@ public class CustomTimePickerDialog extends DialogFragment {
         TimePickerDialog dialog = new TimePickerDialog(requireContext(), viewModel.getDialogTheme(), viewModel.getTimeSetListener(),
                 viewModel.getLocalDateTime().getHourOfDay(), viewModel.getLocalDateTime().getMinuteOfHour(), DateFormat.is24HourFormat(requireContext()));
 
-        dialog.setTitle(requireContext().getString(R.string.select_time));
+        dialog.setTitle(requireContext().getString(org.odk.collect.strings.R.string.select_time));
         fixSpinner(requireContext(), dialog, viewModel.getLocalDateTime().getHourOfDay(),
                 viewModel.getLocalDateTime().getMinuteOfHour(), DateFormat.is24HourFormat(requireContext()));
 

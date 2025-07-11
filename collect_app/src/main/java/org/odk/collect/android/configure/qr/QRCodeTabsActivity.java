@@ -64,7 +64,7 @@ public class QRCodeTabsActivity extends CollectAbstractActivity {
         activityResultDelegate = new QRCodeActivityResultDelegate(this, settingsImporter, qrCodeDecoder, analytics);
         setContentView(R.layout.tabs_layout);
 
-        initToolbar(getString(R.string.configure_via_qr_code));
+        initToolbar(getString(org.odk.collect.strings.R.string.configure_via_qr_code));
         menuDelegate = new QRCodeMenuDelegate(this, qrCodeGenerator, jsonPreferencesGenerator, fileProvider, preferencesProvider, scheduler);
 
         permissionsProvider.requestCameraPermission(this, new PermissionListener() {
@@ -81,8 +81,8 @@ public class QRCodeTabsActivity extends CollectAbstractActivity {
     }
 
     private void setupViewPager() {
-        fragmentTitleList = new String[]{getString(R.string.scan_qr_code_fragment_title),
-                getString(R.string.view_qr_code_fragment_title)};
+        fragmentTitleList = new String[]{getString(org.odk.collect.strings.R.string.scan_qr_code_fragment_title),
+                getString(org.odk.collect.strings.R.string.view_qr_code_fragment_title)};
 
         ViewPager2 viewPager = findViewById(R.id.viewPager);
         TabLayout tabLayout = findViewById(R.id.tabLayout);

@@ -198,14 +198,14 @@ public class DrawActivity extends CollectAbstractActivity {
         // output -- where the output should be written
 
         if (OPTION_SIGNATURE.equals(loadOption)) {
-            alertTitleString = getString(R.string.quit_application,
-                    getString(R.string.sign_button));
+            alertTitleString = getString(org.odk.collect.strings.R.string.quit_application,
+                    getString(org.odk.collect.strings.R.string.sign_button));
         } else if (OPTION_ANNOTATE.equals(loadOption)) {
-            alertTitleString = getString(R.string.quit_application,
-                    getString(R.string.markup_image));
+            alertTitleString = getString(org.odk.collect.strings.R.string.quit_application,
+                    getString(org.odk.collect.strings.R.string.markup_image));
         } else {
-            alertTitleString = getString(R.string.quit_application,
-                    getString(R.string.draw_image));
+            alertTitleString = getString(org.odk.collect.strings.R.string.quit_application,
+                    getString(org.odk.collect.strings.R.string.draw_image));
         }
 
         drawView = findViewById(R.id.drawView);
@@ -285,8 +285,8 @@ public class DrawActivity extends CollectAbstractActivity {
         ListView listView = DialogUtils.createActionListView(this);
 
         List<IconMenuItem> items;
-        items = ImmutableList.of(new IconMenuItem(R.drawable.ic_save, R.string.keep_changes),
-                new IconMenuItem(R.drawable.ic_delete, R.string.do_not_save));
+        items = ImmutableList.of(new IconMenuItem(R.drawable.ic_save, org.odk.collect.strings.R.string.keep_changes),
+                new IconMenuItem(R.drawable.ic_delete, org.odk.collect.strings.R.string.do_not_save));
 
         final IconMenuListAdapter adapter = new IconMenuListAdapter(this, items);
         listView.setAdapter(adapter);
@@ -294,7 +294,7 @@ public class DrawActivity extends CollectAbstractActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 IconMenuItem item = (IconMenuItem) adapter.getItem(position);
-                if (item.getTextResId() == R.string.keep_changes) {
+                if (item.getTextResId() == org.odk.collect.strings.R.string.keep_changes) {
                     saveAndClose();
                 } else {
                     cancelAndClose();
@@ -304,7 +304,7 @@ public class DrawActivity extends CollectAbstractActivity {
         });
         alertDialog = new AlertDialog.Builder(this)
                 .setTitle(alertTitleString)
-                .setPositiveButton(getString(R.string.do_not_exit), null)
+                .setPositiveButton(getString(org.odk.collect.strings.R.string.do_not_exit), null)
                 .setView(listView).create();
         alertDialog.show();
     }
@@ -335,7 +335,7 @@ public class DrawActivity extends CollectAbstractActivity {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             builder
                     .setView(picker)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> drawView.setColor(picker.getColor()))
+                    .setPositiveButton(org.odk.collect.strings.R.string.ok, (dialog, which) -> drawView.setColor(picker.getColor()))
                     .show();
         }
     }

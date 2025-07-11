@@ -70,7 +70,7 @@ public class BarcodeWidget extends QuestionWidget implements WidgetDataReceiver 
 
         String answer = prompt.getAnswerText();
         if (answer != null && !answer.isEmpty()) {
-            binding.barcodeButton.setText(getContext().getString(R.string.replace_barcode));
+            binding.barcodeButton.setText(getContext().getString(org.odk.collect.strings.R.string.replace_barcode));
             binding.barcodeAnswerText.setText(answer);
         }
 
@@ -80,7 +80,7 @@ public class BarcodeWidget extends QuestionWidget implements WidgetDataReceiver 
     @Override
     public void clearAnswer() {
         binding.barcodeAnswerText.setText(null);
-        binding.barcodeButton.setText(getContext().getString(R.string.get_barcode));
+        binding.barcodeButton.setText(getContext().getString(org.odk.collect.strings.R.string.get_barcode));
         widgetValueChanged();
     }
 
@@ -94,7 +94,7 @@ public class BarcodeWidget extends QuestionWidget implements WidgetDataReceiver 
     public void setData(Object answer) {
         String response = (String) answer;
         binding.barcodeAnswerText.setText(stripInvalidCharacters(response));
-        binding.barcodeButton.setText(getContext().getString(R.string.replace_barcode));
+        binding.barcodeButton.setText(getContext().getString(org.odk.collect.strings.R.string.replace_barcode));
         widgetValueChanged();
     }
 
@@ -140,7 +140,7 @@ public class BarcodeWidget extends QuestionWidget implements WidgetDataReceiver 
             if (cameraUtils.isFrontCameraAvailable()) {
                 intent.addExtra(FRONT, true);
             } else {
-                ToastUtils.showLongToast(R.string.error_front_camera_unavailable);
+                ToastUtils.showLongToast(org.odk.collect.strings.R.string.error_front_camera_unavailable);
             }
         }
     }

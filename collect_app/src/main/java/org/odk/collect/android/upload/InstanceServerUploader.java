@@ -91,7 +91,7 @@ public class InstanceServerUploader extends InstanceUploader {
             } catch (IllegalArgumentException e) {
                 saveFailedStatusToDatabase(instance);
                 Timber.d(e.getMessage() != null ? e.getMessage() : e.toString());
-                throw new UploadException(TranslationHandler.getString(Collect.getInstance(), R.string.url_error));
+                throw new UploadException(TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.url_error));
             }
 
             HttpHeadResult headResult;
@@ -117,7 +117,7 @@ public class InstanceServerUploader extends InstanceUploader {
 
             if (headResult.getStatusCode() == HttpsURLConnection.HTTP_UNAUTHORIZED) {
                 saveFailedStatusToDatabase(instance);
-                throw new UploadAuthRequestedException(TranslationHandler.getString(Collect.getInstance(), R.string.server_auth_credentials, submissionUri.getHost()),
+                throw new UploadAuthRequestedException(TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.server_auth_credentials, submissionUri.getHost()),
                         submissionUri);
             } else if (headResult.getStatusCode() == HttpsURLConnection.HTTP_NO_CONTENT) {
                 // Redirect header received
@@ -317,7 +317,7 @@ public class InstanceServerUploader extends InstanceUploader {
 
         // NOTE: /submission must not be translated! It is the well-known path on the server.
         String submissionPath = settings.getString(GeneralKeys.KEY_SUBMISSION_URL,
-                app.getString(R.string.default_odk_submission));
+                app.getString(org.odk.collect.strings.R.string.default_odk_submission));
 
         if (!submissionPath.startsWith(URL_PATH_SEP)) {
             submissionPath = URL_PATH_SEP + submissionPath;

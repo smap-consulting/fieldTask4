@@ -116,7 +116,7 @@ public class ExStringWidget extends StringWidget implements WidgetDataReceiver, 
 
     private String getButtonText() {
         String v = getFormEntryPrompt().getSpecialFormQuestionText("buttonText");
-        return v != null ? v : getContext().getString(R.string.launch_app);
+        return v != null ? v : getContext().getString(org.odk.collect.strings.R.string.launch_app);
     }
 
     protected void fireActivity(Intent i) throws ActivityNotFoundException {
@@ -125,7 +125,7 @@ public class ExStringWidget extends StringWidget implements WidgetDataReceiver, 
             ((Activity) getContext()).startActivityForResult(i, RequestCodes.EX_STRING_CAPTURE);
         } catch (SecurityException e) {
             Timber.i(e);
-            ToastUtils.showLongToast(R.string.not_granted_permission);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.not_granted_permission);
         }
     }
 

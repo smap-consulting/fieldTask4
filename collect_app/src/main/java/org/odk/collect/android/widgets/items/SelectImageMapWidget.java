@@ -213,7 +213,7 @@ public abstract class SelectImageMapWidget extends ItemsWidget {
             return convertDocumentToString(document);
         } catch (Exception e) {
             Timber.w(e);
-            return getContext().getString(R.string.svg_file_does_not_exist);
+            return getContext().getString(org.odk.collect.strings.R.string.svg_file_does_not_exist);
         }
     }
 
@@ -251,7 +251,7 @@ public abstract class SelectImageMapWidget extends ItemsWidget {
         if (!selections.isEmpty()) {
             stringBuilder
                     .append("<b>")
-                    .append(getContext().getString(R.string.selected))
+                    .append(getContext().getString(org.odk.collect.strings.R.string.selected))
                     .append("</b> ");
             for (Selection selection : selections) {
                 String choiceName = getFormEntryPrompt().getSelectChoiceText(selection.choice);

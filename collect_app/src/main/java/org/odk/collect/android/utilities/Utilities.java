@@ -1120,7 +1120,7 @@ public class Utilities {
             if (msg.contains("Unauthorized") || msg.contains(": 401")) {
                 out = Collect.getInstance().getString(R.string.smap_login_unauthorized);
             } else if (msg.contains("Unable to resolve host")) {
-                out = msg + ". " + Collect.getInstance().getString(R.string.no_connection);
+                out = msg + ". " + Collect.getInstance().getString(org.odk.collect.strings.R.string.no_connection);
             } else {
                 if (e != null) {
                     out = e.getLocalizedMessage();

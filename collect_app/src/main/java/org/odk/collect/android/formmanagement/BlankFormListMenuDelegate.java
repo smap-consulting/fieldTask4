@@ -81,13 +81,13 @@ public class BlankFormListMenuDelegate implements MenuDelegate {
                 if (success) {
                     Toast.makeText(
                             activity,
-                            activity.getString(R.string.form_update_succeeded),
+                            activity.getString(org.odk.collect.strings.R.string.form_update_succeeded),
                             Toast.LENGTH_SHORT
                     ).show();
                 }
             });
             } else {
-                Toast.makeText(activity, R.string.no_connection, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, org.odk.collect.strings.R.string.no_connection, Toast.LENGTH_SHORT).show();
             }
             return true;
         } else {

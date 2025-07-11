@@ -42,7 +42,7 @@ public final class ThemeUtils {
             return R.style.Theme_Collect_Magenta;
         } else {
             String theme = getPrefsTheme();
-            if (theme.equals(context.getString(R.string.app_theme_dark))) {
+            if (theme.equals(context.getString(org.odk.collect.strings.R.string.app_theme_dark))) {
                 return R.style.Theme_Collect_Dark;
             } else {
                 return R.style.Theme_Collect_Light;
@@ -56,7 +56,7 @@ public final class ThemeUtils {
             return R.style.Theme_Collect_Activity_FormEntryActivity_Magenta;
         } else {
             String theme = getPrefsTheme();
-            if (theme.equals(context.getString(R.string.app_theme_dark))) {
+            if (theme.equals(context.getString(org.odk.collect.strings.R.string.app_theme_dark))) {
                 return R.style.Theme_Collect_Activity_FormEntryActivity_Dark;
             } else {
                 return R.style.Theme_Collect_Activity_FormEntryActivity_Light;
@@ -70,7 +70,7 @@ public final class ThemeUtils {
             return R.style.Theme_Collect_Settings_Magenta;
         } else {
             String theme = getPrefsTheme();
-            if (theme.equals(context.getString(R.string.app_theme_dark))) {
+            if (theme.equals(context.getString(org.odk.collect.strings.R.string.app_theme_dark))) {
                 return R.style.Theme_Collect_Settings_Dark;
             } else {
                 return R.style.Theme_Collect_Settings_Light;
@@ -119,7 +119,7 @@ public final class ThemeUtils {
 
     public boolean isDarkTheme() {
         String theme = getPrefsTheme();
-        return theme.equals(context.getString(R.string.app_theme_dark));
+        return theme.equals(context.getString(org.odk.collect.strings.R.string.app_theme_dark));
     }
 
     private boolean isMagentaEnabled() {
@@ -135,31 +135,31 @@ public final class ThemeUtils {
      */
     @ColorInt
     public int getColorOnSurface() {
-        return getAttributeValue(R.attr.colorOnSurface);
+        return getAttributeValue(com.google.android.material.R.attr.colorOnSurface);
     }
 
     @ColorInt
     public int getAccentColor() {
-        return getAttributeValue(R.attr.colorAccent);
+        return getAttributeValue(com.google.android.material.R.attr.colorAccent);
     }
 
     @ColorInt
     public int getIconColor() {
-        return getAttributeValue(R.attr.colorOnSurface);
+        return getAttributeValue(com.google.android.material.R.attr.colorOnSurface);
     }
 
     @ColorInt
     public int getColorPrimary() {
-        return getAttributeValue(R.attr.colorPrimary);
+        return getAttributeValue(com.google.android.material.R.attr.colorPrimary);
     }
 
     @ColorInt
     public int getColorOnPrimary() {
-        return getAttributeValue(R.attr.colorOnPrimary);
+        return getAttributeValue(com.google.android.material.R.attr.colorOnPrimary);
     }
 
     @ColorInt
     public int getColorSecondary() {
-        return getAttributeValue(R.attr.colorSecondary);
+        return getAttributeValue(com.google.android.material.R.attr.colorSecondary);
     }
 }

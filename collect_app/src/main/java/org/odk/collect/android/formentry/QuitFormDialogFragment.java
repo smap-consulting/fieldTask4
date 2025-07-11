@@ -65,14 +65,14 @@ public class QuitFormDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
-        String title =  formSaveViewModel.getFormName() == null ? getActivity().getString(R.string.no_form_loaded) : formSaveViewModel.getFormName();
+        String title =  formSaveViewModel.getFormName() == null ? getActivity().getString(org.odk.collect.strings.R.string.no_form_loaded) : formSaveViewModel.getFormName();
 
         List<IconMenuItem> items;
         if ((boolean) AdminSharedPreferences.getInstance().get(AdminKeys.KEY_SAVE_MID)) {
-            items = ImmutableList.of(new IconMenuItem(R.drawable.ic_save, R.string.keep_changes),
-                    new IconMenuItem(R.drawable.ic_delete, R.string.do_not_save));
+            items = ImmutableList.of(new IconMenuItem(R.drawable.ic_save, org.odk.collect.strings.R.string.keep_changes),
+                    new IconMenuItem(R.drawable.ic_delete, org.odk.collect.strings.R.string.do_not_save));
         } else {
-            items = ImmutableList.of(new IconMenuItem(R.drawable.ic_delete, R.string.do_not_save));
+            items = ImmutableList.of(new IconMenuItem(R.drawable.ic_delete, org.odk.collect.strings.R.string.do_not_save));
         }
 
         ListView listView = DialogUtils.createActionListView(getActivity());
@@ -82,7 +82,7 @@ public class QuitFormDialogFragment extends DialogFragment {
         listView.setOnItemClickListener((parent, view, position, id) -> {
             IconMenuItem item = (IconMenuItem) adapter.getItem(position);
 
-            if (item.getTextResId() == R.string.keep_changes) {
+            if (item.getTextResId() == org.odk.collect.strings.R.string.keep_changes) {
                 if (listener != null) {
                     listener.onSaveChangesClicked();
                 }
@@ -106,8 +106,8 @@ public class QuitFormDialogFragment extends DialogFragment {
         });
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle(getString(R.string.quit_application, title))
-                .setNegativeButton(getActivity().getString(R.string.do_not_exit), (dialog, id) -> {
+                .setTitle(getString(org.odk.collect.strings.R.string.quit_application, title))
+                .setNegativeButton(getActivity().getString(org.odk.collect.strings.R.string.do_not_exit), (dialog, id) -> {
                     dialog.cancel();
                     dismiss();
                 })

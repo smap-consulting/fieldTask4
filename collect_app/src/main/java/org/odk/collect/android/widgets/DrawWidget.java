@@ -44,7 +44,7 @@ public class DrawWidget extends BaseImageWidget implements ButtonClickListener {
 
     public DrawWidget(Context context, QuestionDetails prompt, QuestionMediaManager questionMediaManager, WaitingForDataRegistry waitingForDataRegistry) {
         super(context, prompt, questionMediaManager, waitingForDataRegistry, new MediaUtils());
-        imageClickHandler = new DrawImageClickHandler(DrawActivity.OPTION_DRAW, RequestCodes.DRAW_IMAGE, R.string.draw_image);
+        imageClickHandler = new DrawImageClickHandler(DrawActivity.OPTION_DRAW, RequestCodes.DRAW_IMAGE, org.odk.collect.strings.R.string.draw_image);
         setUpLayout();
         addCurrentImageToLayout();
         addAnswerView(answerLayout, WidgetViewUtils.getStandardMargin(context));
@@ -53,7 +53,7 @@ public class DrawWidget extends BaseImageWidget implements ButtonClickListener {
     @Override
     protected void setUpLayout() {
         super.setUpLayout();
-        drawButton = createSimpleButton(getContext(), questionDetails.isReadOnly(), getContext().getString(R.string.draw_image), getAnswerFontSize(), this);
+        drawButton = createSimpleButton(getContext(), questionDetails.isReadOnly(), getContext().getString(org.odk.collect.strings.R.string.draw_image), getAnswerFontSize(), this);
 
         answerLayout.addView(drawButton);
         answerLayout.addView(errorTextView);
@@ -75,7 +75,7 @@ public class DrawWidget extends BaseImageWidget implements ButtonClickListener {
     public void clearAnswer() {
         super.clearAnswer();
         // reset buttons
-        drawButton.setText(getContext().getString(R.string.draw_image));
+        drawButton.setText(getContext().getString(org.odk.collect.strings.R.string.draw_image));
     }
 
     @Override

@@ -65,7 +65,7 @@ public class InstanceGoogleSheetsUploaderTask extends InstanceUploaderTask {
 
             if (isCancelled()) {
                 outcome.messagesByInstanceId.put(instance.getId().toString(),
-                        TranslationHandler.getString(Collect.getInstance(), R.string.instance_upload_cancelled));
+                        TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.instance_upload_cancelled));
                 return outcome;
             }
 
@@ -78,7 +78,7 @@ public class InstanceGoogleSheetsUploaderTask extends InstanceUploaderTask {
 
             if (forms.size() != 1) {
                 outcome.messagesByInstanceId.put(instance.getId().toString(),
-                        TranslationHandler.getString(Collect.getInstance(), R.string.not_exactly_one_blank_form_for_this_form_id));
+                        TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.not_exactly_one_blank_form_for_this_form_id));
             } else {
                 try {
                     String destinationUrl = uploader.getUrlToSubmitTo(instance, null, null);

@@ -66,7 +66,7 @@ public class FixedDatePickerDialog extends DialogFragment {
                 viewModel.getLocalDateTime().getYear(), viewModel.getLocalDateTime().getMonthOfYear() - 1, viewModel.getLocalDateTime().getDayOfMonth());
 
         if (themeUtils.isHoloDialogTheme(viewModel.getDialogTheme())) {
-            dialog.setTitle(requireContext().getString(R.string.select_date));
+            dialog.setTitle(requireContext().getString(org.odk.collect.strings.R.string.select_date));
             fixSpinner(requireContext(), dialog, viewModel.getLocalDateTime().getYear(), viewModel.getLocalDateTime().getMonthOfYear() - 1,
                     viewModel.getLocalDateTime().getDayOfMonth());
             hidePickersIfNeeded(dialog, viewModel.getLocalDateTime());

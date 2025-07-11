@@ -122,10 +122,10 @@ public class AutoSendTaskSpec implements TaskSpec {
                     } catch (SubmitException e) {
                         switch (e.getType()) {
                             case GOOGLE_ACCOUNT_NOT_SET:
-                                notifier.onSubmission(true, context.getString(R.string.google_set_account));
+                                notifier.onSubmission(true, context.getString(org.odk.collect.strings.R.string.google_set_account));
                                 break;
                             case GOOGLE_ACCOUNT_NOT_PERMITTED:
-                                notifier.onSubmission(true, context.getString(R.string.odk_permissions_fail));
+                                notifier.onSubmission(true, context.getString(org.odk.collect.strings.R.string.odk_permissions_fail));
                                 break;
                             case NOTHING_TO_SUBMIT:
                                 break;

@@ -1,10 +1,7 @@
 package org.odk.collect.android.utilities;
 
-<<<<<<< HEAD
 import org.junit.Assert;
 import org.junit.Ignore;
-=======
->>>>>>> merge_master
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;

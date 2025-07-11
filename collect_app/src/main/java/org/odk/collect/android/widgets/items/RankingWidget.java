@@ -136,7 +136,7 @@ public class RankingWidget extends ItemsWidget implements WidgetDataReceiver, Bu
     }
 
     private void setUpLayout(List<SelectChoice> items) {
-        showRankingDialogButton = createSimpleButton(getContext(), getFormEntryPrompt().isReadOnly(), getContext().getString(R.string.rank_items), getAnswerFontSize(), this);
+        showRankingDialogButton = createSimpleButton(getContext(), getFormEntryPrompt().isReadOnly(), getContext().getString(org.odk.collect.strings.R.string.rank_items), getAnswerFontSize(), this);
         answerTextView = createAnswerTextView(getContext(), getAnswerText(), getAnswerFontSize());
 
         LinearLayout widgetLayout = new LinearLayout(getContext());

@@ -170,7 +170,7 @@ public class SmapFormWidget extends QuestionWidget implements WidgetDataReceiver
         }
 
         String v = getFormEntryPrompt().getSpecialFormQuestionText("buttonText");
-        String buttonText = (v != null) ? v : context.getString(R.string.launch_app);
+        String buttonText = (v != null) ? v : context.getString(org.odk.collect.strings.R.string.launch_app);
 
         if(validForm) {
             buttonText += " " + mfd.formName;

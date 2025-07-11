@@ -201,7 +201,7 @@ public abstract class ODKSQLiteOpenHelper {
                 String cardstatus = Environment.getExternalStorageState();
                 if (!cardstatus.equals(Environment.MEDIA_MOUNTED)) {
                     throw new RuntimeException(
-                            Collect.getInstance().getString(R.string.sdcard_unmounted, cardstatus));
+                            Collect.getInstance().getString(org.odk.collect.strings.R.string.sdcard_unmounted, cardstatus));
                 } else {
                     throw e;
                 }

@@ -75,7 +75,7 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
         }
 
         if (importSuccess) {
-            ToastUtils.showLongToast(getString(R.string.successfully_imported_settings));
+            ToastUtils.showLongToast(getString(org.odk.collect.strings.R.string.successfully_imported_settings));
             Intent data = new Intent();
             data.putExtra("server_url",url);
             data.putExtra("auth_token",token);
@@ -83,7 +83,7 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
             getActivity().setResult(RESULT_OK, data);
             getActivity().finish();
         } else {
-            ToastUtils.showLongToast(getString(R.string.invalid_qrcode));
+            ToastUtils.showLongToast(getString(org.odk.collect.strings.R.string.invalid_qrcode));
         }
 
     }

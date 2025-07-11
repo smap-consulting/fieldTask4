@@ -150,8 +150,8 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
      */
     private void createDeleteFormsDialog() {
         alertDialog = new AlertDialog.Builder(getContext()).create();
-        alertDialog.setTitle(getString(R.string.delete_file));
-        alertDialog.setMessage(getString(R.string.delete_confirm,
+        alertDialog.setTitle(getString(org.odk.collect.strings.R.string.delete_file));
+        alertDialog.setMessage(getString(org.odk.collect.strings.R.string.delete_confirm,
                 String.valueOf(getCheckedCount())));
         DialogInterface.OnClickListener dialogYesNoListener =
                 new DialogInterface.OnClickListener() {
@@ -168,16 +168,16 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
                     }
                 };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.delete_yes),
+        alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.delete_yes),
                 dialogYesNoListener);
-        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(R.string.delete_no),
+        alertDialog.setButton(DialogInterface.BUTTON_NEGATIVE, getString(org.odk.collect.strings.R.string.delete_no),
                 dialogYesNoListener);
         alertDialog.show();
     }
 
     @Override
     public void progressUpdate(Integer progress, Integer total) {
-        String message = String.format(getResources().getString(R.string.deleting_form_dialog_update_message), progress, total);
+        String message = String.format(getResources().getString(org.odk.collect.strings.R.string.deleting_form_dialog_update_message), progress, total);
         ProgressDialogFragment existingDialog = (ProgressDialogFragment) requireActivity().getSupportFragmentManager()
                 .findFragmentByTag(ProgressDialogFragment.class.getName());
 
@@ -194,7 +194,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
         // only start if no other task is running
         if (backgroundTasks.deleteFormsTask == null) {
             Bundle args = new Bundle();
-            args.putSerializable(ProgressDialogFragment.MESSAGE, getResources().getString(R.string.form_delete_message));
+            args.putSerializable(ProgressDialogFragment.MESSAGE, getResources().getString(org.odk.collect.strings.R.string.form_delete_message));
             args.putBoolean(ProgressDialogFragment.CANCELABLE, false);
             DialogUtils.showIfNotShowing(ProgressDialogFragment.class, args, getActivity().getSupportFragmentManager());
 
@@ -202,7 +202,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
             backgroundTasks.deleteFormsTask.setDeleteListener(this);
             backgroundTasks.deleteFormsTask.execute(getCheckedIdObjects());
         } else {
-            ToastUtils.showLongToast(R.string.file_delete_in_progress);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.file_delete_in_progress);
         }
     }
 
@@ -225,11 +225,11 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
 
         if (deletedForms == toDeleteCount) {
             // all deletes were successful
-            ToastUtils.showShortToast(getString(R.string.file_deleted_ok, String.valueOf(deletedForms)));
+            ToastUtils.showShortToast(getString(org.odk.collect.strings.R.string.file_deleted_ok, String.valueOf(deletedForms)));
         } else {
             // had some failures
             Timber.e("Failed to delete %d forms", toDeleteCount - deletedForms);
-            ToastUtils.showLongToast(getString(R.string.file_deleted_error, String.valueOf(getCheckedCount()
+            ToastUtils.showLongToast(getString(org.odk.collect.strings.R.string.file_deleted_error, String.valueOf(getCheckedCount()
                     - deletedForms), String.valueOf(getCheckedCount())));
         }
         backgroundTasks.deleteFormsTask = null;
@@ -249,7 +249,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
                 if (areCheckedItems()) {
                     createDeleteFormsDialog();
                 } else {
-                    ToastUtils.showShortToast(R.string.noselect_error);
+                    ToastUtils.showShortToast(org.odk.collect.strings.R.string.noselect_error);
                 }
                 break;
 

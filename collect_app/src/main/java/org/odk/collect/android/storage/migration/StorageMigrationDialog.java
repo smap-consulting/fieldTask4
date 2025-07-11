@@ -131,14 +131,14 @@ public class StorageMigrationDialog extends MaterialFullScreenDialogFragment {
     }
 
     private void setUpToolbar() {
-        getToolbar().setTitle(R.string.storage_migration_dialog_title);
+        getToolbar().setTitle(org.odk.collect.strings.R.string.storage_migration_dialog_title);
         getToolbar().setNavigationIcon(null);
     }
 
     private void setUpMessageAboutUnsetSubmissions() {
         if (unsentInstancesNumber > 0) {
             messageText2.setVisibility(View.VISIBLE);
-            messageText2.setText(getString(R.string.storage_migration_dialog_message2, unsentInstancesNumber));
+            messageText2.setText(getString(org.odk.collect.strings.R.string.storage_migration_dialog_message2, unsentInstancesNumber));
         }
     }
 
@@ -206,7 +206,7 @@ public class StorageMigrationDialog extends MaterialFullScreenDialogFragment {
 
         errorText.setVisibility(View.VISIBLE);
         errorText.setText(result.getErrorResultMessage(getContext()));
-        migrateButton.setText(R.string.try_again);
+        migrateButton.setText(org.odk.collect.strings.R.string.try_again);
     }
 
     public void startStorageMigration() {

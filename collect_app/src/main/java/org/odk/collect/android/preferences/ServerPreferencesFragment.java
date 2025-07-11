@@ -289,7 +289,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
         String currentGoogleSheetsURL = googleSheetsUrlPreference.getText();
         if (currentGoogleSheetsURL != null && currentGoogleSheetsURL.length() > 0) {
             googleSheetsUrlPreference.setSummary(currentGoogleSheetsURL + "\n\n"
-                    + getString(R.string.google_sheets_url_hint));
+                    + getString(org.odk.collect.strings.R.string.google_sheets_url_hint));
         }
         initAccountPreferences();
     }
@@ -356,7 +356,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
                         preference.setSummary(newValue.toString());
                         setupUrlDropdownAdapter(listPopupWindow);
                     } else {
-                        ToastUtils.showShortToast(R.string.url_error);
+                        ToastUtils.showShortToast(org.odk.collect.strings.R.string.url_error);
                         return false;
                     }
                     break;
@@ -366,7 +366,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
 
                     // do not allow leading and trailing whitespace
                     if (!username.equals(username.trim())) {
-                        ToastUtils.showShortToast(R.string.username_error_whitespace);
+                        ToastUtils.showShortToast(org.odk.collect.strings.R.string.username_error_whitespace);
                         return false;
                     }
 
@@ -378,7 +378,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
 
                     // do not allow leading and trailing whitespace
                     if (!pw.equals(pw.trim())) {
-                        ToastUtils.showShortToast(R.string.password_error_whitespace);
+                        ToastUtils.showShortToast(org.odk.collect.strings.R.string.password_error_whitespace);
                         return false;
                     }
 
@@ -394,14 +394,14 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
                     }
 
                     if (Validator.isUrlValid(url)) {
-                        preference.setSummary(url + "\n\n" + getString(R.string.google_sheets_url_hint));
+                        preference.setSummary(url + "\n\n" + getString(org.odk.collect.strings.R.string.google_sheets_url_hint));
 
                         String urlHash = FileUtils.getMd5Hash(new ByteArrayInputStream(url.getBytes()));
                         analytics.logEvent(SET_FALLBACK_SHEETS_URL, urlHash);
                     } else if (url.length() == 0) {
-                        preference.setSummary(getString(R.string.google_sheets_url_hint));
+                        preference.setSummary(getString(org.odk.collect.strings.R.string.google_sheets_url_hint));
                     } else {
-                        ToastUtils.showShortToast(R.string.url_error);
+                        ToastUtils.showShortToast(org.odk.collect.strings.R.string.url_error);
                         return false;
                     }
                     break;
@@ -466,13 +466,13 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
         String account = (String) GeneralSharedPreferences.getInstance().get(KEY_SELECTED_GOOGLE_ACCOUNT);
         String protocol = (String) GeneralSharedPreferences.getInstance().get(KEY_PROTOCOL);
 
-        if (TextUtils.isEmpty(account) && protocol.equals(getString(R.string.protocol_google_sheets))) {
+        if (TextUtils.isEmpty(account) && protocol.equals(getString(org.odk.collect.strings.R.string.protocol_google_sheets))) {
 
             AlertDialog alertDialog = new AlertDialog.Builder(getActivity())
                     .setIcon(android.R.drawable.ic_dialog_info)
-                    .setTitle(R.string.missing_google_account_dialog_title)
-                    .setMessage(R.string.missing_google_account_dialog_desc)
-                    .setPositiveButton(getString(R.string.ok), (dialog, which) -> dialog.dismiss())
+                    .setTitle(org.odk.collect.strings.R.string.missing_google_account_dialog_title)
+                    .setMessage(org.odk.collect.strings.R.string.missing_google_account_dialog_desc)
+                    .setPositiveButton(getString(org.odk.collect.strings.R.string.ok), (dialog, which) -> dialog.dismiss())
                     .create();
 
             showDialog(alertDialog, getActivity());

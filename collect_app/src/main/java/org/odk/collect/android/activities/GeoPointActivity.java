@@ -82,7 +82,7 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
         super.onCreate(savedInstanceState);
 
         if (!permissionsProvider.areLocationPermissionsGranted()) {
-            ToastUtils.showLongToast(R.string.not_granted_permission);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.not_granted_permission);
             finish();
             return;
         }
@@ -104,7 +104,7 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
             }
         }
 
-        setTitle(getString(R.string.get_location));
+        setTitle(getString(org.odk.collect.strings.R.string.get_location));
 
         locationClient = LocationClientProvider.getClient(this,
                 () -> new GoogleFusedLocationClient(getApplication()), GoogleApiAvailability
@@ -210,8 +210,8 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
 
         locationDialog.setCancelable(false); // taping outside the dialog doesn't cancel
         locationDialog.setIndeterminate(true);
-        locationDialog.setTitle(getString(R.string.getting_location));
-        dialogMessage = getString(R.string.please_wait_long);
+        locationDialog.setTitle(getString(org.odk.collect.strings.R.string.getting_location));
+        dialogMessage = getString(org.odk.collect.strings.R.string.please_wait_long);
 
         DialogInterface.OnClickListener geoPointButtonListener =
                 new DialogInterface.OnClickListener() {
@@ -228,10 +228,10 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
                         }
                     }
                 };
-        locationDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(R.string.save_point),
+        locationDialog.setButton(DialogInterface.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.save_point),
                 geoPointButtonListener);
         locationDialog.setButton(DialogInterface.BUTTON_NEGATIVE,
-                getString(R.string.cancel_location),
+                getString(org.odk.collect.strings.R.string.cancel_location),
                 geoPointButtonListener);
     }
 
@@ -259,7 +259,7 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
     }
 
     private void finishOnError() {
-        ToastUtils.showShortToast(R.string.provider_disabled_error);
+        ToastUtils.showShortToast(org.odk.collect.strings.R.string.provider_disabled_error);
         Intent onGPSIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
 
         startActivity(onGPSIntent);
@@ -313,11 +313,11 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
     */
 
     public String getAccuracyMessage(@NonNull Location location) {
-        return getString(R.string.location_accuracy, truncateDouble(location.getAccuracy()));
+        return getString(org.odk.collect.strings.R.string.location_accuracy, truncateDouble(location.getAccuracy()));
     }
 
     public String getProviderMessage(@NonNull Location location) {
-        return getString(R.string.location_provider, GeoUtils.capitalizeGps(location.getProvider()));
+        return getString(org.odk.collect.strings.R.string.location_provider, GeoUtils.capitalizeGps(location.getProvider()));
     }
 
     public String getResultStringForLocation(@NonNull Location location) {
@@ -335,7 +335,7 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
 
     private void updateDialogMessage() {
         String timeElapsed = DateUtils.formatElapsedTime((System.currentTimeMillis() - startTime) / 1000);
-        String locationMetadata = getString(R.string.location_metadata, numberOfAvailableSatellites, timeElapsed);
+        String locationMetadata = getString(org.odk.collect.strings.R.string.location_metadata, numberOfAvailableSatellites, timeElapsed);
         runOnUiThread(() -> locationDialog.setMessage(dialogMessage + "\n\n" + locationMetadata));
     }
 }

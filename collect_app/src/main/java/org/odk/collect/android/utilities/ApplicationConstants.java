@@ -37,14 +37,14 @@ public class ApplicationConstants {
 
     public static HashMap<Integer, Integer> getSortLabelToIconMap() {
         HashMap<Integer, Integer> hashMap = new HashMap<>();
-        hashMap.put(R.string.sort_by_name_asc, R.drawable.ic_sort_by_alpha);
-        hashMap.put(R.string.sort_by_name_desc, R.drawable.ic_sort_by_alpha);
-        hashMap.put(R.string.sort_by_date_asc, R.drawable.ic_access_time);
-        hashMap.put(R.string.sort_by_date_desc, R.drawable.ic_access_time);
-        hashMap.put(R.string.sort_by_status_asc, R.drawable.ic_assignment_turned_in);
-        hashMap.put(R.string.sort_by_status_desc, R.drawable.ic_assignment_late);
-        hashMap.put(R.string.sort_by_distance_asc, R.drawable.compass21);
-        hashMap.put(R.string.sort_by_distance_desc, R.drawable.compass21);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_name_asc, R.drawable.ic_sort_by_alpha);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_name_desc, R.drawable.ic_sort_by_alpha);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_date_asc, R.drawable.ic_access_time);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_date_desc, R.drawable.ic_access_time);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_status_asc, R.drawable.ic_assignment_turned_in);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_status_desc, R.drawable.ic_assignment_late);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_distance_asc, R.drawable.compass21);
+        hashMap.put(org.odk.collect.strings.R.string.sort_by_distance_desc, R.drawable.compass21);
         //hashMap.put(R.string.smap_sort_by_project_asc, R.drawable.ic_sort_by_alpha);     // smap keep as commented out
         //hashMap.put(R.string.smap_sort_by_project_desc, R.drawable.ic_sort_by_alpha);    // smap
         return hashMap;

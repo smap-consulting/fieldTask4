@@ -39,7 +39,7 @@ public abstract class SelectMinimalWidget extends ItemsWidget implements WidgetD
 
     @Override
     public void clearAnswer() {
-        binding.answer.setText(R.string.select_answer);
+        binding.answer.setText(org.odk.collect.strings.R.string.select_answer);
         widgetValueChanged();
     }
 

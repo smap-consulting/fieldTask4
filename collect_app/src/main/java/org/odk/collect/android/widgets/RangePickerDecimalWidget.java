@@ -58,7 +58,7 @@ public class RangePickerDecimalWidget extends QuestionWidget {
 
     @Override
     public IAnswerData getAnswer() {
-        return binding.widgetAnswerText.getText().toString().equals(getContext().getString(R.string.no_value_selected))
+        return binding.widgetAnswerText.getText().toString().equals(getContext().getString(org.odk.collect.strings.R.string.no_value_selected))
                 ? null
                 : new DecimalData(Double.parseDouble(binding.widgetAnswerText.getText().toString()));
     }
@@ -78,8 +78,8 @@ public class RangePickerDecimalWidget extends QuestionWidget {
 
     private void setUpNullValue() {
         progress = 0;
-        binding.widgetAnswerText.setText(getContext().getString(R.string.no_value_selected));
-        binding.widgetButton.setText(getContext().getString(R.string.select_value));
+        binding.widgetAnswerText.setText(getContext().getString(org.odk.collect.strings.R.string.no_value_selected));
+        binding.widgetButton.setText(getContext().getString(org.odk.collect.strings.R.string.select_value));
     }
 
     public void setNumberPickerValue(int value) {

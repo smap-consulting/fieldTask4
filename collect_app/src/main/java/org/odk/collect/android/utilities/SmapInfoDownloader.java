@@ -158,7 +158,7 @@ public class SmapInfoDownloader {
             Timber.w("Copied %s over %s", tempFile.getAbsolutePath(), file.getAbsolutePath());
             FileUtils.deleteAndReport(tempFile);
         } else {
-            String msg = Collect.getInstance().getString(R.string.fs_file_copy_error,
+            String msg = Collect.getInstance().getString(org.odk.collect.strings.R.string.fs_file_copy_error,
                     tempFile.getAbsolutePath(), file.getAbsolutePath(), errorMessage);
             Timber.w(msg);
             throw new RuntimeException(msg);

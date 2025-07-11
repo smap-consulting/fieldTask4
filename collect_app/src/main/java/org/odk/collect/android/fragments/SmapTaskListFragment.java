@@ -238,10 +238,10 @@ public class SmapTaskListFragment extends ListFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
 
         sortingOptions = new int[]{
-                R.string.sort_by_name_asc, R.string.sort_by_name_desc,
-                R.string.sort_by_date_asc, R.string.sort_by_date_desc,
-                R.string.sort_by_status_asc, R.string.sort_by_status_desc,
-                R.string.sort_by_distance_asc, R.string.sort_by_distance_desc
+                org.odk.collect.strings.R.string.sort_by_name_asc, org.odk.collect.strings.R.string.sort_by_name_desc,
+                org.odk.collect.strings.R.string.sort_by_date_asc, org.odk.collect.strings.R.string.sort_by_date_desc,
+                org.odk.collect.strings.R.string.sort_by_status_asc, org.odk.collect.strings.R.string.sort_by_status_desc,
+                org.odk.collect.strings.R.string.sort_by_distance_asc, org.odk.collect.strings.R.string.sort_by_distance_desc
         };
         model = getViewMode();
         model.getSurveyData().observe(getViewLifecycleOwner(), surveyData -> {
@@ -368,22 +368,22 @@ public class SmapTaskListFragment extends ListFragment {
 
         if (odkMenus) {
             menu
-                    .add(0, MENU_ENTERDATA, 0, R.string.enter_data)
+                    .add(0, MENU_ENTERDATA, 0, org.odk.collect.strings.R.string.enter_data)
                     .setIcon(android.R.drawable.ic_menu_edit)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
             menu
-                    .add(0, MENU_GETFORMS, 0, R.string.get_forms)
+                    .add(0, MENU_GETFORMS, 0, org.odk.collect.strings.R.string.get_forms)
                     .setIcon(android.R.drawable.ic_input_add)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
             menu
-                    .add(0, MENU_SENDDATA, 0, R.string.send_data)
+                    .add(0, MENU_SENDDATA, 0, org.odk.collect.strings.R.string.send_data)
                     .setIcon(android.R.drawable.ic_menu_send)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
             menu
-                    .add(0, MENU_MANAGEFILES, 0, R.string.manage_files)
+                    .add(0, MENU_MANAGEFILES, 0, org.odk.collect.strings.R.string.manage_files)
                     .setIcon(android.R.drawable.ic_delete)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         }
@@ -393,7 +393,7 @@ public class SmapTaskListFragment extends ListFragment {
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         menu
-                .add(0, MENU_EXIT, 0, R.string.exit)
+                .add(0, MENU_EXIT, 0, org.odk.collect.strings.R.string.exit)
                 .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
 
         boolean adminMenu = PreferenceManager
@@ -403,14 +403,14 @@ public class SmapTaskListFragment extends ListFragment {
         if (adminMenu) {
             menu
                     .add(0, R.id.menu_admin_preferences, 0,
-                            R.string.admin_preferences)
+                            org.odk.collect.strings.R.string.admin_preferences)
                     .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
         }
 
         final MenuItem sortItem = menu.findItem(R.id.menu_sort);
         final MenuItem searchItem = menu.findItem(R.id.menu_filter);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-        searchView.setQueryHint(getResources().getString(R.string.search));
+        searchView.setQueryHint(getResources().getString(org.odk.collect.strings.R.string.search));
         searchView.setMaxWidth(Integer.MAX_VALUE);
 
         if (filterText == null) {

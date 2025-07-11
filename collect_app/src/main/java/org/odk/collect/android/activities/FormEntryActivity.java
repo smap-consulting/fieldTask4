@@ -550,7 +550,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                         formSaveViewModel.resumeSave();
                     } else {
                         String path = session.getFile().getAbsolutePath();
-                        String message = getString(R.string.answer_file_copy_failed_message, path);
+                        String message = getString(org.odk.collect.strings.R.string.answer_file_copy_failed_message, path);
                         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
                     }
                 });
@@ -682,7 +682,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             FormInfo formInfo = ContentResolverHelper.getFormDetails(uri);
 
             if (formInfo == null) {
-                createErrorDialog(getString(R.string.bad_uri, uri), true);
+                createErrorDialog(getString(org.odk.collect.strings.R.string.bad_uri, uri), true);
                 return;
             }
 
@@ -691,14 +691,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
             if (candidateForms.isEmpty()) {
                 createErrorDialog(getString(
-                        R.string.parent_form_not_present,
+                                org.odk.collect.strings.R.string.parent_form_not_present,
                         formInfo.getFormId())
                                 + ((formInfo.getFormVersion() == null) ? ""
-                                : "\n" + getString(R.string.version) + " " + formInfo.getFormVersion()),
+                                : "\n" + getString(org.odk.collect.strings.R.string.version) + " " + formInfo.getFormVersion()),
                         true);
                 return;
             } else if (candidateForms.stream().filter(f -> !f.isDeleted()).count() > 1) {
-                createErrorDialog(getString(R.string.survey_multiple_forms_error), true);
+                createErrorDialog(getString(org.odk.collect.strings.R.string.survey_multiple_forms_error), true);
                 return;
             }
 
@@ -707,7 +707,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 && uriMimeType.equals(FormsColumns.CONTENT_ITEM_TYPE)) {
             formPath = ContentResolverHelper.getFormPath(uri);
             if (formPath == null) {
-                createErrorDialog(getString(R.string.bad_uri, uri), true);
+                createErrorDialog(getString(org.odk.collect.strings.R.string.bad_uri, uri), true);
                 return;
             } else {
 
@@ -798,7 +798,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     private void initToolbar() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle(getString(R.string.loading_form));
+        setTitle(getString(org.odk.collect.strings.R.string.loading_form));
     }
 
     /**
@@ -889,7 +889,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         if (intent == null && requestCode != RequestCodes.DRAW_IMAGE && requestCode != RequestCodes.ANNOTATE_IMAGE
                 && requestCode != RequestCodes.SIGNATURE_CAPTURE && requestCode != RequestCodes.IMAGE_CAPTURE) {
             Timber.d("The intent has a null value for requestCode: %s", requestCode);
-            showLongToast(getString(R.string.null_intent_value));
+            showLongToast(getString(org.odk.collect.strings.R.string.null_intent_value));
             return;
         }
 
@@ -995,7 +995,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
     private void loadFile(Uri uri) {
         ProgressDialogFragment progressDialog = new ProgressDialogFragment();
-        progressDialog.setMessage(getString(R.string.please_wait));
+        progressDialog.setMessage(getString(org.odk.collect.strings.R.string.please_wait));
         progressDialog.show(getSupportFragmentManager(), ProgressDialogFragment.COLLECT_PROGRESS_DIALOG_TAG);
 
         mediaLoadingFragment.beginMediaLoadingTask(uri);
@@ -1030,7 +1030,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                             waitingForDataRegistry.cancelWaitingForData();
                         } catch (Exception e) {
                             Timber.e(e);
-                            ToastUtils.showLongToast(currentViewIfODKView.getContext().getString(R.string.error_attaching_binary_file,
+                            ToastUtils.showLongToast(currentViewIfODKView.getContext().getString(org.odk.collect.strings.R.string.error_attaching_binary_file,
                                     e.getMessage()));
                         }
                         set = true;
@@ -1173,11 +1173,11 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         super.onCreateContextMenu(menu, v, menuInfo);
         FormController formController = getFormController();
 
-        menu.add(0, v.getId(), 0, getString(R.string.clear_answer));
+        menu.add(0, v.getId(), 0, getString(org.odk.collect.strings.R.string.clear_answer));
         if (formController.indexContainsRepeatableGroup()) {
-            menu.add(0, DELETE_REPEAT, 0, getString(R.string.delete_repeat));
+            menu.add(0, DELETE_REPEAT, 0, getString(org.odk.collect.strings.R.string.delete_repeat));
         }
-        menu.setHeaderTitle(getString(R.string.edit_prompt));
+        menu.setHeaderTitle(getString(org.odk.collect.strings.R.string.edit_prompt));
     }
 
     @Override
@@ -1304,7 +1304,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 // this is badness to avoid a crash.
                 try {
                     event = formController.stepToNextScreenEvent();
-                    createErrorDialog(getString(R.string.survey_internal_error), true);
+                    createErrorDialog(getString(org.odk.collect.strings.R.string.survey_internal_error), true);
                 } catch (JavaRosaException e) {
                     Timber.d(e);
                     createErrorDialog(e.getCause().getMessage(), true);
@@ -1417,7 +1417,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             @Override
             public void onSaveClicked(boolean markAsFinalized) {
                 if (saveName.length() < 1) {
-                    showShortToast(R.string.save_as_error);
+                    showShortToast(org.odk.collect.strings.R.string.save_as_error);
                 } else {
                     formSaveViewModel.saveForm(getIntent().getData(), markAsFinalized, saveName, true);
                 }
@@ -1749,7 +1749,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                     constraintText = formController.getQuestionPrompt(index)
                             .getSpecialFormQuestionText("constraintMsg");
                     if (constraintText == null) {
-                        constraintText = getString(R.string.invalid_answer_error);
+                        constraintText = getString(org.odk.collect.strings.R.string.invalid_answer_error);
                     }
                 }
                 break;
@@ -1760,7 +1760,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                     constraintText = formController.getQuestionPrompt(index)
                             .getSpecialFormQuestionText("requiredMsg");
                     if (constraintText == null) {
-                        constraintText = getString(R.string.required_answer_error);
+                        constraintText = getString(org.odk.collect.strings.R.string.required_answer_error);
                     }
                 }
                 break;
@@ -1844,7 +1844,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             errorMessage = errorMsg;
         }
 
-        alertDialog.setTitle(getString(R.string.error_occured));
+        alertDialog.setTitle(getString(org.odk.collect.strings.R.string.error_occured));
         alertDialog.setMessage(errorMsg);
         DialogInterface.OnClickListener errorListener = new DialogInterface.OnClickListener() {
             @Override
@@ -1860,7 +1860,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.setButton(BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.ok), errorListener);
         swipeHandler.setBeenSwiped(false);
         alertDialog.show();
     }
@@ -1876,7 +1876,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         // save current answer
         if (current) {
             if (!saveAnswersForCurrentScreen(complete)) {
-                showShortToast(R.string.data_saved_error);
+                showShortToast(org.odk.collect.strings.R.string.data_saved_error);
                 return false;
             }
         }
@@ -1902,15 +1902,15 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
             case SAVED:
                 if(result.getShowSavedMessage()) {	// smap TODO
-                    ToastUtils.showShortToast(R.string.data_saved_ok);
+                    ToastUtils.showShortToast(org.odk.collect.strings.R.string.data_saved_ok);
                 }
                 DialogUtils.dismissDialog(SaveFormProgressDialogFragment.class, getSupportFragmentManager());
                 DialogUtils.dismissDialog(ChangesReasonPromptDialogFragment.class, getSupportFragmentManager());
 
                 if(mCanUpdate) {
-                    showShortToast(R.string.data_saved_ok);
+                    showShortToast(org.odk.collect.strings.R.string.data_saved_ok);
                 } else {
-                    showShortToast(R.string.comments_saved_ok);
+                    showShortToast(org.odk.collect.strings.R.string.comments_saved_ok);
                 }
 
                 if (result.getRequest().viewExiting()) {
@@ -1932,10 +1932,10 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 String message;
 
                 if (result.getMessage() != null) {
-                    message = getString(R.string.data_saved_error) + " "
+                    message = getString(org.odk.collect.strings.R.string.data_saved_error) + " "
                             + result.getMessage();
                 } else {
-                    message = getString(R.string.data_saved_error);
+                    message = getString(org.odk.collect.strings.R.string.data_saved_error);
                 }
 
                 showLongToast(message);
@@ -1946,7 +1946,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 DialogUtils.dismissDialog(SaveFormProgressDialogFragment.class, getSupportFragmentManager());
                 DialogUtils.dismissDialog(ChangesReasonPromptDialogFragment.class, getSupportFragmentManager());
 
-                showLongToast(String.format(getString(R.string.encryption_error_message),
+                showLongToast(String.format(getString(org.odk.collect.strings.R.string.encryption_error_message),
                         result.getMessage()));
                 finishAndReturnInstance(result.isComplete());   // smap add isComplete
                 formSaveViewModel.resumeFormEntry();
@@ -1993,7 +1993,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
      */
     private void createClearDialog(final QuestionWidget qw) {
         alertDialog = new AlertDialog.Builder(this).create();
-        alertDialog.setTitle(getString(R.string.clear_answer_ask));
+        alertDialog.setTitle(getString(org.odk.collect.strings.R.string.clear_answer_ask));
 
         String question = qw.getFormEntryPrompt().getLongText();
         if (question == null) {
@@ -2003,7 +2003,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             question = question.substring(0, 50) + "...";
         }
 
-        alertDialog.setMessage(getString(R.string.clearanswer_confirm,
+        alertDialog.setMessage(getString(org.odk.collect.strings.R.string.clearanswer_confirm,
                 question));
 
         DialogInterface.OnClickListener quitListener = new DialogInterface.OnClickListener() {
@@ -2020,8 +2020,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         };
         alertDialog.setCancelable(false);
         alertDialog
-                .setButton(BUTTON_POSITIVE, getString(R.string.discard_answer), quitListener);
-        alertDialog.setButton(BUTTON_NEGATIVE, getString(R.string.clear_answer_no),
+                .setButton(BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.discard_answer), quitListener);
+        alertDialog.setButton(BUTTON_NEGATIVE, getString(org.odk.collect.strings.R.string.clear_answer_no),
                 quitListener);
         alertDialog.show();
     }
@@ -2079,8 +2079,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                                 onScreenRefresh();
                             }
                         })
-                .setTitle(getString(R.string.change_language))
-                .setNegativeButton(getString(R.string.do_not_change), null).create();
+                .setTitle(getString(org.odk.collect.strings.R.string.change_language))
+                .setNegativeButton(getString(org.odk.collect.strings.R.string.do_not_change), null).create();
         alertDialog.show();
     }
 
@@ -2414,7 +2414,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 boolean hasUsedSavepoint = task.hasUsedSavepoint();
 
                 if (hasUsedSavepoint) {
-                    runOnUiThread(() -> showLongToast(R.string.savepoint_used));
+                    runOnUiThread(() -> showLongToast(org.odk.collect.strings.R.string.savepoint_used));
                 }
 
                 if (formController.getInstanceFile() == null) {
@@ -2427,7 +2427,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                     if (instanceFile != null) {
                         formController.setInstanceFile(instanceFile);
                     } else {
-                        showFormLoadErrorAndExit(getString(R.string.loading_form_failed));
+                        showFormLoadErrorAndExit(getString(org.odk.collect.strings.R.string.loading_form_failed));
                     }
 
                     formControllerAvailable(formController);
@@ -2509,7 +2509,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
             // end smap
         } else {
             Timber.e("FormController is null");
-            showLongToast(R.string.loading_form_failed);
+            showLongToast(org.odk.collect.strings.R.string.loading_form_failed);
             finish();
         }
     }
@@ -2550,7 +2550,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
         if (errorMsg != null) {
             createErrorDialog(errorMsg, true);
         } else {
-            createErrorDialog(getString(R.string.parse_error), true);
+            createErrorDialog(getString(org.odk.collect.strings.R.string.parse_error), true);
         }
     }
 
@@ -2559,7 +2559,7 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
 
         FormLoadingDialogFragment dialog = getDialog(FormLoadingDialogFragment.class, getSupportFragmentManager());
         if (dialog != null) {
-            dialog.setMessage(getString(R.string.please_wait) + "\n\n" + stepMessage);
+            dialog.setMessage(getString(org.odk.collect.strings.R.string.please_wait) + "\n\n" + stepMessage);
         }
     }
 
@@ -2608,14 +2608,14 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
     @Override
     public void onSavePointError(String errorMessage) {
         if (errorMessage != null && errorMessage.trim().length() > 0) {
-            showLongToast(getString(R.string.save_point_error, errorMessage));
+            showLongToast(getString(org.odk.collect.strings.R.string.save_point_error, errorMessage));
         }
     }
 
     @Override
     public void onSaveFormIndexError(String errorMessage) {
         if (errorMessage != null && errorMessage.trim().length() > 0) {
-            showLongToast(getString(R.string.save_point_error, errorMessage));
+            showLongToast(getString(org.odk.collect.strings.R.string.save_point_error, errorMessage));
         }
     }
 

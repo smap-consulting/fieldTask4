@@ -143,7 +143,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
         // enter data button. expects a result.
         Button enterDataButton = findViewById(R.id.enter_data);
-        enterDataButton.setText(getString(R.string.enter_data_button));
+        enterDataButton.setText(getString(org.odk.collect.strings.R.string.enter_data_button));
         enterDataButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,7 +155,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
         // review data button. expects a result.
         reviewDataButton = findViewById(R.id.review_data);
-        reviewDataButton.setText(getString(R.string.review_data_button));
+        reviewDataButton.setText(getString(org.odk.collect.strings.R.string.review_data_button));
         reviewDataButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,7 +168,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
         // send data button. expects a result.
         sendDataButton = findViewById(R.id.send_data);
-        sendDataButton.setText(getString(R.string.send_data_button));
+        sendDataButton.setText(getString(org.odk.collect.strings.R.string.send_data_button));
         sendDataButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -192,16 +192,16 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
         // manage forms button. no result expected.
         getFormsButton = findViewById(R.id.get_forms);
-        getFormsButton.setText(getString(R.string.get_forms));
+        getFormsButton.setText(getString(org.odk.collect.strings.R.string.get_forms));
         getFormsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 SharedPreferences sharedPreferences = PreferenceManager
                         .getDefaultSharedPreferences(MainMenuActivity.this);
                 String protocol = sharedPreferences.getString(
-                        GeneralKeys.KEY_PROTOCOL, getString(R.string.protocol_odk_default));
+                        GeneralKeys.KEY_PROTOCOL, getString(org.odk.collect.strings.R.string.protocol_odk_default));
                 Intent i = null;
-                if (protocol.equalsIgnoreCase(getString(R.string.protocol_google_sheets))) {
+                if (protocol.equalsIgnoreCase(getString(org.odk.collect.strings.R.string.protocol_google_sheets))) {
                     if (new PlayServicesChecker().isGooglePlayServicesAvailable(MainMenuActivity.this)) {
                         i = new Intent(getApplicationContext(),
                                 GoogleDriveActivity.class);
@@ -219,7 +219,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
         // manage forms button. no result expected.
         manageFilesButton = findViewById(R.id.manage_forms);
-        manageFilesButton.setText(getString(R.string.manage_files));
+        manageFilesButton.setText(getString(org.odk.collect.strings.R.string.manage_files));
         manageFilesButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -249,9 +249,9 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
         LegacySettingsFileImporter legacySettingsFileImporter = new LegacySettingsFileImporter(storagePathProvider, analytics, settingsImporter);
         if (legacySettingsFileImporter.importFromFile()) {
             new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.successfully_imported_settings)
-                    .setMessage(R.string.settings_successfully_loaded_file_notification)
-                    .setPositiveButton(R.string.ok, (dialog, which) -> {
+                    .setTitle(org.odk.collect.strings.R.string.successfully_imported_settings)
+                    .setMessage(org.odk.collect.strings.R.string.settings_successfully_loaded_file_notification)
+                    .setPositiveButton(org.odk.collect.strings.R.string.ok, (dialog, which) -> {
                         dialog.dismiss();
                         recreate();
                     })
@@ -369,7 +369,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
             }
         };
         alertDialog.setCancelable(false);
-        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(R.string.ok), errorListener);
+        alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, getString(org.odk.collect.strings.R.string.ok), errorListener);
         alertDialog.show();
     }
 
@@ -399,23 +399,23 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
             if (completedCount > 0) {
                 sendDataButton.setText(
-                        getString(R.string.send_data_button, String.valueOf(completedCount)));
+                        getString(org.odk.collect.strings.R.string.send_data_button, String.valueOf(completedCount)));
             } else {
-                sendDataButton.setText(getString(R.string.send_data));
+                sendDataButton.setText(getString(org.odk.collect.strings.R.string.send_data));
             }
 
             if (savedCount > 0) {
-                reviewDataButton.setText(getString(R.string.review_data_button,
+                reviewDataButton.setText(getString(org.odk.collect.strings.R.string.review_data_button,
                         String.valueOf(savedCount)));
             } else {
-                reviewDataButton.setText(getString(R.string.review_data));
+                reviewDataButton.setText(getString(org.odk.collect.strings.R.string.review_data));
             }
 
             if (viewSentCount > 0) {
                 viewSentFormsButton.setText(
-                        getString(R.string.view_sent_forms_button, String.valueOf(viewSentCount)));
+                        getString(org.odk.collect.strings.R.string.view_sent_forms_button, String.valueOf(viewSentCount)));
             } else {
-                viewSentFormsButton.setText(getString(R.string.view_sent_forms));
+                viewSentFormsButton.setText(getString(org.odk.collect.strings.R.string.view_sent_forms));
             }
         }
     }
@@ -441,7 +441,7 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
     @Override
     public void onIncorrectAdminPassword() {
-        ToastUtils.showShortToast(R.string.admin_password_incorrect);
+        ToastUtils.showShortToast(org.odk.collect.strings.R.string.admin_password_incorrect);
     }
 
     /*
@@ -507,8 +507,8 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
     private void displayStorageMigrationBanner() {
         storageMigrationBanner.setVisibility(View.VISIBLE);
-        storageMigrationBanner.setText(getText(R.string.scoped_storage_banner_text));
-        storageMigrationBanner.setActionText(getString(R.string.scoped_storage_learn_more));
+        storageMigrationBanner.setText(getText(org.odk.collect.strings.R.string.scoped_storage_banner_text));
+        storageMigrationBanner.setActionText(getString(org.odk.collect.strings.R.string.scoped_storage_learn_more));
         storageMigrationBanner.setAction(() -> {
             showStorageMigrationDialog();
             getContentResolver().unregisterContentObserver(contentObserver);
@@ -517,8 +517,8 @@ public class MainMenuActivity extends CollectAbstractActivity implements AdminPa
 
     private void displayBannerWithSuccessStorageMigrationResult() {
         storageMigrationBanner.setVisibility(View.VISIBLE);
-        storageMigrationBanner.setText(getString(R.string.storage_migration_completed));
-        storageMigrationBanner.setActionText(getString(R.string.scoped_storage_dismiss));
+        storageMigrationBanner.setText(getString(org.odk.collect.strings.R.string.storage_migration_completed));
+        storageMigrationBanner.setActionText(getString(org.odk.collect.strings.R.string.scoped_storage_dismiss));
         storageMigrationBanner.setAction(() -> {
             storageMigrationBanner.setVisibility(View.GONE);
             storageMigrationRepository.clearResult();

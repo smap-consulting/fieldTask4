@@ -121,7 +121,7 @@ public class GoogleMapFragment extends SupportMapFragment implements
             .beginTransaction().replace(containerId, this).commitNow();
         getMapAsync((GoogleMap map) -> {
             if (map == null) {
-                ToastUtils.showShortToast(R.string.google_play_services_error_occured);
+                ToastUtils.showShortToast(org.odk.collect.strings.R.string.google_play_services_error_occured);
                 if (errorListener != null) {
                     errorListener.onError();
                 }
@@ -708,12 +708,12 @@ public class GoogleMapFragment extends SupportMapFragment implements
     private void showGpsDisabledAlert() {
         if(getActivity() != null) {
             new AlertDialog.Builder(getActivity())
-                    .setMessage(getString(R.string.gps_enable_message))
+                    .setMessage(getString(org.odk.collect.strings.R.string.gps_enable_message))
                     .setCancelable(false)
-                    .setPositiveButton(getString(R.string.enable_gps),
+                    .setPositiveButton(getString(org.odk.collect.strings.R.string.enable_gps),
                             (dialog, id) -> startActivityForResult(
                                     new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0))
-                    .setNegativeButton(getString(R.string.cancel),
+                    .setNegativeButton(getString(org.odk.collect.strings.R.string.cancel),
                             (dialog, id) -> dialog.cancel())
                     .create()
                     .show();

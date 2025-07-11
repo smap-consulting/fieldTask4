@@ -525,12 +525,12 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     private void showGpsDisabledAlert() {
         new AlertDialog.Builder(getContext())
-            .setMessage(getString(R.string.gps_enable_message))
+            .setMessage(getString( org.odk.collect.strings.R.string.gps_enable_message))
             .setCancelable(false)
-            .setPositiveButton(getString(R.string.enable_gps),
+            .setPositiveButton(getString(org.odk.collect.strings.R.string.enable_gps),
                 (dialog, id) -> startActivityForResult(
                     new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0))
-            .setNegativeButton(getString(R.string.cancel),
+            .setNegativeButton(getString(org.odk.collect.strings.R.string.cancel),
                 (dialog, id) -> dialog.cancel())
             .create()
             .show();

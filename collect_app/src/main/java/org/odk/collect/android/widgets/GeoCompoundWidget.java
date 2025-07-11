@@ -75,15 +75,15 @@ public class GeoCompoundWidget extends QuestionWidget implements WidgetDataRecei
 
         if (getFormEntryPrompt().isReadOnly()) {
             if (dataAvailable) {
-                binding.simpleButton.setText(R.string.geocompound_view_read_only);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.geocompound_view_read_only);
             } else {
                 binding.simpleButton.setVisibility(View.GONE);
             }
         } else {
             if (dataAvailable) {
-                binding.simpleButton.setText(R.string.geocompound_view_change_location);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.geocompound_view_change_location);
             } else {
-                binding.simpleButton.setText(R.string.get_geocompound);
+                binding.simpleButton.setText(org.odk.collect.strings.R.string.get_geocompound);
             }
         }
 
@@ -104,7 +104,7 @@ public class GeoCompoundWidget extends QuestionWidget implements WidgetDataRecei
     @Override
     public void clearAnswer() {
         binding.geoAnswerText.setText(null);
-        binding.simpleButton.setText(R.string.get_geocompound);
+        binding.simpleButton.setText(org.odk.collect.strings.R.string.get_geocompound);
         widgetValueChanged();
     }
 
@@ -118,7 +118,7 @@ public class GeoCompoundWidget extends QuestionWidget implements WidgetDataRecei
     @Override
     public void setData(Object answer) {
         binding.geoAnswerText.setText(answer.toString());
-        binding.simpleButton.setText(answer.toString().isEmpty() ? R.string.get_geocompound : R.string.geocompound_view_change_location);
+        binding.simpleButton.setText(answer.toString().isEmpty() ? org.odk.collect.strings.R.string.get_geocompound : org.odk.collect.strings.R.string.geocompound_view_change_location);
         widgetValueChanged();
     }
 

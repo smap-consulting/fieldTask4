@@ -69,9 +69,9 @@ public abstract class ItemsWidget extends QuestionWidget {
         try {
             items = new ItemsetDao(new ItemsetDbAdapter()).getItems(getFormEntryPrompt(), new XPathParseTool());
         } catch (FileNotFoundException e) {
-            showWarning(getContext().getString(R.string.file_missing, e.getMessage()));
+            showWarning(getContext().getString(org.odk.collect.strings.R.string.file_missing, e.getMessage()));
         } catch (XPathSyntaxException e) {
-            showWarning(getContext().getString(R.string.parser_exception, e.getMessage()));
+            showWarning(getContext().getString(org.odk.collect.strings.R.string.parser_exception, e.getMessage()));
         }
     }
 
@@ -81,7 +81,7 @@ public abstract class ItemsWidget extends QuestionWidget {
         try {
             items = ExternalDataUtil.populateExternalChoices(getFormEntryPrompt(), xpathFuncExpr);
         } catch (FileNotFoundException e) {
-            showWarning(getContext().getString(R.string.file_missing, e.getMessage()));
+            showWarning(getContext().getString(org.odk.collect.strings.R.string.file_missing, e.getMessage()));
         } catch (ExternalDataException e) {
             showWarning(e.getMessage());
         }

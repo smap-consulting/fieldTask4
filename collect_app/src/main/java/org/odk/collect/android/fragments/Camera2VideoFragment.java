@@ -374,7 +374,7 @@ public class Camera2VideoFragment extends Fragment
         } catch (NullPointerException e) {
             // Currently an NPE is thrown when the Camera2API is used but not supported on the
             // device this code runs.
-            ErrorDialog.newInstance(getString(R.string.camera_error))
+            ErrorDialog.newInstance(getString(org.odk.collect.strings.R.string.camera_error))
                     .show(getChildFragmentManager(), FRAGMENT_DIALOG);
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while trying to lock camera opening.");
@@ -559,7 +559,7 @@ public class Camera2VideoFragment extends Fragment
 
                             // Start recording
                             mediaRecorder.start();
-                            ToastUtils.showLongToast(getActivity().getString(R.string.stop_video_capture_instruction));
+                            ToastUtils.showLongToast(getActivity().getString(org.odk.collect.strings.R.string.stop_video_capture_instruction));
                         }
                     });
                 }

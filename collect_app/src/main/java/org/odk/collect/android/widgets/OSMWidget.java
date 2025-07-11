@@ -75,7 +75,7 @@ public class OSMWidget extends QuestionWidget implements WidgetDataReceiver, But
 
         errorTextView = new TextView(context);
         errorTextView.setId(View.generateViewId());
-        errorTextView.setText(R.string.invalid_osm_data);
+        errorTextView.setText(org.odk.collect.strings.R.string.invalid_osm_data);
 
         // Determine the tags required
         osmRequiredTags = questionDetails.getPrompt().getQuestion().getOsmTags();
@@ -94,9 +94,9 @@ public class OSMWidget extends QuestionWidget implements WidgetDataReceiver, But
         }
         launchOpenMapKitButton.setTextColor(Color.WHITE); // White text
         if (osmFileName != null) {
-            launchOpenMapKitButton.setText(getContext().getString(R.string.recapture_osm));
+            launchOpenMapKitButton.setText(getContext().getString(org.odk.collect.strings.R.string.recapture_osm));
         } else {
-            launchOpenMapKitButton.setText(getContext().getString(R.string.capture_osm));
+            launchOpenMapKitButton.setText(getContext().getString(org.odk.collect.strings.R.string.capture_osm));
         }
 
         osmFileNameHeaderTextView = new TextView(context);
@@ -104,7 +104,7 @@ public class OSMWidget extends QuestionWidget implements WidgetDataReceiver, But
         osmFileNameHeaderTextView.setTextSize(20);
         osmFileNameHeaderTextView.setTypeface(null, Typeface.BOLD);
         osmFileNameHeaderTextView.setPadding(10, 0, 0, 10);
-        osmFileNameHeaderTextView.setText(R.string.edited_osm_file);
+        osmFileNameHeaderTextView.setText(org.odk.collect.strings.R.string.edited_osm_file);
 
         // text view showing the resulting OSM file name
         osmFileNameTextView = new TextView(context);
@@ -168,8 +168,8 @@ public class OSMWidget extends QuestionWidget implements WidgetDataReceiver, But
 
         } catch (Exception ex) {
             AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setTitle(R.string.alert);
-            builder.setMessage(R.string.install_openmapkit);
+            builder.setTitle(org.odk.collect.strings.R.string.alert);
+            builder.setMessage(org.odk.collect.strings.R.string.install_openmapkit);
             DialogInterface.OnClickListener okClickListener = new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     //TODO: launch to app store?

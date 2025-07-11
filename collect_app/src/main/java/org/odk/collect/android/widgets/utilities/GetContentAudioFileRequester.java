@@ -31,7 +31,7 @@ public class GetContentAudioFileRequester implements AudioFileRequester {
             waitingForDataRegistry.waitForData(prompt.getIndex());
             activity.startActivityForResult(intent, ApplicationConstants.RequestCodes.AUDIO_CHOOSER);
         } catch (Exception e) {
-            Toast.makeText(activity, activity.getString(R.string.activity_not_found, activity.getString(R.string.choose_sound)), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(org.odk.collect.strings.R.string.activity_not_found, activity.getString(org.odk.collect.strings.R.string.choose_sound)), Toast.LENGTH_SHORT).show();
             waitingForDataRegistry.cancelWaitingForData();
         }
 

@@ -88,7 +88,7 @@ public class AdminPreferencesActivity extends CollectAbstractActivity implements
         setContentView(R.layout.activity_preferences_layout);
         setTheme(new ThemeUtils(this).getSettingsTheme());
 
-        setTitle(R.string.admin_preferences);
+        setTitle(org.odk.collect.strings.R.string.admin_preferences);
 
         Fragment fragment = new AdminPreferencesFragment();
         Bundle args = new Bundle();

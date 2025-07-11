@@ -23,7 +23,7 @@ public class GeoWidgetUtils {
             if (answer != null && !answer.isEmpty()) {
                 String[] parts = answer.split(" ");
                 return context.getString(
-                        R.string.gps_result,
+                        org.odk.collect.strings.R.string.gps_result,
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[0]), "lat"),
                         convertCoordinatesIntoDegreeFormat(context, Double.parseDouble(parts[1]), "lon"),
                         truncateDouble(parts[2]),
@@ -100,7 +100,7 @@ public class GeoWidgetUtils {
 
     private static String getCardinalDirection(Context context, double coordinate, String type) {
         return type.equalsIgnoreCase("lon")
-                ? coordinate < 0 ? context.getString(R.string.west) : context.getString(R.string.east)
-                : coordinate < 0 ? context.getString(R.string.south) : context.getString(R.string.north);
+                ? coordinate < 0 ? context.getString(org.odk.collect.strings.R.string.west) : context.getString(org.odk.collect.strings.R.string.east)
+                : coordinate < 0 ? context.getString(org.odk.collect.strings.R.string.south) : context.getString(org.odk.collect.strings.R.string.north);
     }
 }

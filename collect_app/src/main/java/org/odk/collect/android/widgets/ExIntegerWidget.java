@@ -54,7 +54,7 @@ public class ExIntegerWidget extends ExStringWidget {
             ((Activity) getContext()).startActivityForResult(i, RequestCodes.EX_INT_CAPTURE);
         } catch (SecurityException e) {
             Timber.i(e);
-            ToastUtils.showLongToast(R.string.not_granted_permission);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.not_granted_permission);
         }
     }
 

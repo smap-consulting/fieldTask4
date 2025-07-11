@@ -147,7 +147,7 @@ public class RangeWidgetUtils {
             if (prompt.getAnswerValue() != null) {
                 BigDecimal actualValue = new BigDecimal(prompt.getAnswerValue().getValue().toString());
                 binding.widgetAnswerText.setText(String.valueOf(actualValue));
-                binding.widgetButton.setText(context.getString(R.string.edit_value));
+                binding.widgetButton.setText(context.getString(org.odk.collect.strings.R.string.edit_value));
             }
         }
         if (prompt.isReadOnly()) {
@@ -244,7 +244,7 @@ public class RangeWidgetUtils {
             actualValue = rangeStart.subtract(multiply);
         }
         binding.widgetAnswerText.setText(String.valueOf(actualValue));
-        binding.widgetButton.setText(R.string.edit_value);
+        binding.widgetButton.setText(org.odk.collect.strings.R.string.edit_value);
 
         return actualValue.subtract(rangeStart).abs().divide(rangeStep).intValue();
     }
@@ -264,7 +264,7 @@ public class RangeWidgetUtils {
         boolean result = true;
         if (rangeStep.compareTo(BigDecimal.ZERO) == 0
                 || rangeEnd.subtract(rangeStart).remainder(rangeStep).compareTo(BigDecimal.ZERO) != 0) {
-            ToastUtils.showLongToast(R.string.invalid_range_widget);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.invalid_range_widget);
             result = false;
         }
         return result;

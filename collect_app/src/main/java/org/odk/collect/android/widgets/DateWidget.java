@@ -77,7 +77,7 @@ public class DateWidget extends QuestionWidget implements WidgetDataReceiver {
 
     @Override
     public IAnswerData getAnswer() {
-        return binding.dateAnswerText.getText().equals(getContext().getString(R.string.no_date_selected))
+        return binding.dateAnswerText.getText().equals(getContext().getString(org.odk.collect.strings.R.string.no_date_selected))
                 ? null
                 : new DateData(selectedDate.toDate());
     }
@@ -98,7 +98,7 @@ public class DateWidget extends QuestionWidget implements WidgetDataReceiver {
     @Override
     public void clearAnswer() {
         selectedDate = DateTimeUtils.getCurrentDateTime();
-        binding.dateAnswerText.setText(R.string.no_date_selected);
+        binding.dateAnswerText.setText(org.odk.collect.strings.R.string.no_date_selected);
         widgetValueChanged();
     }
 

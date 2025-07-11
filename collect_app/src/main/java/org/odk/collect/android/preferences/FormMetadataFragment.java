@@ -80,7 +80,7 @@ public class FormMetadataFragment extends BasePreferenceFragment {
         emailPreference.setOnPreferenceChangeListener((preference, newValue) -> {
             String newValueString = newValue.toString();
             if (!newValueString.isEmpty() && !Validator.isEmailAddressValid(newValueString)) {
-                ToastUtils.showLongToast(R.string.invalid_email_address);
+                ToastUtils.showLongToast(org.odk.collect.strings.R.string.invalid_email_address);
                 return false;
             }
 
@@ -107,7 +107,7 @@ public class FormMetadataFragment extends BasePreferenceFragment {
             if (!TextUtils.isEmpty(value)) {
                 return value;
             } else {
-                return getString(R.string.preference_not_available);
+                return getString(org.odk.collect.strings.R.string.preference_not_available);
             }
         }
     }

@@ -63,7 +63,7 @@ public class AndroidShortcuts extends AppCompatActivity {
         ArrayList<Uri> commands = new ArrayList<>();
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.select_odk_shortcut);
+        builder.setTitle(org.odk.collect.strings.R.string.select_odk_shortcut);
 
         Cursor c = null;
         try {

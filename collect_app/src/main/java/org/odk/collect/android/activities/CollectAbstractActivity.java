@@ -66,14 +66,14 @@ public abstract class CollectAbstractActivity extends AppCompatActivity {
          * are able to handle permission checks and requests by themselves.
          */
         if (!permissionsProvider.areStoragePermissionsGranted() && !isEntryPointActivity(this)) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.Theme_AppCompat_Light_Dialog);
+            AlertDialog.Builder builder = new AlertDialog.Builder(this, com.google.android.material.R.style.Theme_AppCompat_Light_Dialog);
 
             Timber.e("xoxoxo - storage permissions not set");    // smap
             for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {   // smap
                 Timber.i(ste.toString());
             }
 
-            builder.setTitle(R.string.storage_runtime_permission_denied_title)
+            builder.setTitle(org.odk.collect.strings.R.string.storage_runtime_permission_denied_title)
                     .setMessage(R.string.smap_storage_runtime_permission_denied_desc)
                     .setPositiveButton(android.R.string.ok, (dialogInterface, i) -> {
                         finishAndRemoveTask();

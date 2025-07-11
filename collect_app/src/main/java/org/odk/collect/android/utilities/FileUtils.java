@@ -521,7 +521,7 @@ public class FileUtils {
             boolean deleted = mediaDir.delete();
             if (!deleted) {
                 throw new RuntimeException(
-                        TranslationHandler.getString(Collect.getInstance(), R.string.fs_delete_media_path_if_file_error,
+                        TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.fs_delete_media_path_if_file_error,
                                 mediaDir.getAbsolutePath()));
             }
         }
@@ -530,7 +530,7 @@ public class FileUtils {
         boolean createdOrExisted = createFolder(mediaDir.getAbsolutePath());
         if (!createdOrExisted) {
             throw new RuntimeException(
-                    TranslationHandler.getString(Collect.getInstance(), R.string.fs_create_media_folder_error,
+                    TranslationHandler.getString(Collect.getInstance(), org.odk.collect.strings.R.string.fs_create_media_folder_error,
                             mediaDir.getAbsolutePath()));
         }
     }

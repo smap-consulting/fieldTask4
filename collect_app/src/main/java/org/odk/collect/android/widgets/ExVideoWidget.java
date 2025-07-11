@@ -101,7 +101,7 @@ public class ExVideoWidget extends QuestionWidget implements FileWidget, WidgetD
             }
         } else if (object != null) {
             if (object instanceof File) {
-                ToastUtils.showLongToast(R.string.invalid_file_type);
+                ToastUtils.showLongToast(org.odk.collect.strings.R.string.invalid_file_type);
                 mediaUtils.deleteMediaFile(((File) object).getAbsolutePath());
                 Timber.e("ExVideoWidget's setBinaryData must receive a video file but received: %s", ContentResolverHelper.getMimeType((File) object));
             } else {
@@ -138,7 +138,7 @@ public class ExVideoWidget extends QuestionWidget implements FileWidget, WidgetD
             ((Activity) getContext()).startActivityForResult(intent, ApplicationConstants.RequestCodes.EX_VIDEO_CHOOSER);
         } catch (SecurityException e) {
             Timber.i(e);
-            ToastUtils.showLongToast(R.string.not_granted_permission);
+            ToastUtils.showLongToast(org.odk.collect.strings.R.string.not_granted_permission);
         }
     }
 

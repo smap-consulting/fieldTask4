@@ -154,7 +154,7 @@ public class AudioVideoImageTextLabel extends RelativeLayout implements View.OnC
             imageView.setOnClickListener(this);
         } else {
             missingImage.setVisibility(VISIBLE);
-            missingImage.setText(getContext().getString(R.string.file_missing, imageFile));
+            missingImage.setText(getContext().getString(org.odk.collect.strings.R.string.file_missing, imageFile));
         }
     }
 
@@ -175,7 +175,7 @@ public class AudioVideoImageTextLabel extends RelativeLayout implements View.OnC
     public void playVideo() {
         if (!videoFile.exists()) {
             // We should have a video clip, but the file doesn't exist.
-            String errorMsg = getContext().getString(R.string.file_missing, videoFile);
+            String errorMsg = getContext().getString(org.odk.collect.strings.R.string.file_missing, videoFile);
             Timber.d("File %s is missing", videoFile);
             ToastUtils.showLongToast(errorMsg);
             return;
@@ -189,7 +189,7 @@ public class AudioVideoImageTextLabel extends RelativeLayout implements View.OnC
         if (intent.resolveActivity(getContext().getPackageManager()) != null) {
             getContext().startActivity(intent);
         } else {
-            ToastUtils.showShortToast(getContext().getString(R.string.activity_not_found, getContext().getString(R.string.view_video)));
+            ToastUtils.showShortToast(getContext().getString(org.odk.collect.strings.R.string.activity_not_found, getContext().getString(org.odk.collect.strings.R.string.view_video)));
         }
     }
 
@@ -254,8 +254,8 @@ public class AudioVideoImageTextLabel extends RelativeLayout implements View.OnC
             getContext().startActivity(intent);
         } catch (ActivityNotFoundException e) {
             Timber.d(e, "No Activity found to handle due to %s", e.getMessage());
-            ToastUtils.showShortToast(getContext().getString(R.string.activity_not_found,
-                    getContext().getString(R.string.view_image)));
+            ToastUtils.showShortToast(getContext().getString(org.odk.collect.strings.R.string.activity_not_found,
+                    getContext().getString(org.odk.collect.strings.R.string.view_image)));
         }
     }
 

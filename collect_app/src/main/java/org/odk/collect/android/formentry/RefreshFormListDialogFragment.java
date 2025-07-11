@@ -20,8 +20,8 @@ public class RefreshFormListDialogFragment extends ProgressDialogFragment {
         if (context instanceof RefreshFormListDialogFragmentListener) {
             listener = (RefreshFormListDialogFragmentListener) context;
         }
-        setTitle(getString(R.string.downloading_data));
-        setMessage(getString(R.string.please_wait));
+        setTitle(getString(org.odk.collect.strings.R.string.downloading_data));
+        setMessage(getString(org.odk.collect.strings.R.string.please_wait));
         setCancelable(false);
     }
 
@@ -32,7 +32,7 @@ public class RefreshFormListDialogFragment extends ProgressDialogFragment {
 
     @Override
     protected String getCancelButtonText() {
-        return getString(R.string.cancel_loading_form);
+        return getString(org.odk.collect.strings.R.string.cancel_loading_form);
     }
 
     @Override

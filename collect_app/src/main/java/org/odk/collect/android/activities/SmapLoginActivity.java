@@ -249,7 +249,7 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         }
 
         if (!Validator.isUrlValid(url)) {
-            urlText.setError(Collect.getInstance().getString(R.string.url_error));
+            urlText.setError(Collect.getInstance().getString(org.odk.collect.strings.R.string.url_error));
             valid = false;
         } else {
             urlText.setError(null);
@@ -257,21 +257,21 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
 
         if(useToken) {
             if (token.isEmpty()) {
-                passwordText.setError(Collect.getInstance().getString(R.string.password_error_whitespace));
+                passwordText.setError(Collect.getInstance().getString(org.odk.collect.strings.R.string.password_error_whitespace));
                 valid = false;
             } else {
                 tokenText.setError(null);
             }
         } else {
             if (pw.isEmpty() || !pw.equals(pw.trim())) {
-                passwordText.setError(Collect.getInstance().getString(R.string.password_error_whitespace));
+                passwordText.setError(Collect.getInstance().getString(org.odk.collect.strings.R.string.password_error_whitespace));
                 valid = false;
             } else {
                 passwordText.setError(null);
             }
 
             if (username.isEmpty() || !username.equals(username.trim())) {
-                userText.setError(Collect.getInstance().getString(R.string.username_error_whitespace));
+                userText.setError(Collect.getInstance().getString(org.odk.collect.strings.R.string.username_error_whitespace));
                 valid = false;
             } else {
                 userText.setError(null);

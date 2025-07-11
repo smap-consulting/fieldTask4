@@ -78,7 +78,7 @@ public class MaterialBanner extends FrameLayout {
 
         if (array.getBoolean(R.styleable.MaterialBanner_secondaryActionColor, false)) {
             Button button = findViewById(R.id.button);
-            button.setTextColor(getAttributeValue(getContext(), R.attr.colorSecondary));
+            button.setTextColor(getAttributeValue(getContext(), com.google.android.material.R.attr.colorSecondary));
         }
 
         array.recycle();

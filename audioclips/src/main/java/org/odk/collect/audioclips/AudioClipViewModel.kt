@@ -3,9 +3,9 @@ package org.odk.collect.audioclips
 import android.media.MediaPlayer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
 import org.odk.collect.async.Cancellable
 import org.odk.collect.async.Scheduler
 import java.io.File
@@ -58,7 +58,7 @@ class AudioClipViewModel(private val mediaPlayerFactory: Supplier<MediaPlayer>, 
     }
 
     fun isPlaying(clipID: String): LiveData<Boolean> {
-        return Transformations.map(currentlyPlaying) { value ->
+        return currentlyPlaying.map { value ->
             if (isCurrentPlayingClip(clipID, value)) {
                 !value!!.isPaused
             } else {
@@ -206,7 +206,7 @@ class AudioClipViewModel(private val mediaPlayerFactory: Supplier<MediaPlayer>, 
     class Factory(private val mediaPlayerFactory: Supplier<MediaPlayer>, private val scheduler: Scheduler) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AudioClipViewModel(mediaPlayerFactory, scheduler) as T
         }
     }

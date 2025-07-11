@@ -55,20 +55,20 @@ public class QRCodeActivityResultDelegate implements ActivityResultDelegate {
                     String responseHash = FileUtils.getMd5Hash(new ByteArrayInputStream(response.getBytes()));
                     if (response != null) {
                         if (settingsImporter.fromJSON(response)) {
-                            showToast(R.string.successfully_imported_settings);
+                            showToast(org.odk.collect.strings.R.string.successfully_imported_settings);
                             analytics.logEvent(AnalyticsEvents.SETTINGS_IMPORT_QR_IMAGE, "Success", responseHash);
                             startActivityAndCloseAllOthers(activity, SmapMain.class);   // smap
                         } else {
-                            showToast(R.string.invalid_qrcode);
+                            showToast(org.odk.collect.strings.R.string.invalid_qrcode);
                             analytics.logEvent(AnalyticsEvents.SETTINGS_IMPORT_QR_IMAGE, "No valid settings", responseHash);
                         }
                     }
 
                 } catch (QRCodeDecoder.InvalidException e) {
-                    showToast(R.string.invalid_qrcode);
+                    showToast(org.odk.collect.strings.R.string.invalid_qrcode);
                     analytics.logEvent(AnalyticsEvents.SETTINGS_IMPORT_QR_IMAGE, "Invalid exception", "none");
                 } catch (QRCodeDecoder.NotFoundException e) {
-                    showToast(R.string.qr_code_not_found);
+                    showToast(org.odk.collect.strings.R.string.qr_code_not_found);
                     analytics.logEvent(AnalyticsEvents.SETTINGS_IMPORT_QR_IMAGE, "No QR code", "none");
                 }
             }

@@ -59,7 +59,7 @@ public class NotificationManagerNotifier implements Notifier {
             if (notificationManager != null) {
                 notificationManager.createNotificationChannel(new NotificationChannel(
                         COLLECT_NOTIFICATION_CHANNEL,
-                        TranslationHandler.getString(application, R.string.notification_channel_name),
+                        TranslationHandler.getString(application, org.odk.collect.strings.R.string.notification_channel_name),
                         NotificationManager.IMPORTANCE_DEFAULT)
                 );
             }
@@ -81,7 +81,7 @@ public class NotificationManagerNotifier implements Notifier {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(application, COLLECT_NOTIFICATION_CHANNEL)
                 .setContentIntent(contentIntent)
-                .setContentTitle(TranslationHandler.getString(application, R.string.form_updates_available))
+                .setContentTitle(TranslationHandler.getString(application, org.odk.collect.strings.R.string.form_updates_available))
                 .setContentText(null)
                 .setSmallIcon(IconUtils.getNotificationAppIcon())
                 .setAutoCancel(true);
@@ -96,18 +96,18 @@ public class NotificationManagerNotifier implements Notifier {
     @Override
     public void onUpdatesDownloaded(HashMap<ServerFormDetails, String> result) {
         Intent intent = new Intent(application, NotificationActivity.class);
-        intent.putExtra(NotificationActivity.NOTIFICATION_TITLE, TranslationHandler.getString(application, R.string.download_forms_result));
+        intent.putExtra(NotificationActivity.NOTIFICATION_TITLE, TranslationHandler.getString(application, org.odk.collect.strings.R.string.download_forms_result));
         intent.putExtra(NotificationActivity.NOTIFICATION_MESSAGE, FormDownloadListActivity.getDownloadResultMessage(result));
         PendingIntent contentIntent = PendingIntent.getActivity(application, FORMS_DOWNLOADED_NOTIFICATION, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         String content = TranslationHandler.getString(application, allFormsDownloadedSuccessfully(result) ?
-                R.string.success :
-                R.string.failures);
+                org.odk.collect.strings.R.string.success :
+                org.odk.collect.strings.R.string.failures);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(application, COLLECT_NOTIFICATION_CHANNEL)
                 .setContentIntent(contentIntent)
-                .setContentTitle(TranslationHandler.getString(application, R.string.odk_auto_download_notification_title))
+                .setContentTitle(TranslationHandler.getString(application, org.odk.collect.strings.R.string.odk_auto_download_notification_title))
                 .setContentText(content)
                 .setSmallIcon(IconUtils.getNotificationAppIcon())
                 .setAutoCancel(true);
@@ -124,7 +124,7 @@ public class NotificationManagerNotifier implements Notifier {
 
             NotificationCompat.Builder builder = new NotificationCompat.Builder(application, COLLECT_NOTIFICATION_CHANNEL)
                     .setContentIntent(contentIntent)
-                    .setContentTitle(TranslationHandler.getString(application, R.string.form_update_error))
+                    .setContentTitle(TranslationHandler.getString(application, org.odk.collect.strings.R.string.form_update_error))
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(new FormSourceExceptionMapper(application).getMessage(exception)))
                     .setSmallIcon(IconUtils.getNotificationAppIcon())
                     .setAutoCancel(true);
@@ -139,19 +139,19 @@ public class NotificationManagerNotifier implements Notifier {
     public void onSubmission(boolean failure, String message) {
         Intent notifyIntent = new Intent(application, NotificationActivity.class);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        notifyIntent.putExtra(NotificationActivity.NOTIFICATION_TITLE, TranslationHandler.getString(application, R.string.upload_results));
+        notifyIntent.putExtra(NotificationActivity.NOTIFICATION_TITLE, TranslationHandler.getString(application, org.odk.collect.strings.R.string.upload_results));
         notifyIntent.putExtra(NotificationActivity.NOTIFICATION_MESSAGE, message.trim());
 
         PendingIntent pendingNotify = PendingIntent.getActivity(application, FORMS_UPLOADED_NOTIFICATION,
                 notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         String content = failure
-                ? TranslationHandler.getString(application, R.string.failures)
-                : TranslationHandler.getString(application, R.string.success);
+                ? TranslationHandler.getString(application, org.odk.collect.strings.R.string.failures)
+                : TranslationHandler.getString(application, org.odk.collect.strings.R.string.success);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(application, COLLECT_NOTIFICATION_CHANNEL)
                 .setContentIntent(pendingNotify)
-                .setContentTitle(TranslationHandler.getString(application, R.string.odk_auto_note))
+                .setContentTitle(TranslationHandler.getString(application, org.odk.collect.strings.R.string.odk_auto_note))
                 .setContentText(content)
                 .setSmallIcon(IconUtils.getNotificationAppIcon())
                 .setAutoCancel(true);
@@ -161,7 +161,7 @@ public class NotificationManagerNotifier implements Notifier {
 
     private boolean allFormsDownloadedSuccessfully(HashMap<ServerFormDetails, String> result) {
         for (Map.Entry<ServerFormDetails, String> item : result.entrySet()) {
-            if (!item.getValue().equals(TranslationHandler.getString(application, R.string.success))) {
+            if (!item.getValue().equals(TranslationHandler.getString(application, org.odk.collect.strings.R.string.success))) {
                 return false;
             }
         }

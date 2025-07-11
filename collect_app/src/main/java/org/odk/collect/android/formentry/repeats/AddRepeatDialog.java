@@ -27,12 +27,12 @@ public class AddRepeatDialog {
             }
         };
 
-        alertDialog.setMessage(context.getString(R.string.add_repeat_question,
+        alertDialog.setMessage(context.getString(org.odk.collect.strings.R.string.add_repeat_question,
                 groupLabel));
 
-        alertDialog.setButton(BUTTON_POSITIVE, context.getString(R.string.add_repeat),
+        alertDialog.setButton(BUTTON_POSITIVE, context.getString(org.odk.collect.strings.R.string.add_repeat),
                 repeatListener);
-        alertDialog.setButton(BUTTON_NEGATIVE, context.getString(R.string.dont_add_repeat),
+        alertDialog.setButton(BUTTON_NEGATIVE, context.getString(org.odk.collect.strings.R.string.dont_add_repeat),
                 repeatListener);
 
         alertDialog.setCancelable(false);
