@@ -5,6 +5,9 @@
 -dontwarn org.xmlpull.v1.**
 -dontwarn org.hamcrest.**
 -dontwarn com.rarepebble.**
+-dontwarn com.networknt.**
+-dontwarn android.content.res.**
+-dontwarn org.kxml2.io.**
 
 -keep class org.javarosa.**
 -keep class org.odk.collect.android.logic.actions.**
@@ -20,7 +23,6 @@
 -keepattributes *Annotation*
 
 -keep class org.apache.commons.logging.**               { *; }
--keep class com.amazonaws.services.sqs.QueueUrlHandler  { *; }
 -keep class com.amazonaws.javax.xml.transform.sax.*     { public *; }
 -keep class com.amazonaws.javax.xml.stream.**           { *; }
 -keep class com.amazonaws.services.**.model.*Exception* { *; }
@@ -39,6 +41,17 @@
 
 -keep class org.odk.collect.android.taskModel.** { *; }
 -keep class org.odk.collect.android.database.** { *; }
+-keep class org.kxml2.io.** { *; }
+-keep class org.xmlpull.v1.** { *; }
+-keep class android.content.res.** { *; }
+
+-keep class com.google.gson.reflect.TypeToken
+-keep class * extends com.google.gson.reflect.TypeToken
+-keep public class * implements java.lang.reflect.Type
+
+-dontwarn android.content.res.*
+-dontwarn org.openjsse.javax.net.*
+
 
 # recommended okhttp rules
 # https://github.com/square/okhttp#r8--proguard
@@ -46,3 +59,43 @@
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
 -dontwarn org.codehaus.mojo.animal_sniffer.*
 -dontwarn okhttp3.internal.platform.ConscryptPlatform
+
+-dontwarn okhttp3.internal.platform.*
+-dontwarn org.bouncycastle.jsse.*
+
+-dontwarn org.openjsse.javax.*
+-dontwarn org.conscrypt.*
+-keep class javax.net.ssl.* { *; }
+-keep class javax.lang.model.* { *; }
+-keep class org.bouncycastle.** { *; }
+
+# This is generated automatically by the Android Gradle plugin.
+-dontwarn javax.lang.model.SourceVersion
+-dontwarn javax.lang.model.element.AnnotationMirror
+-dontwarn javax.lang.model.element.AnnotationValue
+-dontwarn javax.lang.model.element.Element
+-dontwarn javax.lang.model.element.ElementKind
+-dontwarn javax.lang.model.element.ElementVisitor
+-dontwarn javax.lang.model.element.ExecutableElement
+-dontwarn javax.lang.model.element.Modifier
+-dontwarn javax.lang.model.element.Name
+-dontwarn javax.lang.model.element.PackageElement
+-dontwarn javax.lang.model.element.TypeElement
+-dontwarn javax.lang.model.element.TypeParameterElement
+-dontwarn javax.lang.model.element.VariableElement
+-dontwarn javax.lang.model.type.ArrayType
+-dontwarn javax.lang.model.type.DeclaredType
+-dontwarn javax.lang.model.type.ExecutableType
+-dontwarn javax.lang.model.type.TypeKind
+-dontwarn javax.lang.model.type.TypeMirror
+-dontwarn javax.lang.model.type.TypeVariable
+-dontwarn javax.lang.model.type.TypeVisitor
+-dontwarn javax.lang.model.util.AbstractAnnotationValueVisitor8
+-dontwarn javax.lang.model.util.AbstractTypeVisitor8
+-dontwarn javax.lang.model.util.ElementFilter
+-dontwarn javax.lang.model.util.Elements
+-dontwarn javax.lang.model.util.SimpleElementVisitor8
+-dontwarn javax.lang.model.util.SimpleTypeVisitor7
+-dontwarn javax.lang.model.util.SimpleTypeVisitor8
+-dontwarn javax.lang.model.util.Types
+-dontwarn javax.tools.Diagnostic$Kind
