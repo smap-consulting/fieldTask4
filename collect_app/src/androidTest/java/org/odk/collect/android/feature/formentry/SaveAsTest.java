@@ -6,8 +6,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.TestRuleChain;
 
 @RunWith(AndroidJUnit4.class)
 public class SaveAsTest {

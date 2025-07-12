@@ -11,9 +11,6 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.activities.MainMenuActivity;
-import org.odk.collect.android.support.TestDependencies;
-import org.odk.collect.android.support.TestRuleChain;
-import org.odk.collect.android.support.pages.MainMenuPage;
 
 @RunWith(AndroidJUnit4.class)
 public class SendFinalizedFormTest {

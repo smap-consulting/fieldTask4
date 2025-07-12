@@ -3,7 +3,6 @@ package org.odk.collect.android.feature.formentry;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Instrumentation;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
@@ -19,9 +18,6 @@ import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.MainMenuActivity;
 import org.odk.collect.android.support.RunnableRule;
-import org.odk.collect.android.support.TestDependencies;
-import org.odk.collect.android.support.TestRuleChain;
-import org.odk.collect.android.support.pages.MainMenuPage;
 
 import java.io.File;
 import java.io.IOException;

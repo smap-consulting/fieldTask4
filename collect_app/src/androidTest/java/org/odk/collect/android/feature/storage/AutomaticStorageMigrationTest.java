@@ -7,10 +7,6 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.application.AppStateProvider;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.TestDependencies;
-import org.odk.collect.android.support.TestRuleChain;
-import org.odk.collect.android.support.pages.MainMenuPage;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.spy;

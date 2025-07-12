@@ -20,11 +20,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.TestRuleChain;
 import org.odk.collect.android.support.pages.AdminSettingsPage;
 import org.odk.collect.android.support.pages.GeneralSettingsPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
 
 public class NavigationButtonsTest {
 

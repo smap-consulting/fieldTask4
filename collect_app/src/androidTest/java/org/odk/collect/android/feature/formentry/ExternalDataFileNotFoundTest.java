@@ -14,8 +14,6 @@ import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
-import org.odk.collect.android.support.FormLoadingUtils;
 
 public class ExternalDataFileNotFoundTest {
     private static final String EXTERNAL_DATA_QUESTIONS = "external_data_questions.xml";

@@ -12,12 +12,8 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.injection.config.AppDependencyModule;
 import org.odk.collect.android.openrosa.OpenRosaHttpInterface;
-import org.odk.collect.android.support.CollectTestRule;
 import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
-import org.odk.collect.android.support.StubOpenRosaServer;
 import org.odk.collect.android.support.pages.GeneralSettingsPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.pages.ServerSettingsPage;
 import org.odk.collect.utilities.UserAgentProvider;
 

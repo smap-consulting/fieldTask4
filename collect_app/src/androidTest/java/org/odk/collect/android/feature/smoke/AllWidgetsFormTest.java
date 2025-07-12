@@ -1,7 +1,6 @@
 package org.odk.collect.android.feature.smoke;
 
 import android.Manifest;
-import android.content.Context;
 
 import androidx.test.rule.GrantPermissionRule;
 
@@ -12,8 +11,6 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.odk.collect.android.injection.config.AppDependencyModule;
 import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.FormActivityTestRule;
-import org.odk.collect.android.support.ResetStateRule;
 
 import tools.fastlane.screengrab.Screengrab;
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy;

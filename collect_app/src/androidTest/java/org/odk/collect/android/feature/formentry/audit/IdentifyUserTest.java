@@ -12,9 +12,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.activities.MainMenuActivity;
 import org.odk.collect.android.support.pages.IdentifyUserPromptPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.ResetStateRule;
 
 @RunWith(AndroidJUnit4.class)
 public class IdentifyUserTest {

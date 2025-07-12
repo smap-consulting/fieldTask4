@@ -11,9 +11,6 @@ import org.odk.collect.android.activities.MainMenuActivity;
 import org.odk.collect.android.application.AppStateProvider;
 import org.odk.collect.android.storage.StorageStateProvider;
 import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.TestDependencies;
-import org.odk.collect.android.support.TestRuleChain;
-import org.odk.collect.android.support.pages.MainMenuPage;
 import org.odk.collect.android.support.pages.StorageMigrationDialogPage;
 
 import static java.util.Arrays.asList;

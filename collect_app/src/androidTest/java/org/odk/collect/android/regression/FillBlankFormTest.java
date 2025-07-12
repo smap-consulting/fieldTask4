@@ -16,16 +16,12 @@ import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.instances.Instance;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
-import org.odk.collect.android.support.ActivityHelpers;
-import org.odk.collect.android.support.CollectTestRule;
-import org.odk.collect.android.support.ResetStateRule;
 import org.odk.collect.android.support.pages.BlankFormSearchPage;
 import org.odk.collect.android.support.pages.ExitFormDialog;
 import org.odk.collect.android.support.pages.FillBlankFormPage;
 import org.odk.collect.android.support.pages.FormEndPage;
 import org.odk.collect.android.support.pages.FormEntryPage;
 import org.odk.collect.android.support.pages.GeneralSettingsPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
 
 import java.util.ArrayList;
 import java.util.List;

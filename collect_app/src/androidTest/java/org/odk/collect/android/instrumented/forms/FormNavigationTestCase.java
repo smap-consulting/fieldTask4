@@ -26,7 +26,6 @@ import org.odk.collect.android.javarosawrapper.FormController;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.odk.collect.android.storage.StorageSubdirectory;
 import org.odk.collect.android.tasks.FormLoaderTask;
-import org.odk.collect.android.support.FormLoadingUtils;
 
 import java.io.File;
 import java.io.IOException;

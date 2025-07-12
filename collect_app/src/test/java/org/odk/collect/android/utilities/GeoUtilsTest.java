@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.odk.collect.android.location.LocationTestUtils;
 import org.odk.collect.android.storage.StoragePathProvider;
 import org.robolectric.RobolectricTestRunner;
 

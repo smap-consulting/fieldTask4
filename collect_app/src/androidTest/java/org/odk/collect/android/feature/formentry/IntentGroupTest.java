@@ -36,8 +36,6 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.activities.FormEntryActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.support.CopyFormRule;
-import org.odk.collect.android.support.FormLoadingUtils;
-import org.odk.collect.android.support.ResetStateRule;
 
 import java.io.File;
 import java.io.IOException;

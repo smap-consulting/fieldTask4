@@ -12,14 +12,9 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.MainMenuActivity;
-import org.odk.collect.android.support.FormLoadingUtils;
 import org.odk.collect.android.support.NotificationDrawerRule;
-import org.odk.collect.android.support.TestDependencies;
-import org.odk.collect.android.support.TestRuleChain;
-import org.odk.collect.android.support.TestScheduler;
 import org.odk.collect.android.support.pages.FormManagementPage;
 import org.odk.collect.android.support.pages.GeneralSettingsPage;
-import org.odk.collect.android.support.pages.MainMenuPage;
 
 import java.util.List;
 

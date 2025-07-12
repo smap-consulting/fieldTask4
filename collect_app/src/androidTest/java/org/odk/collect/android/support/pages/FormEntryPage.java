@@ -6,7 +6,6 @@ import androidx.test.rule.ActivityTestRule;
 
 import org.hamcrest.Matchers;
 import org.odk.collect.android.R;
-import org.odk.collect.android.support.ActivityHelpers;
 import org.odk.collect.android.utilities.FlingRegister;
 
 import static androidx.test.espresso.Espresso.onView;
