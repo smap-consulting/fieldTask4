@@ -28,7 +28,7 @@ def mapboxToken = secrets.getProperty('MAPBOX_ACCESS_TOKEN', '')
 android {
     namespace = "org.odk.collect.android"
 
-    compileSdkVersion rootProject.androidCompileSdk
+    compileSdkVersion = libs.versions.compileSdk.get().toInteger()
 
     buildFeatures {
         viewBinding true
@@ -36,8 +36,8 @@ android {
 
     defaultConfig {
         applicationId "org.smap.smapTask.android"
-        minSdkVersion rootProject.androidMinSdk
-        targetSdkVersion rootProject.androidTargetSdk
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
         versionCode(6830)
         versionName getVersionName()
         testInstrumentationRunner('androidx.test.runner.AndroidJUnitRunner')

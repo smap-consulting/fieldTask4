@@ -1,5 +1,8 @@
 [versions]
 
+compileSdk = "35"
+minSdk = "21"
+targetSdk = "35"
 dagger = "2.56.2"
 
 [libraries]

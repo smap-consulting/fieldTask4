@@ -8,11 +8,11 @@ apply from: '../config/quality.gradle'
 android {
     namespace = "org.odk.collect.fragmentstest"
 
-    compileSdkVersion 35
+    compileSdkVersion = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdkVersion 29
-        targetSdkVersion 35
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"

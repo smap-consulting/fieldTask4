@@ -6,11 +6,11 @@ apply from: '../config/quality.gradle'
 android {
     namespace = "org.odk.collect.async"
 
-    compileSdkVersion rootProject.androidCompileSdk
+    compileSdkVersion = libs.versions.compileSdk.get().toInteger()
 
     defaultConfig {
-        minSdkVersion rootProject.androidMinSdk
-        targetSdkVersion rootProject.androidTargetSdk
+        minSdkVersion libs.versions.minSdk.get().toInteger()
+        targetSdkVersion libs.versions.targetSdk.get().toInteger()
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
