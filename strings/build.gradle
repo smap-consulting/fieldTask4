@@ -32,7 +32,6 @@ android {
 
 dependencies {
     implementation libs.androidxCoreKtx
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.hamcrest:hamcrest:2.2'

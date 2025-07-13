@@ -33,7 +33,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugar)
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation libs.kotlinStdlib
     implementation libs.androidxCoreKtx
 
     implementation project(':async')

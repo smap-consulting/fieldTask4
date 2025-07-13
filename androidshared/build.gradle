@@ -50,7 +50,7 @@ dependencies {
     implementation ("com.vdurmont:emoji-java:5.1.1") {
         exclude group: 'org.json', module: 'json'
     }
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation libs.kotlinStdlib
     implementation libs.androidxCoreKtx
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation "com.google.android.material:material:${rootProject.materialVersion}"
