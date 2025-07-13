@@ -290,7 +290,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
     implementation libs.androidxCoreKtx
     implementation 'androidx.browser:browser:1.4.0'
-    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation libs.androidxAppcompat
     implementation "androidx.work:work-runtime:2.10.2"
 
     implementation 'androidx.cardview:cardview:1.0.0'
@@ -299,7 +299,7 @@ dependencies {
     implementation 'androidx.preference:preference:1.2.1'
     implementation "androidx.fragment:fragment:${rootProject.fragmentVersion}"
 
-    implementation 'com.google.android.material:material:1.7.0'
+    implementation libs.androidMaterial
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
 
     implementation "com.google.android.gms:play-services-auth:20.4.0"
@@ -350,7 +350,7 @@ dependencies {
         exclude group: 'com.google.guava'
     }
 
-    implementation "com.jakewharton.timber:timber:${rootProject.timberVersion}"
+    implementation libs.timber
     implementation "org.slf4j:slf4j-api:2.0.0-alpha0"
     implementation "com.arcao:slf4j-timber:3.1@aar"
 
