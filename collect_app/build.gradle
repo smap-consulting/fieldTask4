@@ -287,11 +287,11 @@ configurations.all {
 dependencies {
     coreLibraryDesugaring(libs.desugar)
 
-    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation libs.legacySupportV13
     implementation libs.androidxCoreKtx
-    implementation 'androidx.browser:browser:1.4.0'
+    implementation libs.androidxBrowser
     implementation libs.androidxAppcompat
-    implementation "androidx.work:work-runtime:2.10.2"
+    implementation libs.androidxWorkRuntime
 
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.exifinterface:exifinterface:1.3.5'
