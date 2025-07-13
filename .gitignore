@@ -86,6 +86,7 @@ out/
 .externalNativeBuild/
 .navigation/
 captures/
+.kotlin/
 
 # Visual Studio Code files
 .project

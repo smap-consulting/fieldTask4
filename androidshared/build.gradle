@@ -51,7 +51,7 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "androidx.core:core-ktx:${rootProject.coreKtxVersion}"
+    implementation libs.androidxCoreKtx
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation "com.google.android.material:material:${rootProject.materialVersion}"
     implementation "androidx.fragment:fragment-ktx:1.5.4"
