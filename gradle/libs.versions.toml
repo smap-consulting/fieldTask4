@@ -29,6 +29,7 @@ daggerAndroidProcessor = { group = "com.google.dagger", name = "dagger-android-p
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version = "2.1.5" }
 gradle = { group = "com.android.tools.build", name = "gradle", version = "8.11.0" }
 gson = { group = "com.google.code.gson", name = "gson", version = "2.13.1" }
+karumiDexter = { group = "com.karumi", name = "dexter", version = "6.2.3" }
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = "2.2.0" }
 kotlinStdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version = "2.2.0" }
 legacySupportV13 = { module = "androidx.legacy:legacy-support-v13", version.ref = "legacySupportV13" }
@@ -37,7 +38,6 @@ okHttpTls = { group = "com.squareup.okhttp3", name = "okhttp-tls", version.ref =
 okHttpDigest = { group = "io.github.rburgst", name = "okhttp-digest", version = "3.1.1" }
 playServicesMaps = { group = "com.google.android.gms", name = "play-services-maps", version = "19.2.0" }
 playServicesLocation = { group = "com.google.android.gms", name = "play-services-location", version = "21.3.0" }
-playServicesOssLicenses = { group = "com.google.android.gms", name = "play-services-oss-licenses", version = "17.1.0" }
 timber = { group = "com.jakewharton.timber", name = "timber", version = "5.0.1" }
 
 [plugins]
