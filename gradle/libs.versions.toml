@@ -22,6 +22,7 @@ androidxFragmentKtx = { group = "androidx.fragment", name = "fragment-ktx", vers
 androidMaterial = { group = "com.google.android.material", name = "material", version = "1.12.0" }
 androidxPreference = { group = "androidx.preference", name = "preference", version = "1.2.1" }
 androidxWorkRuntime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+commonsIo = { group = "commons-io", name = "commons-io", version = "2.5" } # Commons 2.6+ introduce java.nio usage that we can't access until our minSdkVersion >= 26 (https://developer.android.com/reference/java/io/File#toPath())
 dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
 daggerCompiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
 daggerAndroid = { group = "com.google.dagger", name = "dagger-android", version.ref = "dagger" }
@@ -36,6 +37,9 @@ legacySupportV13 = { module = "androidx.legacy:legacy-support-v13", version.ref 
 okHttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3" }
 okHttpTls = { group = "com.squareup.okhttp3", name = "okhttp-tls", version.ref = "okhttp3" }
 okHttpDigest = { group = "io.github.rburgst", name = "okhttp-digest", version = "3.1.1" }
+opencsv = { group = "com.opencsv", name = "opencsv", version = "5.11.2" }
+osmdroid = { group = "org.osmdroid", name = "osmdroid-android", version = "6.1.20" }
+persianJodaTime = { group = "com.github.mohamadian", name = "persianjodatime", version = "1.2" }
 playServicesMaps = { group = "com.google.android.gms", name = "play-services-maps", version = "19.2.0" }
 playServicesLocation = { group = "com.google.android.gms", name = "play-services-location", version = "21.3.0" }
 timber = { group = "com.jakewharton.timber", name = "timber", version = "5.0.1" }
