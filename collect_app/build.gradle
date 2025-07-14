@@ -315,9 +315,9 @@ dependencies {
 
     implementation("com.google.guava:guava:30.1-android")
 
-    implementation "com.squareup.okhttp3:okhttp:${rootProject.okhttp3Version}"
-    implementation "com.squareup.okhttp3:okhttp-tls:${rootProject.okhttp3Version}"
-    implementation 'io.github.rburgst:okhttp-digest:2.7'
+    implementation libs.okHttp
+    implementation libs.okHttpTls
+    implementation libs.okHttpDigest
 
     implementation 'com.github.mohamadian:PersianJodaTime:1.2'
     implementation 'com.github.chanmratekoko:myanmar-calendar:1.0.6.RC3'
