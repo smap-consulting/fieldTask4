@@ -298,11 +298,11 @@ dependencies {
     implementation libs.androidxFragment
 
     implementation libs.androidMaterial
-    implementation 'com.google.android.flexbox:flexbox:3.0.0'
+    implementation libs.androidFlexbox
 
-    implementation "com.google.android.gms:play-services-auth:20.4.0"
-    implementation "com.google.android.gms:play-services-maps:19.2.0"
-    implementation "com.google.android.gms:play-services-location:20.0.0"  // Downgraded from 21.0.1 due to location errors in mapbobox and google maps, https://developers.google.com/android/guides/releases#october_13_2022
+    //implementation "com.google.android.gms:play-services-auth:20.4.0"
+    implementation libs.playServicesMaps
+    implementation libs.playServicesLocation
     implementation "com.google.firebase:firebase-messaging:23.1.0"      // smap synchronisation
 
     implementation 'com.google.firebase:firebase-analytics:22.5.0'
