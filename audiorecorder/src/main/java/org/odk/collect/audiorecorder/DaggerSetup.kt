@@ -107,9 +107,12 @@ internal fun RobolectricApplication.clearDependencies() {
     _component = null
 }
 
+/*
 internal fun RobolectricApplication.setupDependencies(module: AudioRecorderDependencyModule) {
     _component = DaggerAudioRecorderDependencyComponent.builder()
         .application(this)
         .dependencyModule(module)
         .build()
 }
+
+ */

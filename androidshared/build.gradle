@@ -54,7 +54,7 @@ dependencies {
     implementation libs.androidxCoreKtx
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
     implementation libs.androidMaterial
-    implementation "androidx.fragment:fragment-ktx:1.5.4"
+    implementation libs.androidxFragmentKtx
     implementation project(':strings')
 
     debugImplementation project(':fragmentstest')
