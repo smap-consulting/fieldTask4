@@ -41,7 +41,8 @@ opencsv = { group = "com.opencsv", name = "opencsv", version = "5.11.2" }
 osmdroid = { group = "org.osmdroid", name = "osmdroid-android", version = "6.1.20" }
 persianJodaTime = { group = "com.github.mohamadian", name = "persianjodatime", version = "1.2" }
 playServicesMaps = { group = "com.google.android.gms", name = "play-services-maps", version = "19.2.0" }
-playServicesLocation = { group = "com.google.android.gms", name = "play-services-location", version = "21.3.0" }
+playServicesLocation = { group = "com.google.android.gms", name = "play-services-location", version = "20.0.0" }
+playServicesAuth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.4.0" }
 timber = { group = "com.jakewharton.timber", name = "timber", version = "5.0.1" }
 
 [plugins]
