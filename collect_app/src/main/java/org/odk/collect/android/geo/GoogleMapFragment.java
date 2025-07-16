@@ -479,7 +479,6 @@ public class GoogleMapFragment extends SupportMapFragment implements
     }
 
     @Override public void onClientStart() {
-        lastLocationFix = fromLocation(locationClient.getLastLocation());
         Timber.i("Requesting location updates (to %s)", this);
         locationClient.requestLocationUpdates(this);
         if (!locationClient.isLocationAvailable()) {
