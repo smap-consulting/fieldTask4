@@ -174,7 +174,9 @@ the specific language governing permissions and limitations under the License.
         <!-- smap add survey notes -->
         <activity android:name="org.odk.collect.android.activities.SurveyNotesActivity" />
         <activity android:name=".activities.GeoPointActivity" />
-        <activity android:name=".activities.GeoPointMapActivity" />
+        <activity android:name=".activities.GeoPointMapActivity"
+            android:theme="@style/Theme.MaterialComponents"
+            tools:replace="android:theme" />
         <activity android:name=".activities.GeoPolyActivity" />
         <activity android:name=".activities.GeoCompoundActivity" />
         <activity android:name=".activities.FormMapActivity" />
