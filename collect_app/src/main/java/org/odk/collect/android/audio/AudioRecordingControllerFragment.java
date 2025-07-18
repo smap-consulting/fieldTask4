@@ -85,9 +85,9 @@ public class AudioRecordingControllerFragment extends Fragment {
             binding.stopRecording.setVisibility(GONE);
         } else if (session == null) {
             binding.getRoot().setVisibility(GONE);
-        } else if (session.getFailedToStart() != null) {
-            binding.getRoot().setVisibility(GONE);
-            showIfNotShowing(AudioRecordingErrorDialogFragment.class, getParentFragmentManager());
+        //} else if (session.getFailedToStart() != null) {   TODO handle errors - AUDIOERRORS
+        //    binding.getRoot().setVisibility(GONE);
+        //    showIfNotShowing(AudioRecordingErrorDialogFragment.class, getParentFragmentManager());
         } else if (session.getFile() == null) {
             binding.getRoot().setVisibility(VISIBLE);
 

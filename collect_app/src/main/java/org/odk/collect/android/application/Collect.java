@@ -45,6 +45,9 @@ import org.odk.collect.android.utilities.FileUtils;
 import org.odk.collect.android.utilities.LocaleHelper;
 import org.odk.collect.androidshared.data.AppState;
 import org.odk.collect.androidshared.data.StateStore;
+import org.odk.collect.audiorecorder.AudioRecorderDependencyComponent;
+import org.odk.collect.audiorecorder.AudioRecorderDependencyComponentProvider;
+import org.odk.collect.audiorecorder.DaggerAudioRecorderDependencyComponent;
 import org.odk.collect.strings.LocalizedApplication;
 
 import java.io.ByteArrayInputStream;
@@ -61,7 +64,9 @@ import javax.inject.Inject;
 
 import static org.odk.collect.android.preferences.MetaKeys.KEY_GOOGLE_BUG_154855417_FIXED;
 
-public class Collect extends Application implements LocalizedApplication,
+public class Collect extends Application implements
+        LocalizedApplication,
+        AudioRecorderDependencyComponentProvider,
         StateStore {
     public static String defaultSysLanguage;
     private static Collect singleton;
@@ -72,7 +77,7 @@ public class Collect extends Application implements LocalizedApplication,
     private FormController formController;
     private ExternalDataManager externalDataManager;
     private AppDependencyComponent applicationComponent;
-
+    private AudioRecorderDependencyComponent audioRecorderDependencyComponent;
     private Location location = null;                   // smap
     private Location savedLocation = null;              // Location saved to trail database
     private ArrayList<GeofenceEntry> geofences = new ArrayList<GeofenceEntry>();    // smap
@@ -117,6 +122,12 @@ public class Collect extends Application implements LocalizedApplication,
             }
         }
         return false;
+    }
+
+    @NotNull
+    @Override
+    public AudioRecorderDependencyComponent getAudioRecorderDependencyComponent() {
+        return audioRecorderDependencyComponent;
     }
 
     @Nullable
@@ -180,6 +191,10 @@ public class Collect extends Application implements LocalizedApplication,
 
     private void setupDagger() {
         applicationComponent = DaggerAppDependencyComponent.builder()
+                .application(this)
+                .build();
+
+        audioRecorderDependencyComponent = DaggerAudioRecorderDependencyComponent.builder()
                 .application(this)
                 .build();
 

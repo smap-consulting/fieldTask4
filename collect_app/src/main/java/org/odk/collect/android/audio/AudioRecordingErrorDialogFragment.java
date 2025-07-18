@@ -37,11 +37,11 @@ public class AudioRecordingErrorDialogFragment extends DialogFragment {
                 .setPositiveButton(org.odk.collect.strings.R.string.ok, null);
 
         RecordingSession session = audioRecorder.getCurrentSession().getValue();
-        if (session != null && session.getFailedToStart() instanceof MicInUseException) {
-            dialogBuilder.setMessage(org.odk.collect.strings.R.string.mic_in_use);
-        } else {
+        //if (session != null && session.getFailedToStart() instanceof MicInUseException) {  TODO handle mic not in use - AUDIOERRORS
+        //    dialogBuilder.setMessage(org.odk.collect.strings.R.string.mic_in_use);
+        //} else {
             dialogBuilder.setMessage(org.odk.collect.strings.R.string.start_recording_failed);
-        }
+        //}
 
         return dialogBuilder.create();
     }

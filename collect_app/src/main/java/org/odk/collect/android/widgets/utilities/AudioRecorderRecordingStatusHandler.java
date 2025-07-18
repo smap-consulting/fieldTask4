@@ -36,11 +36,12 @@ public class AudioRecorderRecordingStatusHandler implements RecordingStatusHandl
     @Override
     public void onRecordingStatusChange(FormEntryPrompt prompt, Consumer<Pair<Long, Integer>> statusListener) {
         audioRecorder.getCurrentSession().observe(lifecycleOwner, session -> {
-            if (session != null && session.getId().equals(prompt.getIndex()) && session.getFailedToStart() == null) {
+            // TODO handle errors - AUDIOERRORS
+            //if (session != null && session.getId().equals(prompt.getIndex()) && session.getFailedToStart() == null) {
                 statusListener.accept(new Pair<>(session.getDuration(), session.getAmplitude()));
-            } else {
-                statusListener.accept(null);
-            }
+            //} else {
+            //    statusListener.accept(null);
+            //}
         });
     }
 }
