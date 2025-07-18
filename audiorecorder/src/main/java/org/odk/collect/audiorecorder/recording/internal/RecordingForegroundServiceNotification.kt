@@ -6,10 +6,10 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context.NOTIFICATION_SERVICE
 import android.content.Intent
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
+import org.odk.collect.androidshared.ui.ReturnToAppActivity
 import org.odk.collect.audiorecorder.R
 import org.odk.collect.audiorecorder.recording.RecordingSession
 import org.odk.collect.strings.format.formatLength
@@ -21,9 +21,8 @@ internal class RecordingForegroundServiceNotification(private val service: Servi
     private val notificationBuilder = NotificationCompat.Builder(service, NOTIFICATION_CHANNEL)
         .setContentTitle(service.getLocalizedString(org.odk.collect.strings.R.string.recording))
         .setContentText(formatLength(0))
-        .setSmallIcon(R.drawable.ic_baseline_mic_24)
-        .setContentIntent(PendingIntent.getActivity(service, 0, notificationIntent,
-            PendingIntent.FLAG_IMMUTABLE))
+        .setSmallIcon(R.drawable.ic_notification_small)
+        .setContentIntent(PendingIntent.getActivity(service, 0, notificationIntent, PendingIntent.FLAG_IMMUTABLE))
         .setPriority(NotificationCompat.PRIORITY_LOW)
 
     private val notificationManager = (service.getSystemService(NOTIFICATION_SERVICE) as NotificationManager)

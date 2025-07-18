@@ -37,8 +37,8 @@ dependencies {
     implementation libs.androidxCoreKtx
 
     implementation project(':async')
-    implementation 'androidx.lifecycle:lifecycle-viewmodel:2.9.1'
-    implementation 'androidx.lifecycle:lifecycle-livedata:2.9.1'
+    implementation libs.androidxLifecycleViewmodel
+    implementation libs.androidxLifecycleLivedata
 
     testImplementation project(path: ':testshared')
     testImplementation 'junit:junit:4.13.1'

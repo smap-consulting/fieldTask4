@@ -7,6 +7,7 @@ targetSdk = "35"
 androidxFragment = "1.8.8"
 dagger = "2.56.2"
 legacySupportV13 = "1.0.0"
+lifecycle = "2.9.1"
 okhttp3 = "4.12.0"
 work = "2.10.2"
 
@@ -19,6 +20,9 @@ androidxExinterface = { group = "androidx.exifinterface", name = "exifinterface"
 androidFlexbox = { group = "com.google.android.flexbox", name = "flexbox", version = "3.0.0" }
 androidxFragment = { group = "androidx.fragment", name = "fragment", version.ref = "androidxFragment" }
 androidxFragmentKtx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragment" }
+androidxLifecycleLivedataKtx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "lifecycle" }
+androidxLifecycleLivedata = { group = "androidx.lifecycle", name = "lifecycle-livedata", version.ref = "lifecycle" }
+androidxLifecycleViewmodel = { group = "androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "lifecycle" }
 androidMaterial = { group = "com.google.android.material", name = "material", version = "1.12.0" }
 androidxPreference = { group = "androidx.preference", name = "preference", version = "1.2.1" }
 androidxWorkRuntime = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
@@ -46,3 +50,13 @@ playServicesAuth = { group = "com.google.android.gms", name = "play-services-aut
 timber = { group = "com.jakewharton.timber", name = "timber", version = "5.0.1" }
 
 [plugins]
+
+androidApplication = { id = "com.android.application" }
+androidLibrary = { id = "com.android.library" }
+javaLibrary = { id = "java-library" }
+kotlinLibrary = { id = "kotlin" }
+kotlinAndroid = { id = "kotlin-android" }
+kotlinKapt = { id = "kotlin-kapt" }
+kotlinParcelize = { id = "kotlin-parcelize" }
+safeargsKotlin = { id = "androidx.navigation.safeargs.kotlin" }
+ossLicenses = { id = "com.google.android.gms.oss-licenses-plugin" }

@@ -52,7 +52,7 @@ dependencies {
     }
     implementation libs.kotlinStdlib
     implementation libs.androidxCoreKtx
-    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.5.1"
+    implementation libs.androidxLifecycleLivedataKtx
     implementation libs.androidMaterial
     implementation libs.androidxFragmentKtx
     implementation project(':strings')

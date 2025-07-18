@@ -1,35 +1,41 @@
-package org.odk.collect.audiorecorder.recording.internal
+package org.odk.collect.audiorecorder.recording
 
+import android.app.Application
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import org.odk.collect.androidshared.data.getState
 import org.odk.collect.async.Cancellable
 import org.odk.collect.async.Scheduler
-import org.odk.collect.audiorecorder.getComponent
+import org.odk.collect.audiorecorder.AudioRecorderDependencyComponentProvider
 import org.odk.collect.audiorecorder.recorder.Output
 import org.odk.collect.audiorecorder.recorder.Recorder
+import org.odk.collect.audiorecorder.recording.internal.RecordingForegroundServiceNotification
+import org.odk.collect.audiorecorder.recording.internal.RecordingRepository
 import java.io.Serializable
 import javax.inject.Inject
 
-internal class AudioRecorderService : Service() {
+class AudioRecorderService : Service() {
 
     @Inject
     internal lateinit var recorder: Recorder
 
     @Inject
-    internal lateinit var recordingRepository: RecordingRepository
-
-    @Inject
     internal lateinit var scheduler: Scheduler
 
+    private lateinit var recordingRepository: RecordingRepository
     private lateinit var notification: RecordingForegroundServiceNotification
+
     private var duration = 0L
     private var durationUpdates: Cancellable? = null
     private var amplitudeUpdates: Cancellable? = null
 
     override fun onCreate() {
         super.onCreate()
-        getComponent().inject(this)
+        val provider = applicationContext as AudioRecorderDependencyComponentProvider
+        provider.audioRecorderDependencyComponent.inject(this)
+
+        recordingRepository = RecordingRepository((applicationContext as Application).getState())
         notification = RecordingForegroundServiceNotification(this, recordingRepository)
     }
 
@@ -85,7 +91,7 @@ internal class AudioRecorderService : Service() {
             startUpdates()
         } catch (e: Exception) {
             notification.dismiss()
-            recordingRepository.failToStart(sessionId, e)
+            recordingRepository.failToStart(e)
         }
     }
 
