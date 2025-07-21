@@ -1,6 +1,7 @@
 package org.odk.collect.android.audio;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,7 +78,14 @@ public class AudioRecordingControllerFragment extends Fragment {
             update(hasBackgroundRecording, isBackgroundRecordingEnabled, session, failedToStart);
         });
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            binding.pauseRecording.setVisibility(GONE);
+        }
+
         binding.stopRecording.setOnClickListener(v -> audioRecorder.stop());
+        binding.help.setOnClickListener(v -> {
+            showIfNotShowing(BackgroundAudioHelpDialogFragment.class, getParentFragmentManager());
+        });
     }
 
     private void update(boolean hasBackgroundRecording, boolean isBackgroundRecordingEnabled, RecordingSession session, Consumable<Exception> failedToStart) {
@@ -110,6 +118,7 @@ public class AudioRecordingControllerFragment extends Fragment {
         binding.timeCode.setText(string);
         binding.volumeBar.setVisibility(GONE);
         binding.controls.setVisibility(GONE);
+        binding.help.setVisibility(GONE);
     }
 
     private void renderRecordingInProgress(RecordingSession session, boolean hasBackgroundRecording) {
@@ -118,6 +127,7 @@ public class AudioRecordingControllerFragment extends Fragment {
 
         if (hasBackgroundRecording) {
             binding.controls.setVisibility(GONE);
+            binding.help.setVisibility(VISIBLE);
         } else {
             renderControls(session);
         }
