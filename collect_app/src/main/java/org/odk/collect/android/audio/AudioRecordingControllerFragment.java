@@ -13,12 +13,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.odk.collect.android.R;
-import org.odk.collect.android.analytics.AnalyticsEvents;
 import org.odk.collect.android.databinding.AudioRecordingControllerFragmentBinding;
 import org.odk.collect.android.formentry.BackgroundAudioViewModel;
 import org.odk.collect.android.formentry.FormEntryViewModel;
 import org.odk.collect.android.injection.DaggerUtils;
-import org.odk.collect.android.utilities.TranslationHandler;
 import static org.odk.collect.strings.LocalizedApplicationKt.getLocalizedString;
 import org.odk.collect.androidshared.data.Consumable;
 import org.odk.collect.audiorecorder.recording.AudioRecorder;
@@ -30,7 +28,6 @@ import javax.inject.Inject;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static org.odk.collect.android.utilities.DialogUtils.showIfNotShowing;
-import static org.odk.collect.android.utilities.LiveDataUtils.zip3;
 import static org.odk.collect.androidshared.livedata.LiveDataUtils.zip4;
 
 public class AudioRecordingControllerFragment extends Fragment {
@@ -113,7 +110,6 @@ public class AudioRecordingControllerFragment extends Fragment {
         binding.timeCode.setText(string);
         binding.volumeBar.setVisibility(GONE);
         binding.controls.setVisibility(GONE);
-        binding.help.setVisibility(GONE);
     }
 
     private void renderRecordingInProgress(RecordingSession session, boolean hasBackgroundRecording) {
@@ -122,7 +118,6 @@ public class AudioRecordingControllerFragment extends Fragment {
 
         if (hasBackgroundRecording) {
             binding.controls.setVisibility(GONE);
-            binding.help.setVisibility(VISIBLE);
         } else {
             renderControls(session);
         }
