@@ -61,11 +61,13 @@ class LocationTrackerService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         setupNotificationChannel()
-        startForeground(
-            NOTIFICATION_ID,
-            createNotification(),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-        )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(
+                NOTIFICATION_ID,
+                createNotification(),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
+            )
+        }
 
         locationClient.setListener(object : LocationClient.LocationClientListener {
             override fun onClientStart() {

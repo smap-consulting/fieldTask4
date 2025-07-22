@@ -19,10 +19,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.GnssStatus;
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.format.DateUtils;
@@ -33,7 +32,6 @@ import androidx.annotation.NonNull;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.location.LocationListener;
 
-import org.odk.collect.android.R;
 import org.odk.collect.android.utilities.GeoUtils;
 import org.odk.collect.android.utilities.ToastUtils;
 import org.odk.collect.android.widgets.utilities.ActivityGeoDataRequester;
@@ -61,6 +59,7 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
     private static final String START_TIME = "startTime";
     private static final String NUMBER_OF_AVAILABLE_SATELLITES = "numberOfAvailableSatellites";
 
+    private GnssStatus.Callback gnssStatusCallback;
     private ProgressDialog locationDialog;
 
     private LocationClient locationClient;
@@ -116,7 +115,6 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
         locationClient.setRetainMockAccuracy(intent.getBooleanExtra(ActivityGeoDataRequester.EXTRA_RETAIN_MOCK_ACCURACY, false));
 
         locationClient.setListener(this);
-
         setupLocationDialog();
     }
 
@@ -141,12 +139,6 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
     @Override
     protected void onPause() {
         super.onPause();
-
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (locationManager != null) {
-            //locationManager.unregisterGnssStatusCallback(this);  TODO
-            //locationManager.removeGpsStatusListener(this);
-        }
 
         locationClient.stop();
         locationClient.setListener(null);
@@ -176,11 +168,7 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
     public void onClientStart() {
         locationClient.requestLocationUpdates(this);
 
-        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        if (locationManager != null) {
-            //locationManager.registerGnssStatusCallback(this);  TODO
-            //locationManager.addGpsStatusListener(this);
-        }
+        startSatelliteMonitoring();
 
         if (locationClient.isLocationAvailable()) {
             logLastLocation();
@@ -196,6 +184,13 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
 
     @Override
     public void onClientStop() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (locationManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && gnssStatusCallback != null) {
+                locationManager.unregisterGnssStatusCallback(gnssStatusCallback);
+                gnssStatusCallback = null;
+            }
+        }
     }
 
     //endregion
@@ -337,5 +332,30 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
         String timeElapsed = DateUtils.formatElapsedTime((System.currentTimeMillis() - startTime) / 1000);
         String locationMetadata = getString(org.odk.collect.strings.R.string.location_metadata, numberOfAvailableSatellites, timeElapsed);
         runOnUiThread(() -> locationDialog.setMessage(dialogMessage + "\n\n" + locationMetadata));
+    }
+
+    @SuppressLint("MissingPermission")
+    private void startSatelliteMonitoring() {
+        LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        if (locationManager != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                gnssStatusCallback = new GnssStatus.Callback() {
+                    @Override
+                    public void onSatelliteStatusChanged(GnssStatus status) {
+                        int satelliteCount = status.getSatelliteCount();
+                        // Iterate through satellites to check if they are used in a fix
+                        int satellitesUsedInFix = 0;
+                        for (int i = 0; i < satelliteCount; i++) {
+                            if (status.usedInFix(i)) {
+                                satellitesUsedInFix++;
+                            }
+                        }
+                        numberOfAvailableSatellites = satellitesUsedInFix;
+                        updateDialogMessage();
+                    }
+                };
+                locationManager.registerGnssStatusCallback(gnssStatusCallback);
+            }
+        }
     }
 }

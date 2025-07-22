@@ -79,13 +79,13 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
         if (mTimer == null) {
             mTimer = new Timer();
         }
-        mTimer.scheduleAtFixedRate(new CheckEnabledTimerTask(), 0, 60000);  // Peiodically check to see if location tracking is disabled
+        mTimer.schedule(new CheckEnabledTimerTask(), 0, 60000);  // Peiodically check to see if location tracking is disabled
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         createLocationRequest();
         requestLocationUpdates();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
             NotificationChannel chan = new NotificationChannel(FG_CHANNEL_ID, "Notifications", NotificationManager.IMPORTANCE_NONE);
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -99,17 +99,6 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
             Notification notification = builder.build();
             startForeground(1, notification, FOREGROUND_SERVICE_TYPE_LOCATION);
 
-        } else {
-
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
-                    .setContentTitle(getString(R.string.app_name))
-                    .setContentText("some text")
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setAutoCancel(true);
-
-            Notification notification = builder.build();
-
-            startForeground(1, notification, FOREGROUND_SERVICE_TYPE_LOCATION);
         }
 
         return START_STICKY;
