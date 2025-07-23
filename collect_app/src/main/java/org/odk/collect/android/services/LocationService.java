@@ -34,6 +34,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
@@ -156,10 +157,10 @@ public class LocationService extends Service implements GoogleApiClient.Connecti
      * Methods ot support location broadcast receiver
      */
     private void createLocationRequest() {
-        locationRequest = LocationRequest.create();
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setFastestInterval(Constants.GPS_INTERVAL / 2);
-        locationRequest.setInterval(Constants.GPS_INTERVAL);
+        locationRequest = new LocationRequest.Builder(Constants.GPS_INTERVAL)
+                .setMinUpdateIntervalMillis(Constants.GPS_INTERVAL / 2)
+                .setPriority( Priority.PRIORITY_HIGH_ACCURACY)
+                .build();
     }
 
     private void requestLocationUpdates() {
