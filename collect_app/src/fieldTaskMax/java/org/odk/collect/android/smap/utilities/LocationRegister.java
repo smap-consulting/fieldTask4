@@ -113,7 +113,7 @@ public class LocationRegister {
 
                 @Override
                 public void denied() {
-                    permissionsProvider.showAdditionalExplanation(activity, R.string.location_runtime_permissions_denied_title,
+                    permissionsProvider.showAdditionalExplanation(activity, org.odk.collect.strings.R.string.location_runtime_permissions_denied_title,
                             R.string.smap_background_location_permission_denied, R.drawable.ic_room_black_24dp, action);
                 }
             }, Manifest.permission.ACCESS_BACKGROUND_LOCATION);
