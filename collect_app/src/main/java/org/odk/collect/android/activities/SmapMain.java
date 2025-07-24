@@ -580,9 +580,8 @@ public class SmapMain extends CollectAbstractActivity implements TaskDownloaderL
                         message.append(this.getString(R.string.smap_tasks_not_enabled));
                     } else if (key.equals("err_no_tasks")) {
                         // No tasks is fine, in fact its the most common state
-                        //message.append(this.getString(R.string.smap_no_tasks));
                     } else if (key.equals("Error:") && m != null && m.startsWith("403")) {
-                        message.append(this.getString(R.string.smap_invalid_auth_token));
+                        message.append(this.getString(R.string.smap_unauth));
                     } else {
                         message.append(key + " - " + m + "\n\n");
                     }
