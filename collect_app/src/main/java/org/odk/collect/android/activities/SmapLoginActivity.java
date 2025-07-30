@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import org.apache.commons.collections.KeyValue;
 import org.odk.collect.android.R;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.configure.qr.QRCodeTabsActivity;
@@ -34,6 +35,7 @@ import org.odk.collect.android.listeners.SmapLoginListener;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.tasks.SmapLoginTask;
+import org.odk.collect.android.utilities.KeyValueString;
 import org.odk.collect.android.utilities.SnackbarUtils;
 import org.odk.collect.android.utilities.Validator;
 
@@ -41,6 +43,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.SwitchCompat;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.LinkedHashSet;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,6 +72,8 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
     private final ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         gotResult(RESULT_OK, result.getData());
     });
+
+    private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd hh:mm").create();
 
     private void gotResult(int resultOk, Intent data) {
         if(data != null) {
@@ -193,6 +203,30 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
             prefs.save(GeneralKeys.KEY_SMAP_AUTH_TOKEN, tokenText.getText().toString());
         } else {
             prefs.save(GeneralKeys.KEY_PASSWORD, passwordText.getText().toString());
+
+            // Get existing logon array
+            String user = userText.getText().toString();
+            String savedUsersString = (String) prefs.get(GeneralKeys.KEY_SAVED_USERS);
+            LinkedHashSet<KeyValueString> savedUsers = gson.fromJson(savedUsersString, new TypeToken<LinkedHashSet<KeyValueString>>() {}.getType());
+            if(savedUsers == null) {
+                savedUsers = new LinkedHashSet<KeyValueString> ();
+            }
+
+            // Remove any existing entries for this user
+            KeyValueString currentUser = null;
+            for(KeyValueString p : savedUsers) {
+                if(p.key.equals(user)) {
+                    currentUser = p;
+                }
+            }
+            if(currentUser != null) {
+                savedUsers.remove(currentUser);
+            }
+
+            // Add the new logon details to the set
+            savedUsers.add(new KeyValueString(userText.getText().toString(), passwordText.getText().toString()));
+            Timber.i("Count: %s", savedUsers.size());
+            prefs.save(GeneralKeys.KEY_SAVED_USERS, gson.toJson(savedUsers));
         }
 
         // Save the login time in case the password policy is set to periodic
@@ -208,7 +242,7 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
 
     public void loginFailed(String status) {
 
-        // Attempt to login by comparing values agains stored preferences
+        // Attempt to login by comparing values against stored preferences
         boolean useToken = smapUseToken.isChecked();
         String username = userText.getText().toString();
         String password = passwordText.getText().toString();
