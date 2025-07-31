@@ -34,6 +34,7 @@ import org.odk.collect.android.listeners.SmapLoginListener;
 import org.odk.collect.android.preferences.GeneralKeys;
 import org.odk.collect.android.preferences.GeneralSharedPreferences;
 import org.odk.collect.android.tasks.SmapLoginTask;
+import org.odk.collect.android.utilities.KeyValueString;
 import org.odk.collect.android.utilities.SnackbarUtils;
 import org.odk.collect.android.utilities.Validator;
 
@@ -41,6 +42,12 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.SwitchCompat;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -64,6 +71,8 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
     private final ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         gotResult(RESULT_OK, result.getData());
     });
+
+    private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd hh:mm").create();
 
     private void gotResult(int resultOk, Intent data) {
         if(data != null) {
@@ -193,6 +202,7 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
             prefs.save(GeneralKeys.KEY_SMAP_AUTH_TOKEN, tokenText.getText().toString());
         } else {
             prefs.save(GeneralKeys.KEY_PASSWORD, passwordText.getText().toString());
+            saveUserHistory(prefs, userText.getText().toString(), passwordText.getText().toString());      // Save logon details for multiple users to allow logon offline
         }
 
         // Save the login time in case the password policy is set to periodic
@@ -208,26 +218,38 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
 
     public void loginFailed(String status) {
 
-        // Attempt to login by comparing values agains stored preferences
+        // Attempt to login by comparing values against stored preferences
+        GeneralSharedPreferences prefs = GeneralSharedPreferences.getInstance();
         boolean useToken = smapUseToken.isChecked();
         String username = userText.getText().toString();
         String password = passwordText.getText().toString();
         String token = tokenText.getText().toString();
 
-        String prefUrl = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SERVER_URL);
-        String prefUsername = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_USERNAME);
-        String prefPassword = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_PASSWORD);
-        String prefToken = (String) GeneralSharedPreferences.getInstance().get(GeneralKeys.KEY_SMAP_AUTH_TOKEN);
-        if((useToken && url.equals(prefUrl) && username.equals(prefUsername) && token.equals(prefToken))
-                || (!useToken && url.equals(prefUrl) && username.equals(prefUsername) && password.equals(prefPassword))) {
-            // Start Main Activity no refresh as presumably there is no network
-            Intent i = new Intent(SmapLoginActivity.this, SmapMain.class);
-            i.putExtra(SmapMain.EXTRA_REFRESH, "no");
-            i.putExtra(SmapMain.LOGIN_STATUS, "failed");
-            startActivity(i);  //smap
-            finish();
+        String prefUrl = (String) prefs.get(GeneralKeys.KEY_SERVER_URL);
+        String prefUsername = (String) prefs.get(GeneralKeys.KEY_USERNAME);
+        String prefPassword = (String) prefs.get(GeneralKeys.KEY_PASSWORD);
+        String prefToken = (String) prefs.get(GeneralKeys.KEY_SMAP_AUTH_TOKEN);
+        if(url.equals(prefUrl)) {
+            if((useToken && username.equals(prefUsername) && token.equals(prefToken))
+                    || (!useToken && username.equals(prefUsername) && password.equals(prefPassword))
+                    || (!useToken && offlineLogonCheck(prefs, username, password))) {
+
+                // Save the preferences
+                prefs.save(GeneralKeys.KEY_SERVER_URL, url);
+                prefs.save(GeneralKeys.KEY_USERNAME, userText.getText().toString());
+                prefs.save(GeneralKeys.KEY_SMAP_USE_TOKEN, smapUseToken.isChecked());
+
+                // Start Main Activity no refresh as presumably there is no network
+                Intent i = new Intent(SmapLoginActivity.this, SmapMain.class);
+                i.putExtra(SmapMain.EXTRA_REFRESH, "no");
+                i.putExtra(SmapMain.LOGIN_STATUS, "failed");
+                startActivity(i);  //smap
+                finish();
+            } else {
+                loginNotAuthorized(status); // Credentials do not match
+            }
         } else {
-            loginNotAuthorized(status);   // Credentials do not match
+            loginNotAuthorized(status);   // User previously logged into a different server
         }
 
     }
@@ -281,7 +303,7 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         return valid;
     }
 
-    private boolean useTokenChanged(boolean useToken) {
+    private void useTokenChanged(boolean useToken) {
         // show or hide basic authentication preferences
         urlText.setEnabled(!useToken);
         userText.setEnabled(!useToken);
@@ -291,7 +313,6 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         scanButton.setVisibility(!useToken ? View.INVISIBLE : View.VISIBLE);
         this.findViewById(R.id.auth_token_layout).setVisibility(!useToken ? View.INVISIBLE : View.VISIBLE);
 
-        return true;
     }
 
     private CharSequence[] getChoices() {
@@ -299,5 +320,56 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
         choices[0] = "https://app.kontrolid.org";
         choices[1] = "https://app.kontrolid.com";
         return choices;
+    }
+
+    /*
+     * Save logon details of last 5 users to allow for offline logout and logon
+     */
+    private void saveUserHistory(GeneralSharedPreferences prefs, String user, String password) {
+        // Get existing logon array
+        String savedUsersString = (String) prefs.get(GeneralKeys.KEY_SAVED_USERS);
+        ArrayList<KeyValueString> savedUsers = new ArrayList<> ();
+        if(savedUsersString != null && !savedUsersString.trim().isEmpty()) {
+            savedUsers = gson.fromJson(savedUsersString, new TypeToken<ArrayList<KeyValueString>>() {}.getType());
+        }
+
+        // Remove any existing entries for this user
+        for(KeyValueString p : savedUsers) {
+            if(p.key.equals(user)) {
+                savedUsers.remove(p);
+                break;
+            }
+        }
+
+        // Add the new logon details to the set
+        savedUsers.add(new KeyValueString(user, password));
+
+        // Remove any old credentials should be a maximum of 5
+        if(savedUsers.size() > 5) {
+            for(int i = savedUsers.size(); i > 5; i--) {
+                savedUsers.remove(0);
+            }
+        }
+
+        prefs.save(GeneralKeys.KEY_SAVED_USERS, gson.toJson(savedUsers));
+    }
+
+    private boolean offlineLogonCheck(GeneralSharedPreferences prefs, String user, String password) {
+        boolean credsFound = false;
+
+        String savedUsersString = (String) prefs.get(GeneralKeys.KEY_SAVED_USERS);
+        ArrayList<KeyValueString> savedUsers = new ArrayList<> ();
+        if(savedUsersString != null && !savedUsersString.trim().isEmpty()) {
+            savedUsers = gson.fromJson(savedUsersString, new TypeToken<ArrayList<KeyValueString>>() {}.getType());
+        }
+
+        for(KeyValueString p : savedUsers) {
+            if(p.key.equals(user) && p.value.equals(password)) {
+                credsFound = true;
+                break;
+            }
+        }
+
+        return credsFound;
     }
 }

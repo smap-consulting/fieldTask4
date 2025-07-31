@@ -7,9 +7,11 @@ import org.odk.collect.android.R;
 import org.odk.collect.android.activities.GeoPolyActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.smap.utilities.LocationRegister;
+import org.odk.collect.android.utilities.KeyValueString;
 import org.odk.collect.android.utilities.QuestionFontSizeUtils;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 
 public final class GeneralKeys {
     // server_preferences.xml
@@ -19,6 +21,7 @@ public final class GeneralKeys {
     public static final String KEY_SERVER_URL = "server_url";
     public static final String KEY_USERNAME = "username";
     public static final String KEY_PASSWORD = "password";
+    public static final String KEY_SAVED_USERS = "saved_users";
 
     // custom_server_paths_preferences.xmlreferences.xml
     public static final String KEY_FORMLIST_URL = "formlist_url";
@@ -146,6 +149,7 @@ public final class GeneralKeys {
         hashMap.put(KEY_SERVER_URL, Collect.getInstance().getString(R.string.default_server_url));
         hashMap.put(KEY_USERNAME, "");
         hashMap.put(KEY_PASSWORD, "");
+        hashMap.put(KEY_SAVED_USERS, "");
         // form_management_preferences.xml
         hashMap.put(KEY_AUTOSEND, AUTOSEND_OFF);
         hashMap.put(KEY_GUIDANCE_HINT, GUIDANCE_HINT_OFF);
