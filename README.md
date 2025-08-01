@@ -96,6 +96,7 @@ Downloads
 
 |Name          |Link                                                          |Version    |
 |------------- |------------------------------------------------------------- |-----------|
+|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_33_7349.tgz  |25.04.33   |
 |Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_25_8303.tgz  |25.04.25   |
 |Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_17_9632.tgz  |25.04.17   |
 |Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_15_1220.tgz  |25.04.15   |
