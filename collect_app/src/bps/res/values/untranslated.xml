@@ -15,7 +15,7 @@
     <!-- strings that should not be translated -->
     <string translatable="false" name="action_name">BPS Application</string>
     <string translatable="false" name="app_name">BPS</string>
-	<string translatable="false" name="default_server_url">https://bgn.smap.au</string>
+	<string translatable="false" name="default_server_url">https://bps3.smap.au</string>
 	<string translatable="false" name="default_username"></string>
 	<string translatable="false" name="default_password"></string>
 	<string translatable="false" name="app_url">https://www.slos.gov.pg</string>
