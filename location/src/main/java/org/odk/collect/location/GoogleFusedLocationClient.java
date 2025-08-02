@@ -88,7 +88,6 @@ public class GoogleFusedLocationClient
     public void stop() {
         stopLocationUpdates();
         getListener().onClientStop();
-        setListener(null);
     }
 
     public void requestLocationUpdates(@NonNull LocationListener locationListener) {

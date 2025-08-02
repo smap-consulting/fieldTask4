@@ -141,7 +141,6 @@ public class GeoPointActivity extends CollectAbstractActivity implements Locatio
         super.onPause();
 
         locationClient.stop();
-        locationClient.setListener(null);
 
         if (timer != null) {
             timer.cancel();
