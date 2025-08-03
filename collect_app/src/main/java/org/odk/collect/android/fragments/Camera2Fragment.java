@@ -804,15 +804,17 @@ public class Camera2Fragment extends Fragment
     private void unlockFocus() {
         try {
             // Reset the auto-focus trigger
-            previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
-                    CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
-            setAutoFlash(previewRequestBuilder);
-            captureSession.capture(previewRequestBuilder.build(), captureCallback,
-                    backgroundHandler);
-            // After this, the camera will go back to the normal state of preview.
-            state = STATE_PREVIEW;
-            captureSession.setRepeatingRequest(previewRequest, captureCallback,
-                    backgroundHandler);
+            if(captureSession != null) {
+                previewRequestBuilder.set(CaptureRequest.CONTROL_AF_TRIGGER,
+                        CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+                setAutoFlash(previewRequestBuilder);
+                captureSession.capture(previewRequestBuilder.build(), captureCallback,
+                        backgroundHandler);
+                // After this, the camera will go back to the normal state of preview.
+                state = STATE_PREVIEW;
+                captureSession.setRepeatingRequest(previewRequest, captureCallback,
+                        backgroundHandler);
+            }
         } catch (CameraAccessException e) {
             Timber.e(e);
         }
