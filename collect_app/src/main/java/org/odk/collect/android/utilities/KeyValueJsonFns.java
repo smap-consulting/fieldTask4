@@ -20,24 +20,30 @@ public final class KeyValueJsonFns {
 	/*
 	 * Accept a JSON string of key value pairs and return a comma separated list of values
 	 */
-	public static final String getValues(String in) {
-		String out = null;
+	public static String getValues(String in) {
+		StringBuilder out = new StringBuilder();
 		
 		if (in != null) {
 	    	Gson gson = new GsonBuilder().create();
 	    	Type type = new TypeToken<ArrayList<KeyValue>>(){}.getType();		
-	    	ArrayList <KeyValue> kv = gson.fromJson(in, type);
-	    	
-	    	StringBuffer outBuf = new StringBuffer();
-	    	for(int i = 0; i < kv.size(); i++) {
-	    		if(i > 0) {
-	    			outBuf.append(",");
-	    		}
-	    		outBuf.append(kv.get(i).value);
+	    	ArrayList <KeyValue> kva = gson.fromJson(in, type);
+
+			boolean hasEntries = false;
+	    	for(KeyValue kv : kva) {
+				if(kv.key != null && kv.value!= null) {
+					if (hasEntries) {
+						out.append(",");
+					}
+					out.append(kv.value);
+					hasEntries = true;
+				}
 	    	}
-	    	out = outBuf.toString();
 		}
-		
-		return out;
+
+		if(out.length() > 0) {
+			return out.toString();
+		} else {
+			return null;
+		}
 	}
 }
