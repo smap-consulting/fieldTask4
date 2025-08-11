@@ -108,7 +108,7 @@ android {
             applicationId "org.smap.smapTask.android.supply"
             versionName "6.833-supply"
         }
-        seracis {
+        xxx1 {
             applicationId "org.smap.smapTask.android.xxx1"
             versionName "6.833-xxx1"
         }
@@ -116,9 +116,9 @@ android {
             applicationId "org.smap.smapTask.android.meqa"
             versionName "6.833-meqa"
         }
-        atempi {
-            applicationId "org.smap.smapTask.android.atempi"
-            versionName "6.833-atempi"
+        xxx2 {
+            applicationId "org.smap.smapTask.android.xxx2"
+            versionName "6.833-xxx2"
         }
         pop {
             applicationId "org.smap.smapTask.android.pop"

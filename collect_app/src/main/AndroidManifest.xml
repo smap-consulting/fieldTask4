@@ -212,7 +212,7 @@ the specific language governing permissions and limitations under the License.
             android:exported="false">
         </service>
 
-        <service android:name="org.odk.collect.audiorecorder.recording.internal.AudioRecorderService"
+        <service android:name="org.odk.collect.audiorecorder.recording.AudioRecorderService"
             android:foregroundServiceType="microphone"/>
 
         <!-- end smap -->
