@@ -92,9 +92,9 @@ android {
             applicationId "org.smap.smapTask.android.kontrolid"
             versionName "6.833-kontrolid"
         }
-        dogman {
-            applicationId "org.smap.smapTask.android.dogman"
-            versionName "6.833-dogman"
+        xxx4 {
+            applicationId "org.smap.smapTask.android.xxx4"
+            versionName "6.833-xxx4"
         }
         portero {
             applicationId "org.smap.smapTask.android.portero"
