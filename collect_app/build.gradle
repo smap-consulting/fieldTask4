@@ -104,9 +104,9 @@ android {
             applicationId "org.smap.smapTask.android.kontrolid_corporate"
             versionName "6.833-kontrolid"
         }
-        supply {
-            applicationId "org.smap.smapTask.android.supply"
-            versionName "6.833-supply"
+        xxx3 {
+            applicationId "org.smap.smapTask.android.xxx3"
+            versionName "6.833-xxx3"
         }
         xxx1 {
             applicationId "org.smap.smapTask.android.xxx1"
