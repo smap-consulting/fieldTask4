@@ -99,12 +99,6 @@ Downloads
 |Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_33_6357.tgz  |25.04.33   |
 |Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_25_8303.tgz  |25.04.25   |
 |Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_17_9632.tgz  |25.04.17   |
-|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_15_1220.tgz  |25.04.15   |
-|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_13_9275.tgz  |25.04.13   |
-|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_04_11_2810.tgz  |25.04.11   |
-|Server        |https://smap-code.s3.amazonaws.com/os_smap_25_01_28_6298.tgz  |25.01.28   |
-|Server        |https://smap-code.s3.amazonaws.com/os_smap_24_10_07_9281.tgz  |24.10.07   |
-|Server        |https://smap-code.s3.amazonaws.com/os_smap_24_05_47_5768.tgz  |24.05.47   |
 
 
 [Server Administration Documentation](https://www.smap.com.au/docs/server-admin.html)
