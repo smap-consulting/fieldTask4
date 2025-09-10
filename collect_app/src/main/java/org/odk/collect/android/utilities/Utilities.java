@@ -658,7 +658,7 @@ public class Utilities {
 
         List<TaskResponseAssignment> casesToKeep = new ArrayList<>();
 
-        if (assignmentsToKeep != null && assignmentsToKeep.size() > 0) {
+        if (assignmentsToKeep != null && !assignmentsToKeep.isEmpty()) {
             for (TaskResponseAssignment ta : assignmentsToKeep) {
                 if (ta.task.type != null && ta.task.type.equals("case")) {
                     casesToKeep.add(ta);
