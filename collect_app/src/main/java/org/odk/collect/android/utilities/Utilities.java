@@ -654,7 +654,7 @@ public class Utilities {
     /*
      * Delete any cases no longer assigned to this user
      */
-    public static int deleteUnassignedCases(List<TaskResponseAssignment> assignmentsToKeep) {
+    public static void deleteUnassignedCases(List<TaskResponseAssignment> assignmentsToKeep) {
 
         List<TaskResponseAssignment> casesToKeep = new ArrayList<>();
 
@@ -698,17 +698,16 @@ public class Utilities {
             c = Collect.getInstance().getContentResolver().query(dbUri, null, where.toString(), whereArgs, null);
             if (c != null && c.getCount() > 0) {
                 c.moveToFirst();
-                obsoleteUpdateId = c.getString(c.getColumnIndexOrThrow(InstanceColumns.T_UPDATEID));
-                markOldCaseCancelled(obsoleteUpdateId);
+                do {
+                    obsoleteUpdateId = c.getString(c.getColumnIndexOrThrow(InstanceColumns.T_UPDATEID));
+                    markOldCaseCancelled(obsoleteUpdateId);
+                } while (c.moveToNext());
             }
         } finally {
             if (c != null) {
                 c.close();
             }
         }
-
-
-        return casesToKeep.size();
     }
 
     /*
@@ -758,17 +757,17 @@ public class Utilities {
         InstanceProvider ip = new InstanceProvider();
 
         Cursor c = null;
-        String status = null;
         try {
             c = Collect.getInstance().getContentResolver().query(dbUri, null, where, whereArgs, null);
             if (c != null && c.getCount() > 0) {
                 c.moveToFirst();
-                status = c.getString(c.getColumnIndexOrThrow(InstanceColumns.STATUS));
                 do {
                     String instanceFile = c.getString(
                             c.getColumnIndexOrThrow(InstanceColumns.INSTANCE_FILE_PATH));
                     File instanceDir = (new File(instanceFile)).getParentFile();
-                    ip.deleteAllFilesInDirectory(instanceDir);
+                    if(instanceDir != null) {
+                        ip.deleteAllFilesInDirectory(instanceDir);
+                    }
 
                 } while (c.moveToNext());
             }
