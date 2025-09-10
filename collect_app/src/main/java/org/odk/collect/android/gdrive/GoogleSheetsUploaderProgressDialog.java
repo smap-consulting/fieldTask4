@@ -86,7 +86,7 @@ public class GoogleSheetsUploaderProgressDialog extends DialogFragment {
         setRetainInstance(true);
         setCancelable(false);
 
-        dialog = new ProgressDialog(getActivity(), getTheme());
+        dialog = new ProgressDialog(requireActivity(), getTheme());
         dialog.setTitle(getString(org.odk.collect.strings.R.string.uploading_data));
         dialog.setMessage(getString(org.odk.collect.strings.R.string.please_wait));
         dialog.setCancelable(false);

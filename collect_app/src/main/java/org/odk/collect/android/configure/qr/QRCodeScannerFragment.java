@@ -80,8 +80,8 @@ public class QRCodeScannerFragment extends BarCodeScannerFragment {
             data.putExtra("server_url",url);
             data.putExtra("auth_token",token);
             data.putExtra("username",username);
-            getActivity().setResult(RESULT_OK, data);
-            getActivity().finish();
+            requireActivity().setResult(RESULT_OK, data);
+            requireActivity().finish();
         } else {
             ToastUtils.showLongToast(getString(org.odk.collect.strings.R.string.invalid_qrcode));
         }

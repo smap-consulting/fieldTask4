@@ -108,7 +108,7 @@ public class StorageMigrationDialog extends MaterialFullScreenDialogFragment {
                 if (adminPasswordProvider.isAdminPasswordSet()) {
                     Bundle args = new Bundle();
                     args.putSerializable(AdminPasswordDialogFragment.ARG_ACTION, Action.STORAGE_MIGRATION);
-                    DialogUtils.showIfNotShowing(AdminPasswordDialogFragment.class, args, getActivity().getSupportFragmentManager());
+                    DialogUtils.showIfNotShowing(AdminPasswordDialogFragment.class, args, requireActivity().getSupportFragmentManager());
                 } else {
                     startStorageMigration();
                 }

@@ -582,8 +582,8 @@ public class GoogleMapFragment extends SupportMapFragment implements
 
     private void enableLocationUpdates(boolean enable) {
         if (locationClient == null) {
-            locationClient = LocationClientProvider.getClient(getActivity(),
-                    () -> new GoogleFusedLocationClient(getActivity().getApplication()), GoogleApiAvailability
+            locationClient = LocationClientProvider.getClient(requireActivity(),
+                    () -> new GoogleFusedLocationClient(requireActivity().getApplication()), GoogleApiAvailability
                             .getInstance());
             locationClient.setListener(this);
 
@@ -701,12 +701,12 @@ public class GoogleMapFragment extends SupportMapFragment implements
 
     private BitmapDescriptor getBitmapDescriptor(int drawableId) {
         return BitmapDescriptorFactory.fromBitmap(
-            IconUtils.getBitmap(getActivity(), drawableId));
+            IconUtils.getBitmap(requireActivity(), drawableId));
     }
 
     private void showGpsDisabledAlert() {
         if(getActivity() != null) {
-            new AlertDialog.Builder(getActivity())
+            new AlertDialog.Builder(requireActivity())
                     .setMessage(getString(org.odk.collect.strings.R.string.gps_enable_message))
                     .setCancelable(false)
                     .setPositiveButton(getString(org.odk.collect.strings.R.string.enable_gps),

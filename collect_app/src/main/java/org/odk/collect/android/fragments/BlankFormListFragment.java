@@ -103,7 +103,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
             deleteComplete(backgroundTasks.deleteFormsTask.getDeleteCount());
         }
         if (backgroundTasks.deleteFormsTask == null) {
-            DialogUtils.dismissDialog(ProgressDialogFragment.class, getActivity().getSupportFragmentManager());
+            DialogUtils.dismissDialog(ProgressDialogFragment.class, requireActivity().getSupportFragmentManager());
         }
     }
 
@@ -196,7 +196,7 @@ public class BlankFormListFragment extends FormListFragment implements DiskSyncL
             Bundle args = new Bundle();
             args.putSerializable(ProgressDialogFragment.MESSAGE, getResources().getString(org.odk.collect.strings.R.string.form_delete_message));
             args.putBoolean(ProgressDialogFragment.CANCELABLE, false);
-            DialogUtils.showIfNotShowing(ProgressDialogFragment.class, args, getActivity().getSupportFragmentManager());
+            DialogUtils.showIfNotShowing(ProgressDialogFragment.class, args, requireActivity().getSupportFragmentManager());
 
             backgroundTasks.deleteFormsTask = new DeleteFormsTask(formsRepository, instancesRepository);
             backgroundTasks.deleteFormsTask.setDeleteListener(this);

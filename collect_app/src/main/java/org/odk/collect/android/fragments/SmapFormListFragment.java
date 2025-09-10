@@ -173,7 +173,7 @@ public class SmapFormListFragment extends ListFragment {
     }
 
     public SurveyDataViewModel getViewMode() {
-        return ((SmapMain) getActivity()).getViewModel();
+        return ((SmapMain) requireActivity()).getViewModel();
     }
 
     @Override

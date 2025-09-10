@@ -43,9 +43,9 @@ public class DeleteRepeatDialogFragment extends DialogFragment {
             name += " (" + (repeatCount + 1) + ")";
         }
 
-        AlertDialog alertDialog = new AlertDialog.Builder(getActivity()).create();
-        alertDialog.setTitle(getActivity().getString(org.odk.collect.strings.R.string.delete_repeat_ask));
-        alertDialog.setMessage(getActivity().getString(org.odk.collect.strings.R.string.delete_repeat_confirm, name));
+        AlertDialog alertDialog = new AlertDialog.Builder(requireActivity()).create();
+        alertDialog.setTitle(requireActivity().getString(org.odk.collect.strings.R.string.delete_repeat_ask));
+        alertDialog.setMessage(requireActivity().getString(org.odk.collect.strings.R.string.delete_repeat_confirm, name));
         DialogInterface.OnClickListener quitListener = (dialog, i) -> {
             if (i == BUTTON_POSITIVE) { // yes
                 formController.getAuditEventLogger().logEvent(AuditEvent.AuditEventType.DELETE_REPEAT, true, System.currentTimeMillis());
@@ -57,8 +57,8 @@ public class DeleteRepeatDialogFragment extends DialogFragment {
         };
         setCancelable(false);
         alertDialog.setCancelable(false);
-        alertDialog.setButton(BUTTON_POSITIVE, getActivity().getString(org.odk.collect.strings.R.string.discard_group), quitListener);
-        alertDialog.setButton(BUTTON_NEGATIVE, getActivity().getString(org.odk.collect.strings.R.string.delete_repeat_no), quitListener);
+        alertDialog.setButton(BUTTON_POSITIVE, requireActivity().getString(org.odk.collect.strings.R.string.discard_group), quitListener);
+        alertDialog.setButton(BUTTON_NEGATIVE, requireActivity().getString(org.odk.collect.strings.R.string.delete_repeat_no), quitListener);
 
         return alertDialog;
     }

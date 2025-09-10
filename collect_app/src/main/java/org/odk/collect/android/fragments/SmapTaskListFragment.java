@@ -221,7 +221,7 @@ public class SmapTaskListFragment extends ListFragment {
 
             @Override
             public void onLocateClick(TaskEntry taskEntry) {
-                SmapMain activity = ((SmapMain) getActivity());
+                SmapMain activity = ((SmapMain) requireActivity());
                 activity.locateTaskOnMap(taskEntry);
             }
         };

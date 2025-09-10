@@ -275,7 +275,7 @@ public class ServerPreferencesFragment extends BasePreferenceFragment implements
     }
 
     public void setupUrlDropdownAdapter(ListPopupWindow listPopupWindow) {
-        ArrayAdapter adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, serverRepository.getServers());
+        ArrayAdapter adapter = new ArrayAdapter<>(requireActivity(), android.R.layout.simple_list_item_1, serverRepository.getServers());
         listPopupWindow.setAdapter(adapter);
     }
 

@@ -271,9 +271,6 @@ public class MapboxMapFragment extends org.odk.collect.android.geo.mapboxsdk.Map
                 loadReferenceOverlay();
                 initLocationComponent();
 
-                if (mapReadyListener != null && getActivity() != null) {
-                   // mapReadyListener.onReady(this);  // Causes initMap to be recalled
-                }
             });
         }
     }

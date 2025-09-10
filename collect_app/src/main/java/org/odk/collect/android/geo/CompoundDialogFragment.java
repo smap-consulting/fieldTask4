@@ -56,7 +56,7 @@ public class CompoundDialogFragment extends DialogFragment {
         if(label == null || label.equals("")) {
             label = getString(R.string.smap_set_marker);
         }
-        View settingsView = getActivity().getLayoutInflater().inflate(R.layout.geocompound_dialog, null);
+        View settingsView = requireActivity().getLayoutInflater().inflate(R.layout.geocompound_dialog, null);
         RadioButton rb_pit = settingsView.findViewById(R.id.gc_marker_pit);
         RadioButton rb_fault = settingsView.findViewById(R.id.gc_marker_fault);
         RadioButton rb_none = settingsView.findViewById(R.id.gc_marker_none);
@@ -77,7 +77,7 @@ public class CompoundDialogFragment extends DialogFragment {
             checkedRadioButtonId = checkedId;
         });
 
-        return new AlertDialog.Builder(getActivity())
+        return new AlertDialog.Builder(requireActivity())
                 .setTitle(label)
                 .setView(settingsView)
                 .setPositiveButton(getString(R.string.smap_apply), (dialog, id) -> {

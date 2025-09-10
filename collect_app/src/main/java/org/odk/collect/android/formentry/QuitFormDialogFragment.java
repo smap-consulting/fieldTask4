@@ -65,7 +65,7 @@ public class QuitFormDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
-        String title =  formSaveViewModel.getFormName() == null ? getActivity().getString(org.odk.collect.strings.R.string.no_form_loaded) : formSaveViewModel.getFormName();
+        String title =  formSaveViewModel.getFormName() == null ? requireActivity().getString(org.odk.collect.strings.R.string.no_form_loaded) : formSaveViewModel.getFormName();
 
         List<IconMenuItem> items;
         if ((boolean) AdminSharedPreferences.getInstance().get(AdminKeys.KEY_SAVE_MID)) {
@@ -75,7 +75,7 @@ public class QuitFormDialogFragment extends DialogFragment {
             items = ImmutableList.of(new IconMenuItem(R.drawable.ic_delete, org.odk.collect.strings.R.string.do_not_save));
         }
 
-        ListView listView = DialogUtils.createActionListView(getActivity());
+        ListView listView = DialogUtils.createActionListView(requireActivity());
 
         final IconMenuListAdapter adapter = new IconMenuListAdapter(getActivity(), items);
         listView.setAdapter(adapter);
@@ -89,15 +89,15 @@ public class QuitFormDialogFragment extends DialogFragment {
             } else {
                 formSaveViewModel.ignoreChanges();
 
-                String action = getActivity().getIntent().getAction();
+                String action = requireActivity().getIntent().getAction();
                 if (Intent.ACTION_PICK.equals(action) || Intent.ACTION_EDIT.equals(action)) {
                     // caller is waiting on a picked form
                     Uri uri = InstancesDaoHelper.getLastInstanceUri(formSaveViewModel.getAbsoluteInstancePath());
                     if (uri != null) {
-                        getActivity().setResult(RESULT_OK, new Intent().setData(uri));
+                        requireActivity().setResult(RESULT_OK, new Intent().setData(uri));
                     }
                 }
-                getActivity().finish();
+                requireActivity().finish();
             }
 
             if (getDialog() != null) {

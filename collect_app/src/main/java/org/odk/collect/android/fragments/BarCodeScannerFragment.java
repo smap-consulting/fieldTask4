@@ -72,7 +72,7 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        beepManager = new BeepManager(getActivity());
+        beepManager = new BeepManager(requireActivity());
 
         View rootView = inflater.inflate(R.layout.fragment_scan, container, false);
         barcodeScannerView = rootView.findViewById(R.id.barcode_view);
@@ -90,7 +90,7 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
     }
 
     private void startScanning(Bundle savedInstanceState) {
-        capture = new CaptureManager(getActivity(), barcodeScannerView);
+        capture = new CaptureManager(requireActivity(), barcodeScannerView);
         capture.initializeFromIntent(getIntent(), savedInstanceState);
         capture.decode();
 
@@ -120,7 +120,7 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
     private Intent getIntent() {
         Intent intent = new IntentIntegrator(getActivity())
                 .setDesiredBarcodeFormats(getSupportedCodeFormats())
-                .setPrompt(getContext().getString(org.odk.collect.strings.R.string.barcode_scanner_prompt))
+                .setPrompt(requireContext().getString(org.odk.collect.strings.R.string.barcode_scanner_prompt))
                 .createScanIntent();
         intent.putExtra(Intents.Scan.SCAN_TYPE, Intents.Scan.MIXED_SCAN);
         return intent;
@@ -153,12 +153,12 @@ public abstract class BarCodeScannerFragment extends Fragment implements Decorat
     }
 
     private boolean hasFlash() {
-        return getActivity().getApplicationContext().getPackageManager()
+        return requireActivity().getApplicationContext().getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
     }
 
     private boolean frontCameraUsed() {
-        Bundle bundle = getActivity().getIntent().getExtras();
+        Bundle bundle = requireActivity().getIntent().getExtras();
         return bundle != null && bundle.getBoolean(Appearances.FRONT);
     }
 

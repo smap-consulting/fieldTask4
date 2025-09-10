@@ -39,7 +39,6 @@ import java.util.function.Supplier;
  * and the Activity/Fragment components should talk to the ViewModel itself.
  */
 
-@Deprecated
 public class AudioHelper {
 
     private final LifecycleOwner lifecycleOwner;

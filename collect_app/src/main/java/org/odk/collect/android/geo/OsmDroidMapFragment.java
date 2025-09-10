@@ -192,15 +192,15 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
         loadReferenceOverlay();
         addMapLayoutChangeListener(map);
 
-        locationClient = LocationClientProvider.getClient(getActivity(),
-                () -> new GoogleFusedLocationClient(getActivity().getApplication()), GoogleApiAvailability
+        locationClient = LocationClientProvider.getClient(requireActivity(),
+                () -> new GoogleFusedLocationClient(requireActivity().getApplication()), GoogleApiAvailability
                         .getInstance());
         locationClient.setListener(this);
 
         osmLocationClientWrapper = new OsmLocationClientWrapper(locationClient);
         myLocationOverlay = new MyLocationNewOverlay(osmLocationClientWrapper, map);
         myLocationOverlay.setDrawAccuracyEnabled(true);
-        Bitmap crosshairs = IconUtils.getBitmap(getActivity(), R.drawable.ic_crosshairs);
+        Bitmap crosshairs = IconUtils.getBitmap(requireActivity(), R.drawable.ic_crosshairs);
         myLocationOverlay.setDirectionArrow(crosshairs, crosshairs);
         myLocationOverlay.setPersonHotspot(crosshairs.getWidth() / 2.0f, crosshairs.getHeight() / 2.0f);
 
@@ -399,7 +399,7 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
     }
 
     @Override public void runOnGpsLocationReady(@NonNull ReadyListener listener) {
-        myLocationOverlay.runOnFirstFix(() -> getActivity().runOnUiThread(() -> listener.onReady(this)));
+        myLocationOverlay.runOnFirstFix(() -> requireActivity().runOnUiThread(() -> listener.onReady(this)));
     }
 
     @Override public void setGpsLocationEnabled(boolean enable) {
@@ -454,8 +454,8 @@ public class OsmDroidMapFragment extends Fragment implements MapFragment,
 
     private void enableLocationUpdates(boolean enable) {
         if (locationClient == null) {
-            locationClient = LocationClientProvider.getClient(getActivity(),
-                    () -> new GoogleFusedLocationClient(getActivity().getApplication()), GoogleApiAvailability
+            locationClient = LocationClientProvider.getClient(requireActivity(),
+                    () -> new GoogleFusedLocationClient(requireActivity().getApplication()), GoogleApiAvailability
                             .getInstance());
             locationClient.setListener(this);
         }

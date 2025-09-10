@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -40,7 +39,6 @@ import org.odk.collect.android.utilities.Validator;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.widget.AppCompatSpinner;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.gson.Gson;
@@ -66,8 +64,6 @@ public class SmapLoginActivity extends CollectAbstractActivity implements SmapLo
 
 
     private String url;
-    private AppCompatSpinner urlSpinner;
-    private ArrayAdapter<CharSequence> urlAdapter;
     private final ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
         gotResult(RESULT_OK, result.getData());
     });

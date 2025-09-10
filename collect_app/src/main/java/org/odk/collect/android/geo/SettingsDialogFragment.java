@@ -48,7 +48,7 @@ public class SettingsDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         super.onCreateDialog(savedInstanceState);
 
-        View settingsView = getActivity().getLayoutInflater().inflate(R.layout.geopoly_dialog, null);
+        View settingsView = requireActivity().getLayoutInflater().inflate(R.layout.geopoly_dialog, null);
         radioGroup = settingsView.findViewById(R.id.radio_group);
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
             checkedRadioButtonId = checkedId;
@@ -100,7 +100,7 @@ public class SettingsDialogFragment extends DialogFragment {
             accuracyThreshold.setSelection(accuracyThresholdIndex);
         }
 
-        return new AlertDialog.Builder(getActivity())
+        return new AlertDialog.Builder(requireActivity())
                 .setTitle(getString(org.odk.collect.strings.R.string.input_method))
                 .setView(settingsView)
                 .setPositiveButton(getString(org.odk.collect.strings.R.string.start), (dialog, id) -> {
@@ -127,7 +127,7 @@ public class SettingsDialogFragment extends DialogFragment {
     /** Populates a Spinner with the option labels in the given array. */
     private void populateSpinner(Spinner spinner, String[] options) {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                getActivity(), android.R.layout.simple_spinner_item, options);
+                requireActivity(), android.R.layout.simple_spinner_item, options);
         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
     }
