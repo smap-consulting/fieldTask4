@@ -38,7 +38,7 @@ android {
         applicationId "org.smap.smapTask.android"
         minSdkVersion libs.versions.minSdk.get().toInteger()
         targetSdkVersion libs.versions.targetSdk.get().toInteger()
-        versionCode(6835)
+        versionCode(6836)
         versionName getVersionName()
         testInstrumentationRunner('androidx.test.runner.AndroidJUnitRunner')
         multiDexEnabled true
@@ -78,79 +78,79 @@ android {
     productFlavors {
         standard {
             applicationId "org.smap.smapTask.android"
-            versionName "6.835"
+            versionName "6.836"
         }
         fieldTaskMax {
             applicationId "org.smap.smapTask.android.fieldTaskMax"
-            versionName "6.835"
+            versionName "6.836"
         }
         plan {
             applicationId "org.smap.smapTask.android.plan"
-            versionName "6.835-plan"
+            versionName "6.836-plan"
         }
         kontrolid {
             applicationId "org.smap.smapTask.android.kontrolid"
-            versionName "6.835-kontrolid"
+            versionName "6.836-kontrolid"
         }
         xxx4 {
             applicationId "org.smap.smapTask.android.xxx4"
-            versionName "6.835-xxx4"
+            versionName "6.836-xxx4"
         }
         portero {
             applicationId "org.smap.smapTask.android.portero"
-            versionName "6.835-portero"
+            versionName "6.836-portero"
         }
         kontrolid_corporate {
             applicationId "org.smap.smapTask.android.kontrolid_corporate"
-            versionName "6.835-kontrolid"
+            versionName "6.836-kontrolid"
         }
         xxx3 {
             applicationId "org.smap.smapTask.android.xxx3"
-            versionName "6.835-xxx3"
+            versionName "6.836-xxx3"
         }
         xxx1 {
             applicationId "org.smap.smapTask.android.xxx1"
-            versionName "6.835-xxx1"
+            versionName "6.836-xxx1"
         }
         meqa {
             applicationId "org.smap.smapTask.android.meqa"
-            versionName "6.835-meqa"
+            versionName "6.836-meqa"
         }
         xxx2 {
             applicationId "org.smap.smapTask.android.xxx2"
-            versionName "6.835-xxx2"
+            versionName "6.836-xxx2"
         }
         pop {
             applicationId "org.smap.smapTask.android.pop"
-            versionName "6.835-pop"
+            versionName "6.836-pop"
         }
         tdh {
             applicationId "org.smap.smapTask.android.tdh"
-            versionName "6.835-tdh"
+            versionName "6.836-tdh"
         }
         assignfield2 {
             applicationId "org.smap.smapTask.android.assignfield2"
-            versionName "6.835-assignfield2"
+            versionName "6.836-assignfield2"
         }
         informEd {
             applicationId "org.smap.smapTask.android.informEd"
-            versionName "6.835-informEd"
+            versionName "6.836-informEd"
         }
         pangolin {
             applicationId "org.smap.smapTask.android.pangolin"
-            versionName "6.835-pangolin"
+            versionName "6.836-pangolin"
         }
         stl2 {
             applicationId "org.smap.smapTask.android.stl2"
-            versionName "6.835-stl2"
+            versionName "6.836-stl2"
         }
         ljstracker {
             applicationId "org.smap.smapTask.android.ljstracker"
-            versionName "6.835-ljstracker"
+            versionName "6.836-ljstracker"
         }
         bps {
             applicationId "org.smap.smapTask.android.bps"
-            versionName "6.835-bps"
+            versionName "6.836-bps"
         }
     }
 
