@@ -29,15 +29,17 @@ public final class KeyValueJsonFns {
 	    	ArrayList <KeyValue> kva = gson.fromJson(in, type);
 
 			boolean hasEntries = false;
-	    	for(KeyValue kv : kva) {
-				if(kv.key != null && kv.value!= null) {
-					if (hasEntries) {
-						out.append(",");
+			if(kva != null && !kva.isEmpty()) {
+				for (KeyValue kv : kva) {
+					if (kv.key != null && kv.value != null) {
+						if (hasEntries) {
+							out.append(",");
+						}
+						out.append(kv.value);
+						hasEntries = true;
 					}
-					out.append(kv.value);
-					hasEntries = true;
 				}
-	    	}
+			}
 		}
 
 		if(out.length() > 0) {
