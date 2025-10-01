@@ -2047,6 +2047,8 @@ public class FormEntryActivity extends CollectAbstractActivity implements Animat
                 int idx = languages[i].indexOf('(');
                 if(idx > 0) {
                     displayLanguages[i] = languages[i].substring(0, idx).trim();
+                } else {
+                    displayLanguages[i] =  languages[i];
                 }
             }
         }
