@@ -38,7 +38,7 @@ android {
         applicationId "org.smap.smapTask.android"
         minSdkVersion libs.versions.minSdk.get().toInteger()
         targetSdkVersion libs.versions.targetSdk.get().toInteger()
-        versionCode(6837)
+        versionCode(6838)
         versionName getVersionName()
         testInstrumentationRunner('androidx.test.runner.AndroidJUnitRunner')
         multiDexEnabled true
@@ -78,79 +78,79 @@ android {
     productFlavors {
         standard {
             applicationId "org.smap.smapTask.android"
-            versionName "6.837"
+            versionName "6.838"
         }
         fieldTaskMax {
             applicationId "org.smap.smapTask.android.fieldTaskMax"
-            versionName "6.837"
+            versionName "6.838"
         }
         plan {
             applicationId "org.smap.smapTask.android.plan"
-            versionName "6.837-plan"
+            versionName "6.838-plan"
         }
         kontrolid {
             applicationId "org.smap.smapTask.android.kontrolid"
-            versionName "6.837-kontrolid"
+            versionName "6.838-kontrolid"
         }
         xxx4 {
             applicationId "org.smap.smapTask.android.xxx4"
-            versionName "6.837-xxx4"
+            versionName "6.838-xxx4"
         }
         portero {
             applicationId "org.smap.smapTask.android.portero"
-            versionName "6.837-portero"
+            versionName "6.838-portero"
         }
         kontrolid_corporate {
             applicationId "org.smap.smapTask.android.kontrolid_corporate"
-            versionName "6.837-kontrolid"
+            versionName "6.838-kontrolid"
         }
         xxx3 {
             applicationId "org.smap.smapTask.android.xxx3"
-            versionName "6.837-xxx3"
+            versionName "6.838-xxx3"
         }
         xxx1 {
             applicationId "org.smap.smapTask.android.xxx1"
-            versionName "6.837-xxx1"
+            versionName "6.838-xxx1"
         }
         meqa {
             applicationId "org.smap.smapTask.android.meqa"
-            versionName "6.837-meqa"
+            versionName "6.838-meqa"
         }
         xxx2 {
             applicationId "org.smap.smapTask.android.xxx2"
-            versionName "6.837-xxx2"
+            versionName "6.838-xxx2"
         }
         pop {
             applicationId "org.smap.smapTask.android.pop"
-            versionName "6.837-pop"
+            versionName "6.838-pop"
         }
         tdh {
             applicationId "org.smap.smapTask.android.tdh"
-            versionName "6.837-tdh"
+            versionName "6.838-tdh"
         }
         assignfield2 {
             applicationId "org.smap.smapTask.android.assignfield2"
-            versionName "6.837-assignfield2"
+            versionName "6.838-assignfield2"
         }
         informEd {
             applicationId "org.smap.smapTask.android.informEd"
-            versionName "6.837-informEd"
+            versionName "6.838-informEd"
         }
         pangolin {
             applicationId "org.smap.smapTask.android.pangolin"
-            versionName "6.837-pangolin"
+            versionName "6.838-pangolin"
         }
         stl2 {
             applicationId "org.smap.smapTask.android.stl2"
-            versionName "6.837-stl2"
+            versionName "6.838-stl2"
         }
         ljstracker {
             applicationId "org.smap.smapTask.android.ljstracker"
-            versionName "6.837-ljstracker"
+            versionName "6.838-ljstracker"
         }
         bps {
             applicationId "org.smap.smapTask.android.bps"
-            versionName "6.837-bps"
+            versionName "6.838-bps"
         }
     }
 
@@ -329,7 +329,7 @@ dependencies {
     implementation libs.opencsv
 
     implementation('net.sf.kxml:kxml2:2.3.0')                       // smap javarosa dependency is this actually needed?
-    implementation files('libs/javarosa-3.1.3.jar')    // smap javarosa
+    implementation files('libs/javarosa-3.1.4.jar')    // smap javarosa
 
     implementation libs.karumiDexter
     implementation libs.osmdroid
