@@ -32,7 +32,7 @@ daggerCompiler = { group = "com.google.dagger", name = "dagger-compiler", versio
 daggerAndroid = { group = "com.google.dagger", name = "dagger-android", version.ref = "dagger" }
 daggerAndroidProcessor = { group = "com.google.dagger", name = "dagger-android-processor", version.ref = "dagger" }
 desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version = "2.1.5" }
-gradle = { group = "com.android.tools.build", name = "gradle", version = "8.11.0" }
+gradle = { group = "com.android.tools.build", name = "gradle", version = "8.13.0" }
 gson = { group = "com.google.code.gson", name = "gson", version = "2.13.1" }
 karumiDexter = { group = "com.karumi", name = "dexter", version = "6.2.3" }
 kotlinGradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = "2.2.0" }
