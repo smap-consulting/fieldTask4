@@ -35,7 +35,7 @@ Most dependencies are managed using gradle, however some Field Task functionalit
 
         git clone https://github.com/YOUR-GITHUB-USERNAME/fieldTask4.git
         
-1. The v6.809 branch is the default branch
+1. The "main" branch is the default branch
 
 1. Use Android Studio to import the project
 
