@@ -128,10 +128,6 @@ android {
             applicationId "org.smap.smapTask.android.tdh"
             versionName "6.838-tdh"
         }
-        assignfield2 {
-            applicationId "org.smap.smapTask.android.assignfield2"
-            versionName "6.838-assignfield2"
-        }
         informEd {
             applicationId "org.smap.smapTask.android.informEd"
             versionName "6.838-informEd"
