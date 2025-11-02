@@ -71,13 +71,17 @@ Most dependencies are managed using gradle, however some Field Task functionalit
 1. Select run to view fieldTask in an emulator
 
 ## Branches
-* production - The latest Field Task code
+* main - The latest Field Task code
 
 ## Variants
 The variant in the github repository that you will want to start with is "standard".  This contains some resources and Java code to handle customisable processing around location change.  Background location recording can be enabled on FieldTask and by default this is used only for geo fencing and the location data is not stored.   The register function in the LocationRegister file can be modified to do additional processing of location changes if you need that. 
 
-Related Repositories
--------------------
+## Issues
+
+*  [FieldTask Issues](https://github.com/smap-consulting/fieldTask4/issues).
+*  [General issues for Smap Server, Web Clients, Web Forms](https://github.com/smap-consulting/smapserver2/issues)
+
+## Related Repositories
 
 FieldTask is designed to work with Smap server, the code for which is included in other GitHub repositories.  The complete list of repositories is shown 
 in the table below.
@@ -91,13 +95,12 @@ in the table below.
 |SmapClient    |https://github.com/nap2000/prop-smapserver    |Administrative client     |
 |Documentation |https://github.com/nap2000/docs               |Documentation |
 
-Downloads
----------
+## Downloads
+
 *  [Server Downloads Page](https://www.smap.com.au/docs/server-admin-versions.html)
 *  [Server Administration Documentation](https://www.smap.com.au/docs/server-admin.html)
 
-Acknowledgements
-----------------
+## Acknowledgements
 
 This project:
 * includes the Android SDK from [MapBox] (https://www.mapbox.com/)
