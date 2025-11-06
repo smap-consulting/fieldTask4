@@ -21,14 +21,6 @@ Most dependencies are managed using gradle, however some Field Task functionalit
 
 1. Download and install [Android Studio](https://developer.android.com/studio/index.html) if you don't have it already
 
-1. In Android Studio install the target SDK
-
-1. [Add Smap JavaRosa as a project in Android Studio](https://github.com/smap-consulting/javarosa)
-
-        Follow the readme instructions in the javarosa repository to build the latest production java rosa version. Currently tip of production branch.
-        copy the generated jar file to fieldTask/collect_app/libs. You may need to create the libs folder
-        The version of java rosa that you need is referenced in the application's build.gradle
-
 1. Fork the Field Task project ([why and how to fork](https://help.github.com/articles/fork-a-repo/))
 
 1. Clone your fork of the project locally. At the command line type "git clone" and then the url provided by git hub.
@@ -38,6 +30,12 @@ Most dependencies are managed using gradle, however some Field Task functionalit
 1. The "main" branch is the default branch
 
 1. Use Android Studio to import the project
+
+1. [Add Smap JavaRosa as a project in Android Studio](https://github.com/smap-consulting/javarosa)
+
+        Follow the readme instructions in the javarosa repository to build the latest production java rosa version. Currently tip of production branch.
+        copy the generated jar file to fieldTask/collect_app/libs. You may need to create the libs folder
+        The version of java rosa that you need is referenced in the application's build.gradle
 
 1. Get a Google services json file
 
