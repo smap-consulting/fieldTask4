@@ -78,9 +78,9 @@ public class MapProvider {
                 new OsmDroidMapConfigurator(
                     new WebMapService(
                         "Mapnik", 0, 19, 256, OSM_COPYRIGHT,
-                        "http://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        "http://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                        "http://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        "https://a.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        "https://b.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                        "https://c.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     )
                 )
             ),
@@ -105,7 +105,7 @@ public class MapProvider {
                 new OsmDroidMapConfigurator(
                     new WebMapService(
                         org.odk.collect.strings.R.string.openmap_stamen_terrain, 0, 18, 256, STAMEN_ATTRIBUTION,
-                        "http://tile.stamen.com/terrain/{z}/{x}/{y}.jpg"
+                        "https://tile.stamen.com/terrain/{z}/{x}/{y}.jpg"
                     )
                 )
             ),
@@ -114,11 +114,11 @@ public class MapProvider {
                     KEY_CARTO_MAP_STYLE, org.odk.collect.strings.R.string.basemap_source_carto,
                     new WmsOption("positron", org.odk.collect.strings.R.string.carto_map_style_positron, new WebMapService(
                             org.odk.collect.strings.R.string.openmap_cartodb_positron, 0, 18, 256, CARTO_ATTRIBUTION,
-                        "http://1.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
+                        "https://1.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png"
                     )),
                     new WmsOption("dark_matter", org.odk.collect.strings.R.string.carto_map_style_dark_matter, new WebMapService(
                         org.odk.collect.strings.R.string.openmap_cartodb_darkmatter, 0, 18, 256, CARTO_ATTRIBUTION,
-                        "http://1.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
+                        "https://1.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png"
                     ))
                 )
             )
