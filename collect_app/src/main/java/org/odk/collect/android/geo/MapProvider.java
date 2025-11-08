@@ -7,7 +7,6 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.mapbox.mapboxsdk.maps.Style;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.geo.GoogleMapConfigurator.GoogleMapTypeOption;
@@ -73,17 +72,6 @@ public class MapProvider {
                     new GoogleMapTypeOption(GoogleMap.MAP_TYPE_TERRAIN, org.odk.collect.strings.R.string.terrain),
                     new GoogleMapTypeOption(GoogleMap.MAP_TYPE_HYBRID, org.odk.collect.strings.R.string.hybrid),
                     new GoogleMapTypeOption(GoogleMap.MAP_TYPE_SATELLITE, org.odk.collect.strings.R.string.satellite)
-                )
-            ),
-            new SourceOption(BASEMAP_SOURCE_MAPBOX, org.odk.collect.strings.R.string.basemap_source_mapbox,
-                new MapboxMapConfigurator(
-                    KEY_MAPBOX_MAP_STYLE, org.odk.collect.strings.R.string.basemap_source_mapbox,
-                    new MapboxUrlOption(Style.MAPBOX_STREETS, org.odk.collect.strings.R.string.streets),
-                    new MapboxUrlOption(Style.LIGHT, org.odk.collect.strings.R.string.light),
-                    new MapboxUrlOption(Style.DARK, org.odk.collect.strings.R.string.dark),
-                    new MapboxUrlOption(Style.SATELLITE, org.odk.collect.strings.R.string.satellite),
-                    new MapboxUrlOption(Style.SATELLITE_STREETS, org.odk.collect.strings.R.string.hybrid),
-                    new MapboxUrlOption(Style.OUTDOORS, org.odk.collect.strings.R.string.outdoors)
                 )
             ),
             new SourceOption(BASEMAP_SOURCE_OSM, org.odk.collect.strings.R.string.basemap_source_osm,

@@ -7,7 +7,6 @@ import android.os.Bundle;
 import androidx.preference.Preference;
 
 import com.google.common.collect.ImmutableSet;
-import com.mapbox.mapboxsdk.maps.Style;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.preferences.PrefUtils;
@@ -67,8 +66,6 @@ class MapboxMapConfigurator implements MapConfigurator {
 
     @Override public Bundle buildConfig(SharedPreferences prefs) {
         Bundle config = new Bundle();
-        config.putString(MapboxMapFragment.KEY_STYLE_URL,
-            prefs.getString(KEY_MAPBOX_MAP_STYLE, Style.MAPBOX_STREETS));
         config.putString(MapboxMapFragment.KEY_REFERENCE_LAYER,
             prefs.getString(KEY_REFERENCE_LAYER, null));
         return config;

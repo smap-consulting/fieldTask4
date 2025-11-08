@@ -308,11 +308,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics:22.5.0'
     implementation 'com.google.firebase:firebase-crashlytics:19.4.4'
 
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.7.1' // update from 9.2.1 to fix mapbox issue
-
-    // Upgrading will require more changes in our codebase https://github.com/getodk/collect/issues/4305
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.8.0'
-
     implementation("com.google.guava:guava:30.1-android")
 
     implementation libs.okHttp
