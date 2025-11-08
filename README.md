@@ -44,7 +44,7 @@ Most dependencies are managed using gradle, however some Field Task functionalit
         Select Android to add firebase to your Android app
         Specify the package as: org.smap.smapTask.android
         Register the app 
-        Download the google-services.json file and place it in the fieldTas4/collect_app folder
+        Download the google-services.json file and place it in the fieldTask4/collect_app folder
 
 1. [Get a Google Maps API key](https://developers.google.com/maps/documentation/android-api/signup).  A credit card number is required however there a fairly significant number of requests available at no charge each month.  Check how many map calls you expect to be using and the expected cost before signing up. Add this to your global gradle.properties file.
 
