@@ -21,14 +21,6 @@ Most dependencies are managed using gradle, however some Field Task functionalit
 
 1. Download and install [Android Studio](https://developer.android.com/studio/index.html) if you don't have it already
 
-1. In Android Studio install the target SDK
-
-1. [Add Smap JavaRosa as a project in Android Studio](https://github.com/smap-consulting/javarosa)
-
-        Follow the readme instructions in the javarosa repository to build the latest production java rosa version. Currently tip of production branch.
-        copy the generated jar file to fieldTask/collect_app/libs. You may need to create the libs folder
-        The version of java rosa that you need is referenced in the application's build.gradle
-
 1. Fork the Field Task project ([why and how to fork](https://help.github.com/articles/fork-a-repo/))
 
 1. Clone your fork of the project locally. At the command line type "git clone" and then the url provided by git hub.
@@ -39,6 +31,12 @@ Most dependencies are managed using gradle, however some Field Task functionalit
 
 1. Use Android Studio to import the project
 
+1. [Add Smap JavaRosa as a project in Android Studio](https://github.com/smap-consulting/javarosa)
+
+        Follow the readme instructions in the javarosa repository to build the latest production java rosa version. Currently tip of production branch.
+        copy the generated jar file to fieldTask/collect_app/libs. You may need to create the libs folder
+        The version of java rosa that you need is referenced in the application's build.gradle
+
 1. Get a Google services json file
 
         Sign into the firebase console
@@ -46,7 +44,7 @@ Most dependencies are managed using gradle, however some Field Task functionalit
         Select Android to add firebase to your Android app
         Specify the package as: org.smap.smapTask.android
         Register the app 
-        Download the google-services.json file and place it in the fieldTas4/collect_app folder
+        Download the google-services.json file and place it in the fieldTask4/collect_app folder
 
 1. [Get a Google Maps API key](https://developers.google.com/maps/documentation/android-api/signup).  A credit card number is required however there a fairly significant number of requests available at no charge each month.  Check how many map calls you expect to be using and the expected cost before signing up. Add this to your global gradle.properties file.
 
@@ -91,7 +89,7 @@ in the table below.
 |FieldTask     |https://github.com/smap-consulting/fieldTask4 |FieldTask  |
 |JavaRosa      |https://github.com/smap-consulting/javarosa   |FieldTask  |
 |SmapServer    |https://github.com/smap-consulting/smapserver2|Back end Server code     |
-|WebForm       |https://github.com/nap2000/enketo-core        |Browser client    |
+|WebForm       |https://github.com/nap2000/webform            |Browser client    |
 |SmapClient    |https://github.com/nap2000/prop-smapserver    |Administrative client     |
 |Documentation |https://github.com/nap2000/docs               |Documentation |
 

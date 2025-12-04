@@ -1,17 +1,14 @@
 package org.odk.collect.android.preferences;
 
 import com.google.android.gms.maps.GoogleMap;
-import com.mapbox.mapboxsdk.maps.Style;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.activities.GeoPolyActivity;
 import org.odk.collect.android.application.Collect;
 import org.odk.collect.android.smap.utilities.LocationRegister;
-import org.odk.collect.android.utilities.KeyValueString;
 import org.odk.collect.android.utilities.QuestionFontSizeUtils;
 
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 
 public final class GeneralKeys {
     // server_preferences.xml
@@ -232,7 +229,6 @@ public final class GeneralKeys {
         hashMap.put(KEY_CARTO_MAP_STYLE, "positron");
         hashMap.put(KEY_USGS_MAP_STYLE, "topographic");
         hashMap.put(KEY_GOOGLE_MAP_STYLE, String.valueOf(GoogleMap.MAP_TYPE_NORMAL));
-        hashMap.put(KEY_MAPBOX_MAP_STYLE, Style.MAPBOX_STREETS);
         return hashMap;
     }
 

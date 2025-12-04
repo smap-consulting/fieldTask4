@@ -3,49 +3,17 @@ package org.odk.collect.android.geo.mapboxsdk;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.AttributeSet;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.MapboxMapOptions;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
-import com.mapbox.mapboxsdk.utils.MapFragmentUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * This is an exact copy of com.mapbox.mapboxsdk.maps.MapFragment as of tag
- * android-v7.3.0, with only these changes for compatibility with ODK Collect:
- *   - "final" is removed, so this class can be extended.
- *   - The getMapView() method is added to provide access to the private "map" field.
- *   - android.support classes are replaced with the corresponding androidx classes.
- *
- * Fragment wrapper around a map view.
- * <p>
- * A Map component in an app. This fragment is the simplest way to place a map in an application.
- * It's a wrapper around a view of a map to automatically handle the necessary life cycle needs.
- * Being a fragment, this component can be added to an activity's layout or can dynamically be added
- * using a FragmentManager.
- * </p>
- * <p>
- * To get a reference to the MapView, use {@link #getMapAsync(OnMapReadyCallback)}}
- * </p>
- *
- * @see #getMapAsync(OnMapReadyCallback)
+/*
+ * This class was used for Mapbox but has been disabled as this version of Mapbox does not meet google page size requirements
  */
-public class MapFragment extends Fragment implements OnMapReadyCallback {
+public class MapFragment extends Fragment {
 
-    private final List<OnMapReadyCallback> mapReadyCallbackList = new ArrayList<>();
     private OnMapViewReadyCallback mapViewReadyCallback;
-    private MapboxMap mapboxMap;
-    private MapView map;
 
     /**
      * Creates a default MapFragment instance
@@ -54,19 +22,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public static MapFragment newInstance() {
         return new MapFragment();
-    }
-
-    /**
-     * Creates a MapFragment instance
-     *
-     * @param mapboxMapOptions The configuration options to be used.
-     * @return MapFragment instantiated.
-     */
-    @NonNull
-    public static MapFragment newInstance(@Nullable MapboxMapOptions mapboxMapOptions) {
-        MapFragment mapFragment = new MapFragment();
-        mapFragment.setArguments(MapFragmentUtils.createFragmentArgs(mapboxMapOptions));
-        return mapFragment;
     }
 
     /**
@@ -79,7 +34,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onInflate(@NonNull Context context, AttributeSet attrs, Bundle savedInstanceState) {
         super.onInflate(context, attrs, savedInstanceState);
-        setArguments(MapFragmentUtils.createFragmentArgs(MapboxMapOptions.createFromAttributes(context, attrs)));
     }
 
     /**
@@ -96,20 +50,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     }
 
     /**
-     * Creates the fragment view hierarchy.
-     *
-     * @param inflater           Inflater used to inflate content.
-     * @param container          The parent layout for the map fragment.
-     * @param savedInstanceState The saved instance state for the map fragment.
-     * @return The view created
-     */
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        Context context = inflater.getContext();
-        map = new MapView(context, MapFragmentUtils.resolveArgs(context, getArguments()));
-        return map;
-    }
 
     /**
      * Called when the fragment view hierarchy is created.
@@ -120,26 +60,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        map.onCreate(savedInstanceState);
-        map.getMapAsync(this);
-
-        // notify listeners about mapview creation
-        if (mapViewReadyCallback != null) {
-            mapViewReadyCallback.onMapViewReady(map);
-        }
-    }
-
-    /**
-     * Called when the style of the map has successfully loaded.
-     *
-     * @param mapboxMap The public api controller of the map
-     */
-    @Override
-    public void onMapReady(@NonNull MapboxMap mapboxMap) {
-        this.mapboxMap = mapboxMap;
-        for (OnMapReadyCallback onMapReadyCallback : mapReadyCallbackList) {
-            onMapReadyCallback.onMapReady(mapboxMap);
-        }
     }
 
     /**
@@ -148,7 +68,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onStart() {
         super.onStart();
-        map.onStart();
     }
 
     /**
@@ -157,7 +76,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onResume() {
         super.onResume();
-        map.onResume();
     }
 
     /**
@@ -166,7 +84,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onPause() {
         super.onPause();
-        map.onPause();
     }
 
     /**
@@ -177,9 +94,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (map != null && !map.isDestroyed()) {
-            map.onSaveInstanceState(outState);
-        }
     }
 
     /**
@@ -188,7 +102,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onStop() {
         super.onStop();
-        map.onStop();
     }
 
     /**
@@ -197,9 +110,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        if (map != null && !map.isDestroyed()) {
-            map.onLowMemory();
-        }
+
     }
 
     /**
@@ -208,7 +119,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        map.onDestroy();
     }
 
     /**
@@ -217,25 +127,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mapReadyCallbackList.clear();
     }
 
-    /**
-     * Sets a callback object which will be triggered when the MapboxMap instance is ready to be used.
-     *
-     * @param onMapReadyCallback The callback to be invoked.
-     */
-    public void getMapAsync(@NonNull final OnMapReadyCallback onMapReadyCallback) {
-        if (mapboxMap == null) {
-            mapReadyCallbackList.add(onMapReadyCallback);
-        } else {
-            onMapReadyCallback.onMapReady(mapboxMap);
-        }
-    }
-
-    protected MapView getMapView() {
-        return map;
-    }
 
     /**
      * Callback to be invoked when the map fragment has inflated its MapView.
@@ -246,12 +139,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
      */
     public interface OnMapViewReadyCallback {
 
-        /**
-         * Called when the map has been created.
-         *
-         * @param mapView The created mapview
-         */
-        void onMapViewReady(MapView mapView);
     }
 }
 

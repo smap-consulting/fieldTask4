@@ -47,7 +47,6 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
-import com.mapbox.mapboxsdk.plugins.annotation.Symbol;
 
 import org.odk.collect.android.R;
 import org.odk.collect.android.geo.models.CompoundMarker;
