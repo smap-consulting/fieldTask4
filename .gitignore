@@ -99,3 +99,8 @@ libs/
 
 # Config for the official ODK Collect build
 collect_app/src/odkCollectRelease/
+
+
+.claude
+contributors
+CLAUDE.md
